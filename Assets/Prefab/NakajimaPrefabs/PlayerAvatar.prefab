@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 6278831117568584565}
   - component: {fileID: 7453442949649715553}
   - component: {fileID: 2456749128542381984}
+  - component: {fileID: 7282076192020991313}
   m_Layer: 0
   m_Name: PlayerAvatar
   m_TagString: Untagged
@@ -61,6 +62,7 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: 7453442949649715553}
   - {fileID: 2456749128542381984}
+  - {fileID: 7282076192020991313}
   SimulationBehaviours: []
 --- !u!143 &6278831117568584565
 CharacterController:
@@ -83,7 +85,7 @@ CharacterController:
   serializedVersion: 3
   m_Height: 2
   m_Radius: 0.5
-  m_SlopeLimit: 45
+  m_SlopeLimit: 100
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
@@ -141,6 +143,22 @@ MonoBehaviour:
   WordOffset: 0
   WordCount: 0
   _interpolationDataSource: 0
+--- !u!114 &7282076192020991313
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2852828816588928964}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20681be74d3d60a448a897cf0c9d5aff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  WordOffset: 0
+  WordCount: 0
+  _interpolationDataSource: 0
+  cameraOffset: {x: 0, y: 5, z: -7}
 --- !u!1 &7390135594791055790
 GameObject:
   m_ObjectHideFlags: 0
@@ -310,7 +328,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: d1f3efc18c5776846a23097bdcdbaa02, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
