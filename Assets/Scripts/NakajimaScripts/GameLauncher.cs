@@ -14,18 +14,32 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
     private NetworkRunner networkRunner;
 
+
     private async void Start()
     {
         // NetworkRunnerを生成する
         networkRunner = Instantiate(networkRunnerPrefab);
         // NetworkRunnerのコールバック対象に、このスクリプト（GameLauncher）を登録する
         networkRunner.AddCallbacks(this);
+
+
+        var customProps = new Dictionary<string, SessionProperty>();
+
+        customProps["GameRule"] = (int)GameRuleSettings.Instance.selectedRule;
+
+
+
         // StartGameArgsに渡した設定で、セッションに参加する
         var result = await networkRunner.StartGame(new StartGameArgs
         {
             GameMode = GameMode.AutoHostOrClient,
+            SessionProperties = customProps,
             SceneManager = networkRunner.GetComponent<NetworkSceneManagerDefault>()
         });
+
+
+
+        
 
         if (result.Ok)
         {
@@ -34,6 +48,18 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         else
         {
             Debug.Log("失敗！");
+        }
+}
+
+    public void OnConnectedToSession(NetworkRunner runner)
+    {
+        if (runner.SessionInfo != null && runner.SessionInfo.Properties != null)
+        {
+            if (runner.SessionInfo.Properties.TryGetValue("GameRule", out var gameRuleProp))
+            {
+                int gameRuleValue = (int)gameRuleProp;
+                Debug.Log($"GameRule from SessionProperties: {gameRuleValue}");
+            }
         }
     }
 
@@ -63,7 +89,13 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
             runner.Despawn(avatar);
         }
     }
-    public void OnInput(NetworkRunner runner, NetworkInput input) { }
+    public void OnInput(NetworkRunner runner, NetworkInput input) {
+        var data = new NetworkInputData();
+
+        data.Direction = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
+
+        input.Set(data);
+    }
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
     public void OnConnectedToServer(NetworkRunner runner) { }

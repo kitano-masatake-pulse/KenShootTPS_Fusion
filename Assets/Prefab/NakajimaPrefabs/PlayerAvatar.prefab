@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: -631725449571884495}
   - component: {fileID: 6278831117568584565}
   - component: {fileID: 7453442949649715553}
+  - component: {fileID: 2456749128542381984}
   m_Layer: 0
   m_Name: PlayerAvatar
   m_TagString: Untagged
@@ -59,6 +60,7 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 7453442949649715553}
+  - {fileID: 2456749128542381984}
   SimulationBehaviours: []
 --- !u!143 &6278831117568584565
 CharacterController:
@@ -124,6 +126,21 @@ MonoBehaviour:
   rotationSpeed: 15
   _IsGrounded: 0
   _Velocity: {x: 0, y: 0, z: 0}
+--- !u!114 &2456749128542381984
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2852828816588928964}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76e245fdf08a96e4a9a6e4ef0ef8b722, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  WordOffset: 0
+  WordCount: 0
+  _interpolationDataSource: 0
 --- !u!1 &7390135594791055790
 GameObject:
   m_ObjectHideFlags: 0
