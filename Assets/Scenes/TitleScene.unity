@@ -271,6 +271,22 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1371594938714667830, guid: 6f96b7f202c243b469eec09b8edd0575, type: 3}
+      propertyPath: m_FontData.m_MaxSize
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 1371594938714667830, guid: 6f96b7f202c243b469eec09b8edd0575, type: 3}
+      propertyPath: m_FontData.m_FontSize
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 1371594938714667830, guid: 6f96b7f202c243b469eec09b8edd0575, type: 3}
+      propertyPath: m_FontData.m_LineSpacing
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4365534743725808257, guid: 6f96b7f202c243b469eec09b8edd0575, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4812779567521846569, guid: 6f96b7f202c243b469eec09b8edd0575, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
       value: 1
@@ -291,9 +307,77 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
       value: SelectRuleAndGotoLobby, Assembly-CSharp
       objectReference: {fileID: 0}
+    - target: {fileID: 5386964631611226337, guid: 6f96b7f202c243b469eec09b8edd0575, type: 3}
+      propertyPath: m_UiScaleMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5386964631611226337, guid: 6f96b7f202c243b469eec09b8edd0575, type: 3}
+      propertyPath: m_ScreenMatchMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5386964631611226337, guid: 6f96b7f202c243b469eec09b8edd0575, type: 3}
+      propertyPath: m_MatchWidthOrHeight
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5386964631611226337, guid: 6f96b7f202c243b469eec09b8edd0575, type: 3}
+      propertyPath: m_ReferenceResolution.x
+      value: 1920
+      objectReference: {fileID: 0}
+    - target: {fileID: 5386964631611226337, guid: 6f96b7f202c243b469eec09b8edd0575, type: 3}
+      propertyPath: m_ReferenceResolution.y
+      value: 1080
+      objectReference: {fileID: 0}
+    - target: {fileID: 5386964631611226337, guid: 6f96b7f202c243b469eec09b8edd0575, type: 3}
+      propertyPath: m_ReferencePixelsPerUnit
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 7212708535309579535, guid: 6f96b7f202c243b469eec09b8edd0575, type: 3}
       propertyPath: m_Name
       value: Canvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 7545476332637722221, guid: 6f96b7f202c243b469eec09b8edd0575, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7545476332637722221, guid: 6f96b7f202c243b469eec09b8edd0575, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7545476332637722221, guid: 6f96b7f202c243b469eec09b8edd0575, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7545476332637722221, guid: 6f96b7f202c243b469eec09b8edd0575, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -300
+      objectReference: {fileID: 0}
+    - target: {fileID: 8643472598657588853, guid: 6f96b7f202c243b469eec09b8edd0575, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 8643472598657588853, guid: 6f96b7f202c243b469eec09b8edd0575, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 8643472598657588853, guid: 6f96b7f202c243b469eec09b8edd0575, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 8695979897349388657, guid: 6f96b7f202c243b469eec09b8edd0575, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8695979897349388657, guid: 6f96b7f202c243b469eec09b8edd0575, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8695979897349388657, guid: 6f96b7f202c243b469eec09b8edd0575, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8695979897349388657, guid: 6f96b7f202c243b469eec09b8edd0575, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 300
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

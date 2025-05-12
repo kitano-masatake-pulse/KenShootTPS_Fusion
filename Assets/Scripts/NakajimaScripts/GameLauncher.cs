@@ -12,6 +12,8 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     private NetworkRunner networkRunnerPrefab;
     [SerializeField]
     private NetworkPrefabRef playerAvatarPrefab;
+    [SerializeField]
+    private GameObject startButton;
 
     private NetworkRunner networkRunner;
 
@@ -29,6 +31,8 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         var customProps = new Dictionary<string, SessionProperty>();
 
         customProps["GameRule"] = (int)GameRuleSettings.Instance.selectedRule;
+
+        startButton.SetActive(false);
 
 
 
@@ -76,10 +80,11 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
                 {
                     sessionNameText.text = $"ルーム名: {sessionName}";
                 }
-            }
-            else
-            {
-                Debug.Log("GameRule not found in SessionProperties.");
+                if (runner.IsServer)
+                {
+                    Debug.Log("これはホストです。");
+                    startButton.SetActive(true);
+                }
             }
         }
 
