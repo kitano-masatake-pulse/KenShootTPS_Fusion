@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Fusion;
 using Fusion.Sockets;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 {
@@ -13,6 +14,8 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     private NetworkPrefabRef playerAvatarPrefab;
 
     private NetworkRunner networkRunner;
+
+    public Text sessionNameText;
 
 
     private async void Start()
@@ -34,6 +37,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         {
             GameMode = GameMode.AutoHostOrClient,
             SessionProperties = customProps,
+            PlayerCount = 2,
             SceneManager = networkRunner.GetComponent<NetworkSceneManagerDefault>()
         });
 
@@ -51,25 +55,38 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         }
 }
 
-    public void OnConnectedToSession(NetworkRunner runner)
-    {
-        if (runner.SessionInfo != null && runner.SessionInfo.Properties != null)
-        {
-            if (runner.SessionInfo.Properties.TryGetValue("GameRule", out var gameRuleProp))
-            {
-                int gameRuleValue = (int)gameRuleProp;
-                Debug.Log($"GameRule from SessionProperties: {gameRuleValue}");
-            }
-        }
-    }
-
-    // セッションへプレイヤーが参加した時に呼ばれるコールバック
+   
 
 
 
     // INetworkRunnerCallbacksインターフェースの空実装
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
-    {       
+    {
+
+        if (runner.SessionInfo != null && runner.SessionInfo.Properties != null)
+        {
+            if (runner.SessionInfo.Properties.TryGetValue("GameRule", out var gameRuleProp))
+            {
+                int gameRuleValue = (int)gameRuleProp;
+                string sessionName = runner.SessionInfo.Name;
+                Debug.Log($"GameRule from SessionProperties: {gameRuleValue}");
+                Debug.Log($"RoomName from SessionProperties: {sessionName}");
+
+                if (sessionNameText != null)
+                {
+                    sessionNameText.text = $"ルーム名: {sessionName}";
+                }
+            }
+            else
+            {
+                Debug.Log("GameRule not found in SessionProperties.");
+            }
+        }
+
+
+
+
+
         // ホスト（サーバー兼クライアント）かどうかはIsServerで判定できる
         if (!runner.IsServer) { return; }
         // ランダムな生成位置（半径5の円の内部）を取得する
