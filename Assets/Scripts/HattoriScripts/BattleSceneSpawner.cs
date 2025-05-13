@@ -39,7 +39,21 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player){ }
 
     // 他のINetworkRunnerCallbacksは空実装でOK
-    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
+    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) 
+    {   
+        Debug.Log($"[Despawn] プレイヤー {player} が退出しました");
+        
+        foreach (var obj in FindObjectsOfType<NetworkObject>()) 
+        { 
+            // inputAuthority が一致するオブジェクトを見つけたら Despawn
+            if (obj.InputAuthority == player)
+            {
+                Debug.Log($"→ {player} のキャラをDespawnします");
+                runner.Despawn(obj);
+                break; // 複数ある場合は必要に応じて全部消す
+            }
+        }
+    }
     public void OnInput(NetworkRunner runner, NetworkInput input) { }
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
