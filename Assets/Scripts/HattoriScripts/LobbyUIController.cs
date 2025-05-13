@@ -7,8 +7,9 @@ using Fusion;
 
 public class LobbyUIController : MonoBehaviour
 {
-    [SerializeField] 
-    private Button startBattleButton;
+    [Header("バトルシーン開始ボタン")] 
+    public Button startBattleButton;
+
     private NetworkRunner runner;
 
     void Start()

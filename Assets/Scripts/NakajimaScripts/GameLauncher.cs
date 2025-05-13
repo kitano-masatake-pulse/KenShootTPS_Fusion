@@ -5,6 +5,7 @@ using Fusion;
 using Fusion.Sockets;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 {
@@ -17,7 +18,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
     private NetworkRunner networkRunner;
 
-    public Text sessionNameText;
+    public TextMeshProUGUI sessionNameText;
 
 
     private async void Start()
@@ -75,7 +76,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
                 if (sessionNameText != null)
                 {
-                    sessionNameText.text = $"ÉãÅ[ÉÄñº: {sessionName}";
+                    sessionNameText.SetText( $"RoomID: {sessionName}");
                 }
             }
             else
