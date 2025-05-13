@@ -22,6 +22,10 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
     private async void Start()
     {
+
+        //// ランダムなプレイヤー名を設定する
+        //PlayerData.NickName = $"Player{UnityEngine.Random.Range(0, 10000)}";
+
         // NetworkRunnerを生成する
         networkRunner = Instantiate(networkRunnerPrefab);
         // NetworkRunnerのコールバック対象に、このスクリプト（GameLauncher）を登録する
