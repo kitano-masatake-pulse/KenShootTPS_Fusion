@@ -4,9 +4,6 @@ using TMPro;
 
 public class PlayerAvatar : NetworkBehaviour
 {
-    private NetworkString<_16> NickName { get; set; }
-    //[SerializeField]
-    //private PlayerAvatarView view;
     [SerializeField] private TextMeshPro idText;
 
     private NetworkCharacterControllerPrototype characterController;
