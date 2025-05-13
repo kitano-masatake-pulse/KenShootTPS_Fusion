@@ -15,6 +15,9 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     [SerializeField]
     private GameObject startButton;
 
+    public SceneRef battleScene;
+
+
     private NetworkRunner networkRunner;
 
     public Text sessionNameText;
@@ -133,7 +136,18 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
     public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) { }
     public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ArraySegment<byte> data) { }
-    public void OnSceneLoadDone(NetworkRunner runner) { }
+    public void OnSceneLoadDone(NetworkRunner runner) {
+        if (runner.IsServer)
+        {
+            foreach (var player in runner.ActivePlayers)
+            {
+                // プレイヤーアバターをスポーン
+                var randomValue = UnityEngine.Random.insideUnitCircle * 5f;
+                Vector3 spawnPosition = new Vector3(randomValue.x, 5f, randomValue.y); // 任意の位置
+                runner.Spawn(playerAvatarPrefab, spawnPosition, Quaternion.identity, player);
+            }
+        }
+    }
     public void OnSceneLoadStart(NetworkRunner runner) { }
 
 

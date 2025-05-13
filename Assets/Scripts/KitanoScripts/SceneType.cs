@@ -11,9 +11,6 @@ public enum SceneType
 
 public static class SceneTypeExtensions
 {
-    /// <summary>
-    /// SceneType → 実際のシーン名（Build Settingsに登録された名前）への変換
-    /// </summary>
     public static string ToSceneName(this SceneType type)
     {
         return type switch

@@ -708,7 +708,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8502387817672369609, guid: daf5c19e2ac0b2646903896af2a90136, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnClickGameStart
+      value: SwitchToBattle
       objectReference: {fileID: 0}
     - target: {fileID: 8502387817672369609, guid: daf5c19e2ac0b2646903896af2a90136, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
@@ -743,6 +743,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d1d081e777f2c14391c935817c5b1bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WordOffset: 0
+  WordCount: 0
+  _interpolationDataSource: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
