@@ -12,6 +12,8 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     private NetworkRunner networkRunnerPrefab;
     [SerializeField]
     private NetworkPrefabRef playerAvatarPrefab;
+    [SerializeField]
+    private LobbyUIController lobbyUI;
 
     private NetworkRunner networkRunner;
 
@@ -30,8 +32,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
         customProps["GameRule"] = (int)GameRuleSettings.Instance.selectedRule;
 
-
-
+       
         // StartGameArgsに渡した設定で、セッションに参加する
         var result = await networkRunner.StartGame(new StartGameArgs
         {
@@ -96,6 +97,14 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         var avatar = runner.Spawn(playerAvatarPrefab, spawnPosition, Quaternion.identity, player);
         // プレイヤー（PlayerRef）とアバター（NetworkObject）を関連付ける
         runner.SetPlayerObject(player, avatar);
+
+        //ホストのみバトルスタートボタンを表示
+        if (runner.IsServer && player == runner.LocalPlayer)
+        {
+            Debug.Log("ホストが参加 → ボタン表示指示");
+            lobbyUI.ShowStartButton(runner);
+        }
+
     }
 
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) {
@@ -106,6 +115,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
             runner.Despawn(avatar);
         }
     }
+
     public void OnInput(NetworkRunner runner, NetworkInput input) {
         var data = new NetworkInputData();
 
@@ -113,6 +123,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
         input.Set(data);
     }
+
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
     public void OnConnectedToServer(NetworkRunner runner) { }
