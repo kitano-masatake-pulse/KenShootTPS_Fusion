@@ -6,6 +6,7 @@ using Fusion.Sockets;
 using UnityEngine;
 using UnityEngine.UI;
 
+
 public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 {
     [SerializeField]
@@ -15,7 +16,11 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
     private NetworkRunner networkRunner;
 
-    public Text sessionNameText;
+    [SerializeField]
+    private Text sessionNameText;
+
+    [SerializeField]
+    private GameObject[] objectVisibleOnlyHost;
 
 
     private async void Start()
@@ -25,6 +30,8 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         // NetworkRunnerのコールバック対象に、このスクリプト（GameLauncher）を登録する
         networkRunner.AddCallbacks(this);
 
+        NetworkSceneTransitionManager.Instance.runner = networkRunner;
+        networkRunner.AddCallbacks(NetworkSceneTransitionManager.Instance);
 
         var customProps = new Dictionary<string, SessionProperty>();
 
@@ -81,14 +88,19 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
             {
                 Debug.Log("GameRule not found in SessionProperties.");
             }
-        }
 
+
+        }
 
 
 
 
         // ホスト（サーバー兼クライアント）かどうかはIsServerで判定できる
         if (!runner.IsServer) { return; }
+        if (runner.IsServer) 
+        { 
+            HostJoinedLobby(); 
+        }
         // ランダムな生成位置（半径5の円の内部）を取得する
         var randomValue = UnityEngine.Random.insideUnitCircle * 5f;
         var spawnPosition = new Vector3(randomValue.x, 5f, randomValue.y);
@@ -96,6 +108,20 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         var avatar = runner.Spawn(playerAvatarPrefab, spawnPosition, Quaternion.identity, player);
         // プレイヤー（PlayerRef）とアバター（NetworkObject）を関連付ける
         runner.SetPlayerObject(player, avatar);
+
+
+    }
+
+    //ホストがロビーに入ったとき呼び出す
+    public void HostJoinedLobby() 
+    {
+        foreach(GameObject obj in objectVisibleOnlyHost)
+        {
+            //ホストのみに表示するオブジェクトを有効化
+            obj.SetActive(true);
+        }
+
+
     }
 
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) {

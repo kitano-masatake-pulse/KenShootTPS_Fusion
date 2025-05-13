@@ -1,4 +1,5 @@
 using System;
+using UnityEngine.SceneManagement;
 
 public enum SceneType
 {
@@ -27,5 +28,19 @@ public static class SceneTypeExtensions
             SceneType.Sample => "SampleScene",
             _ => throw new ArgumentOutOfRangeException(nameof(type), $"–¢’è‹`‚ÌSceneType‚Å‚·: {type}")
         };
+    }
+
+    public static int ToSceneBuildIndex(this SceneType type)
+    {
+        for (int i = 0; i < SceneManager.sceneCountInBuildSettings; i++)
+        {
+            string path = SceneUtility.GetScenePathByBuildIndex(i);
+            string sceneFileName = System.IO.Path.GetFileNameWithoutExtension(path);
+            if (sceneFileName == type.ToSceneName())
+            {
+                return i;
+            }
+        }
+        return -1; // not found
     }
 }

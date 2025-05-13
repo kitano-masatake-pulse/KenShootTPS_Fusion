@@ -9,12 +9,12 @@ public class SelectRuleAndGotoLobby : MonoBehaviour
     {
         Debug.Log("DeathMatch selected"); // デバッグ用
         GameRuleSettings.Instance.selectedRule = GameRule.DeathMatch;
-        SceneLoader.Instance.LoadScene(SceneType.Sample); // 任意のロビーシーンへ遷移
+        SceneLoader.Instance.LoadScene(SceneType.Lobby); // 任意のロビーシーンへ遷移
     }
 
     public void OnClickSelectTeamDeathMatch()
     {
         GameRuleSettings.Instance.selectedRule = GameRule.TeamDeathMatch;
-        SceneLoader.Instance.LoadScene(SceneType.Sample);
+        SceneLoader.Instance.LoadScene(SceneType.Lobby);
     }
 }
