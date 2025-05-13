@@ -40,18 +40,12 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
 
     // 他のINetworkRunnerCallbacksは空実装でOK
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) 
-    {   
-        Debug.Log($"[Despawn] プレイヤー {player} が退出しました");
-        
-        foreach (var obj in FindObjectsOfType<NetworkObject>()) 
-        { 
-            // inputAuthority が一致するオブジェクトを見つけたら Despawn
-            if (obj.InputAuthority == player)
-            {
-                Debug.Log($"→ {player} のキャラをDespawnします");
-                runner.Despawn(obj);
-                break; // 複数ある場合は必要に応じて全部消す
-            }
+    {
+        if (!runner.IsServer) { return; }
+        // 退出したプレイヤーのアバターを破棄する
+        if (runner.TryGetPlayerObject(player, out var avatar))
+        {
+            runner.Despawn(avatar);
         }
     }
     public void OnInput(NetworkRunner runner, NetworkInput input) { }
