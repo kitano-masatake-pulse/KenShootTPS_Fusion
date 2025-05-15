@@ -31,6 +31,11 @@ public class PlayerAvatar : NetworkBehaviour
             data.Direction.Normalize();
             // “ü—Í•ûŒü‚ðˆÚ“®•ûŒü‚Æ‚µ‚Ä‚»‚Ì‚Ü‚Ü“n‚·
             characterController.Move(data.Direction);
+
+            if (data.Buttons.IsSet(NetworkInputButtons.Jump))
+            {
+                characterController.Jump();
+            }
         }
         idText.transform.rotation = Camera.main.transform.rotation;
 

@@ -123,6 +123,8 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
         data.Direction = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
 
+        data.Buttons.Set(NetworkInputButtons.Jump, Input.GetKey(KeyCode.Space));
+
         input.Set(data);
     }
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
