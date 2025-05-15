@@ -29,9 +29,10 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
 
             var randomValue = UnityEngine.Random.insideUnitCircle * 5f;
             var spawnPosition = new Vector3(randomValue.x, 5f, randomValue.y);
-            runner.Spawn(playerPrefab, spawnPosition, Quaternion.identity, player);
+            var avatar = runner.Spawn(playerPrefab, spawnPosition, Quaternion.identity, player);
             spawnedPlayers.Add(player);
-
+            // プレイヤー（PlayerRef）とアバター（NetworkObject）を関連付ける
+            runner.SetPlayerObject(player, avatar);
             Debug.Log($"[Spawn] プレイヤー {player} をスポーンしました");
         }
     }
@@ -41,9 +42,8 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
     // 他のINetworkRunnerCallbacksは空実装でOK
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) 
     {
-        if (!runner.IsServer) { return; }
-        // 退出したプレイヤーのアバターを破棄する
-        if (runner.TryGetPlayerObject(player, out var avatar))
+       
+        if (runner.IsServer && runner.TryGetPlayerObject(player, out var avatar))
         {
             runner.Despawn(avatar);
         }

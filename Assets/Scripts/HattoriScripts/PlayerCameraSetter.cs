@@ -10,7 +10,9 @@ public class PlayerCameraSetter : NetworkBehaviour
 
     void Start()
     {
-        if (HasInputAuthority && SceneManager.GetActiveScene().name == "LobbyScene")
+        //バトルシーンでのみ実行
+        string sceneName = SceneType.Battle.ToSceneName();
+        if (HasInputAuthority && SceneManager.GetActiveScene().name == sceneName)
         {
             // シーンにあるVirtualCameraを取得
             var vcam = FindObjectOfType<CinemachineVirtualCamera>();
