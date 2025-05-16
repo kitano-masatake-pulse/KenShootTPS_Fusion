@@ -6,9 +6,14 @@ using Fusion.Sockets;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Cinemachine;
 
 public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 {
+    //シングルトンの宣言
+    public static GameLauncher Instance { get; private set; }
+
+
     [SerializeField]
     private NetworkRunner networkRunnerPrefab;
     [SerializeField]
@@ -19,6 +24,18 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     private NetworkRunner networkRunner;
 
     public TextMeshProUGUI sessionNameText;
+
+    
+
+    void Awake()
+    {
+        if (Instance != null)
+        {
+            Destroy(gameObject); // 二重生成防止
+            return;
+        }
+        Instance = this;
+    }
 
 
     private async void Start()
