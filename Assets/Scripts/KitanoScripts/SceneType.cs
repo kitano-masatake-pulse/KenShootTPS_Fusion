@@ -1,4 +1,5 @@
 using System;
+using UnityEngine.SceneManagement;
 
 public enum SceneType
 {
@@ -6,7 +7,8 @@ public enum SceneType
     Lobby,
     Battle,
     Result,
-    Test_Loaded
+    Test_Loaded,
+    Sample
 }
 
 public static class SceneTypeExtensions
@@ -23,7 +25,22 @@ public static class SceneTypeExtensions
             SceneType.Battle => "BattleScene",
             SceneType.Result => "ResultScene",
             SceneType.Test_Loaded => "SceneLoadTest_Loaded",
+            SceneType.Sample => "SampleScene",
             _ => throw new ArgumentOutOfRangeException(nameof(type), $"–¢’è‹`‚ÌSceneType‚Å‚·: {type}")
         };
+    }
+
+    public static int ToSceneBuildIndex(this SceneType type)
+    {
+        for (int i = 0; i < SceneManager.sceneCountInBuildSettings; i++)
+        {
+            string path = SceneUtility.GetScenePathByBuildIndex(i);
+            string sceneFileName = System.IO.Path.GetFileNameWithoutExtension(path);
+            if (sceneFileName == type.ToSceneName())
+            {
+                return i;
+            }
+        }
+        return -1; // not found
     }
 }
