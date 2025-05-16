@@ -5,7 +5,7 @@ using Fusion;
 using Fusion.Sockets;
 using UnityEngine;
 using UnityEngine.UI;
-
+using TMPro;
 
 public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 {
@@ -13,14 +13,12 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     private NetworkRunner networkRunnerPrefab;
     [SerializeField]
     private NetworkPrefabRef playerAvatarPrefab;
+    [SerializeField]
+    private LobbyUIController lobbyUI;
 
     private NetworkRunner networkRunner;
 
-    [SerializeField]
-    private Text sessionNameText;
-
-    [SerializeField]
-    private GameObject[] objectVisibleOnlyHost;
+    public TextMeshProUGUI sessionNameText;
 
 
     private async void Start()
@@ -30,15 +28,12 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         // NetworkRunnerのコールバック対象に、このスクリプト（GameLauncher）を登録する
         networkRunner.AddCallbacks(this);
 
-        NetworkSceneTransitionManager.Instance.runner = networkRunner;
-        networkRunner.AddCallbacks(NetworkSceneTransitionManager.Instance);
 
         var customProps = new Dictionary<string, SessionProperty>();
 
         customProps["GameRule"] = (int)GameRuleSettings.Instance.selectedRule;
 
-
-
+       
         // StartGameArgsに渡した設定で、セッションに参加する
         var result = await networkRunner.StartGame(new StartGameArgs
         {
@@ -81,26 +76,21 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
                 if (sessionNameText != null)
                 {
-                    sessionNameText.text = $"ルーム名: {sessionName}";
+                    sessionNameText.SetText( $"RoomID: {sessionName}");
                 }
             }
             else
             {
                 Debug.Log("GameRule not found in SessionProperties.");
             }
-
-
         }
+
 
 
 
 
         // ホスト（サーバー兼クライアント）かどうかはIsServerで判定できる
         if (!runner.IsServer) { return; }
-        if (runner.IsServer) 
-        { 
-            HostJoinedLobby(); 
-        }
         // ランダムな生成位置（半径5の円の内部）を取得する
         var randomValue = UnityEngine.Random.insideUnitCircle * 5f;
         var spawnPosition = new Vector3(randomValue.x, 5f, randomValue.y);
@@ -109,18 +99,12 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         // プレイヤー（PlayerRef）とアバター（NetworkObject）を関連付ける
         runner.SetPlayerObject(player, avatar);
 
-
-    }
-
-    //ホストがロビーに入ったとき呼び出す
-    public void HostJoinedLobby() 
-    {
-        foreach(GameObject obj in objectVisibleOnlyHost)
+        //ホストのみバトルスタートボタンを表示
+        if (runner.IsServer && player == runner.LocalPlayer)
         {
-            //ホストのみに表示するオブジェクトを有効化
-            obj.SetActive(true);
+            Debug.Log("ホストが参加 → ボタン表示指示");
+            lobbyUI.ShowStartButton(runner);
         }
-
 
     }
 
@@ -132,6 +116,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
             runner.Despawn(avatar);
         }
     }
+
     public void OnInput(NetworkRunner runner, NetworkInput input) {
         var data = new NetworkInputData();
 
@@ -139,6 +124,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
         input.Set(data);
     }
+
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
     public void OnConnectedToServer(NetworkRunner runner) { }
