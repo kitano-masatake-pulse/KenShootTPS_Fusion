@@ -8,9 +8,10 @@ using UnityEngine;
 public class AnimationTestScript : MonoBehaviour
 {
     public float moveSpeed = 5f;
-    public float jumpForce = 8f;
+    public float jumpForce = 10f;
     public float gravity = 9.81f;
     private bool isJumping = false;
+    private bool isPressLeftKey = false;
 
     private CharacterController controller;
     private Vector3 moveDirection;
@@ -53,6 +54,15 @@ public class AnimationTestScript : MonoBehaviour
             move.y -= gravity * Time.deltaTime;
         }
 
+        if (Input.GetMouseButton(0))
+        {
+            isPressLeftKey = true;
+        }
+        else
+        {
+            isPressLeftKey = false;
+        }
+
         controller.Move(move * Time.deltaTime);
         moveDirection = move;
 
@@ -61,6 +71,7 @@ public class AnimationTestScript : MonoBehaviour
         animator.SetFloat("Vertical", input.z);
         animator.SetBool("IsJumping", isJumping);
         animator.SetFloat("YVelocity", move.y);
+        animator.SetBool("IsPressLeftKey", isPressLeftKey);
     }
 
 }

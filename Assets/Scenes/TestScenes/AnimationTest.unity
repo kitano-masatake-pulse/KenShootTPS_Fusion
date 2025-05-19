@@ -415,11 +415,11 @@ Animator:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1405248803}
   m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: 56df14868390ea14999fc5ecec782fdf, type: 3}
+  m_Avatar: {fileID: 9000000, guid: 394ee8d064886a4459d17e200d029fdf, type: 3}
   m_Controller: {fileID: 9100000, guid: 64186b527bd2d8a42a88706699cb9283, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
-  m_ApplyRootMotion: 0
+  m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_WarningMessage: 
@@ -440,6 +440,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 5
+  jumpForce: 8
   gravity: 20
 --- !u!143 &1405248807
 CharacterController:
