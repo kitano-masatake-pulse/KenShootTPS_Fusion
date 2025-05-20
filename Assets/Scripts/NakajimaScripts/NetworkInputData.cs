@@ -3,6 +3,7 @@ using UnityEngine;
 
 public struct NetworkInputData : INetworkInput
 {
-    public Vector3 Direction;
+    public Vector3 wasdInputDirection;
+    public Vector3 cameraForward;
 
 }
