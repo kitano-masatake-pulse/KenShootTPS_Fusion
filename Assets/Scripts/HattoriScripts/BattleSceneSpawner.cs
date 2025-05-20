@@ -12,6 +12,9 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
     private NetworkRunner runner;
     private HashSet<PlayerRef> spawnedPlayers = new();
 
+    [SerializeField]
+    private GameObject TPSCamera;
+
 
     void Start()
     {
@@ -21,22 +24,35 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
     }
     public void OnSceneLoadDone(NetworkRunner runner)
     {
-        if (!runner.IsServer) return;
-
-        foreach (var player in runner.ActivePlayers)
+        if (runner.IsServer)
         {
-            if (spawnedPlayers.Contains(player)) continue;
+            //ホストが全員分のアバターを生成
+            foreach (var player in runner.ActivePlayers)
+            {
+                if (spawnedPlayers.Contains(player)) continue;
 
-            var randomValue = UnityEngine.Random.insideUnitCircle * 5f;
-            var spawnPosition = new Vector3(randomValue.x, 5f, randomValue.y);
-            var avatar = runner.Spawn(playerPrefab, spawnPosition, Quaternion.identity, player);
-            spawnedPlayers.Add(player);
-            // プレイヤー（PlayerRef）とアバター（NetworkObject）を関連付ける
-            runner.SetPlayerObject(player, avatar);
-            Debug.Log($"[Spawn] プレイヤー {player} をスポーンしました");
+                var randomValue = UnityEngine.Random.insideUnitCircle * 5f;
+                var spawnPosition = new Vector3(randomValue.x, 5f, randomValue.y);
+                var avatar = runner.Spawn(playerPrefab, spawnPosition, Quaternion.identity, player);
+                spawnedPlayers.Add(player);
+                // プレイヤー（PlayerRef）とアバター（NetworkObject）を関連付ける
+                runner.SetPlayerObject(player, avatar);
+                Debug.Log($"[Spawn] プレイヤー {player} をスポーンしました");
+            }
         }
+
+        //カメラを各クライアントに追従させるようにセットさせる(RPC)
+        //TPSCameraController tpsCameraController = TPSCamera.GetComponent<TPSCameraController>();
+        //tpsCameraController.RPC_SetCameraToMyAvatar();
+
+
     }
-    
+
+   
+
+
+
+
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player){ }
 
     // 他のINetworkRunnerCallbacksは空実装でOK
