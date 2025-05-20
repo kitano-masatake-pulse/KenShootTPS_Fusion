@@ -6,11 +6,12 @@ public class PlayerAvatar : NetworkBehaviour
 {
     [SerializeField] private TextMeshPro idText;
 
-    private NetworkCharacterControllerPrototype characterController;
+    private NetworkCharacterControllerNoRotation characterController;
+
 
     private void Awake()
     {
-        characterController = GetComponent<NetworkCharacterControllerPrototype>();
+        characterController = GetComponent<NetworkCharacterControllerNoRotation>();
     }
 
     public override void Spawned()
@@ -30,12 +31,10 @@ public class PlayerAvatar : NetworkBehaviour
             // “ü—Í•ûŒü‚ÌƒxƒNƒgƒ‹‚ğ³‹K‰»‚·‚é
             data.Direction.Normalize();
             // “ü—Í•ûŒü‚ğˆÚ“®•ûŒü‚Æ‚µ‚Ä‚»‚Ì‚Ü‚Ü“n‚·
-            characterController.Move(data.Direction);
 
-            if (data.Buttons.IsSet(NetworkInputButtons.Jump))
-            {
-                characterController.Jump();
-            }
+            characterController.Move(data.Direction, data.Buttons.IsSet(NetworkInputButtons.Jump));
+
+            Debug.Log($"Move: {data.Direction}");
         }
         idText.transform.rotation = Camera.main.transform.rotation;
 

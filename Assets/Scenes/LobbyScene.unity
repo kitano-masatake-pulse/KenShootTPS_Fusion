@@ -153,7 +153,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   networkRunnerPrefab: {fileID: -4322884645509030759, guid: 3bd3b1f14f8d95446958652068d5a9ea, type: 3}
   playerAvatarPrefab:
-    RawGuidValue: 1761a9b5a3cd79e4286c1f84350d1373
+    RawGuidValue: 73fc65a2d0fef924cb026fdaab9b6226
   startButton: {fileID: 7541225170578903541}
   sessionNameText: {fileID: 1693251079969067797}
 --- !u!4 &616912103
