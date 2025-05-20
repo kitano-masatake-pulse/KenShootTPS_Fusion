@@ -94,15 +94,15 @@ public class AnimationTestScript : MonoBehaviour
 
         grounded = controller.isGrounded;
 
-        Debug.Log($"controller.isGrounded : {grounded}");
+        //Debug.Log($"controller.isGrounded : {grounded}");
         // 現在の移動方向を保存
         moveDirection = move;
 
         // アニメーション用パラメータを更新
-        animator.SetFloat("Horizontal", input.x);           // 横方向の入力
-        animator.SetFloat("Vertical", input.z);             // 縦方向の入力
-        animator.SetBool("IsJumping", isJumping);           // ジャンプ中かどうか
-        animator.SetFloat("YVelocity", move.y);             // Y方向の速度
-        animator.SetBool("IsPressLeftKey", isPressLeftKey); // 左クリックが押されているか
+        //animator.SetFloat("Horizontal", input.x);           // 横方向の入力
+        //animator.SetFloat("Vertical", input.z);             // 縦方向の入力
+        //animator.SetBool("IsJumping", isJumping);           // ジャンプ中かどうか
+        //animator.SetFloat("YVelocity", move.y);             // Y方向の速度
+        //animator.SetBool("IsPressLeftKey", isPressLeftKey); // 左クリックが押されているか
     }
 }

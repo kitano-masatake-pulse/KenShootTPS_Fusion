@@ -123,7 +123,15 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
         data.Direction = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
 
+
         data.Buttons.Set(NetworkInputButtons.Jump, Input.GetKey(KeyCode.Space));
+
+        bool jumpPressed = Input.GetKey(KeyCode.Space);
+
+        data.IsJumping = jumpPressed;
+
+        Debug.Log($"data.IsJumping: {data.IsJumping}");
+
 
         input.Set(data);
     }
