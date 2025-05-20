@@ -5697,6 +5697,7 @@ GameObject:
   - component: {fileID: 1758965281}
   - component: {fileID: 1758965283}
   - component: {fileID: 1758965282}
+  - component: {fileID: 1758965284}
   m_Layer: 5
   m_Name: WeaponIcon
   m_TagString: Untagged
@@ -5713,7 +5714,7 @@ RectTransform:
   m_GameObject: {fileID: 1758965280}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: -0.25, y: 0.25, z: 0.25}
+  m_LocalScale: {x: -0.23, y: 0.23, z: 0.23}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1954862304}
@@ -5761,6 +5762,69 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1758965280}
   m_CullTransparentMesh: 1
+--- !u!114 &1758965284
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1758965280}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c494e094a216e646b383563b89ec3d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  weaponSprites:
+  - {fileID: 21300038, guid: 6674e8c43c63e4f4184cbd009379498d, type: 3}
+  - {fileID: 21300044, guid: 6674e8c43c63e4f4184cbd009379498d, type: 3}
+  - {fileID: 21300008, guid: 6674e8c43c63e4f4184cbd009379498d, type: 3}
+  - {fileID: 21300032, guid: 6674e8c43c63e4f4184cbd009379498d, type: 3}
+--- !u!1 &1765290030
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1765290032}
+  - component: {fileID: 1765290031}
+  m_Layer: 0
+  m_Name: WeaponIconTester
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1765290031
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1765290030}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea3f631cb1489484eb434fca3342d6de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  iconSwitcher: {fileID: 1758965284}
+  interval: 1
+--- !u!4 &1765290032
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1765290030}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 775.85175, y: 293.95004, z: 48.657066}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1766337740
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6518,7 +6582,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1954862304}
-  - component: {fileID: 1954862305}
+  - component: {fileID: 1954862307}
   m_Layer: 5
   m_Name: WeaponUI
   m_TagString: Untagged
@@ -6549,24 +6613,14 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1954862305
-MonoBehaviour:
+--- !u!222 &1954862307
+CanvasRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1954862303}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6c494e094a216e646b383563b89ec3d3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  targetImage: {fileID: 1758965282}
-  sprites:
-  - {fileID: 21300038, guid: 6674e8c43c63e4f4184cbd009379498d, type: 3}
-  - {fileID: 21300040, guid: 6674e8c43c63e4f4184cbd009379498d, type: 3}
-  - {fileID: 21300008, guid: 6674e8c43c63e4f4184cbd009379498d, type: 3}
-  - {fileID: 21300040, guid: 5163ae49a0de665458bba61cd20c99b1, type: 3}
+  m_CullTransparentMesh: 1
 --- !u!1001 &1966870427
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7206,3 +7260,4 @@ SceneRoots:
   - {fileID: 1915852520}
   - {fileID: 1579562465}
   - {fileID: 1985550815}
+  - {fileID: 1765290032}
