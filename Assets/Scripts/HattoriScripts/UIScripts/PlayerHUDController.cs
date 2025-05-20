@@ -23,25 +23,39 @@ public class PlayerHUDController : NetworkBehaviour
         // 2) 名前セット
         nameLabel.text = $"Player({Object.InputAuthority.PlayerId})";
 
-        // 3) 自分のキャラなら最初から非表示に
+        // 自分のキャラなら非表示、それ以外は表示
         bool isLocal = HasInputAuthority;
-        //デバッグ用にコメントアウト中
         //nameLabel.gameObject.SetActive(!isLocal);
         //hpBar.gameObject.SetActive(!isLocal);
+
+        // イベント登録
+        InitializeSubscriptions();
+        // 初期値も反映
+        hpBar.value = state.HpNormalized;
     }
 
-    //HPが変化した時だけ呼ばれてHPバーを更新する
-    public void UpdateHPBar(float v)
-    {
 
-        {
-            hpBar.value = v;
-        }
+    void InitializeSubscriptions()
+    {
+        // 先に解除してから
+        state.OnHPChanged -= UpdateHPBar;
+        // …
+
+        // 改めて登録
+        state.OnHPChanged += UpdateHPBar;
+        // …
+    }
+
+
+    //HPが変化した時だけ呼ばれてHPバーを更新する
+    public void UpdateHPBar(float normalized)
+    {
+        hpBar.value = normalized;
     }
 
     public override void Despawned(NetworkRunner runner, bool hasState)
     {
-        // クリーンアップ（あれば）
-        state = null;
+        if (state != null)
+            state.OnHPChanged -= UpdateHPBar;
     }
 }

@@ -34,7 +34,9 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
             // プレイヤー（PlayerRef）とアバター（NetworkObject）を関連付ける
             runner.SetPlayerObject(player, avatar);
             Debug.Log($"[Spawn] プレイヤー {player} をスポーンしました");
+
         }
+
     }
     
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player){ }

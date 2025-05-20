@@ -1,4 +1,5 @@
 using TMPro;
+using Fusion;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
@@ -9,21 +10,41 @@ public class HUDManager : MonoBehaviour
     [SerializeField] private TMP_Text ammoText;
     [SerializeField] private TMP_Text scoreText;
 
-    private PlayerNetworkState localPlayer;
+    private PlayerNetworkState localState;
 
-    void Start()
+    public void SetLocalStateAndSubscribe(PlayerNetworkState state)
     {
-        // 自分のプレイヤーを取得（Spawned側でセットしても良い）
-        localPlayer = FindObjectsOfType<PlayerNetworkState>().FirstOrDefault(p => p.HasInputAuthority);
+        localState = state;
+        InitializeSubscriptions();
+
+        // 初期値反映
+        hpSlider.value = localState.HpNormalized;
     }
 
-    void Update()
+    void InitializeSubscriptions()
     {
-        if (localPlayer != null)
-        {
-            hpSlider.value = localPlayer.HpNormalized;
-            ammoText.text = $"Ammo: {localPlayer.Ammo}";
-            scoreText.text = $"Score: {localPlayer.Score}";
-        }
+        // 先に解除してから
+        localState.OnHPChanged -= OnLocalHPChanged;
+        localState.OnWeaponChanged -= OnLocalWeaponChanged;
+        // …
+
+        // 改めて登録
+        localState.OnHPChanged += OnLocalHPChanged;
+        localState.OnWeaponChanged += OnLocalWeaponChanged;
+        // …
+    }
+
+    private void OnLocalHPChanged(float normalized)
+    {
+        hpSlider.value = normalized;
+    }
+    void OnLocalWeaponChanged(WeaponType w) { /* 武器名を更新 */ }
+
+
+    void OnDestroy()
+    {
+        if (localState != null)
+            localState.OnHPChanged -= OnLocalHPChanged;
+
     }
 }
