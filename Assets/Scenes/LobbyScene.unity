@@ -356,7 +356,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   networkRunnerPrefab: {fileID: -4322884645509030759, guid: 3bd3b1f14f8d95446958652068d5a9ea, type: 3}
   playerAvatarPrefab:
-    RawGuidValue: acb1ae8f636808e4e91f7a9c4901b855
+    RawGuidValue: 86ad9a95002370046a758864d04030f1
   lobbyUI: {fileID: 1410479212}
   sessionNameText: {fileID: 1900220776}
 --- !u!4 &616912103
@@ -994,7 +994,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1829126849
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -5586,7 +5586,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerPrefab:
-    RawGuidValue: acb1ae8f636808e4e91f7a9c4901b855
+    RawGuidValue: 86ad9a95002370046a758864d04030f1
   TPSCamera: {fileID: 908114897}
 --- !u!4 &1915852520
 Transform:
@@ -6328,4 +6328,4 @@ SceneRoots:
   - {fileID: 5379035381283475607}
   - {fileID: 1985550815}
   - {fileID: 1041221426}
-
+  - {fileID: 6516055103826008085}
