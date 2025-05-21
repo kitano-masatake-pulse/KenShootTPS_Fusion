@@ -210,6 +210,8 @@ Transform:
   - {fileID: 1804432761367614454}
   - {fileID: 2930331175657079287}
   - {fileID: 4226081573141314985}
+  - {fileID: 6364942180942722991}
+  - {fileID: 6633865732095017302}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &-631725449571884495
@@ -239,6 +241,7 @@ MonoBehaviour:
   - {fileID: 4020800376002421763}
   - {fileID: 6887860513559479073}
   - {fileID: 6434074460655597705}
+  - {fileID: 2009111524188218464}
   SimulationBehaviours: []
 --- !u!143 &6278831117568584565
 CharacterController:
@@ -319,7 +322,11 @@ MonoBehaviour:
   WordOffset: 0
   WordCount: 0
   _interpolationDataSource: 0
-  nameLabel: {fileID: 8577641416120391702}
+  headObject: {fileID: 0}
+  bodyObject: {fileID: 0}
+  moveSpeed: 3
+  gravity: -9.81
+  cameraTarget: {fileID: 0}
 --- !u!114 &4020800376002421763
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -353,8 +360,11 @@ MonoBehaviour:
   _interpolationDataSource: 0
   _CurrentHP: 100
   _MaxHP: 100
-  _Ammo: 0
-  _Score: 0
+  _CurrentWeapon: 0
+  _MagazineAmmo: 0
+  _TotalAmmo: 0
+  _KillScore: 0
+  _DeathScore: 0
 --- !u!114 &6434074460655597705
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -397,8 +407,7 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 399676473651976941}
+  m_Children: []
   m_Father: {fileID: 6364942180942722991}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.25}
@@ -435,7 +444,6 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 7083673500667092288}
   - {fileID: 3416964900715935187}
   m_Father: {fileID: 768207338265179846}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -485,7 +493,7 @@ MonoBehaviour:
     m_DisabledTrigger: Disabled
   m_Interactable: 1
   m_TargetGraphic: {fileID: 0}
-  m_FillRect: {fileID: 399676473651976941}
+  m_FillRect: {fileID: 0}
   m_HandleRect: {fileID: 0}
   m_Direction: 0
   m_MinValue: 0
@@ -609,9 +617,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e390d439f6aad74e963dc9e4579747b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hpSlider: {fileID: 0}
-  player: {fileID: 6887860513559479073}
-
+  WordOffset: 0
+  WordCount: 0
+  _interpolationDataSource: 0
+  nameLabel: {fileID: 0}
+  hpBar: {fileID: 0}
 --- !u!1 &7390135594791055790
 GameObject:
   m_ObjectHideFlags: 0

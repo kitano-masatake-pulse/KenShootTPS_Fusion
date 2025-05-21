@@ -1,7 +1,9 @@
 using Fusion;
+using Unity;
+using UnityEngine;
 
-
-
+public class PlayerAvatar : NetworkBehaviour
+{ 
     [SerializeField]
     private GameObject headObject;
     
@@ -34,7 +36,7 @@ using Fusion;
 
     public override void Spawned()
     {
-        SetNickName($"Player({Object.InputAuthority.PlayerId})");
+        //SetNickName($"Player({Object.InputAuthority.PlayerId})");
 
 
         
