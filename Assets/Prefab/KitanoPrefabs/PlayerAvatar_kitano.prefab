@@ -309,7 +309,8 @@ MonoBehaviour:
   Flags: 2305
   NetworkGuid:
     RawGuidValue: acb1ae8f636808e4e91f7a9c4901b855
-  NestedObjects: []
+  NestedObjects:
+  - {fileID: 5208862430194533245}
   NetworkedBehaviours:
   - {fileID: 7453442949649715553}
   - {fileID: 2456749128542381984}
@@ -398,6 +399,8 @@ MonoBehaviour:
   nameLabel: {fileID: 8577641416120391702}
   headObject: {fileID: 7390135594791055790}
   bodyObject: {fileID: 2852828816588928964}
+  moveSpeed: 3
+  gravity: -9.81
   cameraTarget: {fileID: 2930331175657079287}
 --- !u!114 &6887860513559479073
 MonoBehaviour:
@@ -791,6 +794,8 @@ GameObject:
   - component: {fileID: 6479874104530377080}
   - component: {fileID: 369833390848582940}
   - component: {fileID: 6872264017714937852}
+  - component: {fileID: 5208862430194533245}
+  - component: {fileID: 1033314037715664410}
   m_Layer: 0
   m_Name: head
   m_TagString: Untagged
@@ -886,6 +891,45 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
+--- !u!114 &5208862430194533245
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7390135594791055790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObjectInterest: 1
+  DefaultInterestGroups: []
+  DestroyWhenStateAuthorityLeaves: 0
+  AllowStateAuthorityOverride: 1
+  AoiPositionSource: {fileID: 0}
+  Flags: 3073
+  NetworkGuid:
+    RawGuidValue: 00000000000000000000000000000000
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 1033314037715664410}
+  SimulationBehaviours: []
+--- !u!114 &1033314037715664410
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7390135594791055790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 539362646, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  WordOffset: 0
+  WordCount: 0
+  _interpolationDataSource: 0
 --- !u!1 &8018682721427111600
 GameObject:
   m_ObjectHideFlags: 0
