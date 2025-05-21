@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using Fusion;
 
+//プレイヤの頭上に表示されるUIを制御するクラス
 public class PlayerHUDController : NetworkBehaviour
 {
     [Header("World-Space Canvas 上の UI 要素")]
@@ -13,21 +14,20 @@ public class PlayerHUDController : NetworkBehaviour
 
     public override void Spawned()
     {
-        // 1) ネットワーク状態コンポーネント取得
+        //ネットワーク状態コンポーネント取得
         state = GetComponent<PlayerNetworkState>();
         if (state == null)
         {
             Debug.LogError("PlayerNetworkState not found!");
         }
 
-        // 2) 名前セット
+        //プレイヤー名をセット
         nameLabel.text = $"Player({Object.InputAuthority.PlayerId})";
 
         // 自分のキャラなら非表示、それ以外は表示
         bool isLocal = HasInputAuthority;
-        //nameLabel.gameObject.SetActive(!isLocal);
-        //hpBar.gameObject.SetActive(!isLocal);
-
+        nameLabel.gameObject.SetActive(!isLocal);
+        hpBar.gameObject.SetActive(!isLocal);
         // イベント登録
         InitializeSubscriptions();
         // 初期値も反映
@@ -39,11 +39,9 @@ public class PlayerHUDController : NetworkBehaviour
     {
         // 先に解除してから
         state.OnHPChanged -= UpdateHPBar;
-        // …
 
         // 改めて登録
         state.OnHPChanged += UpdateHPBar;
-        // …
     }
 
 
