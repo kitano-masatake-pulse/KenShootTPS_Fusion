@@ -1,12 +1,6 @@
 using Fusion;
-using Unity.VisualScripting;
-using UnityEngine;
-using TMPro;
 
-public class PlayerAvatar : NetworkBehaviour
-{
-    [SerializeField]
-    private TextMeshPro nameLabel;
+
 
     [SerializeField]
     private GameObject headObject;
@@ -25,7 +19,7 @@ public class PlayerAvatar : NetworkBehaviour
 
     public Transform CameraTarget => cameraTarget;
 
-    private Vector3 velocity; //å‚Éd—Í‚Ég—p
+    private Vector3 velocity; //ä¸»ã«é‡åŠ›ã«ä½¿ç”¨
 
     //private NetworkCharacterControllerPrototype characterController;
 
@@ -33,6 +27,8 @@ public class PlayerAvatar : NetworkBehaviour
     //{
     //    characterController = GetComponent<NetworkCharacterControllerPrototype>();
     //}
+
+
 
 
 
@@ -46,13 +42,14 @@ public class PlayerAvatar : NetworkBehaviour
 
         if (HasInputAuthority)
         {
-            //©•ª‚ÌƒAƒoƒ^[‚È‚çATPSƒJƒƒ‰‚É•R‚Ã‚¯‚é
+            //è‡ªåˆ†ã®ã‚¢ãƒã‚¿ãƒ¼ãªã‚‰ã€TPSã‚«ãƒ¡ãƒ©ã«ç´ã¥ã‘ã‚‹
             FindObjectOfType<TPSCameraController>().SetCameraToMyAvatar(this);
         }
 
 
 
     }
+
 
 
     public override void FixedUpdateNetwork()
@@ -67,40 +64,40 @@ public class PlayerAvatar : NetworkBehaviour
 
             if (bodyForward.sqrMagnitude > 0.0001f)
             {
-                // ƒvƒŒƒCƒ„[–{‘Ì‚ÌŒü‚«‚ğƒJƒƒ‰•ûŒü‚É‰ñ“]
+                // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æœ¬ä½“ã®å‘ãã‚’ã‚«ãƒ¡ãƒ©æ–¹å‘ã«å›è»¢
                 bodyObject.transform.forward = bodyForward;
             }
 
-            // cameraForward ‚©‚ç pitch ‚ğ‹‚ß‚é ãŠW‚ª‘O–Ê‚ğŒü‚­‚æ‚¤‚É
+            // cameraForward ã‹ã‚‰ pitch ã‚’æ±‚ã‚ã‚‹ ä¸Šè“‹ãŒå‰é¢ã‚’å‘ãã‚ˆã†ã«
             float pitch = - Mathf.Asin(data.cameraForward.y) * Mathf.Rad2Deg + 90;
             
-            // “ª•”‰ñ“]‚ğ‹ÂŠp‚¾‚¯‚ÉŒÀ’è
+            // é ­éƒ¨å›è»¢ã‚’ä»°è§’ã ã‘ã«é™å®š
             //headObject.transform.localRotation = Quaternion.Euler(pitch, 0f, 0f);
 
-            //‘Ì‚Æ“¯‚¶•û–@‚Åforward‚Â‚©‚Á‚Ä‚İ‚ÄÀ‘•‚·‚é
+            //ä½“ã¨åŒã˜æ–¹æ³•ã§forwardã¤ã‹ã£ã¦ã¿ã¦å®Ÿè£…ã™ã‚‹
             Vector3 headUp = data.cameraForward.normalized;
 
             headObject.transform.up = headUp;
 
-            // ƒLƒƒƒ‰‚ÌY²‰ñ“]‚ğ“K—p
+            // ã‚­ãƒ£ãƒ©ã®Yè»¸å›è»¢ã‚’é©ç”¨
             // Quaternion yRot = Quaternion.Euler(data.cameraForward.x, 0f, data.cameraForward.z);
             // Quaternion yRot = Quaternion.Euler(data.cameraForward.x, 0f, data.cameraForward.z);
 
-            // “ü—Í•ûŒü‚ÌƒxƒNƒgƒ‹‚ğ³‹K‰»‚·‚é
+            // å…¥åŠ›æ–¹å‘ã®ãƒ™ã‚¯ãƒˆãƒ«ã‚’æ­£è¦åŒ–ã™ã‚‹
             //data.wasdInputDirection.Normalize();
 
-            Vector3 moveDirection =Quaternion.LookRotation(bodyForward,Vector3.up) * data.wasdInputDirection;  // “ü—Í•ûŒü‚ÌƒxƒNƒgƒ‹‚ğ³‹K‰»‚·‚é
-                                                                                                               // “ü—Í•ûŒü‚ğˆÚ“®•ûŒü‚Æ‚µ‚Ä‚»‚Ì‚Ü‚Ü“n‚·
+            Vector3 moveDirection =Quaternion.LookRotation(bodyForward,Vector3.up) * data.wasdInputDirection;  // å…¥åŠ›æ–¹å‘ã®ãƒ™ã‚¯ãƒˆãƒ«ã‚’æ­£è¦åŒ–ã™ã‚‹
+                                                                                                               // å…¥åŠ›æ–¹å‘ã‚’ç§»å‹•æ–¹å‘ã¨ã—ã¦ãã®ã¾ã¾æ¸¡ã™
 
 
-            // d—Í‚ğ‰ÁZi‚±‚±‚ğÈ—ª‚·‚ê‚Î•‚‚­j
+            // é‡åŠ›ã‚’åŠ ç®—ï¼ˆã“ã“ã‚’çœç•¥ã™ã‚Œã°æµ®ãï¼‰
            
             velocity.y += gravity * Runner.DeltaTime;
 
-            // â“¹‘Î‰FMove‚Í©“®‚Å’nŒ`‚ÌŒXÎ‚É‡‚í‚¹‚Ä‚­‚ê‚é
+            // å‚é“å¯¾å¿œï¼šMoveã¯è‡ªå‹•ã§åœ°å½¢ã®å‚¾æ–œã«åˆã‚ã›ã¦ãã‚Œã‚‹
             characterController.Move((moveDirection * moveSpeed + velocity) * Runner.DeltaTime);
 
-            // ’…’n‚µ‚Ä‚¢‚é‚È‚çd—ÍƒŠƒZƒbƒg
+            // ç€åœ°ã—ã¦ã„ã‚‹ãªã‚‰é‡åŠ›ãƒªã‚»ãƒƒãƒˆ
             if (characterController.isGrounded)
             {
                 velocity.y = 0;
@@ -108,17 +105,7 @@ public class PlayerAvatar : NetworkBehaviour
 
             //bodyObject.transform.Translate(moveDirection*moveSpeed*Runner.DeltaTime);
             //characterController.Move(moveDirection);
-        }
-    }
-    private void LateUpdate()
-    {
-        // ƒvƒŒƒCƒ„[–¼‚ÌƒeƒLƒXƒg‚ğAí‚ÉƒJƒƒ‰‚Ì³–ÊŒü‚«‚É‚·‚é
-        nameLabel.transform.rotation = Camera.main.transform.rotation;
-    }
 
-    // ƒvƒŒƒCƒ„[–¼‚ğƒeƒLƒXƒg‚Éİ’è‚·‚é
-    public void SetNickName(string nickName)
-    {
-        nameLabel.text = nickName;
+        }
     }
 }
