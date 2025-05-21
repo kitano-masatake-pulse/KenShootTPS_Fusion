@@ -11,7 +11,7 @@ public class NetworkInputManager : MonoBehaviour,INetworkRunnerCallbacks
 {
 
     
-    public TPSCameraController tpsCameraController;
+    //public TPSCameraController tpsCameraController;
 
     
 
@@ -26,7 +26,7 @@ public class NetworkInputManager : MonoBehaviour,INetworkRunnerCallbacks
     {
         NetworkRunner networkRunner = FindObjectOfType<NetworkRunner>();
 
-        networkRunner.AddCallbacks(this);
+        //networkRunner.AddCallbacks(this);
     }
 
 
@@ -76,8 +76,12 @@ public class NetworkInputManager : MonoBehaviour,INetworkRunnerCallbacks
     {
         var data = new NetworkInputData();
 
-        data.wasdInputDirection = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
-        data.cameraForward = tpsCameraController.GetTPSCameraTransform().forward;
+        data.wasdInputDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+
+        // スペースキーが押されていたら Jump フラグを立てる
+        data.jumpPressed = Input.GetKey(KeyCode.Space);
+
+
 
         input.Set(data);
     }

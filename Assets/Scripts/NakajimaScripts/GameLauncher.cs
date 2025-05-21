@@ -25,7 +25,9 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
     public TextMeshProUGUI sessionNameText;
 
-    
+    public NetworkInputManager networkInputManager;
+
+
 
     void Awake()
     {
@@ -44,11 +46,12 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         networkRunner = Instantiate(networkRunnerPrefab);
         // NetworkRunnerのコールバック対象に、このスクリプト（GameLauncher）を登録する
         networkRunner.AddCallbacks(this);
+        networkRunner.AddCallbacks(networkInputManager);
 
 
         var customProps = new Dictionary<string, SessionProperty>();
 
-        customProps["GameRule"] = (int)GameRuleSettings.Instance.selectedRule;
+        //customProps["GameRule"] = (int)GameRuleSettings.Instance.selectedRule;
 
        
         // StartGameArgsに渡した設定で、セッションに参加する

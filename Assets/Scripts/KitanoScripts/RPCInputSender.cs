@@ -1,14 +1,19 @@
+using Cinemachine;
+using Fusion;
+using Fusion.Sockets;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using Fusion;
 using UnityEngine;
 
 public class RPCInputSender : NetworkBehaviour
 {
+    NetworkPrototypeTest networkPrototypeTest;
+
     // Start is called before the first frame update
     void Start()
     {
-
+        networkPrototypeTest = GetComponent<NetworkPrototypeTest>();
     }
 
     // Update is called once per frame
@@ -47,10 +52,14 @@ public class RPCInputSender : NetworkBehaviour
 
 
     void JumpLocallly()
-    { 
-        Debug.Log($"Jump Locally. {Runner.Tick} SimuTime: {Runner.SimulationTime}");
+    {
+        var data = new NetworkInputData();
+        networkPrototypeTest.velocity.y = 10;
+        data.wasdInputDirection = new Vector3(0, 10f, 0);
 
 
+        //input.Set(data);
+        Debug.Log($"Jump Locally. {Runner.Tick} SimuTime: {Runner.SimulationTime}networkPrototypeTest.velocity.y: {networkPrototypeTest.velocity.y}");
     }
 
 
@@ -77,6 +86,4 @@ public class RPCInputSender : NetworkBehaviour
         }
 
     }
-
-
 }
