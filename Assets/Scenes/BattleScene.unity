@@ -2461,6 +2461,7 @@ GameObject:
   m_Component:
   - component: {fileID: 908114899}
   - component: {fileID: 908114898}
+  - component: {fileID: 908114900}
   m_Layer: 0
   m_Name: CM_PlayerFollowCam
   m_TagString: Untagged
@@ -2523,6 +2524,23 @@ Transform:
   - {fileID: 1123878024}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 37.163, y: 0, z: 0}
+--- !u!114 &908114900
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 908114897}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 900d2efe6d17fcc4a80ad888d3cdbfda, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  virtualCamera: {fileID: 0}
+  sensitivityX: 3
+  sensitivityY: 1.5
+  minVerticalAngle: -40
+  maxVerticalAngle: 75
 --- !u!1001 &921227753
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3288,6 +3306,51 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4441194852809919528, guid: 5c6a1648d6f5d8b45997037cbb0ea5ff, type: 3}
   m_PrefabInstance: {fileID: 1028504850}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1041221424
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1041221426}
+  - component: {fileID: 1041221425}
+  m_Layer: 0
+  m_Name: NetworkInputManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1041221425
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1041221424}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba351ea8b04c02741bcdec54432f2fb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tpsCameraController: {fileID: 908114900}
+--- !u!4 &1041221426
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1041221424}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1060220047 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4962597591542745876, guid: db39c55cba61f5f4886de5e25b22fac6, type: 3}
@@ -5523,7 +5586,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerPrefab:
-    RawGuidValue: 209c6db2a08d55d49aa43a95850a63da
+    RawGuidValue: acb1ae8f636808e4e91f7a9c4901b855
+  TPSCamera: {fileID: 908114897}
 --- !u!4 &1915852520
 Transform:
   m_ObjectHideFlags: 0
@@ -6263,4 +6327,5 @@ SceneRoots:
   - {fileID: 1915852520}
   - {fileID: 5379035381283475607}
   - {fileID: 1985550815}
-  - {fileID: 6516055103826008085}
+  - {fileID: 1041221426}
+

@@ -12,36 +12,49 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
     private NetworkRunner runner;
     private HashSet<PlayerRef> spawnedPlayers = new();
 
+    [SerializeField]
+    private GameObject TPSCamera;
+
 
     void Start()
     {
         runner = FindObjectOfType<NetworkRunner>();
-        runner.AddCallbacks(this); // ƒR[ƒ‹ƒoƒbƒN“o˜^
+        runner.AddCallbacks(this); // ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ç™»éŒ²
 
     }
     public void OnSceneLoadDone(NetworkRunner runner)
     {
-        if (!runner.IsServer) return;
-
-        foreach (var player in runner.ActivePlayers)
+        if (runner.IsServer)
         {
-            if (spawnedPlayers.Contains(player)) continue;
+            //ãƒ›ã‚¹ãƒˆãŒå…¨å“¡åˆ†ã®ã‚¢ãƒã‚¿ãƒ¼ã‚’ç”Ÿæˆ
+            foreach (var player in runner.ActivePlayers)
+            {
+                if (spawnedPlayers.Contains(player)) continue;
 
-            var randomValue = UnityEngine.Random.insideUnitCircle * 5f;
-            var spawnPosition = new Vector3(randomValue.x, 5f, randomValue.y);
-            var avatar = runner.Spawn(playerPrefab, spawnPosition, Quaternion.identity, player);
-            spawnedPlayers.Add(player);
-            // ƒvƒŒƒCƒ„[iPlayerRefj‚ÆƒAƒoƒ^[iNetworkObjectj‚ğŠÖ˜A•t‚¯‚é
-            runner.SetPlayerObject(player, avatar);
-            Debug.Log($"[Spawn] ƒvƒŒƒCƒ„[ {player} ‚ğƒXƒ|[ƒ“‚µ‚Ü‚µ‚½");
-
+                var randomValue = UnityEngine.Random.insideUnitCircle * 5f;
+                var spawnPosition = new Vector3(randomValue.x, 5f, randomValue.y);
+                var avatar = runner.Spawn(playerPrefab, spawnPosition, Quaternion.identity, player);
+                spawnedPlayers.Add(player);
+                // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ï¼ˆPlayerRefï¼‰ã¨ã‚¢ãƒã‚¿ãƒ¼ï¼ˆNetworkObjectï¼‰ã‚’é–¢é€£ä»˜ã‘ã‚‹
+                runner.SetPlayerObject(player, avatar);
+                Debug.Log($"[Spawn] ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ {player} ã‚’ã‚¹ãƒãƒ¼ãƒ³ã—ã¾ã—ãŸ");
+            }
         }
 
+        //ã‚«ãƒ¡ãƒ©ã‚’å„ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆã«è¿½å¾“ã•ã›ã‚‹ã‚ˆã†ã«ã‚»ãƒƒãƒˆã•ã›ã‚‹(RPC)
+        //TPSCameraController tpsCameraController = TPSCamera.GetComponent<TPSCameraController>();
+        //tpsCameraController.RPC_SetCameraToMyAvatar();
+
     }
-    
+
+   
+
+
+
+
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player){ }
 
-    // ‘¼‚ÌINetworkRunnerCallbacks‚Í‹óÀ‘•‚ÅOK
+    // ä»–ã®INetworkRunnerCallbacksã¯ç©ºå®Ÿè£…ã§OK
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) 
     {
        
