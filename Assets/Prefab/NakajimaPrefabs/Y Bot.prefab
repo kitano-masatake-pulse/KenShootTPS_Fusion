@@ -285,7 +285,7 @@ PrefabInstance:
       addedObject: {fileID: 2522728715271549266}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 165be0b9e8710fb458592e2586c83890, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 9089163756296287559}
+      addedObject: {fileID: 3408523297849625296}
   m_SourcePrefab: {fileID: 100100000, guid: 165be0b9e8710fb458592e2586c83890, type: 3}
 --- !u!4 &5358703080543802788 stripped
 Transform:
@@ -368,7 +368,7 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: 7984905665404469515}
   - {fileID: 2522728715271549266}
-  - {fileID: 9089163756296287559}
+  - {fileID: 3408523297849625296}
   SimulationBehaviours: []
 --- !u!114 &7984905665404469515
 MonoBehaviour:
@@ -427,7 +427,7 @@ MonoBehaviour:
   _MaxHP: 0
   _Ammo: 0
   _Score: 0
---- !u!114 &9089163756296287559
+--- !u!114 &3408523297849625296
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

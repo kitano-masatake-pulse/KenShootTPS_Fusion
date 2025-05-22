@@ -4,11 +4,12 @@ using UnityEngine;
 using Fusion;
 using TMPro;
 
-public class NetworkPrototypeTest : NetworkBehaviour
+public class NetworkAnimation : NetworkBehaviour
 {
     private float gravity = -9.81f;
     private float moveSpeed = 5f;
     public Vector3 velocity = Vector3.zero;
+
 
     CharacterController characterController;
     Animator animator;

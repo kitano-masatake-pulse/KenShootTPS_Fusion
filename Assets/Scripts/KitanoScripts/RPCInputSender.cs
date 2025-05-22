@@ -8,13 +8,13 @@ using UnityEngine;
 
 public class RPCInputSender : NetworkBehaviour
 {
-    NetworkPrototypeTest networkPrototypeTest;
+    NetworkAnimation networkPrototypeTest;
     Animator animator;
 
     // Start is called before the first frame update
     void Start()
     {
-        networkPrototypeTest = GetComponent<NetworkPrototypeTest>();
+        networkPrototypeTest = GetComponent<NetworkAnimation>();
         animator = GetComponent<Animator>();
     }
 
