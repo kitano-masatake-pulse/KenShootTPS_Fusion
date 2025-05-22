@@ -13,10 +13,10 @@ public class NetworkPrototypeTest : NetworkBehaviour
     CharacterController characterController;
     Animator animator;
     [Networked] public bool NetIsJumping { get; set; }
+    [Networked] public float Horizontal { get; set; }
+    [Networked] public float Vertical { get; set; }
 
 
-    //NetworkCharacterControllerPrototype characterController;
-    // Start is called before the first frame update
     void Start()
     {
 
@@ -48,13 +48,31 @@ public class NetworkPrototypeTest : NetworkBehaviour
                     velocity.y = 3;
                 }
                 NetIsJumping = !characterController.isGrounded;
+                Vector3 test = data.wasdInputDirection.normalized;
+                Horizontal = test.x;
+                Vertical = test.z;
+
+                if (data.attackClicked)
+                {
+                    RpcTriggerAttack();
+                }
+
 
             }
-            Debug.Log($"Jump: {data.jumpPressed} {NetIsJumping}");
-            animator.SetBool("IsJumping", NetIsJumping);
         }
         animator.SetBool("IsJumping", NetIsJumping);
-        Debug.Log($"!GetInput: {data.jumpPressed} {NetIsJumping}");
+        animator.SetFloat("Horizontal", Horizontal);
+        animator.SetFloat("Vertical", Vertical);
+
+
+        // Debug.Log($"GetInput: {Horizontal} {Vertical}");
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RpcTriggerAttack()
+    {
+        animator.SetTrigger("IsPressLeftKey");
+        Debug.Log("Attack Triggered");
     }
 }
 

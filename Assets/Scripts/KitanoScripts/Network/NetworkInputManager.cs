@@ -78,8 +78,9 @@ public class NetworkInputManager : MonoBehaviour,INetworkRunnerCallbacks
 
         data.wasdInputDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
 
-        // スペースキーが押されていたら Jump フラグを立てる
+        // スペースキーが押されていたら Jump フラグを立てる。FixedUpdateNetworkで取得するとNetworkInputDataに保存されないので検知されない場合がある
         data.jumpPressed = Input.GetKey(KeyCode.Space);
+        data.attackClicked = Input.GetMouseButtonDown(0);
 
 
 
