@@ -73,7 +73,7 @@ public class NetworkAnimation : NetworkBehaviour
     public void RpcTriggerAttack()
     {
         animator.SetTrigger("IsPressLeftKey");
-        Debug.Log("Attack Triggered");
+        Debug.Log("NetworkAnimation Attack Triggered");
     }
 }
 

@@ -9,11 +9,11 @@ using UnityEngine;
 
 public class NetworkInputManager : MonoBehaviour,INetworkRunnerCallbacks
 {
+    private bool wasMouseDown = false;
 
-    
     //public TPSCameraController tpsCameraController;
 
-    
+
 
     private void Awake()
     {
@@ -80,7 +80,21 @@ public class NetworkInputManager : MonoBehaviour,INetworkRunnerCallbacks
 
         // スペースキーが押されていたら Jump フラグを立てる。FixedUpdateNetworkで取得するとNetworkInputDataに保存されないので検知されない場合がある
         data.jumpPressed = Input.GetKey(KeyCode.Space);
-        data.attackClicked = Input.GetMouseButtonDown(0);
+
+        // 現在の状態（押してるかどうか）
+        bool isMouseDown = Input.GetMouseButton(0);
+
+        // 今押してて、前は押してなかった → 押した瞬間（KeyDown相当）
+        data.attackClicked = isMouseDown && !wasMouseDown;
+
+        // 状態記録（次フレーム用）
+        wasMouseDown = isMouseDown;
+
+        if (data.attackClicked)
+        {
+            Debug.Log("attackClicked!");
+        }
+
 
 
 

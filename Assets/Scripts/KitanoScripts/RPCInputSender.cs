@@ -19,10 +19,10 @@ public class RPCInputSender : NetworkBehaviour
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        InputCheck();
-    }
+    //void Update()
+    //{
+    //    InputCheck();
+    //}
 
     public override void Spawned()
     {
@@ -31,13 +31,21 @@ public class RPCInputSender : NetworkBehaviour
     
 
 
-    private void InputCheck()
-    {
-        if (Input.GetMouseButtonDown(0))
-        {
-            RpcTriggerAttack();
-        }
-    }
+    //private void InputCheck()
+    //{
+    //    if (Input.GetMouseButtonDown(0))
+    //    {
+    //        RpcTriggerAttack();
+    //    }
+    //}
+
+    //[Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    //public void RpcTriggerAttack()
+    //{
+    //    animator.SetTrigger("IsPressLeftKey");
+    //    Debug.Log("Attack Triggered");
+    //}
+
     //void Jump()
     //{
     //    if (Object.HasInputAuthority)
@@ -45,7 +53,7 @@ public class RPCInputSender : NetworkBehaviour
 
     //        JumpLocallly();
 
-        
+
     //        // RPCëóêM
     //        RPC_RequestJump();
     //    }
@@ -88,10 +96,4 @@ public class RPCInputSender : NetworkBehaviour
     //    }
 
     //}
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RpcTriggerAttack()
-    {
-        animator.SetTrigger("IsPressLeftKey");
-        Debug.Log("Attack Triggered");
-    }
 }
