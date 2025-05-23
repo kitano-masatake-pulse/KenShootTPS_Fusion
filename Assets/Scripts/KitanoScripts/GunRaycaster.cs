@@ -30,15 +30,17 @@ public class GunRaycaster : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        if (HasInputAuthority) 
+        { 
         if (Input.GetMouseButtonDown(0))
         {
             Debug.Log("Gun Fire!");
             GunFire(playerCamera.transform.position, playerCamera.transform.forward);
-            
 
-         }
 
+        }
+
+        }
 
     }
 
@@ -104,11 +106,12 @@ public class GunRaycaster : NetworkBehaviour
 
 
     //自作クラスを引数にとっても大丈夫？→重いのでダメ
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_RequestDamage(PlayerRef targetPlayerRef, int Damage)
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority, HostMode = RpcHostMode.SourceIsHostPlayer, TickAligned = false)]
+    public void RPC_RequestDamage(PlayerRef targetPlayerRef, int Damage,RpcInfo info=default)
     {
         PlayerAvatar damagedPlayerAvatarScript = Runner.GetPlayerObject(targetPlayerRef).GetComponent<PlayerAvatar>();
 
+        Debug.Log($"{targetPlayerRef} was attacked by {info.Source}, took {Damage} Damage ");
         damagedPlayerAvatarScript.TakeDamage(Damage);
 
 

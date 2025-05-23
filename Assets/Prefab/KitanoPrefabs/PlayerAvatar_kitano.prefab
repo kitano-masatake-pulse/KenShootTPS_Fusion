@@ -846,7 +846,7 @@ MonoBehaviour:
   fireDistance: 100
   hitMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 192
   weaponDamage: 10
 --- !u!1 &7390135594791055790
 GameObject:

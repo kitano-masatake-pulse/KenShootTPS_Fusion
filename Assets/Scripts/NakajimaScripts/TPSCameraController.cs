@@ -26,6 +26,9 @@ public class TPSCameraController : MonoBehaviour
     bool isSetCameraTarget=false;
 
     private NetworkRunner runner;
+
+
+    bool cursorLocked = true;
     void Start()
     {
         runner = FindObjectOfType<NetworkRunner>();
@@ -40,14 +43,17 @@ public class TPSCameraController : MonoBehaviour
         //    // 初期方向
         //    yaw = cameraTarget.eulerAngles.y;
         //    pitch = 0;
-            
+
         //    virtualCamera.Follow = cameraTarget;
         //    virtualCamera.LookAt = cameraTarget;
         //    Cursor.lockState = CursorLockMode.Locked;
         //    Cursor.visible = false;
-           
+
 
         //}
+
+
+        LockCursor();
 
     }
     void Update()
@@ -63,6 +69,15 @@ public class TPSCameraController : MonoBehaviour
             cameraTarget.rotation = rotation;
            
 
+        }
+
+        // Escapeキーでモード切り替え
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (cursorLocked)
+                UnlockCursor();
+            else
+                LockCursor();
         }
     }
 
@@ -93,8 +108,7 @@ public class TPSCameraController : MonoBehaviour
 
             virtualCamera.Follow = cameraTarget;
             virtualCamera.LookAt = cameraTarget;
-            //Cursor.lockState = CursorLockMode.Locked;
-            //Cursor.visible = false;
+        
 
             isSetCameraTarget = true;
         }
@@ -144,6 +158,18 @@ public class TPSCameraController : MonoBehaviour
         return this.gameObject.transform;
     }
 
+    void LockCursor()
+    {
+        Cursor.lockState = CursorLockMode.Locked; // 中央固定
+        Cursor.visible = false;
+        cursorLocked = true;
+    }
 
+    void UnlockCursor()
+    {
+        Cursor.lockState = CursorLockMode.None; // 通常カーソル
+        Cursor.visible = true;
+        cursorLocked = false;
+    }
 
 }

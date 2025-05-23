@@ -27,6 +27,9 @@ public class PlayerAvatar : NetworkBehaviour
     [SerializeField]
     private PlayerHitbox myPlayerHitbox;
 
+
+    private PlayerNetworkState playerNetworkState;
+
     //private NetworkCharacterControllerPrototype characterController;
 
     //private void Awake()
@@ -46,6 +49,8 @@ public class PlayerAvatar : NetworkBehaviour
 
         characterController = GetComponent<CharacterController>();
 
+        playerNetworkState= GetComponent<PlayerNetworkState>();
+
         if (HasInputAuthority)
         {
             //自分のアバターなら、TPSカメラに紐づける
@@ -61,7 +66,7 @@ public class PlayerAvatar : NetworkBehaviour
     public override void FixedUpdateNetwork()
     {
 
-        Debug.Log("NetworkInput");
+        //Debug.Log("NetworkInput");
         if ( GetInput(out NetworkInputData data))
         {
 
@@ -131,8 +136,9 @@ public class PlayerAvatar : NetworkBehaviour
 
 
 
-    public void TakeDamage( int DamageAmount)
+    public void TakeDamage(int DamageAmount)
     {
-        Debug.Log("TakeDamage");
+        Debug.Log($"TakeDamage {DamageAmount}");
+        //playerNetworkState.Damage(DamageAmount);みたいなのを書く
     }
 }
