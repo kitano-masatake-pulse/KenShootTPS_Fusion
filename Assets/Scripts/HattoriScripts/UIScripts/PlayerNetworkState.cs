@@ -21,10 +21,16 @@ public class PlayerNetworkState : NetworkBehaviour
     #region Events
 
     // インスタンスイベント
+    /// <summary>弾数が変更されたとき</summary>
     public event Action<float> OnHPChanged;
+    /// <summary>武器切替がサーバー正史で確定したとき</summary>
     public event Action<WeaponType> OnWeaponChanged;
-    public event Action<int, int> OnAmmoChanged;
+  
+    /// <summary>スコアが変更されたとき</summary>
     public event Action<int, int> OnScoreChanged;
+
+    /// <summary>弾数が変更されたとき(チート対策用、基本使わない)</summary>
+    public event Action<int, int> OnAmmoChanged;
 
     // ローカルプレイヤー生成時
     public static event Action<PlayerNetworkState> OnLocalPlayerSpawned;
@@ -42,16 +48,9 @@ public class PlayerNetworkState : NetworkBehaviour
 
     public float HpNormalized => MaxHP > 0 ? (float)CurrentHP / MaxHP : 0f;
 
-    // 装備中の武器
+    // 装備中の武器(サーバーから見て)
     [Networked(OnChanged = nameof(WeaponChangedCallback))]
-    public WeaponType CurrentWeapon { get; set; } = WeaponType.Sword;
-
-    // 弾薬 (マガジン / リザーブ)
-    [Networked(OnChanged = nameof(AmmoChangedCallback))]
-    public int MagazineAmmo { get; set; }
-
-    [Networked(OnChanged = nameof(AmmoChangedCallback))]
-    public int ReserveAmmo { get; set; }
+    public WeaponType CurrentWeapon { get; private set; } = WeaponType.Sword;
 
     // スコア (キル / デス)
     [Networked(OnChanged = nameof(ScoreChangedCallback))]
@@ -60,11 +59,18 @@ public class PlayerNetworkState : NetworkBehaviour
     [Networked(OnChanged = nameof(ScoreChangedCallback))]
     public int DeathScore { get; set; }
 
+  // 弾薬 (マガジン / リザーブ)(チート対策用、基本使わない)
+    [Networked(OnChanged = nameof(AmmoChangedCallback))]
+    public int MagazineAmmo { get; set; }
+
+    [Networked(OnChanged = nameof(AmmoChangedCallback))]
+    public int ReserveAmmo { get; set; }
+
     #endregion
 
     #region Local Fields
 
-    // ローカルで管理する武器ごとの弾数テーブル
+    // ローカルで管理する武器ごとの弾数テーブル(チート対策用)
     private Ammo[] ammoPerWeapon;
 
     #endregion
@@ -75,84 +81,57 @@ public class PlayerNetworkState : NetworkBehaviour
         => c.Behaviour.RaiseHPChanged();
 
     static void WeaponChangedCallback(Changed<PlayerNetworkState> c)
-    {
-        var s = c.Behaviour;
-        s.RaiseWeaponChanged();
-        s.ApplyAmmoForWeapon(s.CurrentWeapon);
-    }
+        => c.Behaviour.RaiseWeaponChanged();
 
-    static void AmmoChangedCallback(Changed<PlayerNetworkState> c)
-        => c.Behaviour.RaiseAmmoChanged();
 
     static void ScoreChangedCallback(Changed<PlayerNetworkState> c)
         => c.Behaviour.RaiseScoreChanged();
 
+    static void AmmoChangedCallback(Changed<PlayerNetworkState> c)
+        => c.Behaviour.RaiseAmmoChanged();
+
     void RaiseHPChanged() => OnHPChanged?.Invoke(HpNormalized);
     void RaiseWeaponChanged() => OnWeaponChanged?.Invoke(CurrentWeapon);
-    void RaiseAmmoChanged() => OnAmmoChanged?.Invoke(MagazineAmmo, ReserveAmmo);
     void RaiseScoreChanged() => OnScoreChanged?.Invoke(KillScore, DeathScore);
-
+    void RaiseAmmoChanged() => OnAmmoChanged?.Invoke(MagazineAmmo, ReserveAmmo);
     #endregion
 
     #region Unity Callbacks
 
     public override void Spawned()
-    {       
-        // 配列初期化
-        int count = (int)WeaponType.GrenadeLauncher + 1;
-        ammoPerWeapon = new Ammo[count];
-
-        // 初期弾数設定
-        ammoPerWeapon[(int)WeaponType.Sword] = new Ammo(1, 0);
-        ammoPerWeapon[(int)WeaponType.AssaultRifle] = new Ammo(20, 100);
-        ammoPerWeapon[(int)WeaponType.SemiAutoRifle] = new Ammo(5, 15);
-        ammoPerWeapon[(int)WeaponType.GrenadeLauncher] = new Ammo(1, 5);
+    {
         if (HasInputAuthority)
         {    
             OnLocalPlayerSpawned?.Invoke(this);
-        }
-
+        }    
+        
+        
+        //ホストのみプレイヤーごとの弾数を初期化(チート対策用)
         if (Object.HasStateAuthority)
         {
-            ApplyAmmoForWeapon(CurrentWeapon);
+            // 配列初期化
+            int count = (int)WeaponType.GrenadeLauncher + 1;
+            ammoPerWeapon = new Ammo[count];
+
+            // 初期弾数設定
+            ammoPerWeapon[(int)WeaponType.Sword] = new Ammo(1, 0);
+            ammoPerWeapon[(int)WeaponType.AssaultRifle] = new Ammo(20, 100);
+            ammoPerWeapon[(int)WeaponType.SemiAutoRifle] = new Ammo(5, 15);
+            ammoPerWeapon[(int)WeaponType.GrenadeLauncher] = new Ammo(1, 5);
         }
     }
 
     #endregion
 
     #region Public Methods
-
-    /// <summary>ローカルから武器切替要求</summary>
-    public void ChangeWeapon(WeaponType newWeapon)
-    {
-        if (!HasInputAuthority) return;
-        CurrentWeapon = newWeapon;     // 同期
-        ApplyAmmoForWeapon(newWeapon); // ホストで反映
-    }
-
-    /// <summary>ローカルで弾数を調整</summary>
-    public void ModifyLocalAmmo(int magazineDelta, int reserveDelta)
-    {
-        var idx = (int)CurrentWeapon;
-        ammoPerWeapon[idx].Magazine += magazineDelta;
-        ammoPerWeapon[idx].Reserve += reserveDelta;
-        ApplyAmmoForWeapon(CurrentWeapon);
-    }
-
-    /// <summary>指定武器の弾数をネットワークプロパティに書き込む</summary>
-    public void ApplyAmmoForWeapon(WeaponType weapon)
-    {
-        var a = ammoPerWeapon[(int)weapon];
-        MagazineAmmo = a.Magazine;
-        ReserveAmmo = a.Reserve;
-    }
-
-
+    //―――― サーバー→クライアント：ステータス変更 ――――
+    //ホスト側のみが呼び出すメソッド
     /// <summary>HPを減らす</summary>
     public void DamageHP(int damage)
     {
         if (!HasStateAuthority) return;
         CurrentHP = Mathf.Max(0, CurrentHP - damage);
+        // HPが0になったら死亡イベントを起動
     }
     /// <summary>HPを回復する</summary>
     public void HealHP(int heal)
@@ -172,6 +151,16 @@ public class PlayerNetworkState : NetworkBehaviour
         if (!HasStateAuthority) return;
         DeathScore++;
     }
+
+    //―――― クライアント→サーバー：武器切替リクエスト ――――
+    //クライアント側から呼び出すメソッド
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_RequestWeaponChange(WeaponType newWeapon)
+    {
+        CurrentWeapon = newWeapon;
+    }
+
+    
 
     #endregion
 }
