@@ -21,6 +21,9 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     [SerializeField]
     private LobbyUIController lobbyUI;
 
+    [SerializeField]
+    private int maxPlayerNum=3;
+
     private NetworkRunner networkRunner;
 
     public TextMeshProUGUI sessionNameText;
@@ -56,7 +59,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         {
             GameMode = GameMode.AutoHostOrClient,
             SessionProperties = customProps,
-            PlayerCount = 2,
+            PlayerCount = maxPlayerNum,
             SceneManager = networkRunner.GetComponent<NetworkSceneManagerDefault>()
         });
 

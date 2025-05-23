@@ -23,6 +23,13 @@ public class PlayerAvatar : NetworkBehaviour
 
     private Vector3 velocity; //主に重力に使用
 
+
+    [SerializeField]
+    private PlayerHitbox myPlayerHitbox;
+
+
+    private PlayerNetworkState playerNetworkState;
+
     //private NetworkCharacterControllerPrototype characterController;
 
     //private void Awake()
@@ -38,9 +45,11 @@ public class PlayerAvatar : NetworkBehaviour
     {
         //SetNickName($"Player({Object.InputAuthority.PlayerId})");
 
+        myPlayerHitbox.myPlayerRef = GetComponent<NetworkObject>().InputAuthority;
 
-        
         characterController = GetComponent<CharacterController>();
+
+        playerNetworkState= GetComponent<PlayerNetworkState>();
 
         if (HasInputAuthority)
         {
@@ -57,57 +66,79 @@ public class PlayerAvatar : NetworkBehaviour
     public override void FixedUpdateNetwork()
     {
 
-        Debug.Log("NetworkInput");
+        //Debug.Log("NetworkInput");
         if ( GetInput(out NetworkInputData data))
         {
 
 
-            Vector3 bodyForward = new Vector3(data.cameraForward.x, 0f, data.cameraForward.z).normalized;
-
-            if (bodyForward.sqrMagnitude > 0.0001f)
+            if (HasStateAuthority)
             {
-                // プレイヤー本体の向きをカメラ方向に回転
-                bodyObject.transform.forward = bodyForward;
+
+                Vector3 bodyForward = new Vector3(data.cameraForward.x, 0f, data.cameraForward.z).normalized;
+
+                if (bodyForward.sqrMagnitude > 0.0001f)
+                {
+                    // プレイヤー本体の向きをカメラ方向に回転
+                    bodyObject.transform.forward = bodyForward;
+                }
+
+                // cameraForward から pitch を求める 上蓋が前面を向くように
+                float pitch = -Mathf.Asin(data.cameraForward.y) * Mathf.Rad2Deg + 90;
+
+                // 頭部回転を仰角だけに限定
+                //headObject.transform.localRotation = Quaternion.Euler(pitch, 0f, 0f);
+
+                //体と同じ方法でforwardつかってみて実装する
+                Vector3 headUp = data.cameraForward.normalized;
+
+                headObject.transform.up = headUp;
+
+                // キャラのY軸回転を適用
+                // Quaternion yRot = Quaternion.Euler(data.cameraForward.x, 0f, data.cameraForward.z);
+                // Quaternion yRot = Quaternion.Euler(data.cameraForward.x, 0f, data.cameraForward.z);
+
+                // 入力方向のベクトルを正規化する
+                //data.wasdInputDirection.Normalize();
+
+                Vector3 moveDirection = Quaternion.LookRotation(bodyForward, Vector3.up) * data.wasdInputDirection;  // 入力方向のベクトルを正規化する
+                                                                                                                     // 入力方向を移動方向としてそのまま渡す
+
+
+                // 重力を加算（ここを省略すれば浮く）
+
+                velocity.y += gravity * Runner.DeltaTime;
+
+                // 坂道対応：Moveは自動で地形の傾斜に合わせてくれる
+                characterController.Move((moveDirection * moveSpeed + velocity) * Runner.DeltaTime);
+
+                // 着地しているなら重力リセット
+                if (characterController.isGrounded)
+                {
+                    velocity.y = 0;
+                }
             }
 
-            // cameraForward から pitch を求める 上蓋が前面を向くように
-            float pitch = - Mathf.Asin(data.cameraForward.y) * Mathf.Rad2Deg + 90;
-            
-            // 頭部回転を仰角だけに限定
-            //headObject.transform.localRotation = Quaternion.Euler(pitch, 0f, 0f);
-
-            //体と同じ方法でforwardつかってみて実装する
-            Vector3 headUp = data.cameraForward.normalized;
-
-            headObject.transform.up = headUp;
-
-            // キャラのY軸回転を適用
-            // Quaternion yRot = Quaternion.Euler(data.cameraForward.x, 0f, data.cameraForward.z);
-            // Quaternion yRot = Quaternion.Euler(data.cameraForward.x, 0f, data.cameraForward.z);
-
-            // 入力方向のベクトルを正規化する
-            //data.wasdInputDirection.Normalize();
-
-            Vector3 moveDirection =Quaternion.LookRotation(bodyForward,Vector3.up) * data.wasdInputDirection;  // 入力方向のベクトルを正規化する
-                                                                                                               // 入力方向を移動方向としてそのまま渡す
 
 
-            // 重力を加算（ここを省略すれば浮く）
-           
-            velocity.y += gravity * Runner.DeltaTime;
+           // Debug.Log($"Ground {characterController.isGrounded}");
 
-            // 坂道対応：Moveは自動で地形の傾斜に合わせてくれる
-            characterController.Move((moveDirection * moveSpeed + velocity) * Runner.DeltaTime);
 
-            // 着地しているなら重力リセット
-            if (characterController.isGrounded)
-            {
-                velocity.y = 0;
-            }
+
 
             //bodyObject.transform.Translate(moveDirection*moveSpeed*Runner.DeltaTime);
             //characterController.Move(moveDirection);
 
         }
+
+
+
+    }
+
+
+
+    public void TakeDamage(int DamageAmount)
+    {
+        Debug.Log($"TakeDamage {DamageAmount}");
+        //playerNetworkState.Damage(DamageAmount);みたいなのを書く
     }
 }
