@@ -14,7 +14,8 @@ public class PlayerAvatar : NetworkBehaviour
     CharacterController characterController;
 
     public float moveSpeed = 3f;
-    public float gravity = -9.81f;
+    [SerializeField]
+    private float gravity = -9.81f;
 
     [SerializeField]
     private Transform cameraTarget;
@@ -29,14 +30,6 @@ public class PlayerAvatar : NetworkBehaviour
 
 
     private PlayerNetworkState playerNetworkState;
-
-    //private NetworkCharacterControllerPrototype characterController;
-
-    //private void Awake()
-    //{
-    //    characterController = GetComponent<NetworkCharacterControllerPrototype>();
-    //}
-
 
 
 
@@ -82,25 +75,13 @@ public class PlayerAvatar : NetworkBehaviour
                     bodyObject.transform.forward = bodyForward;
                 }
 
-                // cameraForward から pitch を求める 上蓋が前面を向くように
-                float pitch = -Mathf.Asin(data.cameraForward.y) * Mathf.Rad2Deg + 90;
-
-                // 頭部回転を仰角だけに限定
-                //headObject.transform.localRotation = Quaternion.Euler(pitch, 0f, 0f);
-
                 //体と同じ方法でforwardつかってみて実装する
                 Vector3 headUp = data.cameraForward.normalized;
 
                 headObject.transform.up = headUp;
 
-                // キャラのY軸回転を適用
-                // Quaternion yRot = Quaternion.Euler(data.cameraForward.x, 0f, data.cameraForward.z);
-                // Quaternion yRot = Quaternion.Euler(data.cameraForward.x, 0f, data.cameraForward.z);
 
-                // 入力方向のベクトルを正規化する
-                //data.wasdInputDirection.Normalize();
-
-                Vector3 moveDirection = Quaternion.LookRotation(bodyForward, Vector3.up) * data.wasdInputDirection;  // 入力方向のベクトルを正規化する
+                Vector3 moveDirection = Quaternion.LookRotation(bodyForward, Vector3.up) * data.wasdInputDirection.normalized;  // 入力方向のベクトルを正規化する
                                                                                                                      // 入力方向を移動方向としてそのまま渡す
 
 
@@ -117,16 +98,6 @@ public class PlayerAvatar : NetworkBehaviour
                     velocity.y = 0;
                 }
             }
-
-
-
-           // Debug.Log($"Ground {characterController.isGrounded}");
-
-
-
-
-            //bodyObject.transform.Translate(moveDirection*moveSpeed*Runner.DeltaTime);
-            //characterController.Move(moveDirection);
 
         }
 
