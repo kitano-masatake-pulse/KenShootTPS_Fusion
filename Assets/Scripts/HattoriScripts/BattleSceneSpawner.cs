@@ -41,10 +41,6 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
             }
         }
 
-        //カメラを各クライアントに追従させるようにセットさせる(RPC)
-        //TPSCameraController tpsCameraController = TPSCamera.GetComponent<TPSCameraController>();
-        //tpsCameraController.RPC_SetCameraToMyAvatar();
-
     }
 
    
