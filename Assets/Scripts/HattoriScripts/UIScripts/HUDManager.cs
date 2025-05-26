@@ -7,7 +7,7 @@ public class HUDManager : MonoBehaviour
 {
     // プレイヤーの HP や武器種を表示するUI
     [SerializeField] private Slider hpSlider;
-    [SerializeField] private TMP_Text totalAmmoText;
+    [SerializeField] private TMP_Text reserveAmmoText;
     [SerializeField] private TMP_Text magazineAmmoText;
     [SerializeField] private TMP_Text killScoreText;
     [SerializeField] private TMP_Text deathScoreText;
@@ -21,15 +21,20 @@ public class HUDManager : MonoBehaviour
 
     // プレイヤーの状態を保持するクラス
     private PlayerNetworkState localState;
+    //武器の内容を保持するクラス
+    private WeaponLocalState localWeaponState;
 
     //WeaponIconの大きさ
-    private const float RifleScale = 0.625f;
-    private const float GrenadeLauncherScale = 0.531f;
+    // AssaultRifle, SemiAutoRifle の大きさ
+    private const float RifleScale = 0.53f;
+    private const float GrenadeLauncherScale = 0.53f;
 
     private void OnEnable()
     {
         // ローカルプレイヤー生成通知
         PlayerNetworkState.OnLocalPlayerSpawned += HandlePlayerSpawn;
+        // 武器生成通知
+        WeaponLocalState.OnWeaponSpawned += HandleWeaponSpawn;
         // タイマー通知
         GameTimeManager.OnTimeChanged += HandleTimeChanged;
     }
@@ -37,13 +42,17 @@ public class HUDManager : MonoBehaviour
     private void OnDisable()
     {
         PlayerNetworkState.OnLocalPlayerSpawned -= HandlePlayerSpawn;
+        WeaponLocalState.OnWeaponSpawned -= HandleWeaponSpawn;
         GameTimeManager.OnTimeChanged -= HandleTimeChanged;
         if (localState != null)
         {
             localState.OnHPChanged -= OnLocalHPChanged;
-            localState.OnWeaponChanged -= OnLocalWeaponChanged;
             localState.OnScoreChanged -= OnLocalScoreChanged;
-            localState.OnAmmoChanged -= OnLocalAmmoChanged;
+        }
+        if(localWeaponState != null)
+        {
+            localWeaponState.OnWeaponChanged -= OnLocalWeaponChanged;
+            localWeaponState.OnAmmoChanged -= OnLocalAmmoChanged;
         }
     }
 
@@ -51,40 +60,35 @@ public class HUDManager : MonoBehaviour
     {
         localState = state;
         //イベント登録
-        InitializeSubscriptions();
+        // 先に解除してから
+        localState.OnHPChanged -= OnLocalHPChanged;
+        localState.OnScoreChanged -= OnLocalScoreChanged;
+        localState.OnHPChanged += OnLocalHPChanged;
+        localState.OnScoreChanged += OnLocalScoreChanged;
         // 初期値反映
-        // HPの初期値を反映
         OnLocalHPChanged(localState.HpNormalized);
-        // 武器種の初期値を反映
-        OnLocalWeaponChanged(localState.CurrentWeapon);
-        // スコアの初期値を反映
         OnLocalScoreChanged(localState.KillScore, localState.DeathScore);
-        // 弾薬の初期値を反映
-        OnLocalAmmoChanged(localState.TotalAmmo, localState.MagazineAmmo);
+
+
+
+    }
+
+    private void HandleWeaponSpawn(WeaponLocalState weaponState)
+    {
+        localWeaponState = weaponState;
+        localWeaponState.OnWeaponChanged -= OnLocalWeaponChanged;
+        localWeaponState.OnAmmoChanged -= OnLocalAmmoChanged;
+        localWeaponState.OnWeaponChanged += OnLocalWeaponChanged;
+        localWeaponState.OnAmmoChanged += OnLocalAmmoChanged;
+        // 初期表示
+        OnLocalWeaponChanged(localWeaponState.CurrentWeapon);
+        var ammo = localWeaponState.GetCurrentAmmo();
+        OnLocalAmmoChanged(ammo.magazine, ammo.reserve);
         // Weaponに登録したSpliteの長さチェック
         if (weaponSprites == null || weaponSprites.Length != System.Enum.GetValues(typeof(WeaponType)).Length)
         {
             Debug.LogError($"weaponSprites の要素数は {System.Enum.GetValues(typeof(WeaponType)).Length} にしてください");
         }
-    }
-  
-
-    //初期化処理
-    void InitializeSubscriptions()
-    {
-        // 先に解除してから
-        localState.OnHPChanged -= OnLocalHPChanged;
-        localState.OnWeaponChanged -= OnLocalWeaponChanged;
-        localState.OnScoreChanged -= OnLocalScoreChanged;
-        localState.OnAmmoChanged -= OnLocalAmmoChanged;
-        // …
-
-        // 改めて登録
-        localState.OnHPChanged += OnLocalHPChanged;
-        localState.OnWeaponChanged += OnLocalWeaponChanged;
-        localState.OnScoreChanged += OnLocalScoreChanged;
-        localState.OnAmmoChanged += OnLocalAmmoChanged;
-        // …
     }
 
     //HPイベント
@@ -98,33 +102,25 @@ public class HUDManager : MonoBehaviour
     // 武器種が変化した時だけ呼ばれて武器種表示を更新する
     void OnLocalWeaponChanged(WeaponType type)
     {
-        float scale = 1f;
-
-        
-
-    Sprite sp = weaponSprites[(int)type];
-        targetImage.sprite = sp;
-
-        if (weaponSprites == null || (int)type >= weaponSprites.Length || weaponSprites[(int)type] == null)
+        var idx = (int)type;       
+        if (idx < 0 || idx >= weaponSprites.Length || weaponSprites[idx] == null)
         {
             Debug.LogWarning("対応するスプライトがありません");
             return;
         }
 
-        if (type == WeaponType.AssaultRifle || type == WeaponType.SemiAutoRifle)
-        {
-            scale = RifleScale; // ライフル系はサイズを小さくする
-        }
-        else if (type == WeaponType.GrenadeLauncher)
-        {
-            scale = GrenadeLauncherScale; // GrenadeLauncher のみよりサイズを小さくする   
-        }
-        // RectTransform 取得
-        RectTransform rt = targetImage.rectTransform;
+        Sprite sp = weaponSprites[idx];
+        targetImage.sprite = sp;
 
-        // スプライトの元ピクセルサイズ × scale 倍 を sizeDelta にセット
-        Vector2 native = sp.rect.size;       
-        rt.sizeDelta = native * scale;        
+        // スケールは元のまま
+        float scale = 1f;
+        if (type == WeaponType.AssaultRifle || type == WeaponType.SemiAutoRifle)
+            scale = RifleScale;
+        else if (type == WeaponType.GrenadeLauncher)
+            scale = GrenadeLauncherScale;
+
+        var rt = targetImage.rectTransform;
+        rt.sizeDelta = sp.rect.size * scale;
 
     }
 
@@ -138,9 +134,9 @@ public class HUDManager : MonoBehaviour
 
     // Ammoイベント
     // 弾薬が変化した時だけ呼ばれて弾薬表示を更新する
-    private void OnLocalAmmoChanged(int totalAmmo, int magazineAmmo)
+    private void OnLocalAmmoChanged(int magazineAmmo, int reserveAmmo )
     {
-        totalAmmoText.text = totalAmmo.ToString();
+        reserveAmmoText.text = reserveAmmo.ToString();
         magazineAmmoText.text = magazineAmmo.ToString();
     }
 

@@ -46,6 +46,9 @@ public class GameTimeManager : NetworkBehaviour
             _accumDelta -= 1f;
             RemainingSeconds = Mathf.Max(0, RemainingSeconds - 1);
         }
+
+        // 残り時間が 0 になったらタイマーをストップ
+        if (RemainingSeconds == 0) TimerStop();
     }
 
     //タイマーをスタート
