@@ -1,12 +1,15 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Fusion;
+using Fusion.Sockets;
 using UnityEngine;
+using UnityEngine.Playables;        
 
 /// <summary>
 /// 武器ごとのローカル弾薬管理と操作（発射・リロード・リザーブ補填）を行うコンポーネント
 /// </summary>
-public class LocalWeaponManager : MonoBehaviour
+public class WeaponLocalState : NetworkBehaviour
 {
     [Header("武器リストと初期弾数設定")]
     [Tooltip("利用可能な武器の一覧（WeaponType enum）")]
@@ -17,14 +20,18 @@ public class LocalWeaponManager : MonoBehaviour
         WeaponType.SemiAutoRifle,
         WeaponType.GrenadeLauncher
     };
+    [Header("武器ごとのマガジン最大数")]
     [Tooltip("武器ごとに対応するマガジン最大弾数（配列長は availableWeapons と同じ）")]
+    [SerializeField]
     private int[] magazineCapacities = new[] {
         0,    // Sword
         20,   // AssaultRifle
         5,    // SemiAutoRifle
         1     // GrenadeLauncher
     };
+    [Header("武器ごとのリザーブ最大数")]
     [Tooltip("武器ごとに対応するリザーブ最大弾数（配列長は availableWeapons と同じ）")]
+    [SerializeField]
     private int[] reserveCapacities = new[] {
         0,    // Sword
         100,  // AssaultRifle
@@ -35,6 +42,9 @@ public class LocalWeaponManager : MonoBehaviour
     [Header("リロード設定")]
     [SerializeField] private float reloadDuration = 2.0f;
 
+    [Header("依存コンポーネント")]
+    [SerializeField] private PlayerNetworkState playerState;
+
     // 内部: 武器ごとの弾薬情報
     private struct AmmoData { public int Magazine; public int Reserve; }
     private Dictionary<WeaponType, AmmoData> ammoTable;
@@ -43,15 +53,20 @@ public class LocalWeaponManager : MonoBehaviour
     private WeaponType currentWeapon;
     public WeaponType CurrentWeapon => currentWeapon;
 
-    // 弾薬データ変更時のイベント
-    public event Action<WeaponType, int, int> OnAmmoChanged;
+    // クラス生成・弾薬データ変更時のイベント
+    public static event Action<WeaponLocalState> OnWeaponSpawned;
+    public event Action<int, int> OnAmmoChanged;
     public event Action<WeaponType> OnWeaponChanged;
 
     // リロード中フラグ
     private bool isReloading;
 
-    private void Awake()
+    public override void Spawned()
     {
+
+        //自分以外はこのコンポーネントを使わない
+        if (!HasInputAuthority) return;
+         
         // テーブル初期化
         ammoTable = new Dictionary<WeaponType, AmmoData>();
         for (int i = 0; i < availableWeapons.Length; i++)
@@ -64,6 +79,29 @@ public class LocalWeaponManager : MonoBehaviour
         // 初期武器セット
         if (availableWeapons.Length > 0)
             ChangeWeapon(availableWeapons[0]);
+
+        OnWeaponSpawned?.Invoke(this);
+
+
+    }
+
+    /// <summary>
+    /// 現在の弾薬データを取得
+    /// </summary>
+    public (int magazine, int reserve) GetCurrentAmmo()
+    {
+        var ad = ammoTable[currentWeapon];
+        return (ad.Magazine, ad.Reserve);
+    }
+
+    /// <summary>
+    /// 任意の武器の弾薬データを取得
+    /// </summary>
+    public (int magazine, int reserve) GetAmmo(WeaponType weapon)
+    {
+        if (ammoTable.TryGetValue(weapon, out var ad))
+            return (ad.Magazine, ad.Reserve);
+        throw new ArgumentException($"未設定の武器です: {weapon}");
     }
 
     /// <summary>
@@ -71,14 +109,28 @@ public class LocalWeaponManager : MonoBehaviour
     /// </summary>
     public void ChangeWeapon(WeaponType newWeapon)
     {
+        if (isReloading) return; // リロード中は切り替え不可
         if (!ammoTable.ContainsKey(newWeapon))
             throw new ArgumentException($"未設定の武器です: {newWeapon}");
 
         currentWeapon = newWeapon;
+        // 武器変更イベント通知
         OnWeaponChanged?.Invoke(currentWeapon);
         // 弾薬表示更新
         var ad = ammoTable[currentWeapon];
-        OnAmmoChanged?.Invoke(currentWeapon, ad.Magazine, ad.Reserve);
+        // 現在の武器の弾薬情報を通知
+        OnAmmoChanged?.Invoke( ad.Magazine, ad.Reserve);
+
+        // RPCでホストに切り替えをリクエスト
+        //    ※HasInputAuthority を持つクライアントからのみ呼ぶ
+        if (playerState != null && playerState.HasInputAuthority)
+        {
+            Debug.Log($"RPC呼び出し");
+            playerState.RPC_RequestWeaponChange(currentWeapon);
+        }else 
+        {
+            Debug.Log($"RPC呼び出せず");
+        }
     }
 
     /// <summary>
@@ -95,7 +147,7 @@ public class LocalWeaponManager : MonoBehaviour
         // 発射処理（ここでは単純にマガジンを減らす）
         ad.Magazine--;
         ammoTable[currentWeapon] = ad;
-        OnAmmoChanged?.Invoke(currentWeapon, ad.Magazine, ad.Reserve);
+        OnAmmoChanged?.Invoke(ad.Magazine, ad.Reserve);
         return true;
     }
 
@@ -129,27 +181,33 @@ public class LocalWeaponManager : MonoBehaviour
         ammoTable[currentWeapon] = ad;
         isReloading = false;
 
-        OnAmmoChanged?.Invoke(currentWeapon, ad.Magazine, ad.Reserve);
+        OnAmmoChanged?.Invoke(ad.Magazine, ad.Reserve);
     }
 
     /// <summary>
     /// リザーブ弾を追加
     /// </summary>
+    /// 弾が追加されると、リザーブが最大値を超えないように調整されるが、どれだけ入ったかに関わらず、入れようと試みた弾は消滅する
     public void AddReserve(int amount)
-    {
+    {        
+        // 武器種が Sword の場合はリザーブを増やさない
+        if (currentWeapon == WeaponType.Sword) return;
         var ad = ammoTable[currentWeapon];
+
+        int maxReserve = reserveCapacities[Array.IndexOf(availableWeapons, currentWeapon)];
+        //リザーブが最大であれば追加しない
+        if (ad.Reserve >= maxReserve) return;
+        // 追加量が最大値を超える場合は調整
+        if (ad.Reserve + amount > maxReserve)
+        {
+            amount = maxReserve - ad.Reserve; // 最大値を超えないように調整
+        }
+
         ad.Reserve += amount;
         ammoTable[currentWeapon] = ad;
-        OnAmmoChanged?.Invoke(currentWeapon, ad.Magazine, ad.Reserve);
+        OnAmmoChanged?.Invoke(ad.Magazine, ad.Reserve);
     }
 
-    /// <summary>
-    /// 現在の弾薬データを取得
-    /// </summary>
-    public (int magazine, int reserve) GetCurrentAmmo()
-    {
-        var ad = ammoTable[currentWeapon];
-        return (ad.Magazine, ad.Reserve);
-    }
+    
 }
 

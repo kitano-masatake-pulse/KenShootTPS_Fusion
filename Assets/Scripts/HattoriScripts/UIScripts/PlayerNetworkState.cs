@@ -157,10 +157,10 @@ public class PlayerNetworkState : NetworkBehaviour
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_RequestWeaponChange(WeaponType newWeapon)
     {
+        Debug.Log($"RPCé¿çs");
         CurrentWeapon = newWeapon;
     }
 
-    
 
     #endregion
 }

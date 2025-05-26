@@ -21,6 +21,8 @@ public class HUDManager : MonoBehaviour
 
     // プレイヤーの状態を保持するクラス
     private PlayerNetworkState localState;
+    //武器の内容を保持するクラス
+    private WeaponLocalState localWeaponState;
 
     //WeaponIconの大きさ
     // AssaultRifle, SemiAutoRifle の大きさ
@@ -31,6 +33,8 @@ public class HUDManager : MonoBehaviour
     {
         // ローカルプレイヤー生成通知
         PlayerNetworkState.OnLocalPlayerSpawned += HandlePlayerSpawn;
+        // 武器生成通知
+        WeaponLocalState.OnWeaponSpawned += HandleWeaponSpawn;
         // タイマー通知
         GameTimeManager.OnTimeChanged += HandleTimeChanged;
     }
@@ -38,13 +42,17 @@ public class HUDManager : MonoBehaviour
     private void OnDisable()
     {
         PlayerNetworkState.OnLocalPlayerSpawned -= HandlePlayerSpawn;
+        WeaponLocalState.OnWeaponSpawned -= HandleWeaponSpawn;
         GameTimeManager.OnTimeChanged -= HandleTimeChanged;
         if (localState != null)
         {
             localState.OnHPChanged -= OnLocalHPChanged;
-            localState.OnWeaponChanged -= OnLocalWeaponChanged;
             localState.OnScoreChanged -= OnLocalScoreChanged;
-            localState.OnAmmoChanged -= OnLocalAmmoChanged;
+        }
+        if(localWeaponState != null)
+        {
+            localWeaponState.OnWeaponChanged -= OnLocalWeaponChanged;
+            localWeaponState.OnAmmoChanged -= OnLocalAmmoChanged;
         }
     }
 
@@ -52,40 +60,35 @@ public class HUDManager : MonoBehaviour
     {
         localState = state;
         //イベント登録
-        InitializeSubscriptions();
+        // 先に解除してから
+        localState.OnHPChanged -= OnLocalHPChanged;
+        localState.OnScoreChanged -= OnLocalScoreChanged;
+        localState.OnHPChanged += OnLocalHPChanged;
+        localState.OnScoreChanged += OnLocalScoreChanged;
         // 初期値反映
-        // HPの初期値を反映
         OnLocalHPChanged(localState.HpNormalized);
-        // 武器種の初期値を反映
-        OnLocalWeaponChanged(localState.CurrentWeapon);
-        // スコアの初期値を反映
         OnLocalScoreChanged(localState.KillScore, localState.DeathScore);
-        // 弾薬の初期値を反映
-        OnLocalAmmoChanged(localState.ReserveAmmo, localState.MagazineAmmo);
+
+
+
+    }
+
+    private void HandleWeaponSpawn(WeaponLocalState weaponState)
+    {
+        localWeaponState = weaponState;
+        localWeaponState.OnWeaponChanged -= OnLocalWeaponChanged;
+        localWeaponState.OnAmmoChanged -= OnLocalAmmoChanged;
+        localWeaponState.OnWeaponChanged += OnLocalWeaponChanged;
+        localWeaponState.OnAmmoChanged += OnLocalAmmoChanged;
+        // 初期表示
+        OnLocalWeaponChanged(localWeaponState.CurrentWeapon);
+        var ammo = localWeaponState.GetCurrentAmmo();
+        OnLocalAmmoChanged(ammo.magazine, ammo.reserve);
         // Weaponに登録したSpliteの長さチェック
         if (weaponSprites == null || weaponSprites.Length != System.Enum.GetValues(typeof(WeaponType)).Length)
         {
             Debug.LogError($"weaponSprites の要素数は {System.Enum.GetValues(typeof(WeaponType)).Length} にしてください");
         }
-    }
-  
-
-    //初期化処理
-    void InitializeSubscriptions()
-    {
-        // 先に解除してから
-        localState.OnHPChanged -= OnLocalHPChanged;
-        localState.OnWeaponChanged -= OnLocalWeaponChanged;
-        localState.OnScoreChanged -= OnLocalScoreChanged;
-        localState.OnAmmoChanged -= OnLocalAmmoChanged;
-        // …
-
-        // 改めて登録
-        localState.OnHPChanged += OnLocalHPChanged;
-        localState.OnWeaponChanged += OnLocalWeaponChanged;
-        localState.OnScoreChanged += OnLocalScoreChanged;
-        localState.OnAmmoChanged += OnLocalAmmoChanged;
-        // …
     }
 
     //HPイベント
