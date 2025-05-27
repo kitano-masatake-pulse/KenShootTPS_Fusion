@@ -17,6 +17,10 @@ public class NetworkAnimation : NetworkBehaviour
     [Networked] public float Horizontal { get; set; }
     [Networked] public float Vertical { get; set; }
 
+    public Vector3 inputDirection;
+
+    NetworkInputManager networkInputManager;
+
 
     void Start()
     {
@@ -26,47 +30,66 @@ public class NetworkAnimation : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (!HasInputAuthority) return;
+        // ローカルだった
+        inputDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")).normalized;
+        animator.SetFloat("Horizontal", inputDirection.x);
+        animator.SetFloat("Vertical", inputDirection.z);
+        transform.position += inputDirection * moveSpeed * Time.deltaTime;
     }
 
     public override void Spawned()
     {
         characterController = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
+        networkInputManager = FindObjectOfType<NetworkInputManager>();
+        if (networkInputManager == null)
+        {
+            Debug.LogError("NetworkInputManager がシーンに存在しません！");
+        }
+        if (HasInputAuthority)
+        {
+            networkInputManager.networkAnimation = this;
+            networkInputManager.isMyAvatarAttached = true;
+        }
     }
     public override void FixedUpdateNetwork()
     {
+        Debug.Log($"FixedUpdateNetwork");
+        if (HasStateAuthority)
+        {
+            Horizontal = inputDirection.x;
+            Vertical = inputDirection.z;
+            Debug.Log($"HasStateAuthority: {Horizontal}{Vertical}");
+        }
         if (GetInput(out NetworkInputData data))
         {
-            if (HasStateAuthority)
+            if (!HasInputAuthority)
             {
-                velocity.y += gravity * Runner.DeltaTime;
+                //velocity.y += gravity * Runner.DeltaTime;
                 // 坂道対応：Moveは自動で地形の傾斜に合わせてくれる
-                characterController.Move((data.wasdInputDirection * moveSpeed + velocity) * Runner.DeltaTime);
+                transform.position = data.transform;
+                //Debug.Log($"FixedUpdateNetwork: {data.transform.x} {data.transform.y} {data.transform.z}");
+                //characterController.Move((data.wasdInputDirection * moveSpeed + velocity) * Runner.DeltaTime);
                 // 着地しているなら重力リセット
-                if (data.jumpPressed && characterController.isGrounded)
-                {
-                    velocity.y = 3;
-                }
-                NetIsJumping = !characterController.isGrounded;
-                Vector3 test = data.wasdInputDirection.normalized;
-                Horizontal = test.x;
-                Vertical = test.z;
+                //if (data.jumpPressed && characterController.isGrounded)
+                //{
+                //    velocity.y = 3;
+                //}
+                //NetIsJumping = !characterController.isGrounded;
 
-                if (data.attackClicked)
-                {
-                    RpcTriggerAttack();
-                }
+                //if (data.attackClicked)
+                //{
+                //    RpcTriggerAttack();
+                //}
 
+                //animator.SetBool("IsJumping", NetIsJumping);
 
             }
         }
-        animator.SetBool("IsJumping", NetIsJumping);
         animator.SetFloat("Horizontal", Horizontal);
         animator.SetFloat("Vertical", Vertical);
-
-
-        // Debug.Log($"GetInput: {Horizontal} {Vertical}");
+        Debug.Log($"FixedUpdateNetwork: {Horizontal} {data.transform.y} {Vertical}");
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]

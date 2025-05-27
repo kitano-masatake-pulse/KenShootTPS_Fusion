@@ -285,6 +285,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba351ea8b04c02741bcdec54432f2fb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  networkAnimation: {fileID: 0}
+  isMyAvatarAttached: 0
 --- !u!4 &566359416
 Transform:
   m_ObjectHideFlags: 0
@@ -708,6 +710,12 @@ MonoBehaviour:
   sensitivityY: 1.5
   minVerticalAngle: -40
   maxVerticalAngle: 75
+  yaw: 0
+  pitch: 0
+  cameraTarget: {fileID: 0}
+  isBattleScene: 0
+  isSetCameraTarget: 0
+  runner: {fileID: 0}
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0

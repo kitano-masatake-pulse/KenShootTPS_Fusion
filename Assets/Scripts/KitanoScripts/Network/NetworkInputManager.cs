@@ -11,6 +11,13 @@ public class NetworkInputManager : MonoBehaviour,INetworkRunnerCallbacks
 {
     private bool wasMouseDown = false;
 
+    public NetworkAnimation networkAnimation;
+
+
+    public bool isMyAvatarAttached = false;
+
+
+
     //public TPSCameraController tpsCameraController;
 
 
@@ -74,31 +81,42 @@ public class NetworkInputManager : MonoBehaviour,INetworkRunnerCallbacks
 
     public void OnInput(NetworkRunner runner, NetworkInput input)
     {
-        var data = new NetworkInputData();
-
-        data.wasdInputDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-
-        // スペースキーが押されていたら Jump フラグを立てる。FixedUpdateNetworkで取得するとNetworkInputDataに保存されないので検知されない場合がある
-        data.jumpPressed = Input.GetKey(KeyCode.Space);
-
-        // 現在の状態（押してるかどうか）
-        bool isMouseDown = Input.GetMouseButton(0);
-
-        // 今押してて、前は押してなかった → 押した瞬間（KeyDown相当）
-        data.attackClicked = isMouseDown && !wasMouseDown;
-
-        // 状態記録（次フレーム用）
-        wasMouseDown = isMouseDown;
-
-        if (data.attackClicked)
+        //これによって自分のプレイヤーしか処理していない？
+        //
+        if (!isMyAvatarAttached)
         {
-            Debug.Log("attackClicked!");
+            return;
         }
+        var data = new NetworkInputData();
+        
 
-
-
+        data.transform += networkAnimation.inputDirection;
 
         input.Set(data);
+
+
+        //Debug.Log($"player.transform.position.inputDirection: {networkAnimation.transform.position.x} {networkAnimation.transform.position.y} {networkAnimation.transform.position.z}");
+        //Debug.Log($"OnInput: {data.transform.x} {data.transform.y} {data.transform.z}");
+
+
+        //data.wasdInputDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+
+        // スペースキーが押されていたら Jump フラグを立てる。FixedUpdateNetworkで取得するとNetworkInputDataに保存されないので検知されない場合がある
+        //data.jumpPressed = Input.GetKey(KeyCode.Space);
+
+        // 現在の状態（押してるかどうか）
+        //bool isMouseDown = Input.GetMouseButton(0);
+
+        // 今押してて、前は押してなかった → 押した瞬間（KeyDown相当）
+        //data.attackClicked = isMouseDown && !wasMouseDown;
+
+        // 状態記録（次フレーム用）
+        //wasMouseDown = isMouseDown;
+
+        //if (data.attackClicked)
+        //{
+        //    Debug.Log("attackClicked!");
+        //}
     }
 
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) { }

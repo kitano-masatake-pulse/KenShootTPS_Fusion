@@ -279,19 +279,11 @@ PrefabInstance:
       addedObject: {fileID: -4092992544010076605}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 165be0b9e8710fb458592e2586c83890, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 7984905665404469515}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 165be0b9e8710fb458592e2586c83890, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 2522728715271549266}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 165be0b9e8710fb458592e2586c83890, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3408523297849625296}
   m_SourcePrefab: {fileID: 100100000, guid: 165be0b9e8710fb458592e2586c83890, type: 3}
---- !u!4 &5358703080543802788 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2484128538761520324, guid: 165be0b9e8710fb458592e2586c83890, type: 3}
-  m_PrefabInstance: {fileID: 7504287470806151520}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &7270494663140543537 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 165be0b9e8710fb458592e2586c83890, type: 3}
@@ -366,48 +358,9 @@ MonoBehaviour:
     RawGuidValue: 73fc65a2d0fef924cb026fdaab9b6226
   NestedObjects: []
   NetworkedBehaviours:
-  - {fileID: 7984905665404469515}
   - {fileID: 2522728715271549266}
   - {fileID: 3408523297849625296}
   SimulationBehaviours: []
---- !u!114 &7984905665404469515
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7270494663140543537}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 378411a89480da345945c2f888327a2d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  WordOffset: 0
-  WordCount: 0
-  _interpolationDataSource: 0
-  InterpolationSpace: 0
-  InterpolationTarget: {fileID: 5358703080543802788}
-  InterpolateErrorCorrection: 1
-  InterpolatedErrorCorrectionSettings:
-    MinRate: 3.3
-    MaxRate: 10
-    PosBlendStart: 0.25
-    PosBlendEnd: 1
-    PosMinCorrection: 0.025
-    PosTeleportDistance: 2
-    RotBlendStart: 0.1
-    RotBlendEnd: 0.5
-    RotTeleportRadians: 1.5
-  UseLegacySharedModeInterpolation: 0
-  TargetInterpolationDelay: 0.03
-  gravity: -20
-  jumpImpulse: 8
-  acceleration: 10
-  braking: 10
-  maxSpeed: 2
-  rotationSpeed: 15
-  _IsGrounded: 0
-  _Velocity: {x: 0, y: 0, z: 0}
 --- !u!114 &2522728715271549266
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -446,6 +399,7 @@ MonoBehaviour:
   _NetIsJumping: 0
   _Horizontal: 0
   _Vertical: 0
+  inputDirection: {x: 0, y: 0, z: 0}
 --- !u!4 &8047418841047619211 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 165be0b9e8710fb458592e2586c83890, type: 3}
