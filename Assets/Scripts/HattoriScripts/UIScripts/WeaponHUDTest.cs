@@ -22,7 +22,7 @@ public class WeaponHUDTest : MonoBehaviour
             hudManager = FindObjectOfType<HUDManager>();
 
         if (weaponManager == null || hudManager == null)
-            Debug.LogError("WeaponHUDTest: LocalWeaponManager ‚Ü‚½‚Í HUDManager ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ");
+            Debug.Log("WeaponHUDTest: LocalWeaponManager ‚Ü‚½‚Í HUDManager ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ");
     }
 
     private void Update()

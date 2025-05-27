@@ -18,6 +18,9 @@ public struct Ammo
 // 各プレイヤーのステータスを管理するクラス
 public class PlayerNetworkState : NetworkBehaviour
 {
+
+    
+
     #region Events
 
     // インスタンスイベント
@@ -34,6 +37,9 @@ public class PlayerNetworkState : NetworkBehaviour
 
     // ローカルプレイヤー生成時
     public static event Action<PlayerNetworkState> OnLocalPlayerSpawned;
+    
+    /// <summary>プレイヤー死亡時(Victim,Killer)</summary>
+    public event Action<PlayerRef, PlayerRef> OnPlayerDied;
 
     #endregion
 
@@ -127,11 +133,30 @@ public class PlayerNetworkState : NetworkBehaviour
     //―――― サーバー→クライアント：ステータス変更 ――――
     //ホスト側のみが呼び出すメソッド
     /// <summary>HPを減らす</summary>
-    public void DamageHP(int damage)
+    public void DamageHP(int damage, PlayerRef attacker = default)
     {
         if (!HasStateAuthority) return;
         CurrentHP = Mathf.Max(0, CurrentHP - damage);
-        // HPが0になったら死亡イベントを起動
+
+        if (CurrentHP == 0)
+        {
+            // 自身のデススコア加算
+            AddDeathScore();
+
+            // 攻撃者が指定されていればキルスコア加算
+            if (attacker != PlayerRef.None && attacker != Object.InputAuthority)
+            {
+                if (Runner.TryGetPlayerObject(attacker, out var atkGo))
+                {
+                    var atkState = atkGo.GetComponent<PlayerNetworkState>();
+                    if (atkState != null && atkState.HasStateAuthority)
+                        atkState.AddKillScore();
+                }
+            }
+
+            // 死亡通知 RPC
+            RPC_PlayerDeath(Object.InputAuthority, attacker);
+        }
     }
     /// <summary>HPを回復する</summary>
     public void HealHP(int heal)
@@ -151,16 +176,22 @@ public class PlayerNetworkState : NetworkBehaviour
         if (!HasStateAuthority) return;
         DeathScore++;
     }
+    ///<summary>死亡イベント</summary>
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    private void RPC_PlayerDeath(PlayerRef victim, PlayerRef killer)
+    {
+        Debug.Log("死亡イベント発火");
+        OnPlayerDied?.Invoke(victim, killer);
+    }
 
     //―――― クライアント→サーバー：武器切替リクエスト ――――
     //クライアント側から呼び出すメソッド
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_RequestWeaponChange(WeaponType newWeapon)
     {
-        Debug.Log($"RPC実行");
         CurrentWeapon = newWeapon;
     }
-
+   
 
     #endregion
 }
