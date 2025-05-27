@@ -48,6 +48,9 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         // NetworkRunnerのコールバック対象に、このスクリプト（GameLauncher）を登録する
         networkRunner.AddCallbacks(this);
 
+        NetworkInputManager networkInputManager = FindObjectOfType<NetworkInputManager>();
+        networkRunner.AddCallbacks(networkInputManager);
+
 
         var customProps = new Dictionary<string, SessionProperty>();
 

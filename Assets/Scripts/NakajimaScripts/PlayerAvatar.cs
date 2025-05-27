@@ -1,12 +1,13 @@
 using Fusion;
 using Unity;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerAvatar : NetworkBehaviour
-{ 
+{
     [SerializeField]
     private GameObject headObject;
-    
+
 
     [SerializeField]
     private GameObject bodyObject;
@@ -31,6 +32,9 @@ public class PlayerAvatar : NetworkBehaviour
 
     private PlayerNetworkState playerNetworkState;
 
+    private Transform tpsCameraTransform;
+
+    [SerializeField] private Transform hostTransform;
 
 
 
@@ -42,68 +46,203 @@ public class PlayerAvatar : NetworkBehaviour
 
         characterController = GetComponent<CharacterController>();
 
-        playerNetworkState= GetComponent<PlayerNetworkState>();
+        playerNetworkState = GetComponent<PlayerNetworkState>();
 
         if (HasInputAuthority)
         {
             //自分のアバターなら、TPSカメラに紐づける
-            FindObjectOfType<TPSCameraController>().SetCameraToMyAvatar(this);
+            TPSCameraController tpsCameraController = FindObjectOfType<TPSCameraController>();
+
+            tpsCameraTransform = tpsCameraController.transform;
+
+            //tpsCameraController.SetCameraToMyAvatar(this);
+
+            NetworkInputManager networkInputManager = FindObjectOfType<NetworkInputManager>();
+
+            networkInputManager.myPlayerAvatar = this;
+
+            TPSCameraTarget cameraTargetScript = FindObjectOfType<TPSCameraTarget>();
+            if(cameraTargetScript != null)
+            {
+                cameraTargetScript.player = this.transform;
+            }
+            
+
+
         }
 
+        ApplyHostTransform();
+
+        characterController.Move(Vector3.zero); //初期位置での移動を防ぐために、初期位置でMoveを呼ぶ
 
 
+
+    }
+
+
+     void Update()
+    {
+        if (HasInputAuthority)
+        {
+            ChangeTransformLocally();
+        }
     }
 
 
 
     public override void FixedUpdateNetwork()
     {
+        //if (HasInputAuthority)
+        //{
+        //    ChangeTransformLocally();
+        //}
 
-        //Debug.Log("NetworkInput");
-        if ( GetInput(out NetworkInputData data))
+        //Debug.Log($"{Runner.LocalPlayer} State {HasStateAuthority}, Input {HasInputAuthority}");
+
+
+        if (HasInputAuthority) { return; }
+
+        //InputAuthorityの位置を参照してホストが位置を動かす
+        if (HasStateAuthority && !HasInputAuthority)
         {
 
+            Debug.Log("ApplyInputAuthorityTransform called");
+            ApplyInputAuthorityTransform();
+        }
 
-            if (HasStateAuthority)
-            {
-
-                Vector3 bodyForward = new Vector3(data.cameraForward.x, 0f, data.cameraForward.z).normalized;
-
-                if (bodyForward.sqrMagnitude > 0.0001f)
-                {
-                    // プレイヤー本体の向きをカメラ方向に回転
-                    bodyObject.transform.forward = bodyForward;
-                }
-
-                //体と同じ方法でforwardつかってみて実装する
-                Vector3 headUp = data.cameraForward.normalized;
-
-                headObject.transform.up = headUp;
-
-
-                Vector3 moveDirection = Quaternion.LookRotation(bodyForward, Vector3.up) * data.wasdInputDirection.normalized;  // 入力方向のベクトルを正規化する
-                                                                                                                     // 入力方向を移動方向としてそのまま渡す
-
-
-                // 重力を加算（ここを省略すれば浮く）
-
-                velocity.y += gravity * Runner.DeltaTime;
-
-                // 坂道対応：Moveは自動で地形の傾斜に合わせてくれる
-                characterController.Move((moveDirection * moveSpeed + velocity) * Runner.DeltaTime);
-
-                // 着地しているなら重力リセット
-                if (characterController.isGrounded)
-                {
-                    velocity.y = 0;
-                }
-            }
-
+        //入力者以外のクライアントがホストの状態に合わせる
+        if (!HasInputAuthority && !HasStateAuthority)
+        {
+            ApplyHostTransform();
         }
 
 
 
+
+        ////Debug.Log("NetworkInput");
+        //if ( GetInput(out NetworkInputData data))
+        //{
+
+
+        //    if (HasStateAuthority)
+        //    {
+
+        //        Vector3 bodyForward = new Vector3(data.cameraForward.x, 0f, data.cameraForward.z).normalized;
+
+        //        if (bodyForward.sqrMagnitude > 0.0001f)
+        //        {
+        //            // プレイヤー本体の向きをカメラ方向に回転
+        //            bodyObject.transform.forward = bodyForward;
+        //        }
+
+        //        //体と同じ方法でforwardつかってみて実装する
+        //        Vector3 headUp = data.cameraForward.normalized;
+
+        //        headObject.transform.up = headUp;
+
+
+        //        Vector3 moveDirection = Quaternion.LookRotation(bodyForward, Vector3.up) * data.wasdInputDirection.normalized;  // 入力方向のベクトルを正規化する
+        //                                                                                                             // 入力方向を移動方向としてそのまま渡す
+
+
+        //        // 重力を加算（ここを省略すれば浮く）
+
+        //        velocity.y += gravity * Runner.DeltaTime;
+
+        //        // 坂道対応：Moveは自動で地形の傾斜に合わせてくれる
+        //        characterController.Move((moveDirection * moveSpeed + velocity) * Runner.DeltaTime);
+
+        //        // 着地しているなら重力リセット
+        //        if (characterController.isGrounded)
+        //        {
+        //            velocity.y = 0;
+        //        }
+        //    }
+
+        //}
+
+
+
+
     }
+
+
+
+
+
+
+    public void ChangeTransformLocally()
+    {
+       // if (!HasInputAuthority) { return; }
+
+        Vector3 cameraForward = tpsCameraTransform.forward;
+
+        Vector3 bodyForward = new Vector3(cameraForward.x, 0f, cameraForward.z).normalized;
+        // ローカルプレイヤーの移動処理
+
+
+
+        if (bodyForward.sqrMagnitude > 0.0001f)
+        {
+            // プレイヤー本体の向きをカメラ方向に回転
+            bodyObject.transform.forward = bodyForward;
+        }
+
+        headObject.transform.up = cameraForward.normalized; // カメラの方向を頭の向きに設定(アバターの頭の軸によって変えること)
+
+
+        Vector3 inputDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+
+        Vector3 moveDirection = Quaternion.LookRotation(bodyForward, Vector3.up) * inputDirection.normalized;
+
+
+
+
+
+        // 重力を加算（ここを省略すれば浮く）
+        velocity.y += gravity * Time.deltaTime;
+        // 坂道対応：Moveは自動で地形の傾斜に合わせてくれる
+        characterController.Move((moveDirection * moveSpeed + velocity) * Time.deltaTime);
+        // 着地しているなら重力リセット
+        if (characterController.isGrounded)
+        {
+            velocity.y = 0;
+        }
+    }
+
+
+
+    void ApplyInputAuthorityTransform()
+    {
+        //Debug.Log($"GetInput {GetInput(out NetworkInputData datum)}");
+        if (GetInput(out NetworkInputData data))
+        { 
+
+            this.transform.position = data.avatarPosition;
+            this.transform.rotation = Quaternion.Euler(data.avatarRotation);
+            Debug.Log($"ApplyInputAuthorityTransform {data.avatarPosition} {data.avatarRotation}");
+            hostTransform.localPosition = Vector3.zero; //ホストの位置をリセットする
+            hostTransform.localRotation = Quaternion.identity; //ホストの回転をリセットする
+
+        }
+    
+    }
+
+
+    void ApplyHostTransform()
+    { 
+    
+        this.transform.position = hostTransform.position;
+        hostTransform.localPosition=Vector3.zero; //ホストの位置をリセットする
+        this.transform.rotation = hostTransform.rotation;
+        hostTransform.localRotation = Quaternion.identity; //ホストの回転をリセットする
+
+    }
+
+
+  
+
+
 
 
 
