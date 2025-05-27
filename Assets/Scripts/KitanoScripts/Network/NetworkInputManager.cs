@@ -13,7 +13,9 @@ public class NetworkInputManager : MonoBehaviour,INetworkRunnerCallbacks
     
     public TPSCameraController tpsCameraController;
 
-    
+    public PlayerAvatar myPlayerAvatar;
+
+
 
     private void Awake()
     {
@@ -25,8 +27,9 @@ public class NetworkInputManager : MonoBehaviour,INetworkRunnerCallbacks
     void Start()
     {
         NetworkRunner networkRunner = FindObjectOfType<NetworkRunner>();
-
-        networkRunner.AddCallbacks(this);
+        if (networkRunner != null)
+        { networkRunner.AddCallbacks(this); }
+        
     }
 
 
@@ -39,9 +42,19 @@ public class NetworkInputManager : MonoBehaviour,INetworkRunnerCallbacks
 
     public void OnInput(NetworkRunner runner, NetworkInput input)
     {
+
+        if(myPlayerAvatar==null)
+        {
+            //アバターが紐づいていないなら、入力を受け付けない
+            input.Set(new NetworkInputData());
+            return;
+        }
         var data = new NetworkInputData();
 
         data.wasdInputDirection = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
+
+        data.avatarPosition = myPlayerAvatar.transform.position;
+        data.avatarRotation = myPlayerAvatar.transform.rotation.eulerAngles;
         data.cameraForward = tpsCameraController.GetTPSCameraTransform().forward;
 
         input.Set(data);

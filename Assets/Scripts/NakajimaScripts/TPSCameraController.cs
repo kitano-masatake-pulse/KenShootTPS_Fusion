@@ -18,14 +18,17 @@ public class TPSCameraController : MonoBehaviour
     [SerializeField] private float maxVerticalAngle = 75f;
     private float yaw = 0f;
     private float pitch = 0f;
-    private Transform cameraTarget;
+    public Transform cameraTarget;
     
 
     bool isBattleScene = false;
 
-    bool isSetCameraTarget=false;
+    bool isSetCameraTarget=true;
 
     private NetworkRunner runner;
+
+
+    private PlayerAvatar myPlayerAvatar;
 
 
     bool cursorLocked = true;
@@ -55,9 +58,14 @@ public class TPSCameraController : MonoBehaviour
 
         LockCursor();
 
+        string sceneName = SceneType.Battle.ToSceneName();
+        isBattleScene =SceneManager.GetActiveScene().name == sceneName;
+
     }
     void Update()
     {
+
+        
         if (isBattleScene && isSetCameraTarget)
            {
             float mouseX = Input.GetAxis("Mouse X") * sensitivityX;
@@ -67,7 +75,9 @@ public class TPSCameraController : MonoBehaviour
             pitch = Mathf.Clamp(pitch, minVerticalAngle, maxVerticalAngle);
             Quaternion rotation = Quaternion.Euler(pitch, yaw, 0f);
             cameraTarget.rotation = rotation;
-           
+
+            //myPlayerAvatar.ChangeTransformLocally(); // アバターの向きをカメラ方向に合わせる処理を呼び出す
+
 
         }
 
@@ -120,6 +130,8 @@ public class TPSCameraController : MonoBehaviour
     {
         string sceneName = SceneType.Battle.ToSceneName();
         isBattleScene = SceneManager.GetActiveScene().name == sceneName;
+
+        myPlayerAvatar = myAvatarScript;
 
 
         if (isBattleScene)
