@@ -90,7 +90,7 @@ public class NetworkInputManager : MonoBehaviour,INetworkRunnerCallbacks
         var data = new NetworkInputData();
         
 
-        data.transform += networkAnimation.inputDirection;
+        data.wasdinputDirection = networkAnimation.inputDirection;
 
         input.Set(data);
 

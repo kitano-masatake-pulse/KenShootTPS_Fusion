@@ -31,11 +31,16 @@ public class NetworkAnimation : NetworkBehaviour
     void Update()
     {
         if (!HasInputAuthority) return;
-        // ローカルだった
         inputDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")).normalized;
         animator.SetFloat("Horizontal", inputDirection.x);
         animator.SetFloat("Vertical", inputDirection.z);
+
         transform.position += inputDirection * moveSpeed * Time.deltaTime;
+
+        //if (Input.GetKeyDown(KeyCode.Space))
+        //{
+            
+        //}
     }
 
     public override void Spawned()
@@ -55,20 +60,19 @@ public class NetworkAnimation : NetworkBehaviour
     }
     public override void FixedUpdateNetwork()
     {
-        Debug.Log($"FixedUpdateNetwork");
-        if (HasStateAuthority)
-        {
-            Horizontal = inputDirection.x;
-            Vertical = inputDirection.z;
-            Debug.Log($"HasStateAuthority: {Horizontal}{Vertical}");
-        }
         if (GetInput(out NetworkInputData data))
         {
+            if (HasStateAuthority)
+            {
+                Horizontal = data.wasdinputDirection.x;
+                Vertical = data.wasdinputDirection.z;
+            }
             if (!HasInputAuthority)
             {
                 //velocity.y += gravity * Runner.DeltaTime;
                 // 坂道対応：Moveは自動で地形の傾斜に合わせてくれる
-                transform.position = data.transform;
+                //transform.position = (data.wasdinputDirection * moveSpeed + velocity) * Runner.DeltaTime;
+                //Debug.Log($"transform.position: {transform.position}");
                 //Debug.Log($"FixedUpdateNetwork: {data.transform.x} {data.transform.y} {data.transform.z}");
                 //characterController.Move((data.wasdInputDirection * moveSpeed + velocity) * Runner.DeltaTime);
                 // 着地しているなら重力リセット
@@ -87,9 +91,13 @@ public class NetworkAnimation : NetworkBehaviour
 
             }
         }
-        animator.SetFloat("Horizontal", Horizontal);
-        animator.SetFloat("Vertical", Vertical);
-        Debug.Log($"FixedUpdateNetwork: {Horizontal} {data.transform.y} {Vertical}");
+        if (!HasInputAuthority)
+        {
+            transform.position = (data.wasdinputDirection * moveSpeed + velocity) * Runner.DeltaTime;
+            Debug.Log($"transform.position: {transform.position}");
+            animator.SetFloat("Horizontal", Horizontal);
+            animator.SetFloat("Vertical", Vertical);
+        }
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]

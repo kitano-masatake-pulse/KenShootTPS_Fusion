@@ -256,7 +256,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 560505829}
   m_CullTransparentMesh: 1
---- !u!1 &566359414
+--- !u!1 &563820781
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -264,8 +264,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 566359416}
-  - component: {fileID: 566359415}
+  - component: {fileID: 563820782}
+  - component: {fileID: 563820784}
+  - component: {fileID: 563820783}
   m_Layer: 0
   m_Name: NetworkInputManager
   m_TagString: Untagged
@@ -273,13 +274,51 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &566359415
+--- !u!4 &563820782
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 563820781}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &563820783
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 566359414}
+  m_GameObject: {fileID: 563820781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObjectInterest: 1
+  DefaultInterestGroups: []
+  DestroyWhenStateAuthorityLeaves: 0
+  AllowStateAuthorityOverride: 1
+  AoiPositionSource: {fileID: 0}
+  Flags: 2561
+  NetworkGuid:
+    RawGuidValue: 27920397ebae4882b367332282efc75b
+  NestedObjects: []
+  NetworkedBehaviours: []
+  SimulationBehaviours: []
+--- !u!114 &563820784
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 563820781}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ba351ea8b04c02741bcdec54432f2fb9, type: 3}
@@ -287,21 +326,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   networkAnimation: {fileID: 0}
   isMyAvatarAttached: 0
---- !u!4 &566359416
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 566359414}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.20042896, y: -1.0143257, z: -0.47193143}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &616912101
 GameObject:
   m_ObjectHideFlags: 0
@@ -336,7 +360,7 @@ MonoBehaviour:
     RawGuidValue: 73fc65a2d0fef924cb026fdaab9b6226
   lobbyUI: {fileID: 1410479212}
   sessionNameText: {fileID: 1900220776}
-  networkInputManager: {fileID: 566359415}
+  networkInputManager: {fileID: 563820784}
 --- !u!4 &616912103
 Transform:
   m_ObjectHideFlags: 0
@@ -716,6 +740,7 @@ MonoBehaviour:
   isBattleScene: 0
   isSetCameraTarget: 0
   runner: {fileID: 0}
+  cursorLocked: 1
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -978,7 +1003,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1829126849
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1342,4 +1367,4 @@ SceneRoots:
   - {fileID: 1410479211}
   - {fileID: 705685671}
   - {fileID: 827454257}
-  - {fileID: 566359416}
+  - {fileID: 563820782}
