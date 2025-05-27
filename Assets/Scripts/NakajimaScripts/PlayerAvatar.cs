@@ -92,14 +92,6 @@ public class PlayerAvatar : NetworkBehaviour
 
     public override void FixedUpdateNetwork()
     {
-        //if (HasInputAuthority)
-        //{
-        //    ChangeTransformLocally();
-        //}
-
-        //Debug.Log($"{Runner.LocalPlayer} State {HasStateAuthority}, Input {HasInputAuthority}");
-
-
         if (HasInputAuthority) { return; }
 
         //InputAuthorityの位置を参照してホストが位置を動かす
@@ -115,55 +107,6 @@ public class PlayerAvatar : NetworkBehaviour
         {
             ApplyHostTransform();
         }
-
-
-
-
-        ////Debug.Log("NetworkInput");
-        //if ( GetInput(out NetworkInputData data))
-        //{
-
-
-        //    if (HasStateAuthority)
-        //    {
-
-        //        Vector3 bodyForward = new Vector3(data.cameraForward.x, 0f, data.cameraForward.z).normalized;
-
-        //        if (bodyForward.sqrMagnitude > 0.0001f)
-        //        {
-        //            // プレイヤー本体の向きをカメラ方向に回転
-        //            bodyObject.transform.forward = bodyForward;
-        //        }
-
-        //        //体と同じ方法でforwardつかってみて実装する
-        //        Vector3 headUp = data.cameraForward.normalized;
-
-        //        headObject.transform.up = headUp;
-
-
-        //        Vector3 moveDirection = Quaternion.LookRotation(bodyForward, Vector3.up) * data.wasdInputDirection.normalized;  // 入力方向のベクトルを正規化する
-        //                                                                                                             // 入力方向を移動方向としてそのまま渡す
-
-
-        //        // 重力を加算（ここを省略すれば浮く）
-
-        //        velocity.y += gravity * Runner.DeltaTime;
-
-        //        // 坂道対応：Moveは自動で地形の傾斜に合わせてくれる
-        //        characterController.Move((moveDirection * moveSpeed + velocity) * Runner.DeltaTime);
-
-        //        // 着地しているなら重力リセット
-        //        if (characterController.isGrounded)
-        //        {
-        //            velocity.y = 0;
-        //        }
-        //    }
-
-        //}
-
-
-
-
     }
 
 
@@ -181,7 +124,6 @@ public class PlayerAvatar : NetworkBehaviour
         // ローカルプレイヤーの移動処理
 
 
-
         if (bodyForward.sqrMagnitude > 0.0001f)
         {
             // プレイヤー本体の向きをカメラ方向に回転
@@ -194,10 +136,6 @@ public class PlayerAvatar : NetworkBehaviour
         Vector3 inputDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
 
         Vector3 moveDirection = Quaternion.LookRotation(bodyForward, Vector3.up) * inputDirection.normalized;
-
-
-
-
 
         // 重力を加算（ここを省略すれば浮く）
         velocity.y += gravity * Time.deltaTime;
