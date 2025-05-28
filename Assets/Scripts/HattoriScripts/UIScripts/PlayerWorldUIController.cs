@@ -4,7 +4,7 @@ using TMPro;
 using Fusion;
 
 //プレイヤの頭上に表示されるUIを制御するクラス
-public class PlayerHUDController : NetworkBehaviour
+public class PlayerWorldUIController : NetworkBehaviour
 {
     [Header("World-Space Canvas 上の UI 要素")]
     [SerializeField] private TextMeshProUGUI nameLabel;
@@ -15,13 +15,13 @@ public class PlayerHUDController : NetworkBehaviour
     [SerializeField] private Image targetImage;
 
 
-    private PlayerNetworkState state;
+    private PlayerNetworkState pNState;
 
     public override void Spawned()
     {
         //ネットワーク状態コンポーネント取得
-        state = GetComponent<PlayerNetworkState>();
-        if (state == null)
+        pNState = GetComponent<PlayerNetworkState>();
+        if (pNState == null)
         {
             Debug.LogError("PlayerNetworkState not found!");
         }
@@ -37,19 +37,19 @@ public class PlayerHUDController : NetworkBehaviour
         // イベント登録
         InitializeSubscriptions();
         // 初期値も反映
-        hpBar.value = state.HpNormalized;
+        hpBar.value = pNState.HpNormalized;
     }
 
 
     void InitializeSubscriptions()
     {
         // 先に解除してから
-        state.OnHPChanged -= UpdateHPBar;
-        state.OnWeaponChanged -= UpdateWeapon;
+        pNState.OnHPChanged -= UpdateHPBar;
+        pNState.OnWeaponChanged_Network -= UpdateWeapon;
 
         // 改めて登録
-        state.OnHPChanged += UpdateHPBar;
-        state.OnWeaponChanged += UpdateWeapon;
+        pNState.OnHPChanged += UpdateHPBar;
+        pNState.OnWeaponChanged_Network += UpdateWeapon;
     }
 
 
@@ -79,7 +79,7 @@ public class PlayerHUDController : NetworkBehaviour
 
     public override void Despawned(NetworkRunner runner, bool hasState)
     {
-        if (state != null)
-            state.OnHPChanged -= UpdateHPBar;
+        if (pNState != null)
+            pNState.OnHPChanged -= UpdateHPBar;
     }
 }

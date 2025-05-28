@@ -20,6 +20,7 @@ public class WeaponHUDTest : MonoBehaviour
             weaponManager = FindObjectOfType<WeaponLocalState>();
         if (hudManager == null)
             hudManager = FindObjectOfType<HUDManager>();
+        
 
         if (weaponManager == null || hudManager == null)
             Debug.Log("WeaponHUDTest: LocalWeaponManager または HUDManager が見つかりません");
@@ -48,6 +49,8 @@ public class WeaponHUDTest : MonoBehaviour
         // T キーでリザーブ補填テスト
         if (Input.GetKeyDown(KeyCode.T))
             weaponManager.AddReserve(reserveAmount);
+
+        
     }
 }
 

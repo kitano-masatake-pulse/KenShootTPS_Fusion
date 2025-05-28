@@ -27,13 +27,13 @@ public class PlayerNetworkState : NetworkBehaviour
     /// <summary>弾数が変更されたとき</summary>
     public event Action<float> OnHPChanged;
     /// <summary>武器切替がサーバー正史で確定したとき</summary>
-    public event Action<WeaponType> OnWeaponChanged;
+    public event Action<WeaponType> OnWeaponChanged_Network;
   
     /// <summary>スコアが変更されたとき</summary>
     public event Action<int, int> OnScoreChanged;
 
     /// <summary>弾数が変更されたとき(チート対策用、基本使わない)</summary>
-    public event Action<int, int> OnAmmoChanged;
+    public event Action<int, int> OnAmmoChanged_Network;
 
     // ローカルプレイヤー生成時
     public static event Action<PlayerNetworkState> OnLocalPlayerSpawned;
@@ -56,7 +56,7 @@ public class PlayerNetworkState : NetworkBehaviour
 
     // 装備中の武器(サーバーから見て)
     [Networked(OnChanged = nameof(WeaponChangedCallback))]
-    public WeaponType CurrentWeapon { get; private set; } = WeaponType.Sword;
+    public WeaponType CurrentWeapon_Network { get; private set; } = WeaponType.Sword;
 
     // スコア (キル / デス)
     [Networked(OnChanged = nameof(ScoreChangedCallback))]
@@ -67,10 +67,10 @@ public class PlayerNetworkState : NetworkBehaviour
 
   // 弾薬 (マガジン / リザーブ)(チート対策用、基本使わない)
     [Networked(OnChanged = nameof(AmmoChangedCallback))]
-    public int MagazineAmmo { get; set; }
+    public int MagazineAmmo_Network { get; set; }
 
     [Networked(OnChanged = nameof(AmmoChangedCallback))]
-    public int ReserveAmmo { get; set; }
+    public int ReserveAmmo_Network { get; set; }
 
     #endregion
 
@@ -97,9 +97,9 @@ public class PlayerNetworkState : NetworkBehaviour
         => c.Behaviour.RaiseAmmoChanged();
 
     void RaiseHPChanged() => OnHPChanged?.Invoke(HpNormalized);
-    void RaiseWeaponChanged() => OnWeaponChanged?.Invoke(CurrentWeapon);
+    void RaiseWeaponChanged() => OnWeaponChanged_Network?.Invoke(CurrentWeapon_Network);
     void RaiseScoreChanged() => OnScoreChanged?.Invoke(KillScore, DeathScore);
-    void RaiseAmmoChanged() => OnAmmoChanged?.Invoke(MagazineAmmo, ReserveAmmo);
+    void RaiseAmmoChanged() => OnAmmoChanged_Network?.Invoke(MagazineAmmo_Network, ReserveAmmo_Network);
     #endregion
 
     #region Unity Callbacks
@@ -127,6 +127,17 @@ public class PlayerNetworkState : NetworkBehaviour
         }
     }
 
+    //デバッグ用
+    void Update()
+    {
+        if (HasInputAuthority && Input.GetKeyDown(KeyCode.K))
+        {
+            // 自分を即死させる
+            DamageHP(int.MaxValue, PlayerRef.None);
+        }
+    }
+
+
     #endregion
 
     #region Public Methods
@@ -136,6 +147,9 @@ public class PlayerNetworkState : NetworkBehaviour
     public void DamageHP(int damage, PlayerRef attacker = default)
     {
         if (!HasStateAuthority) return;
+        if (damage <= 0) return; // ダメージが0以下なら無視
+        if (CurrentHP <= 0) return; // 既に死亡しているなら無視
+
         CurrentHP = Mathf.Max(0, CurrentHP - damage);
 
         if (CurrentHP == 0)
@@ -189,7 +203,7 @@ public class PlayerNetworkState : NetworkBehaviour
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_RequestWeaponChange(WeaponType newWeapon)
     {
-        CurrentWeapon = newWeapon;
+        CurrentWeapon_Network = newWeapon;
     }
    
 

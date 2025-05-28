@@ -5,15 +5,15 @@ using TMPro;
 
 public class PlayerDeathHandler : NetworkBehaviour
 {
-    [SerializeField] private Animator animator;
+    //[SerializeField] private Animator animator;
     [SerializeField] private Collider[] colliders;
-    [SerializeField] private GameObject[] weaponModels;
+    //[SerializeField] private GameObject[] weaponModels;
     [SerializeField] private GameObject playerHUDCanvas;
     [SerializeField] private CanvasGroup respawnUI;
     [SerializeField] private TMP_Text respawnCountdown;
     [SerializeField] private float respawnDelay = 5f;
 
-    private bool _isDead;
+    
 
     void OnEnable()
     {
@@ -29,8 +29,6 @@ public class PlayerDeathHandler : NetworkBehaviour
 
     private void HandleDeath(PlayerRef victim, PlayerRef killer)
     {
-
-        _isDead = true;
         // 1. 入力無効（PlayerAvatar 側にもフラグを送るか共有）
         GetComponent<PlayerAvatar>().enabled = false;
 
@@ -39,17 +37,17 @@ public class PlayerDeathHandler : NetworkBehaviour
             col.gameObject.layer = LayerMask.NameToLayer("DeadLayer");
 
         // 3. 死亡アニメ再生
-        animator.SetTrigger("Die");
+        //animator.SetTrigger("Die");
 
         // 4. 武器モデル／ネームタグ非表示
-        foreach (var w in weaponModels) w.SetActive(false);
-        playerHUDCanvas.SetActive(false);
-
+        //foreach (var w in weaponModels) w.SetActive(false);
+        //playerHUDCanvas.SetActive(false);
 
         //死亡プレイヤーなら実行
         if (victim == Object.InputAuthority)
         {
             // 5. リスポーンUI 表示
+
             StartCoroutine(RespawnCountdown());
 
         }
@@ -60,8 +58,6 @@ public class PlayerDeathHandler : NetworkBehaviour
             // ここにキル演出のコードを追加（例：エフェクト、サウンドなど）
 
         }
-
-
 
     }
 
