@@ -109,6 +109,9 @@ public class WeaponLocalState : NetworkBehaviour
     /// </summary>
     public void ChangeWeapon(WeaponType newWeapon)
     {
+        //自分以外はこのコンポーネントを使わない
+        if (!HasInputAuthority) return;
+
         if (isReloading) return; // リロード中は切り替え不可
         if (!ammoTable.ContainsKey(newWeapon))
             throw new ArgumentException($"未設定の武器です: {newWeapon}");
@@ -138,6 +141,9 @@ public class WeaponLocalState : NetworkBehaviour
     /// </summary>
     public bool TryFire()
     {
+        //自分以外はこのコンポーネントを使わない
+        if (!HasInputAuthority) return false; 
+
         if (isReloading) return false;
         var ad = ammoTable[currentWeapon];
         //武器種が Sword の場合はマガジンを減らさない
@@ -156,6 +162,9 @@ public class WeaponLocalState : NetworkBehaviour
     /// </summary>
     public void StartReload()
     {
+        //自分以外はこのコンポーネントを使わない
+        if (!HasInputAuthority) return;
+
         if (isReloading) return;
         var ad = ammoTable[currentWeapon];
         if (ad.Reserve <= 0 || ad.Magazine >= magazineCapacities[Array.IndexOf(availableWeapons, currentWeapon)])
@@ -189,7 +198,10 @@ public class WeaponLocalState : NetworkBehaviour
     /// </summary>
     /// 弾が追加されると、リザーブが最大値を超えないように調整されるが、どれだけ入ったかに関わらず、入れようと試みた弾は消滅する
     public void AddReserve(int amount)
-    {        
+    {
+        //自分以外はこのコンポーネントを使わない
+        if (!HasInputAuthority) return;
+
         // 武器種が Sword の場合はリザーブを増やさない
         if (currentWeapon == WeaponType.Sword) return;
         var ad = ammoTable[currentWeapon];

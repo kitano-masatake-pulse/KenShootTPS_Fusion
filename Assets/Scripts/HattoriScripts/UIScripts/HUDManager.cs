@@ -1,4 +1,6 @@
 using TMPro;
+using Fusion;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,23 +8,33 @@ using UnityEngine.UI;
 public class HUDManager : MonoBehaviour
 {
     // プレイヤーの HP や武器種を表示するUI
+    [Header("HP用UI")]
     [SerializeField] private Slider hpSlider;
+
+    [Header("武器表示用UI")]
     [SerializeField] private TMP_Text reserveAmmoText;
     [SerializeField] private TMP_Text magazineAmmoText;
-    [SerializeField] private TMP_Text killScoreText;
-    [SerializeField] private TMP_Text deathScoreText;
     [Header("WeaponType に対応するスプライト(順番を enum と合わせる)")]
     [Tooltip("0:Sword, 1:AssaultRifle, 2:SemiAutoRifle, 3:GrenadeLauncher")]
     [SerializeField] private Sprite[] weaponSprites = new Sprite[4];
     [SerializeField] private Image targetImage;
 
-    // タイマー表示用UI
+    [Header("スコア表示用UI")]
+    [SerializeField] private TMP_Text killScoreText;
+    [SerializeField] private TMP_Text deathScoreText;
+
+    [Header("リスポーンUI")]
+    [SerializeField] private CanvasGroup respawnUI;
+    [SerializeField] private TMP_Text respawnCountdown;
+    [SerializeField] private float respawnDelay = 5f;
+
+    [Header("タイマー表示用UI")]
     [SerializeField] private TMP_Text timerText;
 
     // プレイヤーの状態を保持するクラス
-    private PlayerNetworkState localState;
+    private PlayerNetworkState pNState;
     //武器の内容を保持するクラス
-    private WeaponLocalState localWeaponState;
+    private WeaponLocalState wLState;
 
     //WeaponIconの大きさ
     // AssaultRifle, SemiAutoRifle の大きさ
@@ -37,6 +49,7 @@ public class HUDManager : MonoBehaviour
         WeaponLocalState.OnWeaponSpawned += HandleWeaponSpawn;
         // タイマー通知
         GameTimeManager.OnTimeChanged += HandleTimeChanged;
+  
     }
 
     private void OnDisable()
@@ -44,30 +57,32 @@ public class HUDManager : MonoBehaviour
         PlayerNetworkState.OnLocalPlayerSpawned -= HandlePlayerSpawn;
         WeaponLocalState.OnWeaponSpawned -= HandleWeaponSpawn;
         GameTimeManager.OnTimeChanged -= HandleTimeChanged;
-        if (localState != null)
+        if (pNState != null)
         {
-            localState.OnHPChanged -= OnLocalHPChanged;
-            localState.OnScoreChanged -= OnLocalScoreChanged;
+            pNState.OnHPChanged -= OnLocalHPChanged;
+            pNState.OnScoreChanged -= OnLocalScoreChanged;
         }
-        if(localWeaponState != null)
+        if(wLState != null)
         {
-            localWeaponState.OnWeaponChanged -= OnLocalWeaponChanged;
-            localWeaponState.OnAmmoChanged -= OnLocalAmmoChanged;
+            wLState.OnWeaponChanged -= OnLocalWeaponChanged;
+            wLState.OnAmmoChanged -= OnLocalAmmoChanged;
         }
     }
 
     public void HandlePlayerSpawn(PlayerNetworkState state)
     {
-        localState = state;
+        pNState = state;
         //イベント登録
         // 先に解除してから
-        localState.OnHPChanged -= OnLocalHPChanged;
-        localState.OnScoreChanged -= OnLocalScoreChanged;
-        localState.OnHPChanged += OnLocalHPChanged;
-        localState.OnScoreChanged += OnLocalScoreChanged;
+        pNState.OnHPChanged -= OnLocalHPChanged;
+        pNState.OnScoreChanged -= OnLocalScoreChanged;
+        pNState.OnPlayerDied -= OnLocalPlayerDied;
+        pNState.OnHPChanged += OnLocalHPChanged;
+        pNState.OnScoreChanged += OnLocalScoreChanged;
+        pNState.OnPlayerDied += OnLocalPlayerDied;
         // 初期値反映
-        OnLocalHPChanged(localState.HpNormalized);
-        OnLocalScoreChanged(localState.KillScore, localState.DeathScore);
+        OnLocalHPChanged(pNState.HpNormalized);
+        OnLocalScoreChanged(pNState.KillScore, pNState.DeathScore);
 
 
 
@@ -75,14 +90,14 @@ public class HUDManager : MonoBehaviour
 
     private void HandleWeaponSpawn(WeaponLocalState weaponState)
     {
-        localWeaponState = weaponState;
-        localWeaponState.OnWeaponChanged -= OnLocalWeaponChanged;
-        localWeaponState.OnAmmoChanged -= OnLocalAmmoChanged;
-        localWeaponState.OnWeaponChanged += OnLocalWeaponChanged;
-        localWeaponState.OnAmmoChanged += OnLocalAmmoChanged;
+        wLState = weaponState;
+        wLState.OnWeaponChanged -= OnLocalWeaponChanged;
+        wLState.OnAmmoChanged -= OnLocalAmmoChanged;
+        wLState.OnWeaponChanged += OnLocalWeaponChanged;
+        wLState.OnAmmoChanged += OnLocalAmmoChanged;
         // 初期表示
-        OnLocalWeaponChanged(localWeaponState.CurrentWeapon);
-        var ammo = localWeaponState.GetCurrentAmmo();
+        OnLocalWeaponChanged(wLState.CurrentWeapon);
+        var ammo = wLState.GetCurrentAmmo();
         OnLocalAmmoChanged(ammo.magazine, ammo.reserve);
         // Weaponに登録したSpliteの長さチェック
         if (weaponSprites == null || weaponSprites.Length != System.Enum.GetValues(typeof(WeaponType)).Length)
@@ -100,9 +115,9 @@ public class HUDManager : MonoBehaviour
 
     //WeaponTypeイベント
     // 武器種が変化した時だけ呼ばれて武器種表示を更新する
-    void OnLocalWeaponChanged(WeaponType type)
+    void OnLocalWeaponChanged(WeaponType currentWeapon)
     {
-        var idx = (int)type;       
+        var idx = (int)currentWeapon;       
         if (idx < 0 || idx >= weaponSprites.Length || weaponSprites[idx] == null)
         {
             Debug.LogWarning("対応するスプライトがありません");
@@ -114,9 +129,9 @@ public class HUDManager : MonoBehaviour
 
         // スケールは元のまま
         float scale = 1f;
-        if (type == WeaponType.AssaultRifle || type == WeaponType.SemiAutoRifle)
+        if (currentWeapon == WeaponType.AssaultRifle || currentWeapon == WeaponType.SemiAutoRifle)
             scale = RifleScale;
-        else if (type == WeaponType.GrenadeLauncher)
+        else if (currentWeapon == WeaponType.GrenadeLauncher)
             scale = GrenadeLauncherScale;
 
         var rt = targetImage.rectTransform;
@@ -140,6 +155,26 @@ public class HUDManager : MonoBehaviour
         magazineAmmoText.text = magazineAmmo.ToString();
     }
 
+    // プレイヤーが死亡した時の処理
+    private void OnLocalPlayerDied(PlayerRef victim, PlayerRef killer)
+    {
+        StartCoroutine(RespawnCountdown());
+    }
+
+    private IEnumerator RespawnCountdown()
+    {
+
+        respawnUI.alpha = 1;
+        float t = respawnDelay;
+        while (t > 0)
+        {
+            respawnCountdown.text = Mathf.CeilToInt(t).ToString();
+            yield return new WaitForSeconds(1f);
+            t -= 1f;
+        }
+        respawnUI.alpha = 0;
+        // ここでリスポーンボタンを表示、押すとリスポーン処理をホストに要求
+    }
 
     //タイマーイベント(厳密にはイベントではなく単に受け取ったままに時間を更新する部分)
     // タイマーの時間が変化した時に呼ばれる

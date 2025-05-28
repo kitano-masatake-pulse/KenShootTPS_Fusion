@@ -76,9 +76,9 @@ public class GameTimeManager : NetworkBehaviour
     }
 
     // Networked プロパティ変更検知用 static コールバック
-    static void TimeChangedCallback(Changed<GameTimeManager> changed)
+    static void TimeChangedCallback(Changed<GameTimeManager> c)
     {
-        changed.Behaviour.RaiseTimeChanged();
+        c.Behaviour.RaiseTimeChanged();
     }
 
     // インスタンス側でイベントを発火
