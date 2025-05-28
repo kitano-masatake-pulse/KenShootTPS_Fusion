@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5683930821207415893}
   - component: {fileID: 2711032026697049056}
   - component: {fileID: 8673662887239939546}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -191,7 +191,7 @@ GameObject:
   - component: {fileID: 6477212061786017679}
   - component: {fileID: 676490356386686386}
   - component: {fileID: 6823150476738728603}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -528,7 +528,7 @@ GameObject:
   - component: {fileID: 5795284897450992037}
   - component: {fileID: 1895404125680803449}
   - component: {fileID: 2792155960509197302}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -921,11 +921,11 @@ MonoBehaviour:
   _interpolationDataSource: 0
   _CurrentHP: 100
   _MaxHP: 100
-  _CurrentWeapon: 0
+  _CurrentWeapon_Network: 0
   _KillScore: 0
   _DeathScore: 0
-  _MagazineAmmo: 20
-  _ReserveAmmo: 0
+  _MagazineAmmo_Network: 0
+  _ReserveAmmo_Network: 0
 --- !u!114 &4431962320200600727
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -999,12 +999,10 @@ MonoBehaviour:
   WordOffset: 0
   WordCount: 0
   _interpolationDataSource: 0
-  animator: {fileID: 0}
   colliders:
   - {fileID: 2792155960509197302}
   - {fileID: 6823150476738728603}
   - {fileID: 5683930821207415893}
-  weaponModels: []
   playerHUDCanvas: {fileID: 3602698867948813487}
   respawnUI: {fileID: 0}
   respawnCountdown: {fileID: 0}

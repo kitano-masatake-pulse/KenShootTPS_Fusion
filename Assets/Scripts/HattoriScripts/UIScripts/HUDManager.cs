@@ -26,7 +26,11 @@ public class HUDManager : MonoBehaviour
     [Header("リスポーンUI")]
     [SerializeField] private CanvasGroup respawnUI;
     [SerializeField] private TMP_Text respawnCountdown;
+    [SerializeField] private TMP_Text respawnKillerText; 
+    [SerializeField] private Button respawnButton;
+    [SerializeField] private float fadeDuration = 1f;     // フェードにかける秒数
     [SerializeField] private float respawnDelay = 5f;
+    private float _remainingRespawnTime;
 
     [Header("タイマー表示用UI")]
     [SerializeField] private TMP_Text timerText;
@@ -155,25 +159,58 @@ public class HUDManager : MonoBehaviour
         magazineAmmoText.text = magazineAmmo.ToString();
     }
 
-    // プレイヤーが死亡した時の処理
+    //プレイヤ死亡イベント
+    // プレイヤーが死亡した時に死亡時UIを表示する
     private void OnLocalPlayerDied(PlayerRef victim, PlayerRef killer)
     {
-        StartCoroutine(RespawnCountdown());
+        
+        //respawnCountdown.text = $"Respawn in {_remainingRespawnTime:F0}";
+        respawnButton.gameObject.SetActive(false);
+        respawnUI.alpha = 1;
+        StartCoroutine(RespawnCountdown(killer));
     }
 
-    private IEnumerator RespawnCountdown()
+    private IEnumerator RespawnCountdown(PlayerRef killer)
     {
+       
+        respawnUI.blocksRaycasts = true;
+        respawnUI.alpha = 0; // 初期は非表示
+        respawnKillerText.text = $"You were killed by Player{killer.PlayerId}";
 
-        respawnUI.alpha = 1;
-        float t = respawnDelay;
-        while (t > 0)
+        _remainingRespawnTime = respawnDelay;
+        float t = 0f;
+
+        while (t < fadeDuration)
         {
-            respawnCountdown.text = Mathf.CeilToInt(t).ToString();
-            yield return new WaitForSeconds(1f);
-            t -= 1f;
+            t += Time.deltaTime;
+            respawnUI.alpha = Mathf.Lerp(0f, 1f, t / fadeDuration);
+
+            yield return null;
         }
-        respawnUI.alpha = 0;
+        respawnUI.alpha = 1f; // フェード完了時に確実に表示
+
+        _remainingRespawnTime = respawnDelay;
+        while (_remainingRespawnTime > 0f)
+        {
+            // リスポーンまでのカウントダウン
+            respawnCountdown.text = $"Respawn in {_remainingRespawnTime:F0}";
+            // 1秒待機
+            yield return new WaitForSeconds(1f);
+            _remainingRespawnTime -= 1f;
+        }
+
         // ここでリスポーンボタンを表示、押すとリスポーン処理をホストに要求
+        respawnCountdown.text = "";
+        respawnButton.gameObject.SetActive(true);
+    }
+    // リスポーンボタンが押された時の処理
+    public void OnRespawnButtonClicked()
+    {
+        // リスポーン要求をホストに送る
+       
+        StopAllCoroutines();
+        respawnUI.alpha = 0;
+        respawnUI.blocksRaycasts = false;
     }
 
     //タイマーイベント(厳密にはイベントではなく単に受け取ったままに時間を更新する部分)

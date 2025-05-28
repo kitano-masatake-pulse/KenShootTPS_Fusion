@@ -424,11 +424,11 @@ MonoBehaviour:
   _interpolationDataSource: 0
   _CurrentHP: 100
   _MaxHP: 100
-  _CurrentWeapon: 0
-  _MagazineAmmo: 0
-  _TotalAmmo: 0
+  _CurrentWeapon_Network: 0
   _KillScore: 0
   _DeathScore: 0
+  _MagazineAmmo_Network: 0
+  _ReserveAmmo_Network: 0
 --- !u!114 &-4328647438270834359
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -460,10 +460,11 @@ MonoBehaviour:
   WordCount: 0
   _interpolationDataSource: 0
   Config: 1
-  BroadRadius: 0
+  BroadRadius: 2.3489199
   Offset: {x: 0, y: 0, z: 0}
   GizmosColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-  Hitboxes: []
+  Hitboxes:
+  - {fileID: 11149558625110233}
 --- !u!1 &3314747328892130015
 GameObject:
   m_ObjectHideFlags: 0
@@ -1044,7 +1045,7 @@ MonoBehaviour:
   SphereRadius: 0
   BoxExtents: {x: 1, y: 1, z: 1}
   Offset: {x: 0, y: 0, z: 0}
-  Root: {fileID: 0}
+  Root: {fileID: 7045168527131226642}
   GizmosColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!1 &8018682721427111600
 GameObject:

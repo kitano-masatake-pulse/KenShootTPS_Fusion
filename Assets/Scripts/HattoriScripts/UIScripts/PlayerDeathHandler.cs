@@ -34,22 +34,19 @@ public class PlayerDeathHandler : NetworkBehaviour
 
         // 2. Collider 無効化(レイヤー切り替え)
         foreach (var col in GetComponentsInChildren<Collider>())
-            col.gameObject.layer = LayerMask.NameToLayer("DeadLayer");
+            col.gameObject.layer = LayerMask.NameToLayer("DeadPlayer");
 
         // 3. 死亡アニメ再生
         //animator.SetTrigger("Die");
 
         // 4. 武器モデル／ネームタグ非表示
         //foreach (var w in weaponModels) w.SetActive(false);
-        //playerHUDCanvas.SetActive(false);
+        playerHUDCanvas.SetActive(false);
 
         //死亡プレイヤーなら実行
         if (victim == Object.InputAuthority)
         {
-            // 5. リスポーンUI 表示
-
-            StartCoroutine(RespawnCountdown());
-
+           
         }
         //殺害プレイヤーなら実行
         else if (killer == Object.InputAuthority)
@@ -61,18 +58,5 @@ public class PlayerDeathHandler : NetworkBehaviour
 
     }
 
-    private IEnumerator RespawnCountdown()
-    {
-        
-        respawnUI.alpha = 1;
-        float t = respawnDelay;
-        while (t > 0)
-        {
-            respawnCountdown.text = Mathf.CeilToInt(t).ToString();
-            yield return new WaitForSeconds(1f);
-            t -= 1f;
-        }
-        respawnUI.alpha = 0;
-        // ここでリスポーン処理をトリガー（RPC or イベントでホストに依頼）
-    }
+   
 }
