@@ -131,12 +131,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 900d2efe6d17fcc4a80ad888d3cdbfda, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  virtualCamera: {fileID: 0}
+  virtualCamera: {fileID: 7226897770026476161}
   sensitivityX: 3
   sensitivityY: 1.5
   minVerticalAngle: -40
   maxVerticalAngle: 75
-  cameraTarget: {fileID: 0}
+  cameraTarget: {fileID: 1142201344305074097}
 --- !u!1 &1694594888251386057
 GameObject:
   m_ObjectHideFlags: 0
@@ -623,6 +623,7 @@ MonoBehaviour:
   lobbyUI: {fileID: 8158480803757446394}
   maxPlayerNum: 3
   sessionNameText: {fileID: 4837962720996736568}
+  nextScene: 2
 --- !u!1 &4569052485501281678
 GameObject:
   m_ObjectHideFlags: 0
@@ -861,6 +862,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startBattleButton: {fileID: 1760006953538863370}
+  gameLauncher: {fileID: 5111644406287013726}
 --- !u!1 &6142993060263301902
 GameObject:
   m_ObjectHideFlags: 0
