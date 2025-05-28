@@ -28,7 +28,12 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
     public TextMeshProUGUI sessionNameText;
 
-    
+
+
+    [Header("次に遷移するシーン(デフォルトBattleScene)")]
+    public  SceneType nextScene= SceneType.Battle;
+
+
 
     void Awake()
     {
@@ -54,9 +59,16 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
         var customProps = new Dictionary<string, SessionProperty>();
 
-        customProps["GameRule"] = (int)GameRuleSettings.Instance.selectedRule;
+        if (GameRuleSettings.Instance != null)
+        {
+            customProps["GameRule"] = (int)GameRuleSettings.Instance.selectedRule;
+        }
+        else
+        {
+            customProps["GameRule"] = (int)GameRule.DeathMatch;
+        }
 
-       
+
         // StartGameArgsに渡した設定で、セッションに参加する
         var result = await networkRunner.StartGame(new StartGameArgs
         {

@@ -58,15 +58,15 @@ public class TPSCameraController : MonoBehaviour
 
         LockCursor();
 
-        string sceneName = SceneType.Battle.ToSceneName();
-        isBattleScene =SceneManager.GetActiveScene().name == sceneName;
+        //string sceneName = SceneType.Battle.ToSceneName();
+        //isBattleScene =SceneManager.GetActiveScene().name == sceneName;
 
     }
     void Update()
     {
 
         
-        if (isBattleScene && isSetCameraTarget)
+        if ( isSetCameraTarget)
            {
             float mouseX = Input.GetAxis("Mouse X") * sensitivityX;
             float mouseY = Input.GetAxis("Mouse Y") * sensitivityY;
@@ -94,12 +94,10 @@ public class TPSCameraController : MonoBehaviour
     [Rpc(RpcSources.StateAuthority, RpcTargets.All, HostMode = RpcHostMode.SourceIsHostPlayer, TickAligned = true)]
     public void RPC_SetCameraToMyAvatar( RpcInfo info = default) 
     {
-        string sceneName = SceneType.Battle.ToSceneName();
-        isBattleScene = SceneManager.GetActiveScene().name == sceneName;
+        //string sceneName = SceneType.Battle.ToSceneName();
+        //isBattleScene = SceneManager.GetActiveScene().name == sceneName;
         
 
-        if (isBattleScene)
-        {
             
             //NetworkObject myAvatar=null;
             //while (myAvatar ==null)
@@ -121,7 +119,7 @@ public class TPSCameraController : MonoBehaviour
         
 
             isSetCameraTarget = true;
-        }
+        
 
     }
 
