@@ -12,7 +12,7 @@ public class PlayerWorldUIController : NetworkBehaviour
     [Header("WeaponType に対応するスプライト(順番を enum と合わせる)")]
     [Tooltip("0:Sword, 1:AssaultRifle, 2:SemiAutoRifle, 3:GrenadeLauncher")]
     [SerializeField] private Sprite[] weaponSprites = new Sprite[4];
-    [SerializeField] private Image targetImage;
+    [SerializeField] private Image weaponImage;
 
 
     private PlayerNetworkState pNState;
@@ -44,21 +44,21 @@ public class PlayerWorldUIController : NetworkBehaviour
     void InitializeSubscriptions()
     {
         // 先に解除してから
-        pNState.OnHPChanged -= UpdateHPBar;
-        pNState.OnWeaponChanged_Network -= UpdateWeapon;
+        pNState.OnHPChanged -= UpdateWorldHPBar;
+        pNState.OnWeaponChanged_Network -= UpdateWorldWeapon;
 
         // 改めて登録
-        pNState.OnHPChanged += UpdateHPBar;
-        pNState.OnWeaponChanged_Network += UpdateWeapon;
+        pNState.OnHPChanged += UpdateWorldHPBar;
+        pNState.OnWeaponChanged_Network += UpdateWorldWeapon;
     }
 
 
     //HPが変化した時だけ呼ばれてHPバーを更新する
-    public void UpdateHPBar(float normalized)
+    public void UpdateWorldHPBar(float normalized)
     {
         hpBar.value = normalized;
     }
-    void UpdateWeapon(WeaponType type)
+    void UpdateWorldWeapon(WeaponType type)
     {
         var idx = (int)type;
         if (idx < 0 || idx >= weaponSprites.Length || weaponSprites[idx] == null)
@@ -68,11 +68,11 @@ public class PlayerWorldUIController : NetworkBehaviour
         }
 
         Sprite sp = weaponSprites[idx];
-        targetImage.sprite = sp;
+        weaponImage.sprite = sp;
 
         // スケールは元のまま
         float scale = 1f;
-        var rt = targetImage.rectTransform;
+        var rt = weaponImage.rectTransform;
         rt.sizeDelta = sp.rect.size * scale;
 
     }
@@ -80,6 +80,6 @@ public class PlayerWorldUIController : NetworkBehaviour
     public override void Despawned(NetworkRunner runner, bool hasState)
     {
         if (pNState != null)
-            pNState.OnHPChanged -= UpdateHPBar;
+            pNState.OnHPChanged -= UpdateWorldHPBar;
     }
 }

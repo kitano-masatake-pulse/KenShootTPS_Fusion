@@ -47,10 +47,10 @@ public class PlayerNetworkState : NetworkBehaviour
 
     // HP (現在 / 最大)
     [Networked(OnChanged = nameof(HPChangedCallback))]
-    public int CurrentHP { get; set; }
+    public int CurrentHP { get; private set; }
 
     [Networked(OnChanged = nameof(HPChangedCallback))]
-    public int MaxHP { get; set; }
+    public int MaxHP { get; private set; }
 
     public float HpNormalized => MaxHP > 0 ? (float)CurrentHP / MaxHP : 0f;
 
@@ -60,17 +60,17 @@ public class PlayerNetworkState : NetworkBehaviour
 
     // スコア (キル / デス)
     [Networked(OnChanged = nameof(ScoreChangedCallback))]
-    public int KillScore { get; set; }
+    public int KillScore { get; private set; }
 
     [Networked(OnChanged = nameof(ScoreChangedCallback))]
-    public int DeathScore { get; set; }
+    public int DeathScore { get; private set; }
 
   // 弾薬 (マガジン / リザーブ)(チート対策用、基本使わない)
     [Networked(OnChanged = nameof(AmmoChangedCallback))]
-    public int MagazineAmmo_Network { get; set; }
+    public int MagazineAmmo_Network { get; private set; }
 
     [Networked(OnChanged = nameof(AmmoChangedCallback))]
-    public int ReserveAmmo_Network { get; set; }
+    public int ReserveAmmo_Network { get; private set; }
 
     #endregion
 

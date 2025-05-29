@@ -47,7 +47,7 @@ public class WeaponLocalState : NetworkBehaviour
 
     // 内部: 武器ごとの弾薬情報
     private struct AmmoData { public int Magazine; public int Reserve; }
-    private Dictionary<WeaponType, AmmoData> ammoTable;
+    private Dictionary<WeaponType, AmmoData> allAmmoTable;
 
     // 現在選択中の武器
     private WeaponType currentWeapon;
@@ -59,7 +59,7 @@ public class WeaponLocalState : NetworkBehaviour
     public event Action<WeaponType> OnWeaponChanged;
 
     // リロード中フラグ
-    private bool isReloading;
+    private bool _isReloading;
 
     public override void Spawned()
     {
@@ -68,13 +68,13 @@ public class WeaponLocalState : NetworkBehaviour
         if (!HasInputAuthority) return;
          
         // テーブル初期化
-        ammoTable = new Dictionary<WeaponType, AmmoData>();
+        allAmmoTable = new Dictionary<WeaponType, AmmoData>();
         for (int i = 0; i < availableWeapons.Length; i++)
         {
             var w = availableWeapons[i];
             var magCap = magazineCapacities[i];
             var resCap = reserveCapacities[i];
-            ammoTable[w] = new AmmoData { Magazine = magCap, Reserve = resCap };
+            allAmmoTable[w] = new AmmoData { Magazine = magCap, Reserve = resCap };
         }
         // 初期武器セット
         if (availableWeapons.Length > 0)
@@ -90,7 +90,7 @@ public class WeaponLocalState : NetworkBehaviour
     /// </summary>
     public (int magazine, int reserve) GetCurrentAmmo()
     {
-        var ad = ammoTable[currentWeapon];
+        var ad = allAmmoTable[currentWeapon];
         return (ad.Magazine, ad.Reserve);
     }
 
@@ -99,7 +99,7 @@ public class WeaponLocalState : NetworkBehaviour
     /// </summary>
     public (int magazine, int reserve) GetAmmo(WeaponType weapon)
     {
-        if (ammoTable.TryGetValue(weapon, out var ad))
+        if (allAmmoTable.TryGetValue(weapon, out var ad))
             return (ad.Magazine, ad.Reserve);
         throw new ArgumentException($"未設定の武器です: {weapon}");
     }
@@ -112,15 +112,15 @@ public class WeaponLocalState : NetworkBehaviour
         //自分以外はこのコンポーネントを使わない
         if (!HasInputAuthority) return;
 
-        if (isReloading) return; // リロード中は切り替え不可
-        if (!ammoTable.ContainsKey(newWeapon))
+        if (_isReloading) return; // リロード中は切り替え不可
+        if (!allAmmoTable.ContainsKey(newWeapon))
             throw new ArgumentException($"未設定の武器です: {newWeapon}");
 
         currentWeapon = newWeapon;
         // 武器変更イベント通知
         OnWeaponChanged?.Invoke(currentWeapon);
         // 弾薬表示更新
-        var ad = ammoTable[currentWeapon];
+        var ad = allAmmoTable[currentWeapon];
         // 現在の武器の弾薬情報を通知
         OnAmmoChanged?.Invoke( ad.Magazine, ad.Reserve);
 
@@ -144,15 +144,15 @@ public class WeaponLocalState : NetworkBehaviour
         //自分以外はこのコンポーネントを使わない
         if (!HasInputAuthority) return false; 
 
-        if (isReloading) return false;
-        var ad = ammoTable[currentWeapon];
+        if (_isReloading) return false;
+        var ad = allAmmoTable[currentWeapon];
         //武器種が Sword の場合はマガジンを減らさない
         if (currentWeapon == WeaponType.Sword) return true;
         // マガジンが空なら発射不可
         if (ad.Magazine <= 0) return false;
         // 発射処理（ここでは単純にマガジンを減らす）
         ad.Magazine--;
-        ammoTable[currentWeapon] = ad;
+        allAmmoTable[currentWeapon] = ad;
         OnAmmoChanged?.Invoke(ad.Magazine, ad.Reserve);
         return true;
     }
@@ -165,8 +165,8 @@ public class WeaponLocalState : NetworkBehaviour
         //自分以外はこのコンポーネントを使わない
         if (!HasInputAuthority) return;
 
-        if (isReloading) return;
-        var ad = ammoTable[currentWeapon];
+        if (_isReloading) return;
+        var ad = allAmmoTable[currentWeapon];
         if (ad.Reserve <= 0 || ad.Magazine >= magazineCapacities[Array.IndexOf(availableWeapons, currentWeapon)])
             return; // リロード不要またはリザーブ無し
 
@@ -175,20 +175,20 @@ public class WeaponLocalState : NetworkBehaviour
 
     private IEnumerator ReloadCoroutine()
     {
-        isReloading = true;
+        _isReloading = true;
         yield return new WaitForSeconds(reloadDuration);
 
         var idx = Array.IndexOf(availableWeapons, currentWeapon);
         var cap = magazineCapacities[idx];
-        var ad = ammoTable[currentWeapon];
+        var ad = allAmmoTable[currentWeapon];
 
         int needed = cap - ad.Magazine;
         int toReload = Mathf.Min(needed, ad.Reserve);
 
         ad.Magazine += toReload;
         ad.Reserve -= toReload;
-        ammoTable[currentWeapon] = ad;
-        isReloading = false;
+        allAmmoTable[currentWeapon] = ad;
+        _isReloading = false;
 
         OnAmmoChanged?.Invoke(ad.Magazine, ad.Reserve);
     }
@@ -197,26 +197,26 @@ public class WeaponLocalState : NetworkBehaviour
     /// リザーブ弾を追加
     /// </summary>
     /// 弾が追加されると、リザーブが最大値を超えないように調整されるが、どれだけ入ったかに関わらず、入れようと試みた弾は消滅する
-    public void AddReserve(int amount)
+    public void AddReserve(int addAmount)
     {
         //自分以外はこのコンポーネントを使わない
         if (!HasInputAuthority) return;
 
         // 武器種が Sword の場合はリザーブを増やさない
         if (currentWeapon == WeaponType.Sword) return;
-        var ad = ammoTable[currentWeapon];
+        var ad = allAmmoTable[currentWeapon];
 
         int maxReserve = reserveCapacities[Array.IndexOf(availableWeapons, currentWeapon)];
         //リザーブが最大であれば追加しない
         if (ad.Reserve >= maxReserve) return;
         // 追加量が最大値を超える場合は調整
-        if (ad.Reserve + amount > maxReserve)
+        if (ad.Reserve + addAmount > maxReserve)
         {
-            amount = maxReserve - ad.Reserve; // 最大値を超えないように調整
+            addAmount = maxReserve - ad.Reserve; // 最大値を超えないように調整
         }
 
-        ad.Reserve += amount;
-        ammoTable[currentWeapon] = ad;
+        ad.Reserve += addAmount;
+        allAmmoTable[currentWeapon] = ad;
         OnAmmoChanged?.Invoke(ad.Magazine, ad.Reserve);
     }
 

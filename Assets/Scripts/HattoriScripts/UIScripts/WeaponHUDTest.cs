@@ -8,7 +8,7 @@ public class WeaponHUDTest : MonoBehaviour
 {
     [Header("参照コンポーネント（Inspector で設定可能）")]
     [SerializeField] private WeaponLocalState weaponManager;
-    [SerializeField] private HUDManager hudManager;
+    [SerializeField] private HUDManagerOld hudManager;
 
     [Header("リザーブ補填テスト量")]
     [SerializeField] private int reserveAmount = 5;
@@ -19,7 +19,7 @@ public class WeaponHUDTest : MonoBehaviour
         if (weaponManager == null)
             weaponManager = FindObjectOfType<WeaponLocalState>();
         if (hudManager == null)
-            hudManager = FindObjectOfType<HUDManager>();
+            hudManager = FindObjectOfType<HUDManagerOld>();
         
 
         if (weaponManager == null || hudManager == null)

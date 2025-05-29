@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 // プレイヤーの 画面上のHUD を制御するクラス
-public class HUDManager : MonoBehaviour
+public class HUDManagerOld : MonoBehaviour
 {
     // プレイヤーの HP や武器種を表示するUI
     [Header("HP用UI")]

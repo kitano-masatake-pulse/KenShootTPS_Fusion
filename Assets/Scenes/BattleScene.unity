@@ -6265,6 +6265,10 @@ PrefabInstance:
       propertyPath: NetworkGuid.RawGuidValue.Array.data[1]
       value: -3522400909179018317
       objectReference: {fileID: 0}
+    - target: {fileID: 3272050268758366531, guid: 1d6511eaf9922ff49987e0d2143189d1, type: 3}
+      propertyPath: _IsTimerRunning
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4357859349358009625, guid: 1d6511eaf9922ff49987e0d2143189d1, type: 3}
       propertyPath: m_Name
       value: GameTimeManager

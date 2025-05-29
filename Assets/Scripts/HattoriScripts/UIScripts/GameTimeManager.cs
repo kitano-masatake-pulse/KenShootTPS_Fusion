@@ -9,15 +9,13 @@ public class GameTimeManager : NetworkBehaviour
 {
     // 残り時間を秒で管理（秒単位で同期する例）
     [Networked(OnChanged = nameof(TimeChangedCallback))]
-    public int RemainingSeconds { get; set; }
+    public int RemainingSeconds { get; private set; }
     // 時間変更時のイベント
     public static event Action<int> OnTimeChanged;
     // 初期値（3分 = 180 秒）
-    [SerializeField] private int initialTimeSec = 180;
-
+    public　static int initialTimeSec = 180;
     // 内部用タイマー
     private float _accumDelta;
-
     //タイマーが動くかどうかのフラグ
     [Networked] public bool IsTimerRunning { get; private set; } = false;
 
@@ -32,9 +30,7 @@ public class GameTimeManager : NetworkBehaviour
 
     public override void FixedUpdateNetwork()
     {
-        // ホストだけカウントダウン
         if (!Object.HasStateAuthority) return;
-        // タイマーが動いていないなら何もしない
         if (!IsTimerRunning) return;
 
         // ネットワーク Tick ごとの delta 時間を加算
