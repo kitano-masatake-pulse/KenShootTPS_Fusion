@@ -621,6 +621,7 @@ MonoBehaviour:
   playerAvatarPrefab:
     RawGuidValue: acb1ae8f636808e4e91f7a9c4901b855
   lobbyUI: {fileID: 8158480803757446394}
+  networkInputManager: {fileID: 1089007334912242511}
   maxPlayerNum: 3
   sessionNameText: {fileID: 4837962720996736568}
   nextScene: 2

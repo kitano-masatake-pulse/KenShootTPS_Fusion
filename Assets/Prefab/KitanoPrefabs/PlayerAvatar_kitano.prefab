@@ -369,6 +369,8 @@ MonoBehaviour:
   cameraTarget: {fileID: 0}
   myPlayerHitbox: {fileID: 11149558625110233}
   hostTransform: {fileID: 3438471693419661691}
+  normalizedInputDirection: {x: 0, y: 0, z: 0}
+  jumpHeight: 2
 --- !u!114 &6887860513559479073
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -386,11 +388,11 @@ MonoBehaviour:
   _interpolationDataSource: 0
   _CurrentHP: 100
   _MaxHP: 100
-  _CurrentWeapon: 0
-  _MagazineAmmo: 0
-  _TotalAmmo: 0
+  _CurrentWeapon_Network: 0
   _KillScore: 0
   _DeathScore: 0
+  _MagazineAmmo_Network: 0
+  _ReserveAmmo_Network: 0
 --- !u!114 &-4328647438270834359
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -398,7 +400,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2852828816588928964}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ce7f274245424684489c845176478ab2, type: 3}
   m_Name: 
