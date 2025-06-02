@@ -31,9 +31,9 @@ public enum ActionType
     Reload_SemiAutoRifle,
     Reload_Grenade,
 
-    WeaponChangeTo_Sword,
-    WeaponChangeTo_AssaultRifle,
-    WeaponChangeTo_SemiAutoRifle,
-    WeaponChangeTo_Grenade,
+    ChangeWeaponTo_Sword,
+    ChangeWeaponTo_AssaultRifle,
+    ChangeWeaponTo_SemiAutoRifle,
+    ChangeWeaponTo_Grenade,
 
 }

@@ -7,34 +7,29 @@ using UnityEngine;
 
 public class PlayerAvatar : NetworkBehaviour
 {
-    [SerializeField]
-    private GameObject headObject;
-
-
-    [SerializeField]
-    private GameObject bodyObject;
+    [SerializeField] private GameObject headObject;
+    [SerializeField] private GameObject bodyObject;
 
     CharacterController characterController;
-
-    public float moveSpeed = 3f;
-    [SerializeField]
-    private float gravity = -9.81f;
-
-    [SerializeField]
-    private Transform cameraTarget;
-
-    public Transform CameraTarget => cameraTarget;
-
-    private Vector3 velocity; //主に重力に使用
+    WeaponHandler weaponHandler;
+    private PlayerNetworkState playerNetworkState;
+    private Transform tpsCameraTransform;
 
 
     [SerializeField]
     private PlayerHitbox myPlayerHitbox;
 
+    // プレイヤーの身体能力を設定するための変数群
+    public float moveSpeed = 3f;
+    [SerializeField] private float gravity = -9.81f;
+    [SerializeField] float jumpHeight = 2f;
 
-    private PlayerNetworkState playerNetworkState;
 
-    private Transform tpsCameraTransform;
+
+    [SerializeField]
+    private Transform cameraTarget;
+    public Transform CameraTarget => cameraTarget;
+
 
     [SerializeField] private Transform hostTransform;
 
@@ -42,15 +37,19 @@ public class PlayerAvatar : NetworkBehaviour
 
     public Vector3 normalizedInputDirection=Vector3.zero; //入力方向の正規化されたベクトル
 
-    [SerializeField] float jumpHeight=2f;
-
 
     [Networked] public Vector3 avatarPositionInHost { get; set; } = Vector3.zero; //ホスト環境でのアバター位置(入力権限のあるプレイヤーの位置を参照するために使用)
     [Networked] public Vector3 cameraForwardInHost { get; set; } = Vector3.zero; //カメラの向き(入力権限のあるプレイヤーの回転を参照するために使用)
-
     [Networked] public Vector3 normalizedInputDirectionInHost { get; set; } = Vector3.zero; //入力権限のあるプレイヤーの入力方向を参照するために使用
 
 
+    private Vector3 velocity; //主に重力に使用
+
+
+
+
+    //Weapon関連
+    private WeaponType currentWeapon = WeaponType.Sword; //現在の武器タイプ
 
     public override void Spawned()
     {
@@ -75,13 +74,15 @@ public class PlayerAvatar : NetworkBehaviour
 
             networkInputManager.myPlayerAvatar = this;
 
+            
+
             TPSCameraTarget cameraTargetScript = FindObjectOfType<TPSCameraTarget>();
             if(cameraTargetScript != null)
             {
                 cameraTargetScript.player = this.transform;
             }
-            
 
+            weaponHandler = GetComponent<WeaponHandler>();
 
         }
 
@@ -112,18 +113,52 @@ public class PlayerAvatar : NetworkBehaviour
 
         PlayerInputData localInputData = LocalInputHandler.CollectInput();
 
-        bool isGrounded = characterController.isGrounded; // 接地判定を取得
+        
 
 
-        if (localInputData.JumpPressed && isGrounded)//ここに接地判定を追加
+        if (localInputData.JumpPressedDown)//ここに接地判定を追加
         {
-            Jump();// ジャンプは初速度(velocity.y)を与える
+            TryJump();
         }
+
+        if (localInputData.FirePressedDown) //発射ボタンが押されたら、武器の発射処理を呼ぶ
+        {
+            weaponHandler.TryFireDown();
+        }
+
+        if (localInputData.FirePressedStay) //発射ボタンが押され続けている間、武器の発射処理を呼ぶ
+        {
+            weaponHandler.TryFire();
+        }
+
+        if (localInputData.ReloadPressedDown) //リロードボタンが押されたら、武器のリロード処理を呼ぶ
+        {
+            weaponHandler.TryReload();
+        }
+
+
+
+        if (localInputData.weaponChangeScroll != 0f) //武器変更のスクロールがあれば、武器の変更処理を呼ぶ
+        {
+            weaponHandler.TryChangeWeapon(localInputData.weaponChangeScroll);
+        }
+
+
 
         normalizedInputDirection = localInputData.wasdInput.normalized;
 
         ChangeTransformLocally(normalizedInputDirection, tpsCameraTransform.forward);//ジャンプによる初速度も考慮して移動する
 
+    }
+
+    void TryJump()
+    {
+        bool isGrounded = characterController.isGrounded; // 接地判定を取得
+        if (isGrounded) 
+        {
+
+            Jump();// ジャンプは初速度(velocity.y)を与える
+        }
     }
 
 

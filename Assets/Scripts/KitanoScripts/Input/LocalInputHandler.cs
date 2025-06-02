@@ -5,9 +5,10 @@ using UnityEngine;
 public struct PlayerInputData
 {
     public Vector3 wasdInput; //正規化していない移動入力
-    public bool JumpPressed;
+    public bool JumpPressedDown;
     public bool FirePressedDown;
     public bool FirePressedStay;
+    public bool ReloadPressedDown; //リロードボタンが押されたかどうか
     public float weaponChangeScroll;
 }
 
@@ -19,9 +20,10 @@ public static  class LocalInputHandler
     {
         PlayerInputData input;
         input.wasdInput = new Vector3(Input.GetAxis("Horizontal"), 0f,Input.GetAxis("Vertical"));
-        input.JumpPressed = Input.GetKeyDown(KeyCode.Space);
+        input.JumpPressedDown = Input.GetKeyDown(KeyCode.Space);
         input.FirePressedDown = Input.GetMouseButtonDown(0);
         input.FirePressedStay = Input.GetMouseButton(0);
+        input.ReloadPressedDown = Input.GetKeyDown(KeyCode.R);
         input.weaponChangeScroll = Input.GetAxis("Mouse ScrollWheel");
 
         return input;

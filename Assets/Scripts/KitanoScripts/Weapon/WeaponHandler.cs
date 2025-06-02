@@ -4,6 +4,14 @@ using UnityEngine;
 
 public class WeaponHandler : MonoBehaviour
 {
+
+    bool isReloading = false;
+    bool isFiring = false;
+    bool isChangingWeapon=false;
+    public WeaponType currentWeaponType;
+
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -15,4 +23,31 @@ public class WeaponHandler : MonoBehaviour
     {
         
     }
+
+
+    public void TryFire()
+    { 
+    
+    
+    }
+
+    public void TryFireDown()
+    {
+
+
+    }
+
+
+    public void TryReload()
+    {
+        // ƒŠƒ[ƒhˆ—‚ğÀs
+        Debug.Log("Reloading started.");
+    }
+
+    public void TryChangeWeapon(float weaponChangeScroll)
+    { 
+    
+    }
+
+
 }
