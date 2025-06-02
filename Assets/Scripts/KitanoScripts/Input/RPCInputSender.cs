@@ -21,49 +21,55 @@ public class RPCInputSender : NetworkBehaviour
     {
         Runner.ProvideInput = true;
     }
-    
 
 
-    private void InputCheck()
+
+    // アクション用の入力チェックメソッド
+    //順序管理のため、PlayerCallOrderから呼ばれる
+    public void InputCheck()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+
+        if (!Object.HasInputAuthority) return; //入力権限がない場合は何もしない
+
+
+
+        if (Input.GetKeyDown(KeyCode.Space))//後々ここに接地判定を追加
         {
             Jump();
         }
     }
     void Jump()
     {
-        if (Object.HasInputAuthority)
-        {
+        
+        
+        float jumpCalledTime = Runner.SimulationTime;
 
-            JumpLocallly();
+        JumpLocally(jumpCalledTime);
 
         
             // RPC送信
-            RPC_RequestJump();
-        }
+        RPC_RequestJump(jumpCalledTime);
+        
 
     }
 
 
-    void JumpLocallly()
+    void JumpLocally(float calledTime)
     { 
         Debug.Log($"Jump Locally. {Runner.Tick} SimuTime: {Runner.SimulationTime}");
-
-
     }
 
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority, HostMode = RpcHostMode.SourceIsHostPlayer, TickAligned = false)]
-    public void RPC_RequestJump(RpcInfo info=default)
+    public void RPC_RequestJump(float calledTime, RpcInfo info=default)
     {
         // RPC送信（即送信）
-        Debug.Log($" {info.Source} Requests Jump. {info.Tick} SimuTime: {Runner.SimulationTime}");
-        RPC_ApplyJump(info.Source);
+        Debug.Log($" {info.Source} Requests Jump. {info.Tick} SimuTime: {calledTime}");
+        RPC_ApplyJump(info.Source, calledTime);
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All, HostMode = RpcHostMode.SourceIsHostPlayer, TickAligned = false)]
-    public void RPC_ApplyJump(PlayerRef  sourcePlayer, RpcInfo info = default)
+    public void RPC_ApplyJump(PlayerRef  sourcePlayer, float calledTime, RpcInfo info = default)
     {
         Debug.Log($"LocalPlayer {Runner.LocalPlayer}");
         Debug.Log($"SourcePlayer {sourcePlayer}");

@@ -22,13 +22,21 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     private LobbyUIController lobbyUI;
 
     [SerializeField]
+    private NetworkInputManager networkInputManager;
+
+    [SerializeField]
     private int maxPlayerNum=3;
 
     private NetworkRunner networkRunner;
 
     public TextMeshProUGUI sessionNameText;
 
-    
+
+
+    [Header("次に遷移するシーン(デフォルトBattleScene)")]
+    public  SceneType nextScene= SceneType.Battle;
+
+
 
     void Awake()
     {
@@ -48,12 +56,22 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         // NetworkRunnerのコールバック対象に、このスクリプト（GameLauncher）を登録する
         networkRunner.AddCallbacks(this);
 
+        
+        networkRunner.AddCallbacks(networkInputManager);
+
 
         var customProps = new Dictionary<string, SessionProperty>();
 
-        customProps["GameRule"] = (int)GameRuleSettings.Instance.selectedRule;
+        if (GameRuleSettings.Instance != null)
+        {
+            customProps["GameRule"] = (int)GameRuleSettings.Instance.selectedRule;
+        }
+        else
+        {
+            customProps["GameRule"] = (int)GameRule.DeathMatch;
+        }
 
-       
+
         // StartGameArgsに渡した設定で、セッションに参加する
         var result = await networkRunner.StartGame(new StartGameArgs
         {

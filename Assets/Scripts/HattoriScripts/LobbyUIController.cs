@@ -12,6 +12,8 @@ public class LobbyUIController : MonoBehaviour
 
     private NetworkRunner runner;
 
+    [SerializeField] GameLauncher gameLauncher;
+
     void Start()
     {
         // 初期非表示
@@ -31,7 +33,7 @@ public class LobbyUIController : MonoBehaviour
         {
             // バトルシーンに遷移
             Debug.Log("バトルシーンに遷移します");
-            string sceneName = SceneType.Battle.ToSceneName();
+            string sceneName = gameLauncher.nextScene.ToSceneName();
             runner.SetActiveScene(sceneName);
         }
         else
