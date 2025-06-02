@@ -676,7 +676,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3eeaf0db0284e3c44b6694347ad8f42c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  respawnPanelGroup: {fileID: 0}
+  respawnPanelGroup: {fileID: 8769304850650918961}
   countdownText: {fileID: 4368161718439234745}
   killerText: {fileID: 3116887286931543594}
   respawnBtn: {fileID: 166294061550713659}
@@ -2197,8 +2197,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d4ebff2cdb644e4a9c709578682e9d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  killCount: {fileID: 0}
-  deathCount: {fileID: 0}
+  killCount: {fileID: 9205164497150974008}
+  deathCount: {fileID: 2067243778630658861}
 --- !u!1 &7256771590143241101
 GameObject:
   m_ObjectHideFlags: 0
@@ -2431,9 +2431,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: HUDManager, Assembly-CSharp
-        m_MethodName: OnRespawnButtonClicked
+      - m_Target: {fileID: 7154287426130364820}
+        m_TargetAssemblyTypeName: RespawnPanel, Assembly-CSharp
+        m_MethodName: OnRespawnClick
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

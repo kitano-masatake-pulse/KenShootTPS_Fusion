@@ -32,8 +32,8 @@ public class PlayerWorldUIController : NetworkBehaviour
         // 自分のキャラなら非表示、それ以外は表示
         bool isLocal = HasInputAuthority;
         nameLabel.gameObject.SetActive(!isLocal);
-        hpBar.gameObject.SetActive(!isLocal);
-        hpBar.gameObject.SetActive(!isLocal);
+        hpBar.gameObject.SetActive(true);
+        //weaponImage.gameObject.SetActive(!isLocal);
         // イベント登録
         InitializeSubscriptions();
         // 初期値も反映

@@ -759,7 +759,7 @@ GameObject:
   - component: {fileID: 2614715672478573200}
   - component: {fileID: 5159016784927616926}
   - component: {fileID: 3005779836954345960}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: PlayerAvatar_Merged
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -948,7 +948,7 @@ MonoBehaviour:
   - {fileID: 21300044, guid: 6674e8c43c63e4f4184cbd009379498d, type: 3}
   - {fileID: 21300008, guid: 6674e8c43c63e4f4184cbd009379498d, type: 3}
   - {fileID: 21300032, guid: 6674e8c43c63e4f4184cbd009379498d, type: 3}
-  targetImage: {fileID: 6157006531110831317}
+  weaponImage: {fileID: 0}
 --- !u!114 &2614715672478573200
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -999,14 +999,7 @@ MonoBehaviour:
   WordOffset: 0
   WordCount: 0
   _interpolationDataSource: 0
-  colliders:
-  - {fileID: 2792155960509197302}
-  - {fileID: 6823150476738728603}
-  - {fileID: 5683930821207415893}
-  playerHUDCanvas: {fileID: 3602698867948813487}
-  respawnUI: {fileID: 0}
-  respawnCountdown: {fileID: 0}
-  respawnDelay: 5
+  WorldUICanvas: {fileID: 3602698867948813487}
 --- !u!1 &5753190225443848543
 GameObject:
   m_ObjectHideFlags: 0
@@ -1069,7 +1062,7 @@ Transform:
   m_GameObject: {fileID: 6090342777617499549}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.30528274, y: -0.9889904, z: 0.5359186}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

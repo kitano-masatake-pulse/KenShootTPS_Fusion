@@ -18,9 +18,6 @@ public struct Ammo
 // 各プレイヤーのステータスを管理するクラス
 public class PlayerNetworkState : NetworkBehaviour
 {
-
-    
-
     #region Events
 
     // インスタンスイベント
@@ -83,18 +80,23 @@ public class PlayerNetworkState : NetworkBehaviour
 
     #region Change Callbacks
 
-    static void HPChangedCallback(Changed<PlayerNetworkState> c)
-        => c.Behaviour.RaiseHPChanged();
+    static void HPChangedCallback(Changed<PlayerNetworkState> changed)
+    { 
+        // コールバックが呼ばれたときにデバッグログを出力
+        Debug.Log($"HPコールバック呼び出し");
+        changed.Behaviour.RaiseHPChanged();
+        
+    }
 
-    static void WeaponChangedCallback(Changed<PlayerNetworkState> c)
-        => c.Behaviour.RaiseWeaponChanged();
+    static void WeaponChangedCallback(Changed<PlayerNetworkState> changed)
+        => changed.Behaviour.RaiseWeaponChanged();
 
 
-    static void ScoreChangedCallback(Changed<PlayerNetworkState> c)
-        => c.Behaviour.RaiseScoreChanged();
+    static void ScoreChangedCallback(Changed<PlayerNetworkState> changed)
+        => changed.Behaviour.RaiseScoreChanged();
 
-    static void AmmoChangedCallback(Changed<PlayerNetworkState> c)
-        => c.Behaviour.RaiseAmmoChanged();
+    static void AmmoChangedCallback(Changed<PlayerNetworkState> changed)
+        => changed.Behaviour.RaiseAmmoChanged();
 
     void RaiseHPChanged() => OnHPChanged?.Invoke(HpNormalized);
     void RaiseWeaponChanged() => OnWeaponChanged_Network?.Invoke(CurrentWeapon_Network);
@@ -127,16 +129,16 @@ public class PlayerNetworkState : NetworkBehaviour
         }
     }
 
-    //デバッグ用
+    //デバッグ用 
     void Update()
     {
+
         if (HasInputAuthority && Input.GetKeyDown(KeyCode.K))
         {
             // 自分を即死させる
             DamageHP(int.MaxValue, PlayerRef.None);
         }
     }
-
 
     #endregion
 
@@ -205,7 +207,6 @@ public class PlayerNetworkState : NetworkBehaviour
     {
         CurrentWeapon_Network = newWeapon;
     }
-   
 
     #endregion
 }

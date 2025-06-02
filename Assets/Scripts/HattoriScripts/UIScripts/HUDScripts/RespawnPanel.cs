@@ -36,8 +36,10 @@ public class RespawnPanel : MonoBehaviour, IHUDPanel
     private IEnumerator DoRespawn(PlayerRef killer)
     {
         respawnBtn.gameObject.SetActive(false);
-        respawnPanelGroup.alpha = 0; respawnPanelGroup.blocksRaycasts = true;
-        killerText.text = $"You were killed by {killer.PlayerId}";
+        respawnPanelGroup.alpha = 0; 
+        respawnPanelGroup.blocksRaycasts = true;
+        killerText.text = "";
+
         // フェードイン
         float t = 0;
         while (t < fadeTime)
@@ -47,6 +49,8 @@ public class RespawnPanel : MonoBehaviour, IHUDPanel
             yield return null;
         }
         respawnPanelGroup.alpha = 1; 
+        killerText.text = $"You were killed by {killer.PlayerId}";
+
         // カウントダウン開始
         float rem = delay;
         while (rem > 0)
@@ -55,12 +59,14 @@ public class RespawnPanel : MonoBehaviour, IHUDPanel
             yield return new WaitForSeconds(1f);
             rem -= 1f;
         }
+        countdownText.text = "";
         respawnBtn.gameObject.SetActive(true);
     }
     // リスポーンボタンが押された時の処理
     public void OnRespawnClick()
     {
         StopAllCoroutines();
-        respawnPanelGroup.alpha = 0; respawnPanelGroup.blocksRaycasts = false;
+        respawnPanelGroup.alpha = 0; 
+        respawnPanelGroup.blocksRaycasts = false;
     }
 }
