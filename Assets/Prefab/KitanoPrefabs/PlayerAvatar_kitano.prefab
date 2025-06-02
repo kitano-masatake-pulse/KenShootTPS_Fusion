@@ -261,6 +261,7 @@ GameObject:
   - component: {fileID: 6887860513559479073}
   - component: {fileID: -4328647438270834359}
   - component: {fileID: 7045168527131226642}
+  - component: {fileID: 1857893055728629384}
   m_Layer: 0
   m_Name: PlayerAvatar_kitano
   m_TagString: Untagged
@@ -318,6 +319,7 @@ MonoBehaviour:
   - {fileID: 6887860513559479073}
   - {fileID: -4328647438270834359}
   - {fileID: 7045168527131226642}
+  - {fileID: 1857893055728629384}
   - {fileID: 2933117871746372844}
   - {fileID: 2750055372053041274}
   SimulationBehaviours: []
@@ -428,6 +430,22 @@ MonoBehaviour:
   Offset: {x: 0, y: 0, z: 0}
   GizmosColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   Hitboxes: []
+--- !u!114 &1857893055728629384
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2852828816588928964}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edff1c9ae239aa64f8f39de37a8ce7e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  WordOffset: 0
+  WordCount: 0
+  _interpolationDataSource: 0
+  playerNetworkState: {fileID: 6887860513559479073}
 --- !u!1 &3314747328892130015
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,4 +1,11 @@
 using System;
+// 他のスクリプトからプレイヤーのHPを減らす場合は、PlayerNetworkStateのDamageHP関数を使ってください。
+// 例:
+// 対象プレイヤーのPlayerNetworkStateを取得し、DamageHP(damage量, 攻撃者のPlayerRef)を呼び出します。
+// attackerが不要な場合は省略できます。
+
+// 例:
+// playerNetworkState.DamageHP(30, attackerPlayerRef);
 using UnityEngine;
 using Fusion;
 
@@ -146,14 +153,18 @@ public class PlayerNetworkState : NetworkBehaviour
     /// <summary>HPを減らす</summary>
     public void DamageHP(int damage, PlayerRef attacker = default)
     {
+        Debug.Log($"DamageHPMethod");
         if (!HasStateAuthority) return;
         if (damage <= 0) return; // ダメージが0以下なら無視
         if (CurrentHP <= 0) return; // 既に死亡しているなら無視
 
         CurrentHP = Mathf.Max(0, CurrentHP - damage);
 
+        Debug.Log($"Player {Object.InputAuthority} took {damage} damage, remaining HP: {CurrentHP}");
+
         if (CurrentHP == 0)
         {
+            Debug.Log($"Player {Object.InputAuthority} has died.");
             // 自身のデススコア加算
             AddDeathScore();
 
