@@ -42,8 +42,8 @@ public class NetworkInputManager : MonoBehaviour,INetworkRunnerCallbacks
 
     public void OnInput(NetworkRunner runner, NetworkInput input)
     {
-
-        if(myPlayerAvatar==null)
+        Debug.Log($"{runner.LocalPlayer} NetworkInputManager.OnInput called.");
+        if (myPlayerAvatar==null)
         {
             //アバターが紐づいていないなら、入力を受け付けない
             input.Set(new NetworkInputData());
@@ -51,10 +51,9 @@ public class NetworkInputManager : MonoBehaviour,INetworkRunnerCallbacks
         }
         var data = new NetworkInputData();
 
-        data.wasdInputDirection = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
-
         data.avatarPosition = myPlayerAvatar.transform.position;
-        data.avatarRotation = myPlayerAvatar.transform.rotation.eulerAngles;
+        //data.avatarRotation = myPlayerAvatar.transform.rotation.eulerAngles;
+        data.normalizedInputDirection=myPlayerAvatar.normalizedInputDirection;
         data.cameraForward = tpsCameraController.GetTPSCameraTransform().forward;
 
         input.Set(data);

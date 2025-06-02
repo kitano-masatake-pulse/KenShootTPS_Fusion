@@ -22,6 +22,9 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     private LobbyUIController lobbyUI;
 
     [SerializeField]
+    private NetworkInputManager networkInputManager;
+
+    [SerializeField]
     private int maxPlayerNum=3;
 
     private NetworkRunner networkRunner;
@@ -53,7 +56,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         // NetworkRunnerのコールバック対象に、このスクリプト（GameLauncher）を登録する
         networkRunner.AddCallbacks(this);
 
-        NetworkInputManager networkInputManager = FindObjectOfType<NetworkInputManager>();
+        
         networkRunner.AddCallbacks(networkInputManager);
 
 
