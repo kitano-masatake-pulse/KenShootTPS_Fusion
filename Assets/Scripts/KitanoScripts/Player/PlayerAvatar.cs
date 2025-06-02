@@ -120,7 +120,7 @@ public class PlayerAvatar : NetworkBehaviour
         {
             TryJump();
         }
-
+        /*
         if (localInputData.FirePressedDown) //発射ボタンが押されたら、武器の発射処理を呼ぶ
         {
             weaponHandler.TryFireDown();
@@ -136,13 +136,13 @@ public class PlayerAvatar : NetworkBehaviour
             weaponHandler.TryReload();
         }
 
-
+        
 
         if (localInputData.weaponChangeScroll != 0f) //武器変更のスクロールがあれば、武器の変更処理を呼ぶ
         {
             weaponHandler.TryChangeWeapon(localInputData.weaponChangeScroll);
         }
-
+        */
 
 
         normalizedInputDirection = localInputData.wasdInput.normalized;

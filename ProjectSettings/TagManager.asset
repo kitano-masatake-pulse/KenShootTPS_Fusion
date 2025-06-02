@@ -13,9 +13,9 @@ TagManager:
   - UI
   - PlayerHitbox
   - StaticCollider
-  - DeadLayer
-  - 
-  - 
+  - DeadPlayer
+  - DeadHitbox
+  - Player
   - 
   - 
   - 

@@ -8,7 +8,6 @@ public class WeaponHUDTest : MonoBehaviour
 {
     [Header("参照コンポーネント（Inspector で設定可能）")]
     [SerializeField] private WeaponLocalState weaponManager;
-    [SerializeField] private HUDManager hudManager;
 
     [Header("リザーブ補填テスト量")]
     [SerializeField] private int reserveAmount = 5;
@@ -18,12 +17,10 @@ public class WeaponHUDTest : MonoBehaviour
         // シーン内にあれば自動取得
         if (weaponManager == null)
             weaponManager = FindObjectOfType<WeaponLocalState>();
-        if (hudManager == null)
-            hudManager = FindObjectOfType<HUDManager>();
         
 
-        if (weaponManager == null || hudManager == null)
-            Debug.Log("WeaponHUDTest: LocalWeaponManager または HUDManager が見つかりません");
+        if (weaponManager == null)
+            Debug.Log("WeaponHUDTest: LocalWeaponManagerが見つかりません");
     }
 
     private void Update()
