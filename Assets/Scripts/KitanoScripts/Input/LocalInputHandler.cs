@@ -8,6 +8,7 @@ public struct PlayerInputData
     public bool JumpPressedDown;
     public bool FirePressedDown;
     public bool FirePressedStay;
+    public bool FirePressedUp; 
     public bool ReloadPressedDown; //リロードボタンが押されたかどうか
     public float weaponChangeScroll;
 }
@@ -23,6 +24,7 @@ public static  class LocalInputHandler
         input.JumpPressedDown = Input.GetKeyDown(KeyCode.Space);
         input.FirePressedDown = Input.GetMouseButtonDown(0);
         input.FirePressedStay = Input.GetMouseButton(0);
+        input.FirePressedUp = Input.GetMouseButtonUp(0);
         input.ReloadPressedDown = Input.GetKeyDown(KeyCode.R);
         input.weaponChangeScroll = Input.GetAxis("Mouse ScrollWheel");
 
