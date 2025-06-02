@@ -16,6 +16,7 @@ public class AssultRifle : WeaponBase
     {
         //FireRay();
         //localState.ConsumeAmmo(weaponType);
+        
         Debug.Log($"{weaponType.GetName()} fired! Current Magazine: {CurrentMagazine}, Current Reserve: {CurrentReserve}");
     }
 

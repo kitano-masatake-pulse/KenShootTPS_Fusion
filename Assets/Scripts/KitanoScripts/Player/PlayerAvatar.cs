@@ -56,8 +56,13 @@ public class PlayerAvatar : NetworkBehaviour
     //Weapon関連
     private WeaponType currentWeapon = WeaponType.AssaultRifle ; //現在の武器タイプ
     [SerializeField]private Dictionary<WeaponType, WeaponBase> weaponClassDictionary = new Dictionary<WeaponType, WeaponBase>(); //武器タイプと武器の対応関係を保持する辞書
-    [SerializeField] private Dictionary<WeaponType, float> reloadTimeDictionary= new Dictionary<WeaponType, float>(); //武器タイプとリロード時間の対応関係を保持する辞書
+    //[SerializeField] private Dictionary<WeaponType, float> reloadTimeDictionary= new Dictionary<WeaponType, float>(); //武器タイプとリロード時間の対応関係を保持する辞書
     [SerializeField] private float weaponChangeTime = 0.5f; //武器変更時間(秒)
+
+    // クラス生成・弾薬データ変更時のイベント
+    public static event Action<PlayerAvatar> OnWeaponSpawned;
+    public event Action<int, int> OnAmmoChanged;
+    public event Action<WeaponType> OnWeaponChanged;
 
     public override void Spawned()
     {
@@ -117,6 +122,8 @@ public class PlayerAvatar : NetworkBehaviour
                 Debug.LogWarning($"Weapon {weapon.weaponType} already exists in the dictionary.");
             }
         }
+
+        OnWeaponSpawned?.Invoke(this); //武器生成イベントを発火
 
 
 
@@ -202,7 +209,9 @@ public class PlayerAvatar : NetworkBehaviour
 
         if (CanFire()) //発射可能かどうかを判定
         { 
-            weaponClassDictionary[currentWeapon].Fire(); //現在の武器の発射処理を呼ぶ
+            FireDown(); //現在の武器の発射処理を呼ぶ
+
+
             //SetActionAnimationPlayList(ActionType.Fire, Runner.SimulationTime); //アクションアニメーションのリストに射撃を追加
             Debug.Log($"FireDown {currentWeapon.GetName()}"); //デバッグログ
 
@@ -218,15 +227,33 @@ public class PlayerAvatar : NetworkBehaviour
 
     void TryFire()
     {
-        if (CanFire()  && !currentWeapon.isOneShotWeapon())
-        { 
-            weaponClassDictionary[currentWeapon].Fire(); //現在の武器の発射処理を呼ぶ
+        if (CanFire()  && !currentWeapon.isOneShotWeapon()) //連射武器で、かつ発射可能な場合
+        {
+            Fire(); //現在の武器の発射処理を呼ぶ
+            //weaponClassDictionary[currentWeapon].Fire(); //現在の武器の発射処理を呼ぶ
             Debug.Log($"FireStay {currentWeapon.GetName()}"); //デバッグログ
 
         }
 
      
     }
+    void FireDown()
+    {
+
+        weaponClassDictionary[currentWeapon].FireDown(); //現在の武器の発射処理を呼ぶ
+        OnAmmoChanged?.Invoke(weaponClassDictionary[currentWeapon].CurrentMagazine, weaponClassDictionary[currentWeapon].CurrentReserve); //弾薬変更イベントを発火
+       
+    }
+
+    void Fire()
+    {
+        
+        
+        weaponClassDictionary[currentWeapon].Fire(); //現在の武器の発射処理を呼ぶ
+        OnAmmoChanged?.Invoke(weaponClassDictionary[currentWeapon].CurrentMagazine, weaponClassDictionary[currentWeapon].CurrentReserve); //弾薬変更イベントを発火
+        
+    }
+
 
     void FireUp()
     {
@@ -325,17 +352,22 @@ public class PlayerAvatar : NetworkBehaviour
     void Reload()
     { 
         isDuringWeaponAction = true; //リロード中フラグを立てる
-        StartCoroutine(ReloadRoutine(currentWeapon, reloadTimeDictionary[currentWeapon])); //リロード処理をコルーチンで実行
+        StartCoroutine(ReloadRoutine(currentWeapon, currentWeapon.ReloadTime())); //リロード処理をコルーチンで実行
     }
 
     void ChangeWeapon(WeaponType newWeaponType)
     {
         if (weaponClassDictionary.ContainsKey(newWeaponType))
         {
+            isDuringWeaponAction = true; //武器変更中フラグを立てる
             currentWeapon = newWeaponType;
             
+            OnWeaponChanged?.Invoke(currentWeapon); //武器変更イベントを発火
+            OnAmmoChanged?.Invoke(weaponClassDictionary[currentWeapon].CurrentMagazine, weaponClassDictionary[currentWeapon].CurrentReserve); //弾薬変更イベントを発火
+
+
             //SetActionAnimationPlayList(.ChangeWeaponTo_ , Runner.SimulationTime); //アクションアニメーションのリストに武器変更を追加
-            StartCoroutine(WeaponChangeRoutine(weaponChangeTime)); //武器変更処理をコルーチンで実行
+            StartCoroutine(ChangeWeaponRoutine(weaponChangeTime)); //武器変更処理をコルーチンで実行
 
         }
         else
@@ -361,11 +393,13 @@ public class PlayerAvatar : NetworkBehaviour
 
 
         isDuringWeaponAction = false;
+
+        OnAmmoChanged?.Invoke(weaponClassDictionary[reloadedWeaponType].CurrentMagazine, weaponClassDictionary[reloadedWeaponType].CurrentReserve); //弾薬変更イベントを発火
         Debug.Log("リロード完了！");
     }
 
     //コルーチン
-    private IEnumerator WeaponChangeRoutine(float waitTime)
+    private IEnumerator ChangeWeaponRoutine(float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
         //localState.SetAmmo(weaponType, localState.GetMaxAmmo(weaponType));
@@ -477,11 +511,6 @@ public class PlayerAvatar : NetworkBehaviour
     }
 
 
-   
-
-
-
-
     public void SetActionAnimationPlayList(ActionType actiontype, float calledtime)
     {
 
@@ -497,16 +526,6 @@ public class PlayerAvatar : NetworkBehaviour
     {
         actionAnimationPlayList.Clear();
     }
-
-
-
-
-
-
-
-
-
-
 
 
     public override void FixedUpdateNetwork()
@@ -581,48 +600,6 @@ public class PlayerAvatar : NetworkBehaviour
         
 
     }
-
-    void ApplyInputAuthorityTransform()
-    {
-
-        if (GetInput(out NetworkInputData data))
-        {
-
-
-            Vector3 bodyForward = new Vector3(data.cameraForward.x, 0f, data.cameraForward.z).normalized;
-            // ローカルプレイヤーの移動処理     
-
-            if (bodyForward.sqrMagnitude > 0.0001f)
-            {
-                // プレイヤー本体の向きをカメラ方向に回転
-                bodyObject.transform.forward = bodyForward;
-            }
-
-            headObject.transform.up = data.cameraForward; // カメラの方向を頭の向きに設定(アバターの頭の軸(upなのかforwardなのか)によって変えること)
-
-
-            bodyObject.transform.position = data.avatarPosition;
-
-            //Debug.Log($"ApplyInputAuthorityTransform {data.avatarPosition} {data.avatarRotation}");
-            hostTransform.localPosition = Vector3.zero; //ホストの位置をリセットする
-            hostTransform.localRotation = Quaternion.identity; //ホストの回転をリセットする
-
-        }
-
-
-    }
-
-
-    void ApplyHostTransform()
-    {
-
-        this.transform.position = hostTransform.position;
-        hostTransform.localPosition = Vector3.zero; //ホストの位置をリセットする
-        this.transform.rotation = hostTransform.rotation;
-        hostTransform.localRotation = Quaternion.identity; //ホストの回転をリセットする
-
-    }
-
 
 
 }

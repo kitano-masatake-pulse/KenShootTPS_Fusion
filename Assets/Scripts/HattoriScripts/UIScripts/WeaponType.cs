@@ -62,15 +62,28 @@ public static class WeaponTypeExtensions
         };
     }
 
-    public static float isReloadTime(this WeaponType weaponType)
+    public static float ReloadTime(this WeaponType weaponType)
     {
         return weaponType switch
         {
-            WeaponType.Sword => 0f,
+            WeaponType.Sword => 3f,
             WeaponType.AssaultRifle => 1f,
             WeaponType.SemiAutoRifle => 2f,
             WeaponType.GrenadeLauncher => 3f,
             _ => 0f
         };
     }
+
+    public static float FireWaitTime(this WeaponType weaponType)
+    {
+        return weaponType switch
+        {
+            WeaponType.Sword => 0.5f,
+            WeaponType.AssaultRifle => 0.1f,
+            WeaponType.SemiAutoRifle => 0.5f,
+            WeaponType.GrenadeLauncher => 1f,
+            _ => 0f
+        };
+    }
+
 }
