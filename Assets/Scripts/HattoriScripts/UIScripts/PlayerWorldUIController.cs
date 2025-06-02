@@ -20,7 +20,7 @@ public class PlayerWorldUIController : NetworkBehaviour
     public override void Spawned()
     {
         //ネットワーク状態コンポーネント取得
-        pNState = GetComponent<PlayerNetworkState>();
+        pNState = GetComponentInParent<PlayerNetworkState>();
         if (pNState == null)
         {
             Debug.LogError("PlayerNetworkState not found!");
@@ -32,8 +32,8 @@ public class PlayerWorldUIController : NetworkBehaviour
         // 自分のキャラなら非表示、それ以外は表示
         bool isLocal = HasInputAuthority;
         nameLabel.gameObject.SetActive(!isLocal);
-        hpBar.gameObject.SetActive(true);
-        //weaponImage.gameObject.SetActive(!isLocal);
+        hpBar.gameObject.SetActive(!isLocal);
+        weaponImage.gameObject.SetActive(!isLocal);
         // イベント登録
         InitializeSubscriptions();
         // 初期値も反映
@@ -80,6 +80,10 @@ public class PlayerWorldUIController : NetworkBehaviour
     public override void Despawned(NetworkRunner runner, bool hasState)
     {
         if (pNState != null)
+        {
             pNState.OnHPChanged -= UpdateWorldHPBar;
+            pNState.OnWeaponChanged_Network -= UpdateWorldWeapon;
+
+        }
     }
 }
