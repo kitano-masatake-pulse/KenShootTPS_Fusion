@@ -25,7 +25,7 @@ public static class WeaponTypeExtensions
             _ => "Unknown"
         };
     }
-    public static int GetMaxMagazineCapacity(this WeaponType weaponType)
+    public static int MagazineCapacity(this WeaponType weaponType)
     {
         return weaponType switch
         {
@@ -36,7 +36,7 @@ public static class WeaponTypeExtensions
             _ => 0
         };
     }
-    public static int GetMaxReserveCapacity(this WeaponType weaponType)
+    public static int ReserveCapacity(this WeaponType weaponType)
     {
         return weaponType switch
         {
@@ -59,6 +59,18 @@ public static class WeaponTypeExtensions
             WeaponType.SemiAutoRifle => true,
             WeaponType.GrenadeLauncher => true,
             _ => false
+        };
+    }
+
+    public static float isReloadTime(this WeaponType weaponType)
+    {
+        return weaponType switch
+        {
+            WeaponType.Sword => 0f,
+            WeaponType.AssaultRifle => 1f,
+            WeaponType.SemiAutoRifle => 2f,
+            WeaponType.GrenadeLauncher => 3f,
+            _ => 0f
         };
     }
 }

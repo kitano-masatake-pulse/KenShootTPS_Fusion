@@ -1,9 +1,12 @@
 using Fusion;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 
 using Unity;
 using Unity.VisualScripting;
 using UnityEngine;
+using static TMPro.Examples.ObjectSpin;
 
 public class PlayerAvatar : NetworkBehaviour
 {
@@ -11,7 +14,7 @@ public class PlayerAvatar : NetworkBehaviour
     [SerializeField] private GameObject bodyObject;
 
     CharacterController characterController;
-    WeaponHandler weaponHandler;
+    //WeaponHandler weaponHandler;
     private PlayerNetworkState playerNetworkState;
     private Transform tpsCameraTransform;
 
@@ -24,6 +27,7 @@ public class PlayerAvatar : NetworkBehaviour
     [SerializeField] private float gravity = -9.81f;
     [SerializeField] float jumpHeight = 2f;
 
+    private Vector3 velocity; //主に重力に使用
 
 
     [SerializeField]
@@ -43,13 +47,17 @@ public class PlayerAvatar : NetworkBehaviour
     [Networked] public Vector3 normalizedInputDirectionInHost { get; set; } = Vector3.zero; //入力権限のあるプレイヤーの入力方向を参照するために使用
 
 
-    private Vector3 velocity; //主に重力に使用
-
+    //行動可能かどうかのフラグ
+    private bool isDuringWeaponAction = false; //武器アクション(射撃、リロード、武器切り替え)中かどうか
+    private bool isImmobilized = false; //行動不能中かどうか(移動・ジャンプもできない)
 
 
 
     //Weapon関連
-    private WeaponType currentWeapon = WeaponType.Sword; //現在の武器タイプ
+    private WeaponType currentWeapon = WeaponType.AssaultRifle ; //現在の武器タイプ
+    [SerializeField]private Dictionary<WeaponType, WeaponBase> weaponClassDictionary = new Dictionary<WeaponType, WeaponBase>(); //武器タイプと武器の対応関係を保持する辞書
+    [SerializeField] private Dictionary<WeaponType, float> reloadTimeDictionary= new Dictionary<WeaponType, float>(); //武器タイプとリロード時間の対応関係を保持する辞書
+    [SerializeField] private float weaponChangeTime = 0.5f; //武器変更時間(秒)
 
     public override void Spawned()
     {
@@ -82,13 +90,33 @@ public class PlayerAvatar : NetworkBehaviour
                 cameraTargetScript.player = this.transform;
             }
 
-            weaponHandler = GetComponent<WeaponHandler>();
-
         }
 
         //ApplyHostTransform();
 
         characterController.Move(Vector3.zero); //初期位置での移動を防ぐために、初期位置でMoveを呼ぶ
+
+        SetWeapons(); //武器の初期化を行う
+
+    }
+
+    void SetWeapons()
+    {
+        WeaponBase[] weaponScripts = GetComponentsInChildren<WeaponBase>(includeInactive: true);
+
+        foreach (WeaponBase weapon in weaponScripts)
+        {
+            if (!weaponClassDictionary.ContainsKey(weapon.weaponType))
+            {
+                weaponClassDictionary.Add(weapon.weaponType, weapon);
+                weapon.CurrentMagazine = weapon.weaponType.MagazineCapacity(); //初期マガジンは最大値に設定
+                weapon.CurrentReserve = 50; //初期リザーブは50
+            }
+            else
+            {
+                Debug.LogWarning($"Weapon {weapon.weaponType} already exists in the dictionary.");
+            }
+        }
 
 
 
@@ -123,24 +151,31 @@ public class PlayerAvatar : NetworkBehaviour
 
         if (localInputData.FirePressedDown) //発射ボタンが押されたら、武器の発射処理を呼ぶ
         {
-            weaponHandler.TryFireDown();
+            TryFireDown();
+            Debug.Log($"FirePressedDown {currentWeapon.GetName()}"); //デバッグログ
         }
 
         if (localInputData.FirePressedStay) //発射ボタンが押され続けている間、武器の発射処理を呼ぶ
         {
-            weaponHandler.TryFire();
+            TryFire();
+            Debug.Log($"FirePressedStay {currentWeapon.GetName()}"); //デバッグログ
+        }
+
+        if (localInputData.FirePressedUp) //発射ボタンが押され続けている間、武器の発射処理を呼ぶ
+        {
+            FireUp();
         }
 
         if (localInputData.ReloadPressedDown) //リロードボタンが押されたら、武器のリロード処理を呼ぶ
         {
-            weaponHandler.TryReload();
+            TryReload();
         }
 
 
 
         if (localInputData.weaponChangeScroll != 0f) //武器変更のスクロールがあれば、武器の変更処理を呼ぶ
         {
-            weaponHandler.TryChangeWeapon(localInputData.weaponChangeScroll);
+            TryChangeWeapon(localInputData.weaponChangeScroll);
         }
 
 
@@ -161,9 +196,185 @@ public class PlayerAvatar : NetworkBehaviour
         }
     }
 
+    //単発武器の射撃
+    void TryFireDown()
+    {
+
+        if (CanFire()) //発射可能かどうかを判定
+        { 
+            weaponClassDictionary[currentWeapon].Fire(); //現在の武器の発射処理を呼ぶ
+            //SetActionAnimationPlayList(ActionType.Fire, Runner.SimulationTime); //アクションアニメーションのリストに射撃を追加
+            Debug.Log($"FireDown {currentWeapon.GetName()}"); //デバッグログ
+
+        }
+        else
+        {
+            Debug.Log($"Cannot fire {currentWeapon.GetName()}: Magazine is empty or not ready to fire.");
+        }
+
+    }
+
+    //連射武器の射撃
+
+    void TryFire()
+    {
+        if (CanFire()  && !currentWeapon.isOneShotWeapon())
+        { 
+            weaponClassDictionary[currentWeapon].Fire(); //現在の武器の発射処理を呼ぶ
+            Debug.Log($"FireStay {currentWeapon.GetName()}"); //デバッグログ
+
+        }
+
+     
+    }
+
+    void FireUp()
+    {
+        if (currentWeapon == WeaponType.AssaultRifle)
+        {
+            SetActionAnimationPlayList(ActionType.FireEnd_AssaultRifle , Runner.SimulationTime);
+        }
 
 
-  
+        //連射武器の発射ボタンを離したときの処理は特にないので、何もしない
+        //もし必要なら、ここで連射武器の発射を止める処理を追加することができる
+    }
+
+
+
+    void TryReload()
+    {
+        //武器のリロード処理を呼ぶ
+        if (CanReload())
+        {
+            Reload();
+        }
+        else
+        {
+            Debug.Log("Cannot reload now."); //リロードできない場合のデバッグログ
+        }
+    }
+
+    void TryChangeWeapon(float scrollValue)
+    {
+        if (CanChangeWeapon())
+        {
+            //武器の変更可能かどうかを判定
+            if (scrollValue > 0f) //スクロールアップなら次の武器に変更
+            {
+                int weaponCount= Enum.GetValues(typeof(WeaponType)).Length; //武器の総数を取得  
+                ChangeWeapon((WeaponType)(((int)currentWeapon + 1 + weaponCount) % weaponCount));
+            }
+            else if (scrollValue < 0f) //スクロールダウンなら前の武器に変更
+            {
+                int weaponCount = Enum.GetValues(typeof(WeaponType)).Length; //武器の総数を取得  
+                ChangeWeapon((WeaponType)(((int)currentWeapon - 1 + weaponCount) % weaponCount));
+            }
+        }
+        else
+        {
+            Debug.Log("Cannot change weapon now."); //武器変更できない場合のデバッグログ
+        }
+
+    }
+    bool CanFire()
+    {
+        //武器の発射可能かどうかを判定する処理を追加する
+        //例えば、リロード中や武器変更中は発射できないなど
+        if ( isDuringWeaponAction || isImmobilized)
+        {
+            return false;
+        }
+        else if (weaponClassDictionary[currentWeapon].CurrentMagazine <= 0)
+        { 
+            return false; //現在の武器の弾薬がない場合は発射できない
+            Debug.Log($"Cannot fire {currentWeapon.GetName()}: Magazine is empty.");
+        }
+            return true;
+            Debug.Log($"Can fire {currentWeapon.GetName()}: Magazine: {weaponClassDictionary[currentWeapon].CurrentMagazine}, Reserve: {weaponClassDictionary[currentWeapon].CurrentReserve}");
+    }
+
+    bool CanReload()
+    {
+        //武器のリロード可能かどうかを判定する処理を追加する
+        //例えば、リロード中や武器変更中はリロードできないなど
+        if (isDuringWeaponAction || isImmobilized)
+        {
+            return false;
+        }
+        else if (weaponClassDictionary[currentWeapon].CurrentMagazine >= currentWeapon.MagazineCapacity())
+        {
+            return false; //現在の武器のマガジンが満タンの場合はリロードできない
+        }
+        return true;
+    }
+
+    bool CanChangeWeapon()
+    {
+        //武器の変更可能かどうかを判定する処理を追加する
+        //例えば、リロード中や武器変更中は変更できないなど
+        if (isDuringWeaponAction || isImmobilized)
+        {
+            return false;
+        }
+        return true;
+    }
+
+      //Fire()はWeaponBaseクラスのメソッドとして実装している
+
+    void Reload()
+    { 
+        isDuringWeaponAction = true; //リロード中フラグを立てる
+        StartCoroutine(ReloadRoutine(currentWeapon, reloadTimeDictionary[currentWeapon])); //リロード処理をコルーチンで実行
+    }
+
+    void ChangeWeapon(WeaponType newWeaponType)
+    {
+        if (weaponClassDictionary.ContainsKey(newWeaponType))
+        {
+            currentWeapon = newWeaponType;
+            
+            //SetActionAnimationPlayList(.ChangeWeaponTo_ , Runner.SimulationTime); //アクションアニメーションのリストに武器変更を追加
+            StartCoroutine(WeaponChangeRoutine(weaponChangeTime)); //武器変更処理をコルーチンで実行
+
+        }
+        else
+        {
+            Debug.LogWarning($"Weapon {newWeaponType} not found in weapon dictionary.");
+        }
+    }
+
+
+    //コルーチン
+    private IEnumerator　ReloadRoutine(WeaponType reloadedWeaponType, float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        //localState.SetAmmo(weaponType, localState.GetMaxAmmo(weaponType));
+
+        int currentMagazine = weaponClassDictionary[reloadedWeaponType].CurrentMagazine;
+        int currentReserve = weaponClassDictionary[reloadedWeaponType].CurrentReserve;
+        int magazineCapacity = reloadedWeaponType.MagazineCapacity();
+        int reloadededAmmo = Mathf.Min(currentReserve, magazineCapacity - currentMagazine); //リロードされる弾薬数
+
+        weaponClassDictionary[reloadedWeaponType].CurrentMagazine += reloadededAmmo; //マガジンにリロードされた弾薬を追加
+        weaponClassDictionary[reloadedWeaponType].CurrentReserve -= reloadededAmmo; //リザーブからリロードされた弾薬を減らす
+
+
+        isDuringWeaponAction = false;
+        Debug.Log("リロード完了！");
+    }
+
+    //コルーチン
+    private IEnumerator WeaponChangeRoutine(float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        //localState.SetAmmo(weaponType, localState.GetMaxAmmo(weaponType));
+
+
+        isDuringWeaponAction = false;
+        Debug.Log("武器切り替え完了！");
+    }
+
 
 
 
