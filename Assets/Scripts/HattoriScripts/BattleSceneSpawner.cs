@@ -24,6 +24,7 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
     }
     public void OnSceneLoadDone(NetworkRunner runner)
     {
+
         if (runner.IsServer)
         {
             //ホストが全員分のアバターを生成

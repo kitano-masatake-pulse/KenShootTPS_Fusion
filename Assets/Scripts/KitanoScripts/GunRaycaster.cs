@@ -1,6 +1,4 @@
 using Fusion;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GunRaycaster : NetworkBehaviour
@@ -93,8 +91,10 @@ public class GunRaycaster : NetworkBehaviour
         if (hit.Hitbox is PlayerHitbox playerHitbox)
         {
             PlayerRef targetPlayerRef = playerHitbox.myPlayerRef;
-            Debug.Log($" Get playerHitbox,PlayerRef :{targetPlayerRef} ");
-            RPC_RequestDamage(targetPlayerRef, weaponDamage);
+            PlayerRef myPlayerRef = Object.InputAuthority;
+            Debug.Log($"Player {myPlayerRef} hit Player {targetPlayerRef} with {weaponDamage} damage");
+            PlayerHP targetHP = playerHitbox.GetComponentInParent<PlayerHP>();
+            targetHP.TakeDamage(myPlayerRef, weaponDamage);
         }
         else
 
@@ -106,14 +106,15 @@ public class GunRaycaster : NetworkBehaviour
 
 
     //自作クラスを引数にとっても大丈夫？→重いのでダメ
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority, HostMode = RpcHostMode.SourceIsHostPlayer, TickAligned = false)]
-    public void RPC_RequestDamage(PlayerRef targetPlayerRef, int Damage,RpcInfo info=default)
-    {
-        PlayerAvatar damagedPlayerAvatarScript = Runner.GetPlayerObject(targetPlayerRef).GetComponent<PlayerAvatar>();
+    //[Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority, HostMode = RpcHostMode.SourceIsHostPlayer, TickAligned = false)]
+    //public void RPC_RequestDamage(PlayerRef targetPlayerRef, int Damage,RpcInfo info=default)
+    //{
+    //    Debug.Log($"RPCStart!");
+    //    PlayerAvatar damagedPlayerAvatarScript = Runner.GetPlayerObject(targetPlayerRef).GetComponent<PlayerAvatar>();
 
-        Debug.Log($"{targetPlayerRef} was attacked by {info.Source}, took {Damage} Damage ");
-        damagedPlayerAvatarScript.TakeDamage(Damage);
+    //    Debug.Log($"{targetPlayerRef} was attacked by {info.Source}, took {Damage} Damage ");
+    //    // damagedPlayerAvatarScript.TakeDamage(playerNetworkState, Damage);
 
 
-    }
+    //}
 }

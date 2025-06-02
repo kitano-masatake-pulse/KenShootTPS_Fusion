@@ -184,9 +184,10 @@ public class PlayerAvatar : NetworkBehaviour
 
 
 
-    public void TakeDamage(int DamageAmount)
-    {
-        Debug.Log($"TakeDamage {DamageAmount}");
-        //playerNetworkState.Damage(DamageAmount);みたいなのを書く
-    }
+    //public void TakeDamage(int DamageAmount)
+    //{
+    //    Debug.Log($"TakeDamage {DamageAmount}");
+    //    playerNetworkState.DamageHP(DamageAmount);
+    //    //playerNetworkState.Damage(DamageAmount);みたいなのを書く
+    //}
 }
