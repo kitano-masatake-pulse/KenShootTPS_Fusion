@@ -27,8 +27,18 @@ public abstract class WeaponBase : MonoBehaviour
         Debug.Log($"{weaponType.GetName()} fired! Current Magazine: {CurrentMagazine}, Current Reserve: {CurrentReserve}");
     }
 
-    
-    
+
+    public virtual bool IsMagazineEmpty()
+    {
+        return CurrentMagazine <= 0;
+    }
+
+
+    public virtual bool IsMagazineFull()
+    {
+        return CurrentMagazine >=  weaponType.MagazineCapacity() ;
+    }
+
 
 
     protected virtual void OnEmptyAmmo()
