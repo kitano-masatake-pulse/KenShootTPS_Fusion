@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Unity;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class PlayerAvatar : NetworkBehaviour
 {
@@ -29,6 +30,13 @@ public class PlayerAvatar : NetworkBehaviour
     [SerializeField]
     private Transform cameraTarget;
     public Transform CameraTarget => cameraTarget;
+
+    public Animator animator;
+
+    public float Horizontal;
+    public float Vertical;
+    private Vector3 lastplayerPosition;
+    private Vector3 lastCameraPosition2; //カメラの前回位置を保存するための変数
 
 
     [SerializeField] private Transform hostTransform;
@@ -60,6 +68,8 @@ public class PlayerAvatar : NetworkBehaviour
         characterController = GetComponent<CharacterController>();
 
         playerNetworkState = GetComponent<PlayerNetworkState>();
+
+        animator = GetComponentInChildren<Animator>();
 
         if (HasInputAuthority)
         {
@@ -101,7 +111,13 @@ public class PlayerAvatar : NetworkBehaviour
         {
             InputAvailableCheck();
         }
+        if (Runner.Simulation.Tick != LastTick) // 2 Tickごとにアニメーションを更新
+        {
+            Animation();
+        }
+
     }
+
 
 
     // 入力をチェック、接地判定などアクションの実行可否も判定する
@@ -187,6 +203,7 @@ public class PlayerAvatar : NetworkBehaviour
 
         Vector3 moveDirection = Quaternion.LookRotation(bodyForward, Vector3.up) * normalizedInputDir;
 
+        
         // 重力を加算（ここを省略すれば浮く）
         velocity.y += gravity * Time.deltaTime;
         // 坂道対応：Moveは自動で地形の傾斜に合わせてくれる
@@ -197,7 +214,6 @@ public class PlayerAvatar : NetworkBehaviour
             velocity.y = 0;
         }
     }
-
 
 
 
@@ -231,6 +247,7 @@ public class PlayerAvatar : NetworkBehaviour
         ClearActionAnimationPlayList();
 
     }
+
 
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority, HostMode = RpcHostMode.SourceIsHostPlayer, TickAligned = false)]
@@ -299,12 +316,32 @@ public class PlayerAvatar : NetworkBehaviour
 
 
 
-
-
+    float LastTick = 0;
+       
     public override void FixedUpdateNetwork()
     {
 
         SynchronizeTransform();
+        //if (Runner.Simulation.Tick != LastTick) // 2 Tickごとにアニメーションを更新
+        //{
+        //    Animation();
+        //}
+    }
+
+    void Animation()
+    {
+        //Debug.Log($"LocalMoveAnimation called. {transform.position - lastplayerPosition}");
+        Horizontal = (transform.position.x - lastplayerPosition.x) * 1000;
+        Vertical = (transform.position.z - lastplayerPosition.z) * 1000;
+        animator.SetFloat("Horizontal", Horizontal, 0.01f, Time.deltaTime);
+        animator.SetFloat("Vertical", Vertical, 0.01f, Time.deltaTime);
+        lastplayerPosition = transform.position; // 前回の位置を保存
+        if (!HasInputAuthority)
+        {
+            Debug.Log($"Animation called. Horizontal: {Horizontal}, Vertical: {Vertical} ");
+
+        }
+        LastTick = Runner.Simulation.Tick; // 前回のTickを保存
     }
 
 
@@ -343,8 +380,6 @@ public class PlayerAvatar : NetworkBehaviour
             cameraForwardInHost = data.cameraForward; //カメラの前方向を更新
             normalizedInputDirectionInHost = data.normalizedInputDirection; //入力方向を更新
         }
-
-
     }
 
 
@@ -355,24 +390,36 @@ public class PlayerAvatar : NetworkBehaviour
         Vector3 bodyForward = new Vector3(cameraForwardInHost.x, 0f, cameraForwardInHost.z).normalized;
             // ローカルプレイヤーの移動処理     
 
-            if (bodyForward.sqrMagnitude > 0.0001f)
-            {
-                // プレイヤー本体の向きをカメラ方向に回転
-                bodyObject.transform.forward = bodyForward;
-            }
+        if (bodyForward.sqrMagnitude > 0.0001f)
+        {
+            // プレイヤー本体の向きをカメラ方向に回転
+            bodyObject.transform.forward = bodyForward;
+        }
 
-            headObject.transform.up = cameraForwardInHost.normalized; // カメラの方向を頭の向きに設定(アバターの頭の軸(upなのかforwardなのか)によって変えること)
+        headObject.transform.up = cameraForwardInHost.normalized; // カメラの方向を頭の向きに設定(アバターの頭の軸(upなのかforwardなのか)によって変えること)
 
 
-            bodyObject.transform.position = avatarPositionInHost;
+        bodyObject.transform.position = avatarPositionInHost;
 
-            //Debug.Log($"ApplyInputAuthorityTransform {data.avatarPosition} {data.avatarRotation}");
-            hostTransform.localPosition = Vector3.zero; //ホストの位置をリセットする
-            hostTransform.localRotation = Quaternion.identity; //ホストの回転をリセットする
+        hostTransform.localPosition = Vector3.zero; //ホストの位置をリセットする
+        hostTransform.localRotation = Quaternion.identity; //ホストの回転をリセットする
+        //ApplyAnimationFromNetworkProperty();
 
-        
+
+
 
     }
+
+    //void ApplyAnimationFromNetworkProperty()
+    //{
+    //    Debug.Log($"LocalMoveAnimation called. {transform.position}  ,  {lastplayerPosition}");
+    //    Horizontal = (transform.position.x - lastplayerPosition.x) * 100;
+    //    Vertical = (transform.position.z - lastplayerPosition.z) * 100;
+    //    animator.SetFloat("Horizontal", Horizontal);
+    //    animator.SetFloat("Vertical", Vertical);
+    //    Debug.Log($"ApplyAnimationFromNetworkProperty called. Horizontal: {Horizontal}, Vertical: {Vertical}");
+    //    lastplayerPosition = bodyObject.transform.position;
+    //}
 
     void ApplyInputAuthorityTransform()
     {
