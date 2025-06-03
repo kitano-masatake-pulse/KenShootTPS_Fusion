@@ -264,7 +264,7 @@ GameObject:
   - component: {fileID: 1857893055728629384}
   - component: {fileID: 4728757488061828292}
   m_Layer: 0
-  m_Name: PlayerAvatar_kitano
+  m_Name: PlayerAvatar_nakajima
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -313,7 +313,7 @@ MonoBehaviour:
   AoiPositionSource: {fileID: 0}
   Flags: 2305
   NetworkGuid:
-    RawGuidValue: acb1ae8f636808e4e91f7a9c4901b855
+    RawGuidValue: 96fa9037e27727844827d867691cc6b0
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 2456749128542381984}

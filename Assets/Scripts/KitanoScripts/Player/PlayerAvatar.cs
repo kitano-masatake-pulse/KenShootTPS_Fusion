@@ -33,7 +33,7 @@ public class PlayerAvatar : NetworkBehaviour
 
     [SerializeField] private Transform hostTransform;
 
-    public List<ActionStruct> actionAnimationPlayList=new List<ActionStruct> { }   ;  //再生すべきアクションアニメーションのリスト
+    private List<ActionStruct> actionAnimationPlayList=new List<ActionStruct> { }   ;  //再生すべきアクションアニメーションのリスト
 
     public Vector3 normalizedInputDirection=Vector3.zero; //入力方向の正規化されたベクトル
 
@@ -220,10 +220,15 @@ public class PlayerAvatar : NetworkBehaviour
 
     void JumpLocally(float calledTime)
     {
-        Debug.Log($"Jump Locally. {Runner.Tick} SimuTime: {Runner.SimulationTime}");
         velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity); ; // ジャンプの初速度を設定
-        Debug.Log($"Jump Locally. {Runner.Tick} SimuTime: {Runner.SimulationTime},velocityY:{velocity.y}");
         SetActionAnimationPlayList(ActionType.Jump, calledTime); //アクションアニメーションのリストにジャンプを追加
+
+        //foreach (var action in actionAnimationPlayList)
+        //{
+        //    Debug.Log($"actionType: {action.actionType}, actionCalledTimeOnSimulationTime: {action.actionCalledTimeOnSimulationTime}");
+        //}
+
+        ClearActionAnimationPlayList();
 
     }
 
@@ -249,20 +254,18 @@ public class PlayerAvatar : NetworkBehaviour
 
             SetActionAnimationPlayList(ActionType.Jump, calledTime);  // アクションアニメーションのリストにジャンプを追加
 
+            foreach (var action in actionAnimationPlayList)
+            {
+                Debug.Log($"actionType: {action.actionType}, actionCalledTimeOnSimulationTime: {action.actionCalledTimeOnSimulationTime}");
+            }
 
+            ClearActionAnimationPlayList();
         }
         else
         {
             Debug.Log($"Don't Apply Jump because I'm source  {sourcePlayer}.  {info.Tick} SimuTime: {Runner.SimulationTime}");
         }
 
-    }
-
-
-    public void TakeDamage(int DamageAmount)
-    {
-        Debug.Log($"TakeDamage {DamageAmount}");
-        //playerNetworkState.Damage(DamageAmount);みたいなのを書く
     }
 
 
@@ -322,9 +325,9 @@ public class PlayerAvatar : NetworkBehaviour
         if (!HasInputAuthority)
         {
 
-                //NetworkPropertyを参照して、ホストも他クライアントもTransformを更新する
-                //Debug.Log($"{Runner.LocalPlayer}ApplyHostTransform called");
-                ApplyTransformFromNetworkProperty();
+            //NetworkPropertyを参照して、ホストも他クライアントもTransformを更新する
+            //Debug.Log($"{Runner.LocalPlayer}ApplyHostTransform called");
+            ApplyTransformFromNetworkProperty();
             
         }
     }
