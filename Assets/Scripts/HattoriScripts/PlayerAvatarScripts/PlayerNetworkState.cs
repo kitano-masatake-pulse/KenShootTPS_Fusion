@@ -1,11 +1,4 @@
 using System;
-// 他のスクリプトからプレイヤーのHPを減らす場合は、PlayerNetworkStateのDamageHP関数を使ってください。
-// 例:
-// 対象プレイヤーのPlayerNetworkStateを取得し、DamageHP(damage量, 攻撃者のPlayerRef)を呼び出します。
-// attackerが不要な場合は省略できます。
-
-// 例:
-// playerNetworkState.DamageHP(30, attackerPlayerRef);
 using UnityEngine;
 using Fusion;
 
@@ -182,7 +175,7 @@ public class PlayerNetworkState : NetworkBehaviour
             }
 
             // 死亡通知 RPC
-            RPC_PlayerDeath(Object.InputAuthority, attacker);
+            RPC_PlayerDeath( Object.InputAuthority, attacker);
         }
     }
     /// <summary>HPを回復する</summary>

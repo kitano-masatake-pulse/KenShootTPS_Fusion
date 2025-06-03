@@ -5,12 +5,14 @@ using TMPro;
 
 public class PlayerDeathHandler : NetworkBehaviour
 {
+    [SerializeField] private PlayerAvatar playerAvatar;
     [SerializeField] private GameObject WorldUICanvas;
 
     void OnEnable()
     {
         // PlayerNetworkState の死亡通知を購読
         var state = GetComponent<PlayerNetworkState>();
+        
         state.OnPlayerDied += HandleDeath;
     }
 
@@ -22,35 +24,18 @@ public class PlayerDeathHandler : NetworkBehaviour
     private void HandleDeath(PlayerRef victim, PlayerRef killer)
     {
         //入力無効（PlayerAvatar 側にもフラグを送るか共有）
-        GetComponent<PlayerAvatar>().enabled = false;
-
+        //PlayerAvatarの行動不能フラグを有効化する
         //Collider 無効化(レイヤー切り替え)
         foreach (var col in GetComponentsInChildren<Collider>())
             col.gameObject.layer = LayerMask.NameToLayer("DeadPlayer");
         //Hitbox 無効化(レイヤー切り替え)
         foreach (var hitbox in GetComponentsInChildren<PlayerHitbox>())
             hitbox.gameObject.layer = LayerMask.NameToLayer("DeadHitbox");
-
-        //武器モデル／ネームタグ非表示
+        //ネームタグ非表示
         WorldUICanvas.SetActive(false);
-
-        //他にすること
-        //死亡時アニメーション
-
-        //死亡プレイヤーなら実行
-        if (victim == Object.InputAuthority)
-        {
-           
-        }
-        //殺害プレイヤーなら実行
-        else if (killer == Object.InputAuthority)
-        {
-            // 6. キル演出
-            // ここにキル演出のコードを追加（例：エフェクト、サウンドなど）
-
-        }
-
+        //プレイヤーアバターに死亡アニメーションを設定
+        playerAvatar.SetActionAnimationPlayList(ActionType.Dead, Runner.SimulationTime);
     }
 
-   
+
 }

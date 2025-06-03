@@ -8,9 +8,9 @@ public class HUDManager : MonoBehaviour
     [SerializeField] private WeaponPanel weapon;
     [SerializeField] private TimerPanel timer;
     [SerializeField] private RespawnPanel resp;
-
     private PlayerNetworkState playerState;
     private WeaponLocalState weaponState;
+
 
     private void OnEnable()
     {
