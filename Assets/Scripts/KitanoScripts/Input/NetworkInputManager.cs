@@ -42,7 +42,7 @@ public class NetworkInputManager : MonoBehaviour,INetworkRunnerCallbacks
 
     public void OnInput(NetworkRunner runner, NetworkInput input)
     {
-        Debug.Log($"{runner.LocalPlayer} NetworkInputManager.OnInput called.");
+        //Debug.Log($"{runner.LocalPlayer} NetworkInputManager.OnInput called.");
         if (myPlayerAvatar==null)
         {
             //アバターが紐づいていないなら、入力を受け付けない
