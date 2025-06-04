@@ -262,7 +262,7 @@ GameObject:
   - component: {fileID: -4328647438270834359}
   - component: {fileID: 7045168527131226642}
   - component: {fileID: 1857893055728629384}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: PlayerAvatar_kitano
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -374,6 +374,21 @@ MonoBehaviour:
   _avatarPositionInHost: {x: 0, y: 0, z: 0}
   _cameraForwardInHost: {x: 0, y: 0, z: 0}
   _normalizedInputDirectionInHost: {x: 0, y: 0, z: 0}
+  chaseAngle: 90
+  chaseRange: 5
+  chaseSpeed: 6
+  maxTurnAnglePerFrame: 5
+  maxAlignToCameraAnglePerSecond: 360
+  homingTime: 0.5
+  attackImmolizedTime: 3
+  rotationDuration: 0.1
+  isFollowingCameraForward: 1
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 1024
+  obstructionMask:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!114 &6887860513559479073
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1028,6 +1043,13 @@ MonoBehaviour:
   weaponType: 0
   CurrentMagazine: 0
   CurrentReserve: 0
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  obstructionMask:
+    serializedVersion: 2
+    m_Bits: 0
+  attackActiveTime: 0.5
 --- !u!1 &7390135594791055790
 GameObject:
   m_ObjectHideFlags: 0
@@ -1040,7 +1062,7 @@ GameObject:
   - component: {fileID: 6479874104530377080}
   - component: {fileID: 369833390848582940}
   - component: {fileID: 6872264017714937852}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1197,7 +1219,7 @@ GameObject:
   - component: {fileID: 7901764853807729279}
   - component: {fileID: 2681514934883924883}
   - component: {fileID: 7603101429135026314}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
