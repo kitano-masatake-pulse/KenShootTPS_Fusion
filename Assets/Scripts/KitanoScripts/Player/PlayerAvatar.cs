@@ -32,19 +32,16 @@ public class PlayerAvatar : NetworkBehaviour
     public Transform CameraTarget => cameraTarget;
 
     public Animator animator;
-
-    public float Horizontal;
-    public float Vertical;
-    private Vector3 lastplayerPosition;
     private Vector3 lastCameraPosition2; //カメラの前回位置を保存するための変数
 
 
     [SerializeField] private Transform hostTransform;
 
     private List<ActionStruct> actionAnimationPlayList=new List<ActionStruct> { }   ;  //再生すべきアクションアニメーションのリスト
+    public List<ActionStruct> ActionAnimationPlayList => actionAnimationPlayList; //外部から参照可能なプロパティ
+
 
     public Vector3 normalizedInputDirection=Vector3.zero; //入力方向の正規化されたベクトル
-
 
     [Networked] public Vector3 avatarPositionInHost { get; set; } = Vector3.zero; //ホスト環境でのアバター位置(入力権限のあるプレイヤーの位置を参照するために使用)
     [Networked] public Vector3 cameraForwardInHost { get; set; } = Vector3.zero; //カメラの向き(入力権限のあるプレイヤーの回転を参照するために使用)
@@ -111,12 +108,10 @@ public class PlayerAvatar : NetworkBehaviour
         {
             InputAvailableCheck();
         }
-        if (Runner.Simulation.Tick != LastTick) // 2 Tickごとにアニメーションを更新
-        {
-            Animation();
-        }
 
     }
+
+
 
 
 
@@ -244,7 +239,7 @@ public class PlayerAvatar : NetworkBehaviour
         //    Debug.Log($"actionType: {action.actionType}, actionCalledTimeOnSimulationTime: {action.actionCalledTimeOnSimulationTime}");
         //}
 
-        ClearActionAnimationPlayList();
+        //ClearActionAnimationPlayList();
 
     }
 
@@ -276,7 +271,7 @@ public class PlayerAvatar : NetworkBehaviour
                 Debug.Log($"actionType: {action.actionType}, actionCalledTimeOnSimulationTime: {action.actionCalledTimeOnSimulationTime}");
             }
 
-            ClearActionAnimationPlayList();
+            //ClearActionAnimationPlayList();
         }
         else
         {
@@ -302,21 +297,13 @@ public class PlayerAvatar : NetworkBehaviour
 
     }
 
+
     public void ClearActionAnimationPlayList()
     {
         actionAnimationPlayList.Clear();
     }
 
 
-
-
-
-
-
-
-
-
-    float LastTick = 0;
        
     public override void FixedUpdateNetwork()
     {
@@ -328,21 +315,7 @@ public class PlayerAvatar : NetworkBehaviour
         //}
     }
 
-    void Animation()
-    {
-        //Debug.Log($"LocalMoveAnimation called. {transform.position - lastplayerPosition}");
-        Horizontal = (transform.position.x - lastplayerPosition.x) * 1000;
-        Vertical = (transform.position.z - lastplayerPosition.z) * 1000;
-        animator.SetFloat("Horizontal", Horizontal, 0.01f, Time.deltaTime);
-        animator.SetFloat("Vertical", Vertical, 0.01f, Time.deltaTime);
-        lastplayerPosition = transform.position; // 前回の位置を保存
-        if (!HasInputAuthority)
-        {
-            Debug.Log($"Animation called. Horizontal: {Horizontal}, Vertical: {Vertical} ");
 
-        }
-        LastTick = Runner.Simulation.Tick; // 前回のTickを保存
-    }
 
 
 
@@ -410,17 +383,6 @@ public class PlayerAvatar : NetworkBehaviour
 
     }
 
-    //void ApplyAnimationFromNetworkProperty()
-    //{
-    //    Debug.Log($"LocalMoveAnimation called. {transform.position}  ,  {lastplayerPosition}");
-    //    Horizontal = (transform.position.x - lastplayerPosition.x) * 100;
-    //    Vertical = (transform.position.z - lastplayerPosition.z) * 100;
-    //    animator.SetFloat("Horizontal", Horizontal);
-    //    animator.SetFloat("Vertical", Vertical);
-    //    Debug.Log($"ApplyAnimationFromNetworkProperty called. Horizontal: {Horizontal}, Vertical: {Vertical}");
-    //    lastplayerPosition = bodyObject.transform.position;
-    //}
-
     void ApplyInputAuthorityTransform()
     {
 
@@ -461,7 +423,5 @@ public class PlayerAvatar : NetworkBehaviour
         hostTransform.localRotation = Quaternion.identity; //ホストの回転をリセットする
 
     }
-
-
 
 }
