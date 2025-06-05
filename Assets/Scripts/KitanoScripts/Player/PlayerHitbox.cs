@@ -6,7 +6,11 @@ using Fusion;
 public class PlayerHitbox : Hitbox
 {
 
-    public PlayerRef myPlayerRef;
+    public PlayerRef hitPlayerRef;
+
+
+    [SerializeField] private PlayerAvatar myPlayerAvatar;
+
     // Start is called before the first frame update
     void Start()
     {

@@ -125,14 +125,14 @@ public class PlayerNetworkState : NetworkBehaviour
         if (Object.HasStateAuthority)
         {
             // ”z—ñ‰Šú‰»
-            int count = (int)WeaponType.GrenadeLauncher + 1;
+            int count = (int)WeaponType.Grenade + 1;
             ammoPerWeapon = new Ammo[count];
 
             // ‰Šú’e”İ’è
             ammoPerWeapon[(int)WeaponType.Sword] = new Ammo(1, 0);
             ammoPerWeapon[(int)WeaponType.AssaultRifle] = new Ammo(20, 100);
             ammoPerWeapon[(int)WeaponType.SemiAutoRifle] = new Ammo(5, 15);
-            ammoPerWeapon[(int)WeaponType.GrenadeLauncher] = new Ammo(1, 5);
+            ammoPerWeapon[(int)WeaponType.Grenade] = new Ammo(1, 5);
         }
     }
 

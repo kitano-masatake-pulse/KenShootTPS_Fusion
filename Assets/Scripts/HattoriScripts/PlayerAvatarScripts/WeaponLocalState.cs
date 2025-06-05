@@ -18,7 +18,7 @@ public class WeaponLocalState : NetworkBehaviour
         WeaponType.Sword,
         WeaponType.AssaultRifle,
         WeaponType.SemiAutoRifle,
-        WeaponType.GrenadeLauncher
+        WeaponType.Grenade
     };
     [Header("武器ごとのマガジン最大数")]
     [Tooltip("武器ごとに対応するマガジン最大弾数（配列長は availableWeapons と同じ）")]

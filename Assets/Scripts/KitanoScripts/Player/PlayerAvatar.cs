@@ -65,7 +65,7 @@ public class PlayerAvatar : NetworkBehaviour
     [SerializeField] private float rotationDuration = 0.1f; //カメラの前方向に向くまでの時間(0.1秒かけてカメラの前方向に向く)
     private Vector3 homingMoveDirection = Vector3.forward; // ホーミング中の現在の移動方向
     private bool isHoming = false; // ホーミング中かどうか
-    public bool isFollowingCameraForward = true; //カメラの前方向に向くかどうか(デフォルトはtrue)
+    private bool isFollowingCameraForward = true; //カメラの前方向に向くかどうか(デフォルトはtrue)
     private Transform currentTargetTransform; // 現在のターゲットのTransform
     [SerializeField]private LayerMask playerLayer;
     [SerializeField] private LayerMask obstructionMask;
@@ -83,7 +83,7 @@ public class PlayerAvatar : NetworkBehaviour
     {
         //SetNickName($"Player({Object.InputAuthority.PlayerId})");
 
-        myPlayerHitbox.myPlayerRef = GetComponent<NetworkObject>().InputAuthority;
+        myPlayerHitbox.hitPlayerRef = GetComponent<NetworkObject>().InputAuthority;
 
         characterController = GetComponent<CharacterController>();
 
@@ -411,7 +411,7 @@ public class PlayerAvatar : NetworkBehaviour
         // 向きを移動方向に合わせる（任意）
         bodyObject.transform.forward = homingMoveDirection;
 
-        Debug.Log($"Homing towards {targetTransform.name}");
+        //Debug.Log($"Homing towards {targetTransform.name}");
 
 
 

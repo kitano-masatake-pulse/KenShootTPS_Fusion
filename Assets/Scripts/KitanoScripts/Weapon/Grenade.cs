@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Grenade : WeaponBase
 {
+    protected override WeaponType weapon => WeaponType.Grenade; // •Ší‚Ìí—Ş‚ğw’è
+
+
     // Start is called before the first frame update
     void Start()
     {
