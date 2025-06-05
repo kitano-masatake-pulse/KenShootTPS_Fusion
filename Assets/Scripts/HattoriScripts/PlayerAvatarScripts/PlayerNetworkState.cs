@@ -1,26 +1,7 @@
 using System;
-// 他のスクリプトからプレイヤーのHPを減らす場合は、PlayerNetworkStateのDamageHP関数を使ってください。
-// 例:
-// 対象プレイヤーのPlayerNetworkStateを取得し、DamageHP(damage量, 攻撃者のPlayerRef)を呼び出します。
-// attackerが不要な場合は省略できます。
-
-// 例:
-// playerNetworkState.DamageHP(30, attackerPlayerRef);
 using UnityEngine;
 using Fusion;
 
-// 弾薬データ構造
-public struct Ammo
-{
-    public int Magazine;
-    public int Reserve;
-
-    public Ammo(int mag, int reserve)
-    {
-        Magazine = mag;
-        Reserve = reserve;
-    }
-}
 
 // 各プレイヤーのステータスを管理するクラス
 public class PlayerNetworkState : NetworkBehaviour
@@ -28,16 +9,11 @@ public class PlayerNetworkState : NetworkBehaviour
     #region Events
 
     // インスタンスイベント
-    /// <summary>弾数が変更されたとき</summary>
+    /// <summary>HPが変更されたとき</summary>
     public event Action<float> OnHPChanged;
+
     /// <summary>武器切替がサーバー正史で確定したとき</summary>
     public event Action<WeaponType> OnWeaponChanged_Network;
-  
-    /// <summary>スコアが変更されたとき</summary>
-    public event Action<int, int> OnScoreChanged;
-
-    /// <summary>弾数が変更されたとき(チート対策用、基本使わない)</summary>
-    public event Action<int, int> OnAmmoChanged_Network;
 
     // ローカルプレイヤー生成時
     public static event Action<PlayerNetworkState> OnLocalPlayerSpawned;
@@ -62,53 +38,18 @@ public class PlayerNetworkState : NetworkBehaviour
     [Networked(OnChanged = nameof(WeaponChangedCallback))]
     public WeaponType CurrentWeapon_Network { get; private set; } = WeaponType.Sword;
 
-    // スコア (キル / デス)
-    [Networked(OnChanged = nameof(ScoreChangedCallback))]
-    public int KillScore { get; private set; }
-
-    [Networked(OnChanged = nameof(ScoreChangedCallback))]
-    public int DeathScore { get; private set; }
-
-  // 弾薬 (マガジン / リザーブ)(チート対策用、基本使わない)
-    [Networked(OnChanged = nameof(AmmoChangedCallback))]
-    public int MagazineAmmo_Network { get; private set; }
-
-    [Networked(OnChanged = nameof(AmmoChangedCallback))]
-    public int ReserveAmmo_Network { get; private set; }
-
-    #endregion
-
-    #region Local Fields
-
-    // ローカルで管理する武器ごとの弾数テーブル(チート対策用)
-    private Ammo[] ammoPerWeapon;
-
     #endregion
 
     #region Change Callbacks
 
     static void HPChangedCallback(Changed<PlayerNetworkState> changed)
-    { 
-        // コールバックが呼ばれたときにデバッグログを出力
-        Debug.Log($"HPコールバック呼び出し");
-        changed.Behaviour.RaiseHPChanged();
-        
-    }
-
+        =>changed.Behaviour.RaiseHPChanged();
     static void WeaponChangedCallback(Changed<PlayerNetworkState> changed)
         => changed.Behaviour.RaiseWeaponChanged();
 
 
-    static void ScoreChangedCallback(Changed<PlayerNetworkState> changed)
-        => changed.Behaviour.RaiseScoreChanged();
-
-    static void AmmoChangedCallback(Changed<PlayerNetworkState> changed)
-        => changed.Behaviour.RaiseAmmoChanged();
-
     void RaiseHPChanged() => OnHPChanged?.Invoke(HpNormalized);
     void RaiseWeaponChanged() => OnWeaponChanged_Network?.Invoke(CurrentWeapon_Network);
-    void RaiseScoreChanged() => OnScoreChanged?.Invoke(KillScore, DeathScore);
-    void RaiseAmmoChanged() => OnAmmoChanged_Network?.Invoke(MagazineAmmo_Network, ReserveAmmo_Network);
     #endregion
 
     #region Unity Callbacks
@@ -119,21 +60,7 @@ public class PlayerNetworkState : NetworkBehaviour
         {    
             OnLocalPlayerSpawned?.Invoke(this);
         }    
-        
-        
-        //ホストのみプレイヤーごとの弾数を初期化(チート対策用)
-        if (Object.HasStateAuthority)
-        {
-            // 配列初期化
-            int count = (int)WeaponType.GrenadeLauncher + 1;
-            ammoPerWeapon = new Ammo[count];
-
-            // 初期弾数設定
-            ammoPerWeapon[(int)WeaponType.Sword] = new Ammo(1, 0);
-            ammoPerWeapon[(int)WeaponType.AssaultRifle] = new Ammo(20, 100);
-            ammoPerWeapon[(int)WeaponType.SemiAutoRifle] = new Ammo(5, 15);
-            ammoPerWeapon[(int)WeaponType.GrenadeLauncher] = new Ammo(1, 5);
-        }
+  
     }
 
     //デバッグ用 
@@ -143,7 +70,7 @@ public class PlayerNetworkState : NetworkBehaviour
         if (HasInputAuthority && Input.GetKeyDown(KeyCode.K))
         {
             // 自分を即死させる
-            DamageHP(int.MaxValue, PlayerRef.None);
+            RPC_RequestDamageHP(int.MaxValue, PlayerRef.None);
         }
     }
 
@@ -157,58 +84,22 @@ public class PlayerNetworkState : NetworkBehaviour
     {
         Debug.Log($"DamageHPMethod");
         if (!HasStateAuthority) return;
-        if (damage <= 0) return; // ダメージが0以下なら無視
         if (CurrentHP <= 0) return; // 既に死亡しているなら無視
 
         CurrentHP = Mathf.Max(0, CurrentHP - damage);
 
-        Debug.Log($"Player {Object.InputAuthority} took {damage} damage, remaining HP: {CurrentHP}");
-
-        if (CurrentHP == 0)
+        if (CurrentHP <= 0)
         {
-            Debug.Log($"Player {Object.InputAuthority} has died.");
-            // 自身のデススコア加算
-            AddDeathScore();
-
-            // 攻撃者が指定されていればキルスコア加算
-            if (attacker != PlayerRef.None && attacker != Object.InputAuthority)
-            {
-                if (Runner.TryGetPlayerObject(attacker, out var atkGo))
-                {
-                    var atkState = atkGo.GetComponent<PlayerNetworkState>();
-                    if (atkState != null && atkState.HasStateAuthority)
-                        atkState.AddKillScore();
-                }
-            }
-
-            // 死亡通知 RPC
-            RPC_PlayerDeath(Object.InputAuthority, attacker);
+            //GameManagerに死亡を通知
+            GameManager.Instance.NotifyDeath(Object.InputAuthority, attacker,Runner.SimulationTime);
         }
     }
+
     /// <summary>HPを回復する</summary>
     public void HealHP(int heal)
     {
         if (!HasStateAuthority) return;
         CurrentHP = Mathf.Min(MaxHP, CurrentHP + heal);
-    }
-    /// <summary>Killスコアを加算する</summary>
-    public void AddKillScore()
-    {
-        if (!HasStateAuthority) return;
-        KillScore ++;
-    }
-    /// <summary>Deathスコアを加算する</summary>
-    public void AddDeathScore()
-    {
-        if (!HasStateAuthority) return;
-        DeathScore++;
-    }
-    ///<summary>死亡イベント</summary>
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    private void RPC_PlayerDeath(PlayerRef victim, PlayerRef killer)
-    {
-        Debug.Log("死亡イベント発火");
-        OnPlayerDied?.Invoke(victim, killer);
     }
 
     //―――― クライアント→サーバー：武器切替リクエスト ――――
@@ -217,6 +108,12 @@ public class PlayerNetworkState : NetworkBehaviour
     public void RPC_RequestWeaponChange(WeaponType newWeapon)
     {
         CurrentWeapon_Network = newWeapon;
+    }
+    //クライアント側からHPを減らすリクエスト(デバッグ用)
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_RequestDamageHP(int damage, PlayerRef attacker = default)
+    {
+        DamageHP(damage, attacker);
     }
 
     #endregion

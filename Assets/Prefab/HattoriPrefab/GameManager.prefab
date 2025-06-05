@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &4357859349358009625
+--- !u!1 &1082473974923648409
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,56 +8,55 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 8408011497245037656}
-  - component: {fileID: 3272050268758366531}
-  - component: {fileID: 3044147717416353587}
+  - component: {fileID: 2436986719424798924}
+  - component: {fileID: 6326802498127617836}
+  - component: {fileID: 5104897567611952093}
   m_Layer: 0
-  m_Name: GameTimeManager
+  m_Name: GameManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &8408011497245037656
+--- !u!4 &2436986719424798924
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4357859349358009625}
+  m_GameObject: {fileID: 1082473974923648409}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 775.85175, y: 293.95004, z: 48.657066}
+  m_LocalPosition: {x: 0, y: -2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3272050268758366531
+--- !u!114 &6326802498127617836
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4357859349358009625}
+  m_GameObject: {fileID: 1082473974923648409}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e80d485164d8f64096f6768467e7f6b, type: 3}
+  m_Script: {fileID: 11500000, guid: 3b562c8abf3edae489c887a9b256b5ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   WordOffset: 0
   WordCount: 0
   _interpolationDataSource: 0
-  _RemainingSeconds: 180
-  initialTimeSec: 180
+  _RemainingSeconds: 0
   _IsTimerRunning: 0
---- !u!114 &3044147717416353587
+--- !u!114 &5104897567611952093
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4357859349358009625}
+  m_GameObject: {fileID: 1082473974923648409}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
@@ -70,8 +69,8 @@ MonoBehaviour:
   AoiPositionSource: {fileID: 0}
   Flags: 2305
   NetworkGuid:
-    RawGuidValue: 1d6511eaf9922ff49987e0d2143189d1
+    RawGuidValue: 6e3ac7a9c6975374fbfe4b53732b488b
   NestedObjects: []
   NetworkedBehaviours:
-  - {fileID: 3272050268758366531}
+  - {fileID: 6326802498127617836}
   SimulationBehaviours: []

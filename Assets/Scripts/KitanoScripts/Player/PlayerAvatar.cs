@@ -31,7 +31,9 @@ public class PlayerAvatar : NetworkBehaviour
 
     private List<ActionStruct> actionAnimationPlayList=new List<ActionStruct> { }   ;  //再生すべきアクションアニメーションのリスト
 
+
     public Vector3 normalizedInputDirection=Vector3.zero; //入力方向の正規化されたベクトル。OnInput()で参照するためpublic
+
 
     //座標同期用のネットワークプロパティ
     [Networked] public Vector3 avatarPositionInHost { get; set; } = Vector3.zero; //ホスト環境でのアバター位置(入力権限のあるプレイヤーの位置を参照するために使用)
@@ -488,6 +490,7 @@ public class PlayerAvatar : NetworkBehaviour
         //localState.SetAmmo(weaponType, localState.GetMaxAmmo(weaponType));
 
 
+
         isDuringWeaponAction = false;
         Debug.Log("武器切り替え完了！");
     }
@@ -504,7 +507,7 @@ public class PlayerAvatar : NetworkBehaviour
         float calledTime = Runner.SimulationTime; //アクションが呼ばれた時間を取得
 
         SetActionAnimationPlayList(actionType, calledTime); //アクションアニメーションのリストにジャンプを追加
-
+        
         RPC_RequestActionAnimation(actionType, calledTime); //RPCを送信して他のクライアントにアクションを通知
     }
 

@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-
-
 //アクションとそれが行われた時間(Runner.simulationTimeベース)
 public struct ActionStruct
 {
@@ -12,13 +10,13 @@ public struct ActionStruct
    public float actionCalledTimeOnSimulationTime; //アクションが行われた時間(Runner.simulationTimeベース)
 }
 
-
-
 public enum ActionType
 {
     None,
     Jump,
     Land,
+
+    Dead,
 
     Fire_Sword,
     FireStart_AssaultRifle,

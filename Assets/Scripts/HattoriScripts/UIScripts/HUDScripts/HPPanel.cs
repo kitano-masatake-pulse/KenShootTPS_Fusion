@@ -18,7 +18,7 @@ public class HPPanel : MonoBehaviour, IHUDPanel
     }
     public void Cleanup()
     {
-       playerState.OnHPChanged -= UpdateHPBar;
+        playerState.OnHPChanged -= UpdateHPBar;
     }
     private void UpdateHPBar(float hpNormalized) => hpSlider.value = hpNormalized;
 }
