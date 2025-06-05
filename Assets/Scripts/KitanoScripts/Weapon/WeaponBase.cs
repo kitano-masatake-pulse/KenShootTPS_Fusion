@@ -54,7 +54,7 @@ public abstract class WeaponBase : NetworkBehaviour
             PlayerRef myPlayerRef = Object.InputAuthority;
             Debug.Log($"Player {myPlayerRef} hit Player {targetPlayerRef} with {weaponDamage} damage");
             PlayerHP targetHP = playerHitbox.GetComponentInParent<PlayerHP>();
-            targetHP.TakeDamage(myPlayerRef, weaponDamage);
+            targetHP.RPC_RequestDamage(myPlayerRef, weaponDamage);
         }
         else
 
