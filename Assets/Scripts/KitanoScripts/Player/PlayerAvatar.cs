@@ -30,6 +30,7 @@ public class PlayerAvatar : NetworkBehaviour
     public Transform CameraTarget => cameraTarget;
 
     private List<ActionStruct> actionAnimationPlayList=new List<ActionStruct> { }   ;  //再生すべきアクションアニメーションのリスト
+    public List<ActionStruct> ActionAnimationPlayList => actionAnimationPlayList;
 
 
     public Vector3 normalizedInputDirection=Vector3.zero; //入力方向の正規化されたベクトル。OnInput()で参照するためpublic
