@@ -32,4 +32,5 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/TestScenes/Test_PlayerMove.unity
     guid: e4c756f6e7541014ba26c65ef70a9c2a
+
   m_configObjects: {}
