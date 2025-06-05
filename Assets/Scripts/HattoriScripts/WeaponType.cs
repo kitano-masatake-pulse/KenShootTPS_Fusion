@@ -8,7 +8,7 @@ public enum WeaponType : byte
     Sword = 0,
     AssaultRifle,
     SemiAutoRifle,
-    GrenadeLauncher
+    Grenade
 }
 
 
@@ -21,7 +21,7 @@ public static class WeaponTypeExtensions
             WeaponType.Sword => "Sword",
             WeaponType.AssaultRifle => "Assault Rifle",
             WeaponType.SemiAutoRifle => "Semi-Auto Rifle",
-            WeaponType.GrenadeLauncher => "Grenade Launcher",
+            WeaponType.Grenade => "Grenade Launcher",
             _ => "Unknown"
         };
     }
@@ -32,7 +32,7 @@ public static class WeaponTypeExtensions
             WeaponType.Sword => 0,
             WeaponType.AssaultRifle => 20,
             WeaponType.SemiAutoRifle => 5,
-            WeaponType.GrenadeLauncher => 1,
+            WeaponType.Grenade => 1,
             _ => 0
         };
     }
@@ -43,9 +43,23 @@ public static class WeaponTypeExtensions
             WeaponType.Sword => 0,
             WeaponType.AssaultRifle => 100,
             WeaponType.SemiAutoRifle => 15,
-            WeaponType.GrenadeLauncher => 5,
+            WeaponType.Grenade => 5,
             _ => 0
         };
+    }
+
+
+    public static int Damage(this WeaponType weaponType)
+    { 
+        return weaponType switch
+        {
+            WeaponType.Sword => 50, // Œ•‚Ìƒ_ƒ[ƒW‚ÍŒˆ‚Ü‚Á‚Ä‚È‚¢‚Ì‚Å‰¼‚É50‚Æ‚·‚é
+            WeaponType.AssaultRifle => 5,
+            WeaponType.SemiAutoRifle => 20,
+            WeaponType.Grenade => 50,
+            _ => 0
+        };
+
     }
 
 
@@ -57,7 +71,7 @@ public static class WeaponTypeExtensions
             WeaponType.Sword => true,
             WeaponType.AssaultRifle => false,
             WeaponType.SemiAutoRifle => true,
-            WeaponType.GrenadeLauncher => true,
+            WeaponType.Grenade => true,
             _ => false
         };
     }
@@ -69,7 +83,7 @@ public static class WeaponTypeExtensions
             WeaponType.Sword => 1f,
             WeaponType.AssaultRifle => 0.1f,
             WeaponType.SemiAutoRifle => 1f,
-            WeaponType.GrenadeLauncher => 1f,
+            WeaponType.Grenade => 1f,
             _ => 0f
         };
     }
@@ -81,7 +95,7 @@ public static class WeaponTypeExtensions
             WeaponType.Sword => 3f,
             WeaponType.AssaultRifle => 3f,
             WeaponType.SemiAutoRifle => 5f,
-            WeaponType.GrenadeLauncher => 3f,
+            WeaponType.Grenade => 3f,
             _ => 0f
         };
     }
@@ -106,7 +120,7 @@ public static class WeaponTypeExtensions
             WeaponType.Sword => ActionType.Fire_Sword,
             WeaponType.AssaultRifle => ActionType.FireStart_AssaultRifle,
             WeaponType.SemiAutoRifle => ActionType.Fire_SemiAutoRifle,
-            WeaponType.GrenadeLauncher => ActionType.Fire_Grenade,
+            WeaponType.Grenade => ActionType.Fire_Grenade,
             _ => ActionType.None
         };
 
@@ -132,7 +146,7 @@ public static class WeaponTypeExtensions
             WeaponType.Sword => ActionType.Reload_Sword,
             WeaponType.AssaultRifle => ActionType.Reload_AssaultRifle,
             WeaponType.SemiAutoRifle => ActionType.Reload_SemiAutoRifle,
-            WeaponType.GrenadeLauncher => ActionType.Reload_Grenade,
+            WeaponType.Grenade => ActionType.Reload_Grenade,
             _ => ActionType.None
         };
     }
@@ -144,7 +158,7 @@ public static class WeaponTypeExtensions
             WeaponType.Sword => ActionType.ChangeWeaponTo_Sword,
             WeaponType.AssaultRifle => ActionType.ChangeWeaponTo_AssaultRifle,
             WeaponType.SemiAutoRifle => ActionType.ChangeWeaponTo_SemiAutoRifle,
-            WeaponType.GrenadeLauncher => ActionType.ChangeWeaponTo_Grenade,
+            WeaponType.Grenade => ActionType.ChangeWeaponTo_Grenade,
             _ => ActionType.None
         };
     }

@@ -90,7 +90,7 @@ public class GunRaycaster : NetworkBehaviour
         //“–‚½‚Á‚½‘ÎÛ‚ªPlayerHitbox‚ğ‚Á‚Ä‚¢‚½‚çƒ_ƒ[ƒWˆ—
         if (hit.Hitbox is PlayerHitbox playerHitbox)
         {
-            PlayerRef targetPlayerRef = playerHitbox.myPlayerRef;
+            PlayerRef targetPlayerRef = playerHitbox.hitPlayerRef;
             PlayerRef myPlayerRef = Object.InputAuthority;
             Debug.Log($"Player {myPlayerRef} hit Player {targetPlayerRef} with {weaponDamage} damage");
             PlayerHP targetHP = playerHitbox.GetComponentInParent<PlayerHP>();

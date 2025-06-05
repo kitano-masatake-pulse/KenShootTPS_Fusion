@@ -5,14 +5,14 @@ using UnityEngine;
 public class AssultRifle : WeaponBase
 {
 
+    protected override WeaponType weapon => WeaponType.AssaultRifle; // •Ší‚Ìí—Ş‚ğw’è
 
 
 
-   
 
 
 
- 
+
 
 
 

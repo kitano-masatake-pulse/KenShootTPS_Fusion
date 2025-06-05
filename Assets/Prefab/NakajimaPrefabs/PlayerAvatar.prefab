@@ -184,10 +184,8 @@ GameObject:
   - component: {fileID: 6278831117568584565}
   - component: {fileID: 7453442949649715553}
   - component: {fileID: 2456749128542381984}
-  - component: {fileID: 4020800376002421763}
   - component: {fileID: 6887860513559479073}
-  - component: {fileID: 6434074460655597705}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: PlayerAvatar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -238,9 +236,7 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: 7453442949649715553}
   - {fileID: 2456749128542381984}
-  - {fileID: 4020800376002421763}
   - {fileID: 6887860513559479073}
-  - {fileID: 6434074460655597705}
   - {fileID: 2009111524188218464}
   SimulationBehaviours: []
 --- !u!143 &6278831117568584565
@@ -324,25 +320,29 @@ MonoBehaviour:
   _interpolationDataSource: 0
   headObject: {fileID: 0}
   bodyObject: {fileID: 0}
+  myPlayerHitbox: {fileID: 0}
   moveSpeed: 3
   gravity: -9.81
+  jumpHeight: 2
   cameraTarget: {fileID: 0}
---- !u!114 &4020800376002421763
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2852828816588928964}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 394e7a955c2a9b145b19997ffa6bc364, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  WordOffset: 0
-  WordCount: 0
-  _interpolationDataSource: 0
-  cameraFollowTarget: {fileID: 2930331175657079287}
+  normalizedInputDirection: {x: 0, y: 0, z: 0}
+  _avatarPositionInHost: {x: 0, y: 0, z: 0}
+  _cameraForwardInHost: {x: 0, y: 0, z: 0}
+  _normalizedInputDirectionInHost: {x: 0, y: 0, z: 0}
+  chaseAngle: 90
+  chaseRange: 5
+  chaseSpeed: 6
+  maxTurnAnglePerFrame: 5
+  maxAlignToCameraAnglePerSecond: 360
+  homingTime: 2
+  attackImmolizedTime: 3
+  rotationDuration: 0.1
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  obstructionMask:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!114 &6887860513559479073
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -360,26 +360,11 @@ MonoBehaviour:
   _interpolationDataSource: 0
   _CurrentHP: 100
   _MaxHP: 100
-  _CurrentWeapon: 0
-  _MagazineAmmo: 0
-  _TotalAmmo: 0
+  _CurrentWeapon_Network: 0
   _KillScore: 0
   _DeathScore: 0
---- !u!114 &6434074460655597705
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2852828816588928964}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ce7f274245424684489c845176478ab2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  WordOffset: 0
-  WordCount: 0
-  _interpolationDataSource: 0
+  _MagazineAmmo_Network: 0
+  _ReserveAmmo_Network: 0
 --- !u!1 &3314747328892130015
 GameObject:
   m_ObjectHideFlags: 0
@@ -622,6 +607,12 @@ MonoBehaviour:
   _interpolationDataSource: 0
   nameLabel: {fileID: 0}
   hpBar: {fileID: 0}
+  weaponSprites:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  weaponImage: {fileID: 0}
 --- !u!1 &7390135594791055790
 GameObject:
   m_ObjectHideFlags: 0
@@ -634,7 +625,7 @@ GameObject:
   - component: {fileID: 6479874104530377080}
   - component: {fileID: 369833390848582940}
   - component: {fileID: 6872264017714937852}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -741,7 +732,7 @@ GameObject:
   - component: {fileID: 7901764853807729279}
   - component: {fileID: 2681514934883924883}
   - component: {fileID: 7603101429135026314}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: body
   m_TagString: Untagged
   m_Icon: {fileID: 0}

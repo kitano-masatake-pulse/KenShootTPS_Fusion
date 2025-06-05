@@ -1,9 +1,12 @@
 using UnityEngine;
+using Fusion;
 
-public abstract class WeaponBase : MonoBehaviour
+public abstract class WeaponBase : NetworkBehaviour
 {
     //protected WeaponLocalState localState;
-    public WeaponType weaponType;
+    protected abstract WeaponType weapon { get; }
+
+    public WeaponType weaponType => weapon;
 
     public int CurrentMagazine;
     public int CurrentReserve;
@@ -40,6 +43,26 @@ public abstract class WeaponBase : MonoBehaviour
     }
 
 
+
+    public virtual void CauseDamage(LagCompensatedHit hit, int weaponDamage)
+    {
+
+        //“–‚½‚Á‚½‘ÎÛ‚ªPlayerHitbox‚ğ‚Á‚Ä‚¢‚½‚çƒ_ƒ[ƒWˆ—
+        if (hit.Hitbox is PlayerHitbox playerHitbox)
+        {
+            PlayerRef targetPlayerRef = playerHitbox.hitPlayerRef;
+            PlayerRef myPlayerRef = Object.InputAuthority;
+            Debug.Log($"Player {myPlayerRef} hit Player {targetPlayerRef} with {weaponDamage} damage");
+            PlayerHP targetHP = playerHitbox.GetComponentInParent<PlayerHP>();
+            targetHP.TakeDamage(myPlayerRef, weaponDamage);
+        }
+        else
+
+        {
+            Debug.Log($"Couldn't Get playerHitbox, but{hit.Hitbox} ");
+        }
+
+    }
 
     protected virtual void OnEmptyAmmo()
     {

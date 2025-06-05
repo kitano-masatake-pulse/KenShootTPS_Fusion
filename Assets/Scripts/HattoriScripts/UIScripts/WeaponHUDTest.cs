@@ -31,7 +31,7 @@ public class WeaponHUDTest : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha2))
             weaponManager.ChangeWeapon(WeaponType.SemiAutoRifle);
         if (Input.GetKeyDown(KeyCode.Alpha3))
-            weaponManager.ChangeWeapon(WeaponType.GrenadeLauncher);
+            weaponManager.ChangeWeapon(WeaponType.Grenade);
         if (Input.GetKeyDown(KeyCode.Alpha0))
             weaponManager.ChangeWeapon(WeaponType.Sword);
 

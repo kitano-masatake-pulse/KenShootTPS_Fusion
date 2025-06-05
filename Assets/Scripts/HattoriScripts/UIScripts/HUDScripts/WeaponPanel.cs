@@ -44,7 +44,7 @@ public class WeaponPanel : MonoBehaviour, IHUDPanel
         float scale = 1f;
         if (currentWeapon == WeaponType.AssaultRifle || currentWeapon == WeaponType.SemiAutoRifle)
             scale = RifleScale;
-        else if (currentWeapon == WeaponType.GrenadeLauncher)
+        else if (currentWeapon == WeaponType.Grenade)
             scale = GrenadeLauncherScale;
 
         var rt = weaponImage.rectTransform;

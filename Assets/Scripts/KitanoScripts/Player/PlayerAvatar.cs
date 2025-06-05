@@ -10,7 +10,7 @@ using static TMPro.Examples.ObjectSpin;
 
 public class PlayerAvatar : NetworkBehaviour
 {
-    [SerializeField] private GameObject headObject;
+    public GameObject headObject;
     [SerializeField] private GameObject bodyObject;
 
 
@@ -44,6 +44,7 @@ public class PlayerAvatar : NetworkBehaviour
     //行動可能かどうかのフラグ
     private bool isDuringWeaponAction = false; //武器アクション(射撃、リロード、武器切り替え)中かどうか
     private bool isImmobilized = false; //行動不能中かどうか(移動・ジャンプもできない)
+    
 
     //Weapon関連
     private WeaponType currentWeapon = WeaponType.AssaultRifle ; //現在の武器タイプ
@@ -54,14 +55,37 @@ public class PlayerAvatar : NetworkBehaviour
     public event Action<int, int> OnAmmoChanged;
     public event Action<WeaponType,int,int> OnWeaponChanged;
 
-    #region 初期化
 
+    //ホーミング関連
+    [SerializeField] private float chaseAngle = 90f; // FOVの角度（度単位）
+    [SerializeField] private float chaseRange = 5f; // 射程距離
+    [SerializeField] private float chaseSpeed = 6f; // 移動速度
+    [SerializeField] private float maxTurnAnglePerFrame = 5f; // 追尾の角度（度単位）
+    [SerializeField] private float maxAlignToCameraAnglePerSecond = 360f; // 追尾の角度（度単位）
+    [SerializeField] private float homingTime = 2f; // ホーミングの時間
+    [SerializeField] private float attackImmolizedTime = 3f; // 攻撃開始→攻撃後硬直終了までの時間
+    [SerializeField] private float rotationDuration = 0.1f; //カメラの前方向に向くまでの時間(0.1秒かけてカメラの前方向に向く)
+    private Vector3 homingMoveDirection = Vector3.forward; // ホーミング中の現在の移動方向
+    private bool isHoming = false; // ホーミング中かどうか
+    private bool isFollowingCameraForward = true; //カメラの前方向に向くかどうか(デフォルトはtrue)
+    private Transform currentTargetTransform; // 現在のターゲットのTransform
+    [SerializeField]private LayerMask playerLayer;
+    [SerializeField] private LayerMask obstructionMask;
+
+
+
+
+
+    //----------------------ここまで変数宣言----------------------------------
+
+
+    #region 初期化
 
     public override void Spawned()
     {
         //SetNickName($"Player({Object.InputAuthority.PlayerId})");
 
-        myPlayerHitbox.myPlayerRef = GetComponent<NetworkObject>().InputAuthority;
+        myPlayerHitbox.hitPlayerRef = GetComponent<NetworkObject>().InputAuthority;
 
         characterController = GetComponent<CharacterController>();
 
@@ -207,19 +231,49 @@ public class PlayerAvatar : NetworkBehaviour
     public void ChangeTransformLocally(Vector3 normalizedInputDir, Vector3 lookForwardDir)
     {
 
-        Vector3 bodyForward = new Vector3(lookForwardDir.x, 0f, lookForwardDir.z).normalized;
-        // ローカルプレイヤーの移動処理
-
-
-        if (bodyForward.sqrMagnitude > 0.0001f)
+        if (isFollowingCameraForward)
         {
-            // プレイヤー本体の向きをカメラ方向に回転
-            bodyObject.transform.forward = bodyForward;
+            Vector3 bodyForward = new Vector3(lookForwardDir.x, 0f, lookForwardDir.z).normalized;
+            // ローカルプレイヤーの移動処理
+
+
+            if (bodyForward.sqrMagnitude > 0.0001f)
+            {
+                // プレイヤー本体の向きをカメラ方向に回転
+                bodyObject.transform.forward = bodyForward;
+            }
+
+            headObject.transform.up = lookForwardDir.normalized; // カメラの方向を頭の向きに設定(アバターの頭の軸によって変えること)
+
+        }
+        else 
+        {
+            if (isHoming)
+            {
+                Homing(bodyObject.transform.position, currentTargetTransform); //ホーミング中はターゲットに向かって移動する
+
+            }
+            else 
+            {
+                //コルーチン(RotateToCameraOverTime(float duration))で、カメラの前方向に徐々に向きを合わせる
+            }
         }
 
-        headObject.transform.up = lookForwardDir.normalized; // カメラの方向を頭の向きに設定(アバターの頭の軸によって変えること)
+        Vector3 moveDirection= Vector3.zero; // 初期化
 
-        Vector3 moveDirection = Quaternion.LookRotation(bodyForward, Vector3.up) * normalizedInputDir;
+        if (isImmobilized)
+        {
+            // 行動不能中は移動方向をゼロにする
+            moveDirection = Vector3.zero;
+            
+        }
+        else
+        {
+            // 入力方向に基づいて移動方向を計算
+            moveDirection = Quaternion.LookRotation(bodyObject.transform.forward, Vector3.up) * normalizedInputDir;
+        }
+
+
 
         // 重力を加算（ここを省略すれば浮く）
         velocity.y += gravity * Time.deltaTime;
@@ -232,7 +286,188 @@ public class PlayerAvatar : NetworkBehaviour
         }
     }
 
-    //位置同期
+    #endregion
+
+
+    #region ホーミング関連
+
+    //ホーミング
+    public bool TryGetClosestTargetInRange(Vector3 origin, Vector3 forward, float range, float fovAngle, out Transform targetTransform)
+    {
+
+
+        Collider[] hits = Physics.OverlapSphere(origin, range, playerLayer); // プレイヤーのレイヤーマスクを使用して近くの敵を検出
+        float closestDistance = Mathf.Infinity;
+        targetTransform = null;
+        float minDistance = Mathf.Infinity;
+
+
+
+
+        foreach (Collider hit in hits)
+        {
+            Transform enemyTransform = hit.transform;
+            Transform enemyHeadTransform = null; // 敵の頭のTransformを格納する変数
+            if (enemyTransform.TryGetComponent<PlayerAvatar>(out PlayerAvatar enemyPlayerAvatar))
+            {
+                // PlayerAvatarコンポーネントを持つ敵のみを対象とする
+                enemyHeadTransform = enemyPlayerAvatar.headObject.transform;
+            }
+            else
+            {
+                if(enemyTransform.parent.TryGetComponent<PlayerAvatar>(out PlayerAvatar enemyParentPlayerAvatar))
+                    {
+                    // 親にPlayerAvatarコンポーネントを持つ敵も対象とする
+                    enemyHeadTransform = enemyParentPlayerAvatar.headObject.transform;
+                }
+                else
+                {
+                    continue; // PlayerAvatarコンポーネントがない場合はスキップ
+                }
+                //continue; // PlayerAvatarコンポーネントがない場合はスキップ
+            }
+            
+
+            Vector3 toEnemy = (enemyTransform.position - origin);
+            float angle = Vector3.Angle(forward, toEnemy.normalized); // 必要に応じて forward をプレイヤーの forward に変更
+            float distance = toEnemy.magnitude;
+
+
+
+            if (angle > fovAngle / 2f || distance > range)
+            {
+                continue;
+            }
+
+
+            // Raycast視線チェック
+            Vector3 from = headObject.transform.position;
+            Vector3 to = enemyHeadTransform.position;
+            Vector3 direction = (to - from).normalized;
+            float rayDistance = Vector3.Distance(from, to);
+
+            if (Physics.Raycast(from, direction, out RaycastHit hitInfo, rayDistance, obstructionMask))
+            {
+                // Rayが途中で何かに当たっていたら視線が通っていない
+                continue;
+            }
+
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                targetTransform = enemyTransform;
+            }
+
+
+        }
+
+        return targetTransform != null;
+    }
+
+
+    void StartHoming(Transform targetTransform)
+    {
+        if (targetTransform != null)
+        {
+            isHoming = true;// ホーミングを開始
+
+            // 初期方向をターゲットの方向に設定
+            Vector3 toTarget = (targetTransform.position - transform.position);
+            toTarget.y = 0f; // Y軸の成分をゼロにして水平面上の方向を取得
+            toTarget.Normalize(); // 正規化して方向ベクトルにする
+
+            bodyObject.transform.forward = toTarget; // プレイヤーの向きをターゲット方向に設定
+
+            homingMoveDirection = toTarget; // 現在の移動方向を更新
+          
+            StartCoroutine(HomingCoroutine()); // ホーミング時間の管理を開始
+
+           
+        }
+    }
+
+
+    void Homing(Vector3 attackerTransform, Transform targetTransform)
+    {
+
+
+        Vector3 toTarget = (targetTransform.position - attackerTransform);
+        toTarget.y = 0f; // Y軸の成分をゼロにして水平面上の方向を取得
+        toTarget.Normalize(); // 正規化して方向ベクトルにする
+
+        // 今の移動方向から敵への方向との差を角度で計算
+        float angleToTarget = Vector3.Angle(homingMoveDirection, toTarget);
+
+        // 角度差がある場合は補正
+        if (angleToTarget > 0f)
+        {
+            // 回転角の制限（最大maxTurnAnglePerFrame度）
+            float t = Mathf.Min(1f, maxTurnAnglePerFrame / angleToTarget);
+            homingMoveDirection = Vector3.Slerp(homingMoveDirection, toTarget, t);
+        }
+
+        // 移動
+        characterController.Move(homingMoveDirection * chaseSpeed * Time.deltaTime);
+        //transform.position += homingMoveDirection * chaseSpeed * Time.deltaTime;
+
+        // 向きを移動方向に合わせる（任意）
+        bodyObject.transform.forward = homingMoveDirection;
+
+        //Debug.Log($"Homing towards {targetTransform.name}");
+
+
+
+    }
+
+    //ホーミング時間の管理
+    IEnumerator HomingCoroutine()
+    {
+        yield return new WaitForSeconds(homingTime);
+
+        isHoming = false; // ホーミングを終了
+    }
+
+
+
+
+    //攻撃後の硬直時間の管理
+    IEnumerator PostAttackDelayCoroutine()
+    {
+        yield return new WaitForSeconds(attackImmolizedTime);
+
+        isImmobilized = false; // 行動不能を解除
+        //キャラの向きをカメラの向きに徐々に戻す
+        StartCoroutine(RotateToCameraOverTime(rotationDuration));
+
+    }
+
+    //0.1秒かけてカメラの前方向に向くコルーチン
+    private IEnumerator RotateToCameraOverTime(float duration)
+    {
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            // カメラのY軸の回転をターゲットとする
+            float targetY = tpsCameraTransform.eulerAngles.y;
+            Quaternion targetRotation = Quaternion.Euler(0, targetY, 0);
+
+            // 回転速度に基づいて現在の向きを補間
+            bodyObject.transform.rotation = Quaternion.RotateTowards(
+                transform.rotation,
+                targetRotation,
+                maxAlignToCameraAnglePerSecond  * Time.deltaTime
+            );
+
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+        isFollowingCameraForward = true; // カメラの向きに追従するように設定
+    }
+    #endregion
+
+
+    #region 位置同期
     void SynchronizeTransform()
     {
 
@@ -289,6 +524,12 @@ public class PlayerAvatar : NetworkBehaviour
         
 
     }
+
+
+
+
+
+
     #endregion
 
 
@@ -316,23 +557,59 @@ public class PlayerAvatar : NetworkBehaviour
 
         if (CanWeaponAction()) //発射可能かどうかを判定
         {
+            if (currentWeapon != WeaponType.Sword)
+            {   
+                //遠距離武器の処理
+                if (weaponClassDictionary[currentWeapon].IsMagazineEmpty())
+                {
+                    Reload(); //マガジンが空ならリロードする
 
-            if (weaponClassDictionary[currentWeapon].IsMagazineEmpty())
-            {
-                Reload(); //マガジンが空ならリロードする
+                }
+                else
+                {
+                    weaponClassDictionary[currentWeapon].FireDown(); //現在の武器の発射処理を呼ぶ
+                    SetActionAnimationPlayList(currentWeapon.FireDownAction(), Runner.SimulationTime); //アクションアニメーションのリストに発射ダウンを追加
+
+                    OnAmmoChanged?.Invoke(weaponClassDictionary[currentWeapon].CurrentMagazine, weaponClassDictionary[currentWeapon].CurrentReserve); //弾薬変更イベントを発火
+
+                    StartCoroutine(FireRoutine(currentWeapon.FireWaitTime())); //発射ダウンのコルーチンを開始
+                                                                               //Debug.Log($"FireDown {currentWeapon.GetName()}"); //デバッグログ
+                }
 
             }
             else
             {
+                //近接武器の処理
+                isImmobilized = true; //行動不能
+                isFollowingCameraForward = false; // カメラの向きに追従しないように設定
+
+                //攻撃の当たり判定やアニメーションは変わらないので共通
                 weaponClassDictionary[currentWeapon].FireDown(); //現在の武器の発射処理を呼ぶ
                 SetActionAnimationPlayList(currentWeapon.FireDownAction(), Runner.SimulationTime); //アクションアニメーションのリストに発射ダウンを追加
+                StartCoroutine(PostAttackDelayCoroutine()); //攻撃後の硬直時間を管理するコルーチンを開始
 
-                OnAmmoChanged?.Invoke(weaponClassDictionary[currentWeapon].CurrentMagazine, weaponClassDictionary[currentWeapon].CurrentReserve); //弾薬変更イベントを発火
+                if (TryGetClosestTargetInRange(headObject.transform.position, bodyObject.transform.forward, chaseRange, chaseAngle, out Transform targetTransform))
+                {
+                    // 近くに敵がいる場合
+                    currentTargetTransform = targetTransform; // 現在のターゲットを設定
+                    StartHoming(currentTargetTransform); //ホーミング開始
+                    Debug.Log($"Homing started towards {currentTargetTransform.name} from {headObject.transform.position}");
 
-                StartCoroutine(FireRoutine(currentWeapon.FireWaitTime())); //発射ダウンのコルーチンを開始
-                //Debug.Log($"FireDown {currentWeapon.GetName()}"); //デバッグログ
+                }
+                else 
+                {
+                    // 近くに敵がいない場合、ホーミングせずその場で攻撃
+
+                    Debug.Log("No target found for homing. Attacking in place.");
+
+
+                }
+
+
+
             }
         }
+
         else
         {
             //Debug.Log($"Cannot fire {currentWeapon.GetName()}: Magazine is empty or not ready to fire.");
