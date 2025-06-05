@@ -1,26 +1,39 @@
 using TMPro;
 using UnityEngine;
+using Fusion;
 
-// スコア用パネル
+// スコア用パネル  
 public class ScorePanel : MonoBehaviour, IHUDPanel
 {
     [SerializeField] private TMP_Text killCount, deathCount;
-    private PlayerNetworkState playerState;
-    public void Initialize(PlayerNetworkState pState, WeaponLocalState _)
+
+    public void Initialize(PlayerNetworkState _, WeaponLocalState __)
     {
-        playerState = pState;
-        //イベント登録
-        playerState.OnScoreChanged -= UpdateScoreText; 
-        playerState.OnScoreChanged += UpdateScoreText;
-        //初期値設定
-        UpdateScoreText(playerState.KillScore, playerState.DeathScore);
+
+
+        GameManager.Instance.OnManagerScoreChanged -= UpdateScoreText;
+        GameManager.Instance.OnManagerScoreChanged += UpdateScoreText;
+        //初期値設定  
+        UpdateScoreText();
+
+        
     }
-    public void Cleanup() {
-        playerState.OnScoreChanged -= UpdateScoreText;
-    }
-    private void UpdateScoreText(int k, int d)
+
+    public void Cleanup()
     {
-        killCount.text = k.ToString();
-        deathCount.text = d.ToString();
+        GameManager.Instance.OnManagerScoreChanged -= UpdateScoreText;
+    }
+
+  
+
+    private void UpdateScoreText()
+    {
+
+        if (GameManager.Instance.TryGetMyScore(out var score))
+        {
+            killCount.text = score.Kills.ToString();
+            deathCount.text = score.Deaths.ToString();
+        }
+       
     }
 }

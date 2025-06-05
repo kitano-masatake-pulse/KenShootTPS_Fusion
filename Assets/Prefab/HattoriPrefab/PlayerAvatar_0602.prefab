@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6607547571998389567}
   - component: {fileID: 3017242959755997433}
   - component: {fileID: 3457968446692880310}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -169,7 +169,7 @@ GameObject:
   - component: {fileID: 3003156920590566807}
   - component: {fileID: 5158799397124658616}
   - component: {fileID: 6784965854089944593}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -277,7 +277,7 @@ GameObject:
   - component: {fileID: 949803519744123583}
   - component: {fileID: 4029564902358131634}
   - component: {fileID: 2497911446612596105}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -474,7 +474,8 @@ GameObject:
   - component: {fileID: 7900123258146962750}
   - component: {fileID: 5480361188940726396}
   - component: {fileID: 7602068678416725619}
-  m_Layer: 0
+  - component: {fileID: 7338604316489722838}
+  m_Layer: 10
   m_Name: PlayerAvatar_0602
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -529,6 +530,7 @@ MonoBehaviour:
   - {fileID: 7900123258146962750}
   - {fileID: 5480361188940726396}
   - {fileID: 7602068678416725619}
+  - {fileID: 7338604316489722838}
   - {fileID: 996010130359102429}
   - {fileID: 8343474971765404885}
   - {fileID: 5559872994332756978}
@@ -607,8 +609,6 @@ MonoBehaviour:
   _CurrentWeapon_Network: 0
   _KillScore: 0
   _DeathScore: 0
-  _MagazineAmmo_Network: 0
-  _ReserveAmmo_Network: 0
 --- !u!114 &5480361188940726396
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -645,6 +645,23 @@ MonoBehaviour:
   GizmosColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   Hitboxes:
   - {fileID: 332203224855565679}
+--- !u!114 &7338604316489722838
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4330235374038941541}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30e3feb0f51b1ef41adb5c5cd143ecc1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  WordOffset: 0
+  WordCount: 0
+  _interpolationDataSource: 0
+  playerAvatar: {fileID: 868202301397860627}
+  WorldUICanvas: {fileID: 5412763699026086549}
 --- !u!1 &4768840862029995750
 GameObject:
   m_ObjectHideFlags: 0

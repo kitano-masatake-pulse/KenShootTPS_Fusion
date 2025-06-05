@@ -398,7 +398,7 @@ GameObject:
   - component: {fileID: 75697187}
   - component: {fileID: 75697186}
   m_Layer: 0
-  m_Name: ScoreManager
+  m_Name: GameManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -437,14 +437,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 75697185}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ac565717a939f04c8a70410d179d62d, type: 3}
+  m_Script: {fileID: 11500000, guid: 3b562c8abf3edae489c887a9b256b5ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   WordOffset: 0
   WordCount: 0
   _interpolationDataSource: 0
-  _PlayerScores:
-    _items: []
 --- !u!4 &75697188
 Transform:
   m_ObjectHideFlags: 0

@@ -8,8 +8,8 @@ public class TimerPanel : MonoBehaviour, IHUDPanel
 
     public void Initialize(PlayerNetworkState _, WeaponLocalState __)
     {
-        GameTimeManager.OnTimeChanged -= UpdateTimerText;
-        GameTimeManager.OnTimeChanged += UpdateTimerText;
+        GameManager.Instance.OnTimeChanged -= UpdateTimerText;
+        GameManager.Instance.OnTimeChanged += UpdateTimerText;
         UpdateTimerText(GameTimeManager.initialTimeSec);
     }
     public void Cleanup()
@@ -18,6 +18,7 @@ public class TimerPanel : MonoBehaviour, IHUDPanel
     }
     private void UpdateTimerText(int sec)
     {
+        Debug.Log($"TimerPanel: UpdateTimerText called with sec={sec}");
         timerText.text = $"{sec / 60:00}:{sec % 60:00}";
     }
 }

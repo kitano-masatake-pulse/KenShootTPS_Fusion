@@ -8,28 +8,25 @@ public class HUDManager : MonoBehaviour
     [SerializeField] private WeaponPanel weapon;
     [SerializeField] private TimerPanel timer;
     [SerializeField] private RespawnPanel resp;
-    private PlayerNetworkState playerState;
-    private WeaponLocalState weaponState;
 
 
     private void OnEnable()
-    {
+    {   
         PlayerNetworkState.OnLocalPlayerSpawned += PlayerHUDInitialize;
         WeaponLocalState.OnWeaponSpawned += WeaponHUDInitialize;
-        TimerInitialize();
+        GameManager.OnGameManagerSpawned += GameHUDInitialize;
     }
     private void OnDisable()
     {
         PlayerNetworkState.OnLocalPlayerSpawned -= PlayerHUDInitialize;
         WeaponLocalState.OnWeaponSpawned -= WeaponHUDInitialize;
+        GameManager.OnGameManagerSpawned -= GameHUDInitialize;
         CleanupAll();
     }
 
     private void PlayerHUDInitialize(PlayerNetworkState pState)
     {
         hp.Initialize(pState, null);
-        score.Initialize(pState, null);
-        resp.Initialize(pState, null);
     }
 
     private void WeaponHUDInitialize(WeaponLocalState wState)
@@ -37,8 +34,12 @@ public class HUDManager : MonoBehaviour
         weapon.Initialize(null, wState);
     }
 
-    private void TimerInitialize()
+    private void GameHUDInitialize()
     {
+        // GameManagerÇ™èâä˙âªÇ≥ÇÍÇΩå„Ç…åƒÇ—èoÇ≥ÇÍÇÈ
+        Debug.Log("GameHUDInitialize called");
+        score.Initialize(null, null);
+        resp.Initialize(null, null);
         timer.Initialize(null, null);
     }
 

@@ -12,33 +12,32 @@ public class RespawnPanel : MonoBehaviour, IHUDPanel
     [SerializeField] private Button respawnBtn;
     [Header("フェードと遅延の設定")]
     [SerializeField] private float fadeTime = 1f, delay = 5f;
-    private PlayerNetworkState playerState;
 
     private Coroutine co;
 
-    public void Initialize(PlayerNetworkState pState, WeaponLocalState _)
+    public void Initialize(PlayerNetworkState _, WeaponLocalState __)
     {
-        playerState = pState;
-        // イベント登録
-        playerState.OnPlayerDied -= DisplayRespawnPanel; 
-        playerState.OnPlayerDied += DisplayRespawnPanel;
+        GameManager.Instance.OnMyPlayerDied -= DisplayRespawnPanel;
+        GameManager.Instance.OnMyPlayerDied += DisplayRespawnPanel;
     }
     public void Cleanup()
     {
-        playerState.OnPlayerDied -= DisplayRespawnPanel;
+        GameManager.Instance.OnMyPlayerDied -= DisplayRespawnPanel;
     }
 
-    private void DisplayRespawnPanel(PlayerRef victim, PlayerRef killer)
+    private void DisplayRespawnPanel(PlayerRef killer, float hostTimeStamp)
     {
         if (co != null) StopCoroutine(co);
         co = StartCoroutine(DoRespawn(killer));
     }
+
     private IEnumerator DoRespawn(PlayerRef killer)
     {
         respawnBtn.gameObject.SetActive(false);
         respawnPanelGroup.alpha = 0; 
         respawnPanelGroup.blocksRaycasts = true;
         killerText.text = "";
+        countdownText.text = "";
 
         // フェードイン
         float t = 0;

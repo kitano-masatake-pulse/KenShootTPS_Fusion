@@ -10,21 +10,26 @@ public class PlayerDeathHandler : NetworkBehaviour
 
     void OnEnable()
     {
-        // PlayerNetworkState の死亡通知を購読
-        var state = GetComponent<PlayerNetworkState>();
+        if(GameManager.Instance != null)
+        {
+            GameManager.Instance.OnMyPlayerDied += HandleDeath;
+        }
         
-        state.OnPlayerDied += HandleDeath;
     }
 
     void OnDisable()
     {
-        GetComponent<PlayerNetworkState>().OnPlayerDied -= HandleDeath;
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.OnMyPlayerDied -= HandleDeath;
+        }
     }
 
-    private void HandleDeath(PlayerRef victim, PlayerRef killer)
+    private void HandleDeath(PlayerRef killer, float hostTimeStamp)
     {
         //入力無効（PlayerAvatar 側にもフラグを送るか共有）
         //PlayerAvatarの行動不能フラグを有効化する
+
         //Collider 無効化(レイヤー切り替え)
         foreach (var col in GetComponentsInChildren<Collider>())
             col.gameObject.layer = LayerMask.NameToLayer("DeadPlayer");
@@ -34,8 +39,8 @@ public class PlayerDeathHandler : NetworkBehaviour
         //ネームタグ非表示
         WorldUICanvas.SetActive(false);
         //プレイヤーアバターに死亡アニメーションを設定
-        playerAvatar.SetActionAnimationPlayList(ActionType.Dead, Runner.SimulationTime);
-    }
+        playerAvatar.SetActionAnimationPlayList(ActionType.Dead, hostTimeStamp);
 
+    }
 
 }

@@ -27,12 +27,7 @@ public class ScoreDebugUI : MonoBehaviour
         GUILayout.Label("=== Player Scores ===");
 
         // ScoreManager から全スコア辞書を取得
-        IEnumerable<KeyValuePair<PlayerRef, PlayerScore>> allScores
-            = scoreManager.GetAllScores();
-
-        var SortedScores = allScores
-            .OrderByDescending(kvp => kvp.Value.Kills)
-            .ToList();
+        var SortedScores = GameManager.Instance.GetSortedScores();
 
         foreach (var kvp in SortedScores)
         {
@@ -45,33 +40,8 @@ public class ScoreDebugUI : MonoBehaviour
             // プレイヤー情報＋現在のスコアを表示
             GUILayout.Label($"Player: {playerRef}", GUILayout.Width(140));
             GUILayout.Label($"Kills: {score.Kills}  Deaths: {score.Deaths}", GUILayout.Width(120));
-
-            // もしこのインスタンスがホスト(HasStateAuthority) なら、ボタンを表示してスコアをいじれるようにする
-            if (scoreManager.Object.HasStateAuthority)
-            {
-                // 「+1 キル」ボタンを押すと ModifyScore で +1 する
-                if (GUILayout.Button("+Kill", GUILayout.Width(50)))
-                {
-                    scoreManager.ModifyScore(playerRef, +1, 0);
-                }
-                // 「+1 デス」ボタンを押すと ModifyScore で +1 する
-                if (GUILayout.Button("+Death", GUILayout.Width(60)))
-                {
-                    scoreManager.ModifyScore(playerRef, 0, +1);
-                }
-
-                // 任意で「−1 キル」「−1 デス」ボタンを追加したい場合は以下のように
-                if (GUILayout.Button("-Kill", GUILayout.Width(50)))
-                {
-                    scoreManager.ModifyScore(playerRef, -1, 0);
-                }
-                if (GUILayout.Button("-Death", GUILayout.Width(60)))
-                {
-                    scoreManager.ModifyScore(playerRef, 0, -1);
-                }
-            }
-
             GUILayout.EndHorizontal();
+
         }
 
         GUILayout.EndVertical();

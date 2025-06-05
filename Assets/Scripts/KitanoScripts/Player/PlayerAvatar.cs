@@ -33,7 +33,7 @@ public class PlayerAvatar : NetworkBehaviour
 
     [SerializeField] private Transform hostTransform;
 
-    public List<ActionStruct> actionAnimationPlayList=new List<ActionStruct> { }   ;  //再生すべきアクションアニメーションのリスト
+    public List<ActionStruct> actionAnimationPlayList = new List<ActionStruct> { }   ;  //再生すべきアクションアニメーションのリスト
 
     public Vector3 normalizedInputDirection=Vector3.zero; //入力方向の正規化されたベクトル
 
@@ -332,7 +332,7 @@ public class PlayerAvatar : NetworkBehaviour
 
     void ShareDataFromInputAuthority()
     { 
-        Debug.Log($" Share Data From {Object.InputAuthority}");
+        //Debug.Log($" Share Data From {Object.InputAuthority}");
         //入力権限のあるプレイヤーからのデータを共有する(ホストだけがGetInputで参照可能)
         if (GetInput(out NetworkInputData data))
         {
@@ -348,7 +348,7 @@ public class PlayerAvatar : NetworkBehaviour
     void ApplyTransformFromNetworkProperty()
     {
 
-        Debug.Log($"ApplyTransformFromNetworkProperty called. {Runner.LocalPlayer}");
+        //Debug.Log($"ApplyTransformFromNetworkProperty called. {Runner.LocalPlayer}");
         Vector3 bodyForward = new Vector3(cameraForwardInHost.x, 0f, cameraForwardInHost.z).normalized;
             // ローカルプレイヤーの移動処理     
 
