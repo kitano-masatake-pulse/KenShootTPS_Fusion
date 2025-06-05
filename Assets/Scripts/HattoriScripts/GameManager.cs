@@ -72,7 +72,7 @@ public class GameManager : NetworkBehaviour
     // 時間変更時のイベント
     public event Action<int> OnTimeChanged;
     // 残り時間初期値（3分 = 180 秒）
-    private int initialTimeSec = 10;
+    public int initialTimeSec = 180;
     // タイマー開始時の SimulationTime をサーバー／ホストでキャッシュ
     [Networked]
     private double startSimTime { get; set; } = 0.0;
@@ -239,12 +239,10 @@ public class GameManager : NetworkBehaviour
 
     static void TimeChangedCallback(Changed<GameManager> changed)
     {
-        Debug.Log($"TimeChangedCallback called with RemainingSeconds={changed.Behaviour.RemainingSeconds}");
         changed.Behaviour.RaiseTimeChanged();
     }
     private void RaiseTimeChanged()
     {
-        Debug.Log($"RaiseTimeChanged called with RemainingSeconds={RemainingSeconds}");
         OnTimeChanged?.Invoke(RemainingSeconds);
     }
     //===========================================

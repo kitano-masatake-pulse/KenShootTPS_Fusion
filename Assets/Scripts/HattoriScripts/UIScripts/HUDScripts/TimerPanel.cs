@@ -10,11 +10,11 @@ public class TimerPanel : MonoBehaviour, IHUDPanel
     {
         GameManager.Instance.OnTimeChanged -= UpdateTimerText;
         GameManager.Instance.OnTimeChanged += UpdateTimerText;
-        UpdateTimerText(GameTimeManager.initialTimeSec);
+        UpdateTimerText(GameManager.Instance.initialTimeSec);
     }
     public void Cleanup()
     {
-        GameTimeManager.OnTimeChanged -= UpdateTimerText;
+        GameManager.Instance.OnTimeChanged -= UpdateTimerText;
     }
     private void UpdateTimerText(int sec)
     {
