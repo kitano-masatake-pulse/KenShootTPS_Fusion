@@ -201,6 +201,10 @@ public class PlayerAvatar : NetworkBehaviour
         
         // 重力を加算（ここを省略すれば浮く）
         velocity.y += gravity * Time.deltaTime;
+        if (!HasInputAuthority)
+        {
+            Debug.Log($"VerticalSpeed Velocity.y: {velocity.y}"); // デバッグ用ログ
+        }
         // 坂道対応：Moveは自動で地形の傾斜に合わせてくれる
         characterController.Move((moveDirection * moveSpeed + velocity) * Time.deltaTime);
         // 着地しているなら重力リセット
@@ -233,13 +237,6 @@ public class PlayerAvatar : NetworkBehaviour
     {
         velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity); ; // ジャンプの初速度を設定
         SetActionAnimationPlayList(ActionType.Jump, calledTime); //アクションアニメーションのリストにジャンプを追加
-
-        //foreach (var action in actionAnimationPlayList)
-        //{
-        //    Debug.Log($"actionType: {action.actionType}, actionCalledTimeOnSimulationTime: {action.actionCalledTimeOnSimulationTime}");
-        //}
-
-        //ClearActionAnimationPlayList();
 
     }
 

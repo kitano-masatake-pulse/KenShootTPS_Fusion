@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Fusion;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class AnimationHandler : NetworkBehaviour
 {
@@ -11,8 +12,12 @@ public class AnimationHandler : NetworkBehaviour
     public Vector3 lastplayerPosition;
     public float Horizontal;
     public float Vertical;
+    public CharacterController characterController;
 
     float LastTick = 0;
+    bool IsJumping = false;
+
+    public float verticalSpeed = 0f; // ジャンプ時の垂直速度
 
     // Start is called before the first frame update
     void Start()
@@ -24,28 +29,32 @@ public class AnimationHandler : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-        SetAnimationFromAnimationPlayList();
-        foreach (var action in playerAvatar.ActionAnimationPlayList)
-        {
-            Debug.Log($"actionType: {action.actionType}, actionCalledTimeOnSimulationTime: {action.actionCalledTimeOnSimulationTime}");
-        }
         if (Runner.Simulation.Tick != LastTick) // 2 Tickごとにアニメーションを更新
         {
             Animation();
         }
+        SetAnimationFromAnimationPlayList();
+        if (IsJumping == true)
+        {
+            //JumpAnimationHandler();
+        }
     }
 
+
+    [SerializeField] private Transform modelTransform;
     void Animation()
     {
-        Horizontal = (transform.position.x - lastplayerPosition.x) * 1000;
-        Vertical = (transform.position.z - lastplayerPosition.z) * 1000;
+        Vector3 worldDelta = transform.position - lastplayerPosition;
+        Vector3 localDelta = modelTransform.InverseTransformDirection(worldDelta);
+
+        Horizontal = localDelta.x * 1000;
+        Vertical = localDelta.z * 1000;
         animator.SetFloat("Horizontal", Horizontal, 0.001f, Time.deltaTime);
         animator.SetFloat("Vertical", Vertical, 0.001f, Time.deltaTime);
         lastplayerPosition = transform.position; // 前回の位置を保存
         if (!HasInputAuthority)
         {
             Debug.Log($"Animation called. Horizontal: {Horizontal}, Vertical: {Vertical} ");
-
         }
         LastTick = Runner.Simulation.Tick; // 前回のTickを保存
     }
@@ -58,8 +67,9 @@ public class AnimationHandler : NetworkBehaviour
             switch (action.actionType)
             {
                 case ActionType.Jump:
-                Debug.Log($"JUMP!!!!");
-                animator.SetTrigger("Jump");
+                    Debug.Log($"IsJumping True");
+                    animator.SetBool("IsJumping", true);
+                    IsJumping = true;
                     break;
             }
             Debug.Log($"actionType: {action.actionType}, actionCalledTimeOnSimulationTime: {action.actionCalledTimeOnSimulationTime}");

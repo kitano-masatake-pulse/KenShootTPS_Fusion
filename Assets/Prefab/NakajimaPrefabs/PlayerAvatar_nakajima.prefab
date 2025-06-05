@@ -1090,9 +1090,7 @@ MonoBehaviour:
   gravity: -9.8
   jumpHeight: 2
   cameraTarget: {fileID: 0}
-  animator: {fileID: 0}
-  Horizontal: 0
-  Vertical: 0
+  animator: {fileID: 2231931972422335784}
   hostTransform: {fileID: 3438471693419661691}
   normalizedInputDirection: {x: 0, y: 0, z: 0}
   _avatarPositionInHost: {x: 0, y: 0, z: 0}
@@ -1201,6 +1199,11 @@ MonoBehaviour:
   _interpolationDataSource: 0
   playerAvatar: {fileID: 2456749128542381984}
   animator: {fileID: 2231931972422335784}
+  lastplayerPosition: {x: 0, y: 0, z: 0}
+  Horizontal: 0
+  Vertical: 0
+  characterController: {fileID: 6278831117568584565}
+  modelTransform: {fileID: 5741007329088205313}
 --- !u!1 &2958646034594578311
 GameObject:
   m_ObjectHideFlags: 0
