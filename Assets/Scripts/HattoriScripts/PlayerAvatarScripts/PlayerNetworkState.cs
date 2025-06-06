@@ -90,8 +90,12 @@ public class PlayerNetworkState : NetworkBehaviour
 
         if (CurrentHP <= 0)
         {
-            //GameManager‚ÉŽ€–S‚ð’Ê’m
-            GameManager.Instance.NotifyDeath(Object.InputAuthority, attacker,Runner.SimulationTime);
+            if (GameManager.Instance != null)
+            {
+                //GameManager‚ÉŽ€–S‚ð’Ê’m
+                GameManager.Instance.NotifyDeath(Object.InputAuthority, attacker, Runner.SimulationTime);
+            }
+            
         }
     }
 

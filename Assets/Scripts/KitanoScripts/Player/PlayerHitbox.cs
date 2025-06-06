@@ -9,7 +9,7 @@ public class PlayerHitbox : Hitbox
     public PlayerRef hitPlayerRef;
 
 
-    [SerializeField] private PlayerAvatar myPlayerAvatar;
+    //[SerializeField] private PlayerAvatar myPlayerAvatar;
 
     // Start is called before the first frame update
     void Start()

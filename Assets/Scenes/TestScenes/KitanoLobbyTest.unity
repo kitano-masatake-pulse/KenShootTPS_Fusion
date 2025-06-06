@@ -469,10 +469,6 @@ MonoBehaviour:
   _CurrentHP: 0
   _MaxHP: 0
   _CurrentWeapon_Network: 0
-  _KillScore: 0
-  _DeathScore: 0
-  _MagazineAmmo_Network: 0
-  _ReserveAmmo_Network: 0
 --- !u!114 &879201700
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -527,7 +523,7 @@ MonoBehaviour:
   _interpolationDataSource: 0
   headObject: {fileID: 1137497873}
   bodyObject: {fileID: 879201692}
-  myPlayerHitbox: {fileID: 1137497878}
+  myPlayerHitboxRoot: {fileID: 0}
   moveSpeed: 3
   gravity: -9.81
   jumpHeight: 2
@@ -676,7 +672,6 @@ MonoBehaviour:
   Offset: {x: 0, y: 0, z: 0}
   Root: {fileID: 879201700}
   GizmosColor: {r: 1, g: 0.9203187, b: 0, a: 1}
-  myPlayerAvatar: {fileID: 0}
 --- !u!1 &1318602329
 GameObject:
   m_ObjectHideFlags: 0
@@ -785,11 +780,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -631725449571884495, guid: acb1ae8f636808e4e91f7a9c4901b855, type: 3}
       propertyPath: NetworkGuid.RawGuidValue.Array.data[0]
-      value: 2255259138307531013
+      value: -5311448435288764553
       objectReference: {fileID: 0}
     - target: {fileID: -631725449571884495, guid: acb1ae8f636808e4e91f7a9c4901b855, type: 3}
       propertyPath: NetworkGuid.RawGuidValue.Array.data[1]
-      value: -3293346776396081013
+      value: 7007785206199134344
       objectReference: {fileID: 0}
     - target: {fileID: 399676473651976941, guid: acb1ae8f636808e4e91f7a9c4901b855, type: 3}
       propertyPath: m_AnchorMax.x
@@ -801,11 +796,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 768207338265179846, guid: acb1ae8f636808e4e91f7a9c4901b855, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 19.03
       objectReference: {fileID: 0}
     - target: {fileID: 768207338265179846, guid: acb1ae8f636808e4e91f7a9c4901b855, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 768207338265179846, guid: acb1ae8f636808e4e91f7a9c4901b855, type: 3}
       propertyPath: m_LocalPosition.z
@@ -841,11 +836,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2852828816588928964, guid: acb1ae8f636808e4e91f7a9c4901b855, type: 3}
       propertyPath: m_Name
-      value: PlayerAvatar_kitano
-      objectReference: {fileID: 0}
-    - target: {fileID: 7551589415759287803, guid: acb1ae8f636808e4e91f7a9c4901b855, type: 3}
-      propertyPath: m_Layer
-      value: 10
+      value: Decoy_PlayerAvatar_kitano
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

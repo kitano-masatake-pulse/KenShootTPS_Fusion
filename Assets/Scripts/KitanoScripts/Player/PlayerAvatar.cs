@@ -15,7 +15,7 @@ public class PlayerAvatar : NetworkBehaviour
 
 
     private　CharacterController characterController;
-    [SerializeField] private PlayerHitbox myPlayerHitbox;
+    [SerializeField] private HitboxRoot myPlayerHitboxRoot;
 
     // プレイヤーの身体能力を設定するための変数群
     [SerializeField] float moveSpeed = 3f;
@@ -86,7 +86,19 @@ public class PlayerAvatar : NetworkBehaviour
     {
         //SetNickName($"Player({Object.InputAuthority.PlayerId})");
 
-        myPlayerHitbox.hitPlayerRef = GetComponent<NetworkObject>().InputAuthority;
+
+        myPlayerHitboxRoot = GetComponent<HitboxRoot>();
+
+        Hitbox[] myHitBoxes = myPlayerHitboxRoot.Hitboxes; //HitboxRootからHitboxを取得
+
+        foreach (Hitbox hitbox in myHitBoxes)
+        {
+            if (hitbox is PlayerHitbox playerHitbox)
+            {
+                playerHitbox.hitPlayerRef = Object.InputAuthority; //PlayerHitboxのhitPlayerRefにInputAuthorityを設定
+            }
+
+        }
 
         characterController = GetComponent<CharacterController>();
 
@@ -509,7 +521,7 @@ public class PlayerAvatar : NetworkBehaviour
     void ApplyTransformFromNetworkProperty()
     {
 
-        Debug.Log($"ApplyTransformFromNetworkProperty called. {Runner.LocalPlayer}");
+        //Debug.Log($"ApplyTransformFromNetworkProperty called. {Runner.LocalPlayer}");
         Vector3 bodyForward = new Vector3(cameraForwardInHost.x, 0f, cameraForwardInHost.z).normalized;
             // ローカルプレイヤーの移動処理     
 
