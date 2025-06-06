@@ -15,7 +15,7 @@ public class PlayerAvatar : NetworkBehaviour
 
 
     private　CharacterController characterController;
-    [SerializeField] private PlayerHitbox myPlayerHitbox;
+    [SerializeField] private HitboxRoot myPlayerHitboxRoot;
 
     // プレイヤーの身体能力を設定するための変数群
     [SerializeField] float moveSpeed = 3f;
@@ -42,10 +42,49 @@ public class PlayerAvatar : NetworkBehaviour
     [Networked] public Vector3 normalizedInputDirectionInHost { get; set; } = Vector3.zero; //入力権限のあるプレイヤーの入力方向を参照するために使用
 
 
+
+    #region フラグ管理
     //行動可能かどうかのフラグ
     private bool isDuringWeaponAction = false; //武器アクション(射撃、リロード、武器切り替え)中かどうか
     private bool isImmobilized = false; //行動不能中かどうか(移動・ジャンプもできない)
-    
+    private bool isHoming = false; // ホーミング中かどうか
+    private bool isFollowingCameraForward = true; //カメラの前方向に向くかどうか(デフォルトはtrue)
+    private bool isInvincible = false; //無敵状態かどうか(デフォルトはfalse)
+
+
+    //各変数のgetter/setter
+    public bool IsDuringWeaponAction
+    {
+        get { return isDuringWeaponAction; }
+        set { isDuringWeaponAction = value; }
+    }
+    public bool IsImmobilized 
+    {
+        get { return isImmobilized; }
+        set { isImmobilized = value; }
+    }
+
+    public bool IsHoming
+    {
+        get { return isHoming; }
+        set { isHoming = value; }
+    }   
+    public bool IsFollowingCameraForward    
+    {
+        get { return isFollowingCameraForward; }
+        set { isFollowingCameraForward = value; }
+    }
+
+    public bool IsInvincible
+    {
+        get { return isInvincible; }
+        set { isInvincible = value; }
+    }
+
+
+
+
+    #endregion
 
     //Weapon関連
     private WeaponType currentWeapon = WeaponType.AssaultRifle ; //現在の武器タイプ
@@ -67,8 +106,6 @@ public class PlayerAvatar : NetworkBehaviour
     [SerializeField] private float attackImmolizedTime = 3f; // 攻撃開始→攻撃後硬直終了までの時間
     [SerializeField] private float rotationDuration = 0.1f; //カメラの前方向に向くまでの時間(0.1秒かけてカメラの前方向に向く)
     private Vector3 homingMoveDirection = Vector3.forward; // ホーミング中の現在の移動方向
-    private bool isHoming = false; // ホーミング中かどうか
-    private bool isFollowingCameraForward = true; //カメラの前方向に向くかどうか(デフォルトはtrue)
     private Transform currentTargetTransform; // 現在のターゲットのTransform
     [SerializeField]private LayerMask playerLayer;
     [SerializeField] private LayerMask obstructionMask;
@@ -86,7 +123,19 @@ public class PlayerAvatar : NetworkBehaviour
     {
         //SetNickName($"Player({Object.InputAuthority.PlayerId})");
 
-        myPlayerHitbox.hitPlayerRef = GetComponent<NetworkObject>().InputAuthority;
+
+        myPlayerHitboxRoot = GetComponent<HitboxRoot>();
+
+        Hitbox[] myHitBoxes = myPlayerHitboxRoot.Hitboxes; //HitboxRootからHitboxを取得
+
+        foreach (Hitbox hitbox in myHitBoxes)
+        {
+            if (hitbox is PlayerHitbox playerHitbox)
+            {
+                playerHitbox.hitPlayerRef = Object.InputAuthority; //PlayerHitboxのhitPlayerRefにInputAuthorityを設定
+            }
+
+        }
 
         characterController = GetComponent<CharacterController>();
 
@@ -509,7 +558,7 @@ public class PlayerAvatar : NetworkBehaviour
     void ApplyTransformFromNetworkProperty()
     {
 
-        Debug.Log($"ApplyTransformFromNetworkProperty called. {Runner.LocalPlayer}");
+        //Debug.Log($"ApplyTransformFromNetworkProperty called. {Runner.LocalPlayer}");
         Vector3 bodyForward = new Vector3(cameraForwardInHost.x, 0f, cameraForwardInHost.z).normalized;
             // ローカルプレイヤーの移動処理     
 

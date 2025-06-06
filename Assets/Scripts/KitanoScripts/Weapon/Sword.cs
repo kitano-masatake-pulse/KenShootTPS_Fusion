@@ -86,7 +86,7 @@ public class Sword : WeaponBase
             hits, 
             playerLayer,
             //HitOptions.IgnoreInputAuthority
-            HitOptions.None // HitOptions.Noneを使用して、すべてのヒットを取得する
+            HitOptions.IgnoreInputAuthority // HitOptions.Noneを使用して、すべてのヒットを取得する
             );
 
         Debug.Log($"OverlapSphere hit count: {hitCount}");
@@ -127,7 +127,7 @@ public class Sword : WeaponBase
                         continue;
                     }
 
-                    if (TryRaycastCornRadiial(hit))// 円錐形のRaycastを行う
+                    if (TryRaycastCornRadial(hit))// 円錐形のRaycastを行う
                     {
 
                         damagedPlayerWithHit[targetPlayerRef]= hit; // ダメージを与えたプレイヤーとヒット情報を記録
@@ -140,6 +140,8 @@ public class Sword : WeaponBase
             }
 
             // damagedPlayerWithHitに含まれるプレイヤーにダメージを与える
+            Debug.Log($"Damaged players count: {damagedPlayerWithHit.Count}");
+            Debug.Log($"damagedPlayerWithHit: {damagedPlayerWithHit}");
 
             foreach (var kv　in damagedPlayerWithHit)
             {
@@ -153,8 +155,8 @@ public class Sword : WeaponBase
         }
     }
 
-
-    bool TryRaycastCornRadiial(LagCompensatedHit hit)
+    // 円錐形のRaycastを行う
+    bool TryRaycastCornRadial(LagCompensatedHit hit)
     {
         Vector3 swordDirection = hit.GameObject.transform.position - swordRoot.position; // 剣の方向を計算(後々、被弾側のspineを参照するようにする)
         List<Vector3> rayDirections = CornRaycastDirections(swordDirection, cornRayAngleDeg, cornRayNum); // 30度の円錐形の方向に4本のRayを放射状に飛ばす
@@ -182,7 +184,7 @@ public class Sword : WeaponBase
             {
                 Debug.Log("Hit!" + hit.GameObject);
 
-                CauseDamage(hit, weaponType.Damage()); //PlayerHitboxかどうかの確認が必要？
+                
 
                 return true; // ヒットした場合はtrueを返す
 
