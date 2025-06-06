@@ -47,6 +47,8 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         }
         Instance = this;
     }
+    //タイトルシーンでデスマッチなのかチームデスマッチかを選択する
+    //その情報を持って、セッションに参加する
 
 
     private async void Start()
@@ -143,7 +145,6 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
             Debug.Log("ホストが参加 → ボタン表示指示");
             lobbyUI.ShowStartButton(runner);
         }
-
     }
 
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) {
@@ -155,13 +156,6 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         }
     }
 
-    //public void OnInput(NetworkRunner runner, NetworkInput input) {
-    //    var data = new NetworkInputData();
-
-    //    data.Direction = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
-
-    //    input.Set(data);
-    //}
 
     public void OnInput(NetworkRunner runner, NetworkInput input) { }
 

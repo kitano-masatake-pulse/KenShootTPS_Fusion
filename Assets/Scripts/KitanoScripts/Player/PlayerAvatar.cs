@@ -30,7 +30,7 @@ public class PlayerAvatar : NetworkBehaviour
     public Transform CameraTarget => cameraTarget;
 
     private List<ActionStruct> actionAnimationPlayList=new List<ActionStruct> { }   ;  //再生すべきアクションアニメーションのリスト
-    public List<ActionStruct> ActionAnimationPlayList => actionAnimationPlayList;
+    public IReadOnlyList<ActionStruct> ActionAnimationPlayList => actionAnimationPlayList;
 
 
     public Vector3 normalizedInputDirection=Vector3.zero; //入力方向の正規化されたベクトル。OnInput()で参照するためpublic
@@ -86,76 +86,87 @@ public class PlayerAvatar : NetworkBehaviour
     {
         //SetNickName($"Player({Object.InputAuthority.PlayerId})");
 
+        // プレイヤーが被弾したときに誰に当たったかを記録するための参照を設定
         myPlayerHitbox.hitPlayerRef = GetComponent<NetworkObject>().InputAuthority;
 
+        // CharacterController コンポーネントを取得
         characterController = GetComponent<CharacterController>();
-
 
         if (HasInputAuthority)
         {
-            //自分のアバターなら、TPSカメラに紐づける
+            // 自分のアバターであれば、TPSカメラのTransformを取得
             TPSCameraController tpsCameraController = FindObjectOfType<TPSCameraController>();
-
             tpsCameraTransform = tpsCameraController.transform;
 
-            //tpsCameraController.SetCameraToMyAvatar(this);
-
+            // 入力管理オブジェクトを取得し、自身のアバターを登録
             NetworkInputManager networkInputManager = FindObjectOfType<NetworkInputManager>();
-
             networkInputManager.myPlayerAvatar = this;
 
-            
-
+            // TPSカメラのターゲットスクリプトに自身のTransformを設定
             TPSCameraTarget cameraTargetScript = FindObjectOfType<TPSCameraTarget>();
-            if(cameraTargetScript != null)
+            if (cameraTargetScript != null)
             {
                 cameraTargetScript.player = this.transform;
             }
-
         }
 
         //ApplyHostTransform();
 
-        characterController.Move(Vector3.zero); //初期位置での移動を防ぐために、初期位置でMoveを呼ぶ
+        // 起動時にCharacterControllerの物理挙動を安定させるため、ゼロ移動を実行
+        characterController.Move(Vector3.zero);
 
-        SetWeapons(); //武器の初期化を行う
-
+        // 武器の初期設定を行う
+        SetWeapons();
     }
+
 
     void SetWeapons()
     {
+        // 子オブジェクトから非アクティブも含めてすべてのWeaponBaseコンポーネントを取得
         WeaponBase[] weaponScripts = GetComponentsInChildren<WeaponBase>(includeInactive: true);
 
+        // 取得したすべての武器スクリプトに対して処理を行う
         foreach (WeaponBase weapon in weaponScripts)
         {
+            // 同じ武器タイプがまだ辞書に登録されていなければ追加
             if (!weaponClassDictionary.ContainsKey(weapon.weaponType))
             {
                 weaponClassDictionary.Add(weapon.weaponType, weapon);
-                weapon.CurrentMagazine = weapon.weaponType.MagazineCapacity(); //初期マガジンは最大値に設定
-                weapon.CurrentReserve = 50; //初期リザーブは50
+
+                weapon.CurrentMagazine = weapon.weaponType.MagazineCapacity(); // 初期マガジンは最大値に設定
+                weapon.CurrentReserve = 50; // 初期リザーブは50
             }
             else
             {
+                // 同じ武器タイプがすでに登録済みであることを警告として出力
                 Debug.LogWarning($"Weapon {weapon.weaponType} already exists in the dictionary.");
             }
         }
 
-        OnWeaponSpawned?.Invoke(this); //武器生成イベントを発火
-
-
-
+        // 武器が生成されたことを通知するイベントを発火
+        OnWeaponSpawned?.Invoke(this);
     }
+
 
     #endregion
 
 
     #region Update系
+    public bool wasGraunded;
+    public bool isGraundedNow;
     void Update()
     {
         if (HasInputAuthority)
         {
             InputCheck();
         }
+        isGraundedNow = characterController.isGrounded; // 現在の接地判定を取得
+        if (!wasGraunded && isGraundedNow)
+        {
+            // 接地した瞬間に呼ばれる処理
+            Land();
+        }
+        wasGraunded = isGraundedNow; // 前回の接地状態を更新
     }
 
     public override void FixedUpdateNetwork()
@@ -182,6 +193,8 @@ public class PlayerAvatar : NetworkBehaviour
         {
             Jump();
         }
+
+        
         
         if (localInputData.FirePressedDown) //発射ボタンが押されたら、武器の発射処理を呼ぶ
         {
@@ -546,6 +559,13 @@ public class PlayerAvatar : NetworkBehaviour
         }
     }
 
+    void Land()
+    {
+        if (!wasGraunded && isGraundedNow)
+        {
+            SetActionAnimationPlayListForAllClients(ActionType.Land);
+        }
+    }
 
     #endregion
 
@@ -622,7 +642,7 @@ public class PlayerAvatar : NetworkBehaviour
 
     void Fire()
     {
-        if (!currentWeapon.isOneShotWeapon() &&  CanWeaponAction()   && !weaponClassDictionary[currentWeapon].IsMagazineEmpty() ) //連射武器で、かつ発射可能な場合
+        if (!currentWeapon.isOneShotWeapon() &&  CanWeaponAction()   && !weaponClassDictionary[currentWeapon].IsMagazineEmpty() ) //連射武器で、かつ発射可能な場合a
         {
 
 
@@ -762,6 +782,7 @@ public class PlayerAvatar : NetworkBehaviour
     }
 
     //コルーチン
+    //コルーチン
     private IEnumerator ChangeWeaponRoutine(float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
@@ -812,7 +833,6 @@ public class PlayerAvatar : NetworkBehaviour
             Debug.Log($" Apply Jump of  {sourcePlayer}. Tick:{info.Tick} SimuTime: {Runner.SimulationTime}");
 
             SetActionAnimationPlayList(actionType, calledTime);  // アクションアニメーションのリストにジャンプを追加
-
 
         }
         else

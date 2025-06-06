@@ -977,7 +977,6 @@ GameObject:
   - component: {fileID: -4328647438270834359}
   - component: {fileID: 7045168527131226642}
   - component: {fileID: 1857893055728629384}
-  - component: {fileID: 4728757488061828292}
   - component: {fileID: 9087073000084578297}
   m_Layer: 0
   m_Name: PlayerAvatar_nakajima
@@ -1090,12 +1089,24 @@ MonoBehaviour:
   gravity: -9.8
   jumpHeight: 2
   cameraTarget: {fileID: 0}
-  animator: {fileID: 2231931972422335784}
-  hostTransform: {fileID: 3438471693419661691}
   normalizedInputDirection: {x: 0, y: 0, z: 0}
   _avatarPositionInHost: {x: 0, y: 0, z: 0}
   _cameraForwardInHost: {x: 0, y: 0, z: 0}
   _normalizedInputDirectionInHost: {x: 0, y: 0, z: 0}
+  chaseAngle: 90
+  chaseRange: 5
+  chaseSpeed: 6
+  maxTurnAnglePerFrame: 5
+  maxAlignToCameraAnglePerSecond: 360
+  homingTime: 2
+  attackImmolizedTime: 3
+  rotationDuration: 0.1
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  obstructionMask:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!114 &6887860513559479073
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1114,10 +1125,6 @@ MonoBehaviour:
   _CurrentHP: 100
   _MaxHP: 100
   _CurrentWeapon_Network: 0
-  _KillScore: 0
-  _DeathScore: 0
-  _MagazineAmmo_Network: 0
-  _ReserveAmmo_Network: 0
 --- !u!114 &-4328647438270834359
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1169,19 +1176,6 @@ MonoBehaviour:
   WordCount: 0
   _interpolationDataSource: 0
   playerNetworkState: {fileID: 6887860513559479073}
---- !u!114 &4728757488061828292
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2852828816588928964}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3d5876ad77b47674eb361a0dc966aa82, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  currentWeaponType: 0
 --- !u!114 &9087073000084578297
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1199,9 +1193,6 @@ MonoBehaviour:
   _interpolationDataSource: 0
   playerAvatar: {fileID: 2456749128542381984}
   animator: {fileID: 2231931972422335784}
-  lastplayerPosition: {x: 0, y: 0, z: 0}
-  Horizontal: 0
-  Vertical: 0
   characterController: {fileID: 6278831117568584565}
   modelTransform: {fileID: 5741007329088205313}
 --- !u!1 &2958646034594578311
@@ -2975,6 +2966,7 @@ MonoBehaviour:
   Offset: {x: 0, y: 0, z: 0}
   Root: {fileID: 0}
   GizmosColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  myPlayerAvatar: {fileID: 0}
 --- !u!1 &7554588070204959923
 GameObject:
   m_ObjectHideFlags: 0
