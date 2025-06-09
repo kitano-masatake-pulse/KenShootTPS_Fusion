@@ -346,7 +346,7 @@ GameObject:
   - component: {fileID: 7045168527131226642}
   - component: {fileID: 1857893055728629384}
   m_Layer: 10
-  m_Name: DecoyPlayer
+  m_Name: DummyPlayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -408,7 +408,7 @@ MonoBehaviour:
   - {fileID: 9200981800825702439}
   - {fileID: 2280059693031336937}
   - {fileID: 338725240706343348}
-  - {fileID: 4505227264538451432}
+  - {fileID: 1239008733076729018}
   SimulationBehaviours: []
 --- !u!143 &6278831117568584565
 CharacterController:
@@ -1789,14 +1789,9 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 76fa51c053078c0498183644e9903c42, type: 3}
---- !u!224 &3399392014856174371 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 5241002001013449850, guid: 76fa51c053078c0498183644e9903c42, type: 3}
-  m_PrefabInstance: {fileID: 7464389327322718041}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &4505227264538451432 stripped
+--- !u!114 &1239008733076729018 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6418507808596132529, guid: 76fa51c053078c0498183644e9903c42, type: 3}
+  m_CorrespondingSourceObject: {fileID: 8549803977748558819, guid: 76fa51c053078c0498183644e9903c42, type: 3}
   m_PrefabInstance: {fileID: 7464389327322718041}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
@@ -1805,3 +1800,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e390d439f6aad74e963dc9e4579747b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &3399392014856174371 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 5241002001013449850, guid: 76fa51c053078c0498183644e9903c42, type: 3}
+  m_PrefabInstance: {fileID: 7464389327322718041}
+  m_PrefabAsset: {fileID: 0}

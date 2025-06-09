@@ -8,9 +8,14 @@ using Fusion.Sockets;
 public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
 {
     [SerializeField]
-    private NetworkPrefabRef playerPrefab;
+    private NetworkPrefabRef playerAvatarPrefab;
+    [SerializeField]
+    private NetworkPrefabRef dummyAvatarPrefab;
     private NetworkRunner runner;
     private HashSet<PlayerRef> spawnedPlayers = new();
+
+    [Header("デバッグ用：ダミーアバターの生成数(0で無効)")]
+    public int dummyAvatarCount = 1;
 
     [SerializeField]
     private GameObject TPSCamera;
@@ -34,17 +39,36 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
 
                 var randomValue = UnityEngine.Random.insideUnitCircle * 5f;
                 var spawnPosition = new Vector3(randomValue.x, 5f, randomValue.y);
-                var avatar = runner.Spawn(playerPrefab, spawnPosition, Quaternion.identity, player);
+                var avatar = runner.Spawn(playerAvatarPrefab, spawnPosition, Quaternion.identity, player);
                 spawnedPlayers.Add(player);
                 // プレイヤー（PlayerRef）とアバター（NetworkObject）を関連付ける
                 runner.SetPlayerObject(player, avatar);
                 Debug.Log($"[Spawn] プレイヤー {player} をスポーンしました");
             }
+
+            CreateDummyAvatars(runner, dummyAvatarCount);
         }
+
+
 
     }
 
-   
+    public void CreateDummyAvatars(NetworkRunner runner, int DummyCount)
+    {
+        for (int i = 0; i < DummyCount; i++)
+        {
+
+            // ランダムな生成位置（半径5の円の内部）を取得する
+            var randomValue = UnityEngine.Random.insideUnitCircle * 5f;
+            var spawnPosition = new Vector3(randomValue.x, 5f, randomValue.y);
+
+            var avatar = runner.Spawn(dummyAvatarPrefab, spawnPosition, Quaternion.identity, PlayerRef.None);
+            // PlayerRef.Noneを使用して、ダミーアバターはプレイヤーに関連付けない
+
+
+        }
+
+    }
 
 
 
