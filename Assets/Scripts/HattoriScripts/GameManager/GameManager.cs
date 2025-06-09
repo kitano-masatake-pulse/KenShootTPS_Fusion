@@ -301,6 +301,10 @@ public class GameManager : NetworkBehaviour
     {
         return Runner.LocalPlayer;
     }
+    public NetworkObject GetMyNetworkObject()
+    {
+        return Runner.GetPlayerObject(Runner.LocalPlayer);
+    }
     /// <summary>
     /// 現在のサーバー時間でのタイムスタンプを取得するメソッド
     /// </summary>

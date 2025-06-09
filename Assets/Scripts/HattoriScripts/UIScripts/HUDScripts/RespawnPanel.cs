@@ -13,11 +13,11 @@ public class RespawnPanel : MonoBehaviour, IHUDPanel
     [SerializeField] private Button respawnBtn;
     [SerializeField] private Image fadePanel;
     [Header("リスポーンUI表示のフェードと遅延の設定")]
-    [SerializeField] private float UIfadeTime = 1f, delay = 5f;
+    [SerializeField] private float UIfadeTime = 0.5f, delay = 5f;
     [Header("リスポーン時のフェード時間設定")]
-    [SerializeField] private float respawnFadeTime = 5f;
+    [SerializeField] private float respawnFadeTime = 3f;
 
-    public event Action OnRespawnClicked;
+    public static event Action OnRespawnClicked;
 
     private Coroutine co;
     private Coroutine currentFade;
@@ -92,6 +92,8 @@ public class RespawnPanel : MonoBehaviour, IHUDPanel
     {
         if (currentFade != null) StopCoroutine(currentFade);
         currentFade = StartCoroutine(FadeRoutine(0f, 1f, respawnFadeTime, onComplete));
+        respawnPanelGroup.alpha = 0;
+        respawnPanelGroup.blocksRaycasts = false;
     }
 
     /// <summary>
