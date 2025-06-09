@@ -1,21 +1,16 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using Fusion;
 using Fusion.Sockets;
-using UnityEngine;
-using UnityEngine.UI;
+using System;
+using System.Collections.Generic;
 using TMPro;
-using Cinemachine;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
-public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
+public class MultiPeerLauncher : MonoBehaviour, INetworkRunnerCallbacks
 {
-    //シングルトンの宣言
-    public static GameLauncher Instance { get; private set; }
-
-
     [SerializeField]
     private NetworkRunner networkRunnerPrefab;
+
     [SerializeField]
     private NetworkPrefabRef playerAvatarPrefab;
 
@@ -25,47 +20,68 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     [SerializeField]
     private LobbyUIController lobbyUI;
 
-    [SerializeField]
-    private NetworkInputManager networkInputManager;
+    public TextMeshProUGUI sessionNameText;
 
-    [SerializeField]
-    private int maxPlayerNum=3;
+
 
     private NetworkRunner networkRunner;
 
-    public TextMeshProUGUI sessionNameText;
+    private NetworkRunner dummyPlayerNetworkRunner;
 
-    [Header("デバッグ用：ダミーアバターの生成数(0で無効)")]
-    public int dummyAvatarCount = 1;
-
-
-
-    [Header("次に遷移するシーン(デフォルトBattleScene)")]
-    public  SceneType nextScene= SceneType.Battle;
-
-
-
-    void Awake()
-    {
-        if (Instance != null)
-        {
-            Destroy(gameObject); // 二重生成防止
-            return;
-        }
-        Instance = this;
-    }
 
 
     private async void Start()
     {
-        // NetworkRunnerを生成する
-        networkRunner = Instantiate(networkRunnerPrefab);
-        // NetworkRunnerのコールバック対象に、このスクリプト（GameLauncher）を登録する
-        networkRunner.AddCallbacks(this);
 
-        
-        networkRunner.AddCallbacks(networkInputManager);
+        //string sceneName = SceneType.KitanoBattleTest.ToSceneName();
 
+        //// 非同期でAdditiveにシーンをロードする
+        //AsyncOperation loadOperation = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+
+        //// 完了するまで待つ
+        //while (!loadOperation.isDone)
+        //{
+        //    await System.Threading.Tasks.Task.Yield(); // フレームをまたいで待つ
+        //}
+
+        //// ロード後にシーン取得
+        //Scene loadedScene = SceneManager.GetSceneByName(sceneName);
+        //if (loadedScene.IsValid() && loadedScene.isLoaded)
+        //{
+        //    SceneManager.SetActiveScene(loadedScene);
+        //}
+        //else
+        //{
+        //    Debug.LogError("SetActiveScene できません：シーンがまだ読み込まれていません。");
+        //    return;
+        //}
+
+        for (int i = 0; i < 3; i++)
+        {
+            // 各NetworkRunnerの接続処理を行う
+            var runner = Instantiate(networkRunnerPrefab);
+            // NetworkRunnerのコールバック対象に、このスクリプト（GameLauncher）を登録する
+            runner.AddCallbacks(this);
+            // Unityで事前にロードしない。StartGameでScene名 or buildIndexを渡すだけでOK。
+            var result=await runner.StartGame(new StartGameArgs
+            {
+                GameMode = GameMode.AutoHostOrClient,
+                Scene = SceneType.KitanoBattleTest.ToSceneBuildIndex(), // ← 名前か buildIndex を指定
+                SceneManager = runner.GetComponent<NetworkSceneManagerDefault>()
+            });
+
+            // 各NetworkRunnerのゲームオブジェクトの名前を変更して識別しやすくする
+            if (result.Ok)
+            {
+                runner.name = (runner.IsServer) ? "HostRunner" : $"Client {runner.LocalPlayer.PlayerId}Runner";
+            }
+        }
+
+    }
+
+
+    public void CreateDummyClients(int DummyCount)
+    {
 
         var customProps = new Dictionary<string, SessionProperty>();
 
@@ -78,49 +94,25 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
             customProps["GameRule"] = (int)GameRule.DeathMatch;
         }
 
-
-        // StartGameArgsに渡した設定で、セッションに参加する
-        var result = await networkRunner.StartGame(new StartGameArgs
-        {
-            GameMode = GameMode.AutoHostOrClient,
-            SessionProperties = customProps,
-            PlayerCount = maxPlayerNum,
-            SceneManager = networkRunner.GetComponent<NetworkSceneManagerDefault>()
-        });
-
-
-
-        
-
-        if (result.Ok)
-        {
-            Debug.Log("成功！");
-        }
-        else
-        {
-            Debug.Log("失敗！");
-        }
-}
-
-
-
-    public void CreateDummyAvatars(NetworkRunner runner  ,int DummyCount)
-    {
         for (int i = 0; i < DummyCount; i++)
         {
-
-            // ランダムな生成位置（半径5の円の内部）を取得する
-            var randomValue = UnityEngine.Random.insideUnitCircle * 5f;
-            var spawnPosition = new Vector3(randomValue.x, 5f, randomValue.y);
-
-            var avatar = runner.Spawn(dummyAvatarPrefab, spawnPosition  , Quaternion.identity, PlayerRef.None);
-            // PlayerRef.Noneを使用して、ダミーアバターはプレイヤーに関連付けない
+            // ダミーのプレイヤーを生成するためのNetworkRunnerを生成
+            dummyPlayerNetworkRunner = Instantiate(networkRunnerPrefab);
+            // ダミーのプレイヤー用にコールバックを登録
+            //dummyPlayerNetworkRunner.AddCallbacks(this);
+            // ダミーのプレイヤーを参加させる
+            var result = dummyPlayerNetworkRunner.StartGame(new StartGameArgs
+            {
+                GameMode = GameMode.Client,
+                SessionProperties = customProps,
+                //PlayerCount = 1, // ダミーは1人だけ
+                SceneManager = networkRunner.GetComponent<NetworkSceneManagerDefault>()
+            });
 
 
         }
 
     }
-
 
 
     // INetworkRunnerCallbacksインターフェースの空実装
@@ -138,7 +130,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
                 if (sessionNameText != null)
                 {
-                    sessionNameText.SetText( $"RoomID: {sessionName}");
+                    sessionNameText.SetText($"RoomID: {sessionName}");
                 }
             }
             else
@@ -156,28 +148,45 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         // ランダムな生成位置（半径5の円の内部）を取得する
         var randomValue = UnityEngine.Random.insideUnitCircle * 5f;
         var spawnPosition = new Vector3(randomValue.x, 5f, randomValue.y);
-        // 参加したプレイヤーのアバターを生成する
-        var avatar = runner.Spawn(playerAvatarPrefab, spawnPosition, Quaternion.identity, player);
-        // プレイヤー（PlayerRef）とアバター（NetworkObject）を関連付ける
-        runner.SetPlayerObject(player, avatar);
+
+        if (runner != null)
+        {
+            // 参加したプレイヤーのアバターを生成する
+            var avatar = runner.Spawn(playerAvatarPrefab, spawnPosition, Quaternion.identity, player);
+            // プレイヤー（PlayerRef）とアバター（NetworkObject）を関連付ける
+            runner.SetPlayerObject(player, avatar);
+
+        }
+        else
+        {
+            // 参加したプレイヤーのアバターを生成する
+            var avatar = runner.Spawn(dummyAvatarPrefab, spawnPosition, Quaternion.identity, player);
+            // プレイヤー（PlayerRef）とアバター（NetworkObject）を関連付ける
+            runner.SetPlayerObject(player, avatar);
+
+        }
+
 
         //ホストのみバトルスタートボタンを表示
         if (runner.IsServer && player == runner.LocalPlayer)
         {
             Debug.Log("ホストが参加 → ボタン表示指示");
-            lobbyUI.ShowStartButton(runner);
+            //lobbyUI.ShowStartButton(runner);
         }
 
-        if (runner.IsServer && player == runner.LocalPlayer)
-        {
-            CreateDummyAvatars(runner ,dummyAvatarCount);
 
 
-        }
+        // ダミーのプレイヤーを生成する
+        //CreateDummyClients(1);
+
 
     }
 
-    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) {
+
+
+
+    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
+    {
         if (!runner.IsServer) { return; }
         // 退出したプレイヤーのアバターを破棄する
         if (runner.TryGetPlayerObject(player, out var avatar))
@@ -209,6 +218,8 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ArraySegment<byte> data) { }
     public void OnSceneLoadDone(NetworkRunner runner) { }
     public void OnSceneLoadStart(NetworkRunner runner) { }
+
+
 
 
 }
