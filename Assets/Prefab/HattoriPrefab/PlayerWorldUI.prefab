@@ -333,8 +333,9 @@ GameObject:
   - component: {fileID: 3082204643575524357}
   - component: {fileID: 2373836273210717932}
   - component: {fileID: 5613162735107187233}
+  - component: {fileID: 8549803977748558819}
   m_Layer: 0
-  m_Name: PlayerHUDCanvas
+  m_Name: PlayerWorldUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -407,7 +408,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 1
+  m_PresetInfoIsWorld: 0
 --- !u!114 &2373836273210717932
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -437,6 +438,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5449ceb3242deea41b07f4a7909d0b9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &8549803977748558819
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5301842975480643952}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e390d439f6aad74e963dc9e4579747b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  WordOffset: 0
+  WordCount: 0
+  _interpolationDataSource: 0
+  nameLabel: {fileID: 2846740386073364762}
+  hpBar: {fileID: 6671095768626876556}
+  weaponSprites:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  weaponImage: {fileID: 3251213282731227402}
 --- !u!1 &5781196432961042352
 GameObject:
   m_ObjectHideFlags: 0
