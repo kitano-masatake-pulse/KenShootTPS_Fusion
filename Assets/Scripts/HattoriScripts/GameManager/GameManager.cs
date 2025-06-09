@@ -108,7 +108,8 @@ public class GameManager : NetworkBehaviour
     //プレイヤーが死亡したときに呼ばれ、色々な処理を行うメソッド
     public void NotifyDeath(PlayerRef victim, PlayerRef killer, float killTime)
     {
-        
+        Debug.Log($"Object :{Object}");
+        Debug.Log($"Object.HasStateAuthority :{Object.HasStateAuthority}");
         if (!Object.HasStateAuthority) return;
         //killTime時に既に試合時間が終了していれば実行しない
         if(startSimTime + initialTimeSec <= Runner.SimulationTime)

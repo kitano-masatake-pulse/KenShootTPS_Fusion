@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using Unity;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using static TMPro.Examples.ObjectSpin;
 
 public class PlayerAvatar : NetworkBehaviour
@@ -42,7 +43,7 @@ public class PlayerAvatar : NetworkBehaviour
     [Networked] public Vector3 cameraForwardInHost { get; set; } = Vector3.zero; //カメラの向き(入力権限のあるプレイヤーの回転を参照するために使用)
     [Networked] public Vector3 normalizedInputDirectionInHost { get; set; } = Vector3.zero; //入力権限のあるプレイヤーの入力方向を参照するために使用
 
-
+    [SerializeField] bool isDummy = false;
 
     #region フラグ管理
     //行動可能かどうかのフラグ
@@ -166,11 +167,17 @@ public class PlayerAvatar : NetworkBehaviour
 
         //ApplyHostTransform();
 
-        TeleportToInitialSpawnPoint(); // 初期スポーンポイントにテレポートする
+        
 
         //characterController.Move(Vector3.zero); //初期位置での移動を防ぐために、初期位置でMoveを呼ぶ
 
         SetWeapons(); //武器の初期化を行う
+
+        if (Object.InputAuthority == PlayerRef.None) { isDummy = true;  }//ダミーキャラならisDummyをtrueにする
+        else { isDummy = false; } //ダミーキャラでなければisDummyをfalseにする
+
+
+        TeleportToInitialSpawnPoint(); // 初期スポーンポイントにテレポートする
 
     }
 
@@ -220,6 +227,11 @@ public class PlayerAvatar : NetworkBehaviour
         {
             InputCheck();
         }
+
+        if (isDummy) //ダミーキャラなら、ダミー落下処理を行う
+        {
+            DummyFall();
+        }
     }
 
     public override void FixedUpdateNetwork()
@@ -234,54 +246,56 @@ public class PlayerAvatar : NetworkBehaviour
     //順序管理のため、PlayerCallOrderから呼ばれる
     public void InputCheck()
     {
-
-        if (!Object.HasInputAuthority) return; //入力権限がない場合は何もしない
-
-        PlayerInputData localInputData = LocalInputHandler.CollectInput();
-
         
 
-
-        if (localInputData.JumpPressedDown)//ここに接地判定を追加
+        if (Object.HasInputAuthority) //入力権限がない場合は何もしない
         {
-            Jump();
+            PlayerInputData localInputData = LocalInputHandler.CollectInput();
+
+
+
+
+            if (localInputData.JumpPressedDown)//ここに接地判定を追加
+            {
+                Jump();
+            }
+
+            if (localInputData.FirePressedDown) //発射ボタンが押されたら、武器の発射処理を呼ぶ
+            {
+                FireDown();
+                Debug.Log($"FirePressedDown {currentWeapon.GetName()}"); //デバッグログ
+            }
+
+            if (localInputData.FirePressedStay) //発射ボタンが押され続けている間、武器の発射処理を呼ぶ
+            {
+                Fire();
+                //Debug.Log($"FirePressedStay {currentWeapon.GetName()}"); //デバッグログ
+            }
+
+            if (localInputData.FirePressedUp) //発射ボタンが離されたら、武器の発射処理を呼ぶ
+            {
+                FireUp();
+            }
+
+            if (localInputData.ReloadPressedDown) //リロードボタンが押されたら、武器のリロード処理を呼ぶ
+            {
+                Reload();
+            }
+
+
+
+            if (localInputData.weaponChangeScroll != 0f) //武器変更のスクロールがあれば、武器の変更処理を呼ぶ
+            {
+                ChangeWeapon(localInputData.weaponChangeScroll);
+            }
+
+
+
+            normalizedInputDirection = localInputData.wasdInput.normalized;
+
+
+            ChangeTransformLocally(normalizedInputDirection, tpsCameraTransform.forward);//ジャンプによる初速度も考慮して移動する
         }
-        
-        if (localInputData.FirePressedDown) //発射ボタンが押されたら、武器の発射処理を呼ぶ
-        {
-            FireDown();
-            Debug.Log($"FirePressedDown {currentWeapon.GetName()}"); //デバッグログ
-        }
-
-        if (localInputData.FirePressedStay) //発射ボタンが押され続けている間、武器の発射処理を呼ぶ
-        {
-            Fire();
-            //Debug.Log($"FirePressedStay {currentWeapon.GetName()}"); //デバッグログ
-        }
-
-        if (localInputData.FirePressedUp) //発射ボタンが離されたら、武器の発射処理を呼ぶ
-        {
-            FireUp();
-        }
-
-        if (localInputData.ReloadPressedDown) //リロードボタンが押されたら、武器のリロード処理を呼ぶ
-        {
-            Reload();
-        }
-
-        
-
-        if (localInputData.weaponChangeScroll != 0f) //武器変更のスクロールがあれば、武器の変更処理を呼ぶ
-        {
-            ChangeWeapon(localInputData.weaponChangeScroll);
-        }
-        
-
-
-        normalizedInputDirection = localInputData.wasdInput.normalized;
-
-        ChangeTransformLocally(normalizedInputDirection, tpsCameraTransform.forward);//ジャンプによる初速度も考慮して移動する
-
     }
 
 
@@ -349,6 +363,22 @@ public class PlayerAvatar : NetworkBehaviour
         {
             velocity.y = 0;
         }
+    }
+
+    void DummyFall()
+    {
+
+        // 重力を加算（ここを省略すれば浮く）
+        velocity.y += gravity * Time.deltaTime;
+        // 坂道対応：Moveは自動で地形の傾斜に合わせてくれる
+        characterController.Move(( velocity) * Time.deltaTime);
+        // 着地しているなら重力リセット
+        if (characterController.isGrounded)
+        {
+            velocity.y = 0;
+        }
+        Debug.Log($"Dummy {Object.InputAuthority} is falling. Position: {transform.position}"); //デバッグログ
+
     }
 
     #endregion
@@ -550,7 +580,7 @@ public class PlayerAvatar : NetworkBehaviour
             //ApplyInputAuthorityTransform(); //入力権限のあるプレイヤーのTransformを更新する
 
         }
-        if (!HasInputAuthority)
+        if (!HasInputAuthority && !isDummy)
         {
 
                 //NetworkPropertyを参照して、ホストも他クライアントもTransformを更新する
