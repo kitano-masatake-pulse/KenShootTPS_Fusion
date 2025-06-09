@@ -61,7 +61,6 @@ public class AnimationHandler : NetworkBehaviour
     {
         foreach (var action in playerAvatar.ActionAnimationPlayList)
         {
-
             switch (action.actionType)
             {
                 case ActionType.Jump:

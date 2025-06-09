@@ -74,9 +74,6 @@ public class PlayerAvatar : NetworkBehaviour
     [SerializeField] private LayerMask obstructionMask;
 
 
-
-
-
     //----------------------ここまで変数宣言----------------------------------
 
 
@@ -584,7 +581,6 @@ public class PlayerAvatar : NetworkBehaviour
                 if (weaponClassDictionary[currentWeapon].IsMagazineEmpty())
                 {
                     Reload(); //マガジンが空ならリロードする
-
                 }
                 else
                 {
