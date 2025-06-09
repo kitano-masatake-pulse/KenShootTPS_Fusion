@@ -13,13 +13,13 @@ public class HUDManager : MonoBehaviour
     private void OnEnable()
     {   
         PlayerNetworkState.OnLocalPlayerSpawned += PlayerHUDInitialize;
-        WeaponLocalState.OnWeaponSpawned += WeaponHUDInitialize;
+        PlayerAvatar.OnWeaponSpawned += WeaponHUDInitialize;
         GameManager.OnGameManagerSpawned += GameHUDInitialize;
     }
     private void OnDisable()
     {
         PlayerNetworkState.OnLocalPlayerSpawned -= PlayerHUDInitialize;
-        WeaponLocalState.OnWeaponSpawned -= WeaponHUDInitialize;
+        PlayerAvatar.OnWeaponSpawned -= WeaponHUDInitialize;
         GameManager.OnGameManagerSpawned -= GameHUDInitialize;
         CleanupAll();
     }
@@ -29,7 +29,7 @@ public class HUDManager : MonoBehaviour
         hp.Initialize(pState, null);
     }
 
-    private void WeaponHUDInitialize(WeaponLocalState wState)
+    private void WeaponHUDInitialize(PlayerAvatar wState)
     {
         weapon.Initialize(null, wState);
     }

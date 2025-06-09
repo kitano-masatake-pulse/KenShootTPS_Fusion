@@ -14,6 +14,7 @@ public class PlayerAvatar : NetworkBehaviour
     [SerializeField] private GameObject bodyObject;
 
 
+
     private　CharacterController characterController;
     [SerializeField] private HitboxRoot myPlayerHitboxRoot;
 
@@ -88,7 +89,9 @@ public class PlayerAvatar : NetworkBehaviour
 
     //Weapon関連
     private WeaponType currentWeapon = WeaponType.AssaultRifle ; //現在の武器タイプ
+    public WeaponType CurrentWeapon => currentWeapon; //現在の武器タイプを取得するプロパティ
     [SerializeField]private Dictionary<WeaponType, WeaponBase> weaponClassDictionary = new Dictionary<WeaponType, WeaponBase>(); //武器タイプと武器の対応関係を保持する辞書
+    public IReadOnlyDictionary<WeaponType, WeaponBase> WeaponClassDictionary => weaponClassDictionary; //武器クラス辞書を読み取り専用で公開するプロパティ
 
     // クラス生成・弾薬データ変更時のイベント
     public static event Action<PlayerAvatar> OnWeaponSpawned;
@@ -109,8 +112,6 @@ public class PlayerAvatar : NetworkBehaviour
     private Transform currentTargetTransform; // 現在のターゲットのTransform
     [SerializeField]private LayerMask playerLayer;
     [SerializeField] private LayerMask obstructionMask;
-
-
 
 
 
@@ -181,7 +182,7 @@ public class PlayerAvatar : NetworkBehaviour
             {
                 weaponClassDictionary.Add(weapon.weaponType, weapon);
                 weapon.CurrentMagazine = weapon.weaponType.MagazineCapacity(); //初期マガジンは最大値に設定
-                weapon.CurrentReserve = 50; //初期リザーブは50
+                weapon.CurrentReserve = weapon.weaponType.ReserveCapacity(); //初期リザーブは50
             }
             else
             {
@@ -189,6 +190,8 @@ public class PlayerAvatar : NetworkBehaviour
             }
         }
 
+
+        //FindObjectOfType<HUDManager>()?.WeaponHUDInitialize(this);
         OnWeaponSpawned?.Invoke(this); //武器生成イベントを発火
 
 
@@ -514,6 +517,12 @@ public class PlayerAvatar : NetworkBehaviour
         }
         isFollowingCameraForward = true; // カメラの向きに追従するように設定
     }
+
+    public void SetFollowingCameraForward(bool isFollowing)
+    {
+        isFollowingCameraForward = isFollowing; // カメラの向きに追従するかどうかを設定
+    }
+
     #endregion
 
 
@@ -764,7 +773,14 @@ public class PlayerAvatar : NetworkBehaviour
         
     }
 
-   
+    public void InitializeAllAmmo()//各武器の弾薬を初期化
+    {
+        foreach (var weapon in weaponClassDictionary.Values)
+        {
+            weapon.InitializeAmmo(); 
+        }
+        OnAmmoChanged?.Invoke(weaponClassDictionary[currentWeapon].CurrentMagazine, weaponClassDictionary[currentWeapon].CurrentReserve); //弾薬変更イベントを発火
+    }
 
     bool CanWeaponAction()
     {
@@ -777,6 +793,16 @@ public class PlayerAvatar : NetworkBehaviour
       
             return true;
            
+    }
+
+    public void SetDuringWeaponAction(bool flag)
+    { 
+        isDuringWeaponAction = flag; 
+    }
+
+    public void SetImmobilized(bool flag)
+    {
+        isImmobilized = flag; //行動不能フラグを立てる
     }
 
 

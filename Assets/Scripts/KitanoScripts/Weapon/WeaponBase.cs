@@ -12,6 +12,13 @@ public abstract class WeaponBase : NetworkBehaviour
     public int CurrentReserve;
 
 
+    public void InitializeAmmo()
+    {
+        CurrentMagazine = weaponType.MagazineCapacity();
+        CurrentReserve = weaponType.ReserveCapacity();
+        Debug.Log($"Weapon {weaponType.GetName()} initialized with Magazine: {CurrentMagazine}, Reserve: {CurrentReserve}");
+    }
+
     public virtual void FireDown()
     {
         //FireRay();
@@ -63,6 +70,7 @@ public abstract class WeaponBase : NetworkBehaviour
         }
 
     }
+
 
     protected virtual void OnEmptyAmmo()
     {

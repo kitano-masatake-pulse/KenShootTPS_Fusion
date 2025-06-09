@@ -350,7 +350,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponManager: {fileID: 4259212600914541583}
-  hudManager: {fileID: 0}
   reserveAmount: 5
 --- !u!1 &3278265760267470655
 GameObject:
@@ -536,6 +535,7 @@ MonoBehaviour:
   - {fileID: 2614715672478573200}
   - {fileID: 5159016784927616926}
   - {fileID: 3005779836954345960}
+  - {fileID: 1066144729488051772}
   - {fileID: 4259212600914541583}
   SimulationBehaviours: []
 --- !u!143 &5900180028145048929
@@ -624,11 +624,24 @@ MonoBehaviour:
   gravity: -9.81
   jumpHeight: 2
   cameraTarget: {fileID: 6535720625108510702}
-  hostTransform: {fileID: 0}
   normalizedInputDirection: {x: 0, y: 0, z: 0}
   _avatarPositionInHost: {x: 0, y: 0, z: 0}
   _cameraForwardInHost: {x: 0, y: 0, z: 0}
   _normalizedInputDirectionInHost: {x: 0, y: 0, z: 0}
+  chaseAngle: 90
+  chaseRange: 5
+  chaseSpeed: 6
+  maxTurnAnglePerFrame: 5
+  maxAlignToCameraAnglePerSecond: 360
+  homingTime: 2
+  attackImmolizedTime: 3
+  rotationDuration: 0.1
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  obstructionMask:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!114 &959258212881799844
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -647,10 +660,6 @@ MonoBehaviour:
   _CurrentHP: 100
   _MaxHP: 100
   _CurrentWeapon_Network: 0
-  _KillScore: 0
-  _DeathScore: 0
-  _MagazineAmmo_Network: 0
-  _ReserveAmmo_Network: 0
 --- !u!114 &4431962320200600727
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -724,6 +733,7 @@ MonoBehaviour:
   WordOffset: 0
   WordCount: 0
   _interpolationDataSource: 0
+  playerAvatar: {fileID: 0}
   WorldUICanvas: {fileID: 3602698867948813487}
 --- !u!1 &6090342777617499549
 GameObject:
@@ -775,6 +785,7 @@ MonoBehaviour:
   Offset: {x: 0, y: 0, z: 0}
   Root: {fileID: 0}
   GizmosColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  myPlayerAvatar: {fileID: 0}
 --- !u!1001 &8677510215750843871
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -872,6 +883,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 76fa51c053078c0498183644e9903c42, type: 3}
+--- !u!114 &1066144729488051772 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8549803977748558819, guid: 76fa51c053078c0498183644e9903c42, type: 3}
+  m_PrefabInstance: {fileID: 8677510215750843871}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3602698867948813487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e390d439f6aad74e963dc9e4579747b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &2664103280098618707 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6671095768626876556, guid: 76fa51c053078c0498183644e9903c42, type: 3}
