@@ -166,7 +166,9 @@ public class PlayerAvatar : NetworkBehaviour
 
         //ApplyHostTransform();
 
-        characterController.Move(Vector3.zero); //初期位置での移動を防ぐために、初期位置でMoveを呼ぶ
+        TeleportToInitialSpawnPoint(); // 初期スポーンポイントにテレポートする
+
+        //characterController.Move(Vector3.zero); //初期位置での移動を防ぐために、初期位置でMoveを呼ぶ
 
         SetWeapons(); //武器の初期化を行う
 
@@ -196,6 +198,16 @@ public class PlayerAvatar : NetworkBehaviour
 
 
 
+    }
+    
+
+
+    void TeleportToInitialSpawnPoint()
+    {         // 初期スポーンポイントにテレポートする
+        Vector3 initialSpawnPoint = new Vector3(UnityEngine.Random.Range(0,5f), 1f, UnityEngine.Random.Range(0, 5f)); // 初期スポーンポイントの座標を設定
+        transform.position = initialSpawnPoint; // プレイヤーの位置を初期スポーンポイントに設定
+        characterController.enabled = false; // CharacterControllerを一時的に無効化
+        characterController.enabled = true; // 再度有効化して、衝突判定をリセット
     }
 
     #endregion
