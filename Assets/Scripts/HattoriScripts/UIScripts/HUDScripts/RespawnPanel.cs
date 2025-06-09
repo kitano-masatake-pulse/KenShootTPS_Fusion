@@ -1,4 +1,5 @@
 using System.Collections;
+using System;
 using Fusion;
 using TMPro;
 using UnityEngine;
@@ -10,12 +11,18 @@ public class RespawnPanel : MonoBehaviour, IHUDPanel
     [SerializeField] private CanvasGroup respawnPanelGroup;
     [SerializeField] private TMP_Text countdownText, killerText;
     [SerializeField] private Button respawnBtn;
-    [Header("フェードと遅延の設定")]
-    [SerializeField] private float fadeTime = 1f, delay = 5f;
+    [SerializeField] private Image fadePanel;
+    [Header("リスポーンUI表示のフェードと遅延の設定")]
+    [SerializeField] private float UIfadeTime = 1f, delay = 5f;
+    [Header("リスポーン時のフェード時間設定")]
+    [SerializeField] private float respawnFadeTime = 5f;
+
+    public event Action OnRespawnClicked;
 
     private Coroutine co;
+    private Coroutine currentFade;
 
-    public void Initialize(PlayerNetworkState _, WeaponLocalState __)
+    public void Initialize(PlayerNetworkState _, PlayerAvatar __)
     {
         GameManager.Instance.OnMyPlayerDied -= DisplayRespawnPanel;
         GameManager.Instance.OnMyPlayerDied += DisplayRespawnPanel;
@@ -28,10 +35,10 @@ public class RespawnPanel : MonoBehaviour, IHUDPanel
     private void DisplayRespawnPanel(PlayerRef killer, float hostTimeStamp)
     {
         if (co != null) StopCoroutine(co);
-        co = StartCoroutine(DoRespawn(killer));
+        co = StartCoroutine(WaitRespawnCoroutine(killer));
     }
 
-    private IEnumerator DoRespawn(PlayerRef killer)
+    private IEnumerator WaitRespawnCoroutine(PlayerRef killer)
     {
         respawnBtn.gameObject.SetActive(false);
         respawnPanelGroup.alpha = 0; 
@@ -41,10 +48,10 @@ public class RespawnPanel : MonoBehaviour, IHUDPanel
 
         // フェードイン
         float t = 0;
-        while (t < fadeTime)
+        while (t < UIfadeTime)
         {
             t += Time.deltaTime;
-            respawnPanelGroup.alpha = t / fadeTime;
+            respawnPanelGroup.alpha = t / UIfadeTime;
             yield return null;
         }
         respawnPanelGroup.alpha = 1; 
@@ -65,7 +72,54 @@ public class RespawnPanel : MonoBehaviour, IHUDPanel
     public void OnRespawnClick()
     {
         StopAllCoroutines();
-        respawnPanelGroup.alpha = 0; 
+        respawnPanelGroup.alpha = 1;
         respawnPanelGroup.blocksRaycasts = false;
+        killerText.text = "";
+        countdownText.text = "";
+
+        if (fadePanel == null)
+            Debug.LogError("Fade Image がアサインされていません");
+        fadePanel.color = new Color(0, 0, 0, 0);
+        FadeOut(() =>
+        {
+            OnRespawnClicked?.Invoke();
+        });
     }
+    /// <summary>
+    /// 画面を黒にフェードアウトし、完了後に onComplete を呼ぶ
+    /// </summary>
+    public void FadeOut(System.Action onComplete = null)
+    {
+        if (currentFade != null) StopCoroutine(currentFade);
+        currentFade = StartCoroutine(FadeRoutine(0f, 1f, respawnFadeTime, onComplete));
+    }
+
+    /// <summary>
+    /// 画面を透明にフェードインし、完了後に onComplete を呼ぶ
+    /// </summary>
+    public void FadeIn(System.Action onComplete = null)
+    {
+        if (currentFade != null) StopCoroutine(currentFade);
+        currentFade = StartCoroutine(FadeRoutine(1f, 0f, respawnFadeTime, onComplete));
+    }
+
+    private IEnumerator FadeRoutine(float fromAlpha, float toAlpha, float duration, System.Action onComplete)
+    {
+        float elapsed = 0f;
+        Color c = fadePanel.color;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            c.a = Mathf.Lerp(fromAlpha, toAlpha, t);
+            fadePanel.color = c;
+            yield return null;
+        }
+        // 最終値を確実にセット
+        c.a = toAlpha;
+        fadePanel.color = c;
+        currentFade = null;
+        onComplete?.Invoke();
+    }
+   
 }

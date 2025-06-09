@@ -12,9 +12,9 @@ public class WeaponPanel : MonoBehaviour, IHUDPanel
     [Header("Imageの大きさ設定")]
     [SerializeField] private float RifleScale = 0.53f; // AssaultRifle, SemiAutoRifle の大きさ
     [SerializeField] private float GrenadeLauncherScale = 0.53f; // GrenadeLauncher の大きさ
-    private WeaponLocalState weaponState;
+    private PlayerAvatar weaponState;
 
-    public void Initialize(PlayerNetworkState _, WeaponLocalState wState)
+    public void Initialize(PlayerNetworkState _, PlayerAvatar wState)
     {
         weaponState = wState;
         //イベント登録
@@ -23,16 +23,15 @@ public class WeaponPanel : MonoBehaviour, IHUDPanel
         weaponState.OnWeaponChanged += UpdateWeaponImage;
         weaponState.OnAmmoChanged += UpdateAmmoText;
         // 初期値の設定
-        UpdateWeaponImage(weaponState.CurrentWeapon);
-        var ammo = weaponState.GetCurrentAmmo();
-        UpdateAmmoText(ammo.magazine, ammo.reserve);
+        WeaponType currentWeapon = weaponState.CurrentWeapon;
+        UpdateWeaponImage(currentWeapon, weaponState.WeaponClassDictionary[currentWeapon].CurrentMagazine, weaponState.WeaponClassDictionary[currentWeapon].CurrentReserve);
     }
     public void Cleanup()
     {
         weaponState.OnWeaponChanged -= UpdateWeaponImage;
         weaponState.OnAmmoChanged -= UpdateAmmoText;
     }
-    private void UpdateWeaponImage(WeaponType currentWeapon)
+    private void UpdateWeaponImage(WeaponType currentWeapon,int magazine, int reserve)
     {
         int idx = (int)currentWeapon;
         // 範囲外のインデックスは無視
@@ -49,6 +48,8 @@ public class WeaponPanel : MonoBehaviour, IHUDPanel
 
         var rt = weaponImage.rectTransform;
         rt.sizeDelta = weaponSprites[idx].rect.size * scale;
+
+        UpdateAmmoText(magazine, reserve);
     }
     private void UpdateAmmoText(int mag, int res)
     {

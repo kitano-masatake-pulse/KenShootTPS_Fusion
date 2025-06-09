@@ -17,8 +17,6 @@ public class GameManager : NetworkBehaviour
     //============================================
     //キルデス関係
     //============================================
-
-    //キルログ構造体
     public struct KillLog
     {
         public PlayerRef Victim;
@@ -32,18 +30,10 @@ public class GameManager : NetworkBehaviour
         }
     }
 
-    //キルログ格納リスト
     private const int KillLogLimit = 100;
     private List<KillLog> killLogs = new List<KillLog>(KillLogLimit);
-
-    /// <summary>
-    /// プレイヤーの誰かが死亡したときに発火するイベント(victime, killer, timeStamp)
-    /// </summary>
+    //死亡時イベント
     public event Action<PlayerRef, PlayerRef, float> OnAnyPlayerDied;
-
-    /// <summary>
-    /// 自分のプレイヤーが死亡したときに発火するイベント(killer, timeStamp)
-    /// </summary>
     public event Action<PlayerRef, float> OnMyPlayerDied;
     //発火先一覧
     //PlayerAvatarのPlayerDeathHandler
@@ -52,35 +42,25 @@ public class GameManager : NetworkBehaviour
     //============================================
     //スコア関係
     //============================================
-
-    /// <summary>
-    /// プレイヤーのスコアを管理する辞書（key: PlayerRef,value: PlayerScore)
-    /// </summary>
     private Dictionary<PlayerRef, PlayerScore> PlayerScores { get; set;}
-
-    /// <summary>
-    /// スコア変更通知イベント
-    /// </summary>
-    public event Action OnManagerScoreChanged;
+    //スコア変更通知イベント
+    public event Action OnScoreChanged;
 
     //============================================
     //時間関係
     //============================================
-    // 残り時間(秒)
     [Networked(OnChanged = nameof(TimeChangedCallback))]
     public int RemainingSeconds { get; private set; }
-    // 時間変更時のイベント
-    public event Action<int> OnTimeChanged;
     // 残り時間初期値（3分 = 180 秒）
     public int initialTimeSec = 180;
-    // タイマー開始時の SimulationTime をサーバー／ホストでキャッシュ
+    // タイマー開始時の時間
     [Networked]
     private double startSimTime { get; set; } = 0.0;
-    // タイマーが動作中かどうか
-
     [Networked]
     public bool IsTimerRunning { get; private set; } = false;
 
+    // 時間変更時のイベント
+    public event Action<int> OnTimeChanged;
 
     //===========================================
     //初期化処理
@@ -95,10 +75,8 @@ public class GameManager : NetworkBehaviour
         {
             Destroy(gameObject);
         }
-        //スコア辞書の初期化
         PlayerScores = new Dictionary<PlayerRef, PlayerScore>();
     }
-    //非同期な初期化
     public override void Spawned()
     {
         
@@ -119,7 +97,8 @@ public class GameManager : NetworkBehaviour
             startSimTime = Runner.SimulationTime;
             TimerStart();
         }
-        
+        //生成時イベントを発火
+        //FindObjectOfType<HUDManager>()?.GameHUDInitialize();
         OnGameManagerSpawned?.Invoke();
     }
 
@@ -146,10 +125,10 @@ public class GameManager : NetworkBehaviour
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_SendDeathData(PlayerRef victim, PlayerRef killer, float timeStamp)
     {
-        //キルログを追加
         var killLog = new KillLog(victim, killer, timeStamp);
         killLogs.Add(killLog);
-        //必要に応じて、キルログのサイズ制限などを行う
+
+        //上限を超えたら最古のログを削除
         if (killLogs.Count >= KillLogLimit) 
         {
             killLogs.RemoveAt(0); 
@@ -160,7 +139,7 @@ public class GameManager : NetworkBehaviour
 
         //死亡イベントを発火
         OnAnyPlayerDied?.Invoke(victim, killer,timeStamp);
-        Debug.Log($"Event発火元は{Runner.LocalPlayer}");
+
         //自分のプレイヤーに対しては、OnMyPlayerDiedイベントも発火
         if (Runner.LocalPlayer == victim)
         {
@@ -186,25 +165,20 @@ public class GameManager : NetworkBehaviour
             {
                 IsTimerRunning = false;
                 Debug.Log("Game Over! Time's up!");
-                // タイマーが終了したときの処理はここ
             }
         }
     }
 
-    // タイマースタート
     public void TimerStart()
     {
         if (!Object.HasStateAuthority) return;
 
-        // いま何秒目かを startSimTime に記録
         startSimTime = Runner.SimulationTime;
         IsTimerRunning = true;
 
-        // 「TimerStart した瞬間に RemainingSeconds」を初期値にしておく（念のため）
         RemainingSeconds = initialTimeSec;
     }
 
-    // タイマーリセット（残り時間を初期値に戻し、停止する）
     public void TimerReset()
     {
         if (!Object.HasStateAuthority) return;
@@ -213,6 +187,7 @@ public class GameManager : NetworkBehaviour
 
         startSimTime = Runner.SimulationTime;
     }
+
     //===========================================
     //全ローカル環境で呼ばれるメソッド群
     //===========================================
@@ -233,10 +208,10 @@ public class GameManager : NetworkBehaviour
         //キルプレイヤーがいない(None)ならスコアは加算しない
 
         // スコア変更イベントを発火
-        OnManagerScoreChanged?.Invoke();
+        OnScoreChanged?.Invoke();
     }
 
-
+    //時間更新時のコールバックなど
     static void TimeChangedCallback(Changed<GameManager> changed)
     {
         changed.Behaviour.RaiseTimeChanged();
@@ -245,6 +220,7 @@ public class GameManager : NetworkBehaviour
     {
         OnTimeChanged?.Invoke(RemainingSeconds);
     }
+
     //===========================================
     //アクセサメソッド群
     //===========================================

@@ -26,10 +26,14 @@ public class PlayerDeathHandler : NetworkBehaviour
     }
 
     private void HandleDeath(PlayerRef killer, float hostTimeStamp)
-    {
-        //入力無効（PlayerAvatar 側にもフラグを送るか共有）
-        //PlayerAvatarの行動不能フラグを有効化する
-
+    {   
+        //プレイヤーアバターに死亡アニメーションを設定
+        playerAvatar.SetActionAnimationPlayList(ActionType.Dead, hostTimeStamp);
+        //行動不能化
+        playerAvatar.SetDuringWeaponAction(true);
+        playerAvatar.SetImmobilized(true);
+        //顔のカメラ追従を切る
+        playerAvatar.SetFollowingCameraForward(false);
         //Collider 無効化(レイヤー切り替え)
         foreach (var col in GetComponentsInChildren<Collider>())
             col.gameObject.layer = LayerMask.NameToLayer("DeadPlayer");
@@ -38,8 +42,7 @@ public class PlayerDeathHandler : NetworkBehaviour
             hitbox.gameObject.layer = LayerMask.NameToLayer("DeadHitbox");
         //ネームタグ非表示
         WorldUICanvas.SetActive(false);
-        //プレイヤーアバターに死亡アニメーションを設定
-        playerAvatar.SetActionAnimationPlayList(ActionType.Dead, hostTimeStamp);
+        
 
     }
 

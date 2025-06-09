@@ -6,7 +6,7 @@ public class TimerPanel : MonoBehaviour, IHUDPanel
 {
     [SerializeField] private TMP_Text timerText;
 
-    public void Initialize(PlayerNetworkState _, WeaponLocalState __)
+    public void Initialize(PlayerNetworkState _, PlayerAvatar __)
     {
         GameManager.Instance.OnTimeChanged -= UpdateTimerText;
         GameManager.Instance.OnTimeChanged += UpdateTimerText;

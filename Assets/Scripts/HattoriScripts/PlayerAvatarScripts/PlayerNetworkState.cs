@@ -57,7 +57,8 @@ public class PlayerNetworkState : NetworkBehaviour
     public override void Spawned()
     {
         if (HasInputAuthority)
-        {    
+        {   
+            //FindObjectOfType<HUDManager>()?.PlayerHUDInitialize(this);
             OnLocalPlayerSpawned?.Invoke(this);
         }    
   
@@ -73,7 +74,6 @@ public class PlayerNetworkState : NetworkBehaviour
             RPC_RequestDamageHP(int.MaxValue, PlayerRef.None);
         }
     }
-
     #endregion
 
     #region Public Methods
@@ -100,6 +100,12 @@ public class PlayerNetworkState : NetworkBehaviour
     {
         if (!HasStateAuthority) return;
         CurrentHP = Mathf.Min(MaxHP, CurrentHP + heal);
+    }
+
+    public void InitializeHP()
+    {
+        if (!HasStateAuthority) return;
+        CurrentHP = MaxHP = 100; // 初期HPを100に設定
     }
 
     //―――― クライアント→サーバー：武器切替リクエスト ――――
