@@ -30,13 +30,13 @@ public class GunRaycaster : NetworkBehaviour
     {
         if (HasInputAuthority) 
         { 
-        if (Input.GetMouseButtonDown(0))
-        {
-            Debug.Log("Gun Fire!");
-            GunFire(playerCamera.transform.position, playerCamera.transform.forward);
+            if (Input.GetMouseButtonDown(0))
+            {
+                Debug.Log("Gun Fire!");
+                GunFire(playerCamera.transform.position, playerCamera.transform.forward);
 
 
-        }
+            }
 
         }
 
@@ -53,7 +53,7 @@ public class GunRaycaster : NetworkBehaviour
             Object.InputAuthority,
             out var hit,
             hitMask.value, //îªíËÇçsÇ§ÉåÉCÉÑÅ[Çêßå¿Ç∑ÇÈ
-            HitOptions.None);
+            HitOptions.IgnoreInputAuthority);
 
         Debug.DrawRay(
             origin,
@@ -92,9 +92,9 @@ public class GunRaycaster : NetworkBehaviour
         {
             PlayerRef targetPlayerRef = playerHitbox.hitPlayerRef;
             PlayerRef myPlayerRef = Object.InputAuthority;
-            Debug.Log($"Player {myPlayerRef} hit Player {targetPlayerRef} with {weaponDamage} damage");
             PlayerHP targetHP = playerHitbox.GetComponentInParent<PlayerHP>();
-            targetHP.TakeDamage(myPlayerRef, weaponDamage);
+            Debug.Log($"Player {targetPlayerRef} HP before damage: {targetHP.playerNetworkState.CurrentHP}");
+            targetHP.RPC_RequestDamage(myPlayerRef, weaponDamage);
         }
         else
 

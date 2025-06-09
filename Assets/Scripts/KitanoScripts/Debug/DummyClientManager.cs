@@ -3,14 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
 
-public class PlayerHitbox : Hitbox
+public class DummyClientManager : MonoBehaviour
 {
-
-    public PlayerRef hitPlayerRef;
-
-
-    //[SerializeField] private PlayerAvatar myPlayerAvatar;
-
     // Start is called before the first frame update
     void Start()
     {
@@ -21,5 +15,15 @@ public class PlayerHitbox : Hitbox
     void Update()
     {
         
+    }
+
+
+    public void CreateDummyClients(int DummyCount)
+    { 
+        for (int i = 0; i < DummyCount; i++)
+        {
+            
+        }
+
     }
 }

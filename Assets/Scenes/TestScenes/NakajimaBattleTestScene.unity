@@ -2395,6 +2395,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1516604608215421652, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
+      propertyPath: playerPrefab.RawGuidValue.Array.data[0]
+      value: -7761029066443085597
+      objectReference: {fileID: 0}
+    - target: {fileID: 1516604608215421652, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
+      propertyPath: playerPrefab.RawGuidValue.Array.data[1]
+      value: 8504940499323338299
+      objectReference: {fileID: 0}
     - target: {fileID: 1609629295696527451, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -2405,7 +2413,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1758588605573958733, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.8789557
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 1758588605573958733, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
       propertyPath: m_LocalPosition.y
@@ -2413,11 +2421,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1758588605573958733, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -2.4000003
+      value: -2.4
       objectReference: {fileID: 0}
     - target: {fileID: 3518879278692763671, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 3518879278692763671, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
       propertyPath: m_LocalPosition.y
@@ -2477,7 +2485,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5590507382842603136, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
       propertyPath: ShoulderOffset.x
-      value: 1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 5590507382842603136, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
       propertyPath: ShoulderOffset.y
