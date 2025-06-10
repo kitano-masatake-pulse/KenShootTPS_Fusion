@@ -462,6 +462,7 @@ MonoBehaviour:
   _avatarPositionInHost: {x: 0, y: 0, z: 0}
   _cameraForwardInHost: {x: 0, y: 0, z: 0}
   _normalizedInputDirectionInHost: {x: 0, y: 0, z: 0}
+  isDummy: 0
   chaseAngle: 90
   chaseRange: 5
   chaseSpeed: 6
@@ -728,8 +729,17 @@ MonoBehaviour:
   WordOffset: 0
   WordCount: 0
   _interpolationDataSource: 0
-  CurrentMagazine: 0
-  CurrentReserve: 0
+  playerCamera: {fileID: 0}
+  fireDistance: 100
+  currentMagazine: 0
+  currentReserve: 0
+  muzzleTransform: {fileID: 0}
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  obstructionLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!1 &4172183429204410978
 GameObject:
   m_ObjectHideFlags: 0
@@ -777,8 +787,22 @@ MonoBehaviour:
   WordOffset: 0
   WordCount: 0
   _interpolationDataSource: 0
-  CurrentMagazine: 0
-  CurrentReserve: 0
+  playerCamera: {fileID: 0}
+  fireDistance: 100
+  currentMagazine: 0
+  currentReserve: 0
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  obstructionLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  directHitRadius: 1
+  blastHitRadius: 5
+  minBlastDamage: 20
+  damageDuration: 1
+  explosionDelay: 3
+  explosionCenter: {fileID: 0}
 --- !u!1 &4176965755305398582
 GameObject:
   m_ObjectHideFlags: 0
@@ -1020,8 +1044,17 @@ MonoBehaviour:
   WordOffset: 0
   WordCount: 0
   _interpolationDataSource: 0
-  CurrentMagazine: 0
-  CurrentReserve: 0
+  playerCamera: {fileID: 0}
+  fireDistance: 100
+  currentMagazine: 0
+  currentReserve: 0
+  muzzleTransform: {fileID: 0}
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  obstructionLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!1 &5018395386530166793
 GameObject:
   m_ObjectHideFlags: 0
@@ -1171,14 +1204,16 @@ MonoBehaviour:
   WordOffset: 0
   WordCount: 0
   _interpolationDataSource: 0
-  CurrentMagazine: 0
-  CurrentReserve: 0
+  playerCamera: {fileID: 0}
+  fireDistance: 100
+  currentMagazine: 0
+  currentReserve: 0
   playerLayer:
     serializedVersion: 2
     m_Bits: 1088
-  obstructionMask:
+  obstructionLayer:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 0
   swordRoot: {fileID: 1681199498018109950}
   attackActiveTime: 0.5
 --- !u!1 &5681736977746601935

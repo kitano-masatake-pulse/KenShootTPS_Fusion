@@ -3,12 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SemiAutoRifle : WeaponBase
+public class AssaultRifle : WeaponBase
 {
 
-     protected override WeaponType weapon=> WeaponType.SemiAutoRifle; // 武器の種類を指定
+    protected override WeaponType weapon => WeaponType.AssaultRifle; // 武器の種類を指定
 
     [SerializeField] private Transform muzzleTransform; // 銃口(=Raycastの光源)の位置を指定するTransform
+
+
 
     [SerializeField] private LayerMask playerLayer;
     public override LayerMask PlayerLayer => playerLayer;
@@ -18,15 +20,45 @@ public class SemiAutoRifle : WeaponBase
 
 
 
+
+
+
+
+
+    protected override void OnEmptyAmmo()
+    {
+        Debug.Log("カチッ（弾切れSE）");
+    }
+
+
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+
+    }
+
     public override void FireDown()
     {
         base.FireDown();
-
-        // ここにセミオートライフルの特有の処理を追加
         GunRaycast(muzzleTransform.position, muzzleTransform.forward);
-        Debug.Log($"{weaponType.GetName()} fired down in SemiAutoRifle!");
+
     }
 
+
+    public override void Fire()
+    { 
+        base.Fire();
+        GunRaycast(muzzleTransform.position, muzzleTransform.forward);
+        // ここにアサルトライフル特有の発射処理を追加することができます
+    }
 
     void GunRaycast(Vector3 origin, Vector3 direction)
     {
@@ -65,16 +97,5 @@ public class SemiAutoRifle : WeaponBase
 
         }
 
-    }
-        // Start is called before the first frame update
-        void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

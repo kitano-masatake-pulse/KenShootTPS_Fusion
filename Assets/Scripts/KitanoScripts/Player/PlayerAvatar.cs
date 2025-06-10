@@ -190,8 +190,8 @@ public class PlayerAvatar : NetworkBehaviour
             if (!weaponClassDictionary.ContainsKey(weapon.weaponType))
             {
                 weaponClassDictionary.Add(weapon.weaponType, weapon);
-                weapon.CurrentMagazine = weapon.weaponType.MagazineCapacity(); //初期マガジンは最大値に設定
-                weapon.CurrentReserve = weapon.weaponType.ReserveCapacity(); //初期リザーブは50
+                weapon.currentMagazine = weapon.weaponType.MagazineCapacity(); //初期マガジンは最大値に設定
+                weapon.currentReserve = weapon.weaponType.ReserveCapacity(); //初期リザーブは50
             }
             else
             {
@@ -671,7 +671,7 @@ public class PlayerAvatar : NetworkBehaviour
                     weaponClassDictionary[currentWeapon].FireDown(); //現在の武器の発射処理を呼ぶ
                     SetActionAnimationPlayList(currentWeapon.FireDownAction(), Runner.SimulationTime); //アクションアニメーションのリストに発射ダウンを追加
 
-                    OnAmmoChanged?.Invoke(weaponClassDictionary[currentWeapon].CurrentMagazine, weaponClassDictionary[currentWeapon].CurrentReserve); //弾薬変更イベントを発火
+                    OnAmmoChanged?.Invoke(weaponClassDictionary[currentWeapon].currentMagazine, weaponClassDictionary[currentWeapon].currentReserve); //弾薬変更イベントを発火
 
                     StartCoroutine(FireRoutine(currentWeapon.FireWaitTime())); //発射ダウンのコルーチンを開始
                                                                                //Debug.Log($"FireDown {currentWeapon.GetName()}"); //デバッグログ
@@ -728,7 +728,7 @@ public class PlayerAvatar : NetworkBehaviour
 
             weaponClassDictionary[currentWeapon].Fire(); //現在の武器の発射処理を呼ぶ
 
-            OnAmmoChanged?.Invoke(weaponClassDictionary[currentWeapon].CurrentMagazine, weaponClassDictionary[currentWeapon].CurrentReserve); //弾薬変更イベントを発火
+            OnAmmoChanged?.Invoke(weaponClassDictionary[currentWeapon].currentMagazine, weaponClassDictionary[currentWeapon].currentReserve); //弾薬変更イベントを発火
             StartCoroutine(FireRoutine(currentWeapon.FireWaitTime())); //発射ダウンのコルーチンを開始
 
             //Debug.Log($"FireStay {currentWeapon.GetName()}"); //デバッグログ
@@ -793,7 +793,7 @@ public class PlayerAvatar : NetworkBehaviour
 
                 Debug.Log($"ChangeWeapon {currentWeapon.GetName()}"); //デバッグログ
 
-                OnWeaponChanged?.Invoke(currentWeapon, weaponClassDictionary[currentWeapon].CurrentMagazine, weaponClassDictionary[currentWeapon].CurrentReserve); //武器変更イベントを発火
+                OnWeaponChanged?.Invoke(currentWeapon, weaponClassDictionary[currentWeapon].currentMagazine, weaponClassDictionary[currentWeapon].currentReserve); //武器変更イベントを発火
                 //OnAmmoChanged?.Invoke(weaponClassDictionary[currentWeapon].CurrentMagazine, weaponClassDictionary[currentWeapon].CurrentReserve); //弾薬変更イベントを発火
 
 
@@ -821,7 +821,7 @@ public class PlayerAvatar : NetworkBehaviour
         {
             weapon.InitializeAmmo(); 
         }
-        OnAmmoChanged?.Invoke(weaponClassDictionary[currentWeapon].CurrentMagazine, weaponClassDictionary[currentWeapon].CurrentReserve); //弾薬変更イベントを発火
+        OnAmmoChanged?.Invoke(weaponClassDictionary[currentWeapon].currentMagazine, weaponClassDictionary[currentWeapon].currentReserve); //弾薬変更イベントを発火
     }
 
     bool CanWeaponAction()
@@ -865,14 +865,9 @@ public class PlayerAvatar : NetworkBehaviour
         yield return new WaitForSeconds(waitTime);
         //localState.SetAmmo(weaponType, localState.GetMaxAmmo(weaponType));
 
-        int currentMagazine = weaponClassDictionary[reloadedWeaponType].CurrentMagazine;
-        int currentReserve = weaponClassDictionary[reloadedWeaponType].CurrentReserve;
-        int magazineCapacity = reloadedWeaponType.MagazineCapacity();
-        int reloadededAmmo = Mathf.Min(currentReserve, magazineCapacity - currentMagazine); //リロードされる弾薬数
+        weaponClassDictionary[reloadedWeaponType].Reload(); //リロード処理を呼ぶ
 
-        weaponClassDictionary[reloadedWeaponType].CurrentMagazine += reloadededAmmo; //マガジンにリロードされた弾薬を追加
-        weaponClassDictionary[reloadedWeaponType].CurrentReserve -= reloadededAmmo; //リザーブからリロードされた弾薬を減らす
-        OnAmmoChanged?.Invoke(weaponClassDictionary[reloadedWeaponType].CurrentMagazine, weaponClassDictionary[reloadedWeaponType].CurrentReserve); //弾薬変更イベントを発火
+        OnAmmoChanged?.Invoke(weaponClassDictionary[reloadedWeaponType].currentMagazine, weaponClassDictionary[reloadedWeaponType].currentReserve); //弾薬変更イベントを発火
 
         isDuringWeaponAction = false;
         Debug.Log("リロード完了！");
