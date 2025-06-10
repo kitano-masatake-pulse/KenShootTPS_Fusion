@@ -28,7 +28,7 @@ public class Sword : WeaponBase
     float cornRayAngleDeg = 30f; // 円錐形の角度
     int cornRayNum = 10; // 円錐形の放射状のRayの本数
 
-    private float rayDrawingDuration = 0.1f; // Rayの描画時間
+    private float rayDrawingDuration = 0.5f; // Rayの描画時間
 
 
     PlayerAvatar myPlayerAvatar;
@@ -96,20 +96,18 @@ public class Sword : WeaponBase
             HitOptions.IgnoreInputAuthority // HitOptions.Noneを使用して、すべてのヒットを取得する
             );
 
+        if (OverlapSphereVisualizer.Instance != null)
+        {
+            OverlapSphereVisualizer.Instance.ShowSphere(swordRoot.position, swordLength, rayDrawingDuration, "Sword Attack Area", Color.red); // 攻撃判定の範囲を可視化する
+        }
+        else
+        {
+            Debug.LogWarning("OverlapSphereVisualizer.Instance is null! Please ensure it is set up in the scene.");
+        }
+
+
         Debug.Log($"OverlapSphere hit count: {hitCount}");
 
-        //bool rayHit=Runner.LagCompensation.Raycast(
-        //                swordRoot.position,
-        //                transform.forward,
-        //                swordLength * 5,   // 剣の長さの5倍の距離でレイキャスト
-        //                Object.InputAuthority,
-        //                out LagCompensatedHit hitRes,
-        //                playerLayer | obstructionMask, // 判定を行うレイヤーを制限する。プレイヤーと障害物のレイヤーを指定
-        //                HitOptions.IgnoreInputAuthority
-
-        //            );
-
-        //Debug.Log($"Raycast hit: {rayHit}");
 
 
         if (hitCount > 0)
@@ -180,7 +178,7 @@ public class Sword : WeaponBase
             Runner.LagCompensation.Raycast(
            swordRoot.position,
            direction,
-           swordLength * 5,   // 剣の長さの5倍の距離でレイキャスト
+           swordLength,   // 剣の長さの距離でレイキャスト
            Object.InputAuthority,
            out LagCompensatedHit hitResult,
            playerLayer | obstructionLayer, // 判定を行うレイヤーを制限する。プレイヤーと障害物のレイヤーを指定
@@ -189,7 +187,26 @@ public class Sword : WeaponBase
             );
 
 
-            Debug.DrawRay(swordRoot.position, direction * swordLength * 5, Color.red, rayDrawingDuration);
+            if (RaycastLinePoolManager.Instance != null)
+            { 
+                Vector3 rayEnd= Vector3.zero;
+                rayEnd = swordRoot.position + direction * swordLength; // ヒットポイントがない場合は剣の長さまでのRayを描画
+
+
+                //if ( hit.Point != null)
+                //{
+                //    rayEnd = hit.Point; // ヒットしたポイントがある場合はそこまでのRayを描画
+                //}
+                //else
+                //{ 
+                //    rayEnd = swordRoot.position + direction * swordLength*5; // ヒットポイントがない場合は剣の長さまでのRayを描画
+
+                //}
+                
+                RaycastLinePoolManager.Instance.ShowRay(swordRoot.position,rayEnd, Color.red,rayDrawingDuration);
+            }
+
+            //Debug.DrawRay(swordRoot.position, direction * swordLength, Color.red, rayDrawingDuration);
 
 
             // レイキャストの結果を確認,何回も刺さないように注意
@@ -254,18 +271,18 @@ public class Sword : WeaponBase
         return directions;
     }
 
-    void OnDrawGizmos()
-    {
-        if (isAttackActive)
-        {
+    //void OnDrawGizmos()
+    //{
+    //    if (isAttackActive)
+    //    {
 
-            // Gizmosを使用して攻撃判定の範囲を可視化
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(swordRoot.position, swordLength);
+    //        // Gizmosを使用して攻撃判定の範囲を可視化
+    //        Gizmos.color = Color.red;
+    //        Gizmos.DrawWireSphere(swordRoot.position, swordLength);
    
-        }
+    //    }
         
-    }
+    //}
 
 
 
