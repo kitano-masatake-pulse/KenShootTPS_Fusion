@@ -45,7 +45,10 @@ public class PlayerAvatar : NetworkBehaviour
     //行動可能かどうかのフラグ
     private bool isDuringWeaponAction = false; //武器アクション(射撃、リロード、武器切り替え)中かどうか
     private bool isImmobilized = false; //行動不能中かどうか(移動・ジャンプもできない)
-    
+
+    //ADS中かどうか(エイムダウンサイト、スコープ覗き込み)
+    private bool isADS = false; 
+
 
     //Weapon関連
     private WeaponType currentWeapon = WeaponType.AssaultRifle ; //現在の武器タイプ
@@ -153,6 +156,7 @@ public class PlayerAvatar : NetworkBehaviour
     public bool isGraundedNow;
     void Update()
     {
+        
         if (HasInputAuthority)
         {
             InputCheck();
@@ -221,11 +225,16 @@ public class PlayerAvatar : NetworkBehaviour
         {
             ChangeWeapon(localInputData.weaponChangeScroll);
         }
-        
+
+        if (localInputData.ADSPressedDown) //ADSボタンが押されたら、ADSの処理を呼ぶ
+        {
+            ADS();
+            Debug.Log($"ADSPressedDown"); //デバッグログ
+        }
+
 
 
         normalizedInputDirection = localInputData.wasdInput.normalized;
-
         ChangeTransformLocally(normalizedInputDirection, tpsCameraTransform.forward);//ジャンプによる初速度も考慮して移動する
 
     }
@@ -244,6 +253,7 @@ public class PlayerAvatar : NetworkBehaviour
 
         if (isFollowingCameraForward)
         {
+             //デバッグログ
             Vector3 bodyForward = new Vector3(lookForwardDir.x, 0f, lookForwardDir.z).normalized;
             // ローカルプレイヤーの移動処理
 
@@ -638,21 +648,18 @@ public class PlayerAvatar : NetworkBehaviour
 
     void Fire()
     {
-        if (!currentWeapon.isOneShotWeapon() &&  CanWeaponAction()   && !weaponClassDictionary[currentWeapon].IsMagazineEmpty() ) //連射武器で、かつ発射可能な場合a
+        if (!currentWeapon.isOneShotWeapon() && CanWeaponAction() && !weaponClassDictionary[currentWeapon].IsMagazineEmpty()) //連射武器で、かつ発射可能な場合a
         {
-
 
             weaponClassDictionary[currentWeapon].Fire(); //現在の武器の発射処理を呼ぶ
 
             OnAmmoChanged?.Invoke(weaponClassDictionary[currentWeapon].CurrentMagazine, weaponClassDictionary[currentWeapon].CurrentReserve); //弾薬変更イベントを発火
             StartCoroutine(FireRoutine(currentWeapon.FireWaitTime())); //発射ダウンのコルーチンを開始
 
-            //Debug.Log($"FireStay {currentWeapon.GetName()}"); //デバッグログ
-
-        }
-
-     
     }
+
+
+}
 
     void FireUp()
     {
@@ -730,7 +737,6 @@ public class PlayerAvatar : NetworkBehaviour
 
         
     }
-
    
 
     bool CanWeaponAction()
@@ -789,6 +795,24 @@ public class PlayerAvatar : NetworkBehaviour
         isDuringWeaponAction = false;
         Debug.Log("武器切り替え完了！");
     }
+
+    void ADS()
+    {
+        if (isADS)
+        {
+            SetActionAnimationPlayListForAllClients(ActionType.ADS_Off);
+            isADS = false; //ADSを解除
+            Debug.Log("ADS Off"); //デバッグログ
+        }
+        else
+        {
+            SetActionAnimationPlayListForAllClients(ActionType.ADS_On);
+            isADS = true; //ADSを有効化
+            Debug.Log("ADS On"); //デバッグログ
+        }
+    }
+
+    
 
     #endregion
 

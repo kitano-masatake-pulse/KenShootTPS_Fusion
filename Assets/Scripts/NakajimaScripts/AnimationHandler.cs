@@ -72,6 +72,15 @@ public class AnimationHandler : NetworkBehaviour
                     Debug.Log($"IsJumping False");
                     animator.SetBool("IsJumping", false);
                     break;
+
+                case ActionType.ADS_On:
+                    Debug.Log($"IsADS True");
+                    animator.SetBool("IsADS", true);
+                    break;
+                case ActionType.ADS_Off:
+                    Debug.Log($"IsADS False");
+                    animator.SetBool("IsADS", false);
+                    break;
             }
             Debug.Log($"actionType: {action.actionType}, actionCalledTimeOnSimulationTime: {action.actionCalledTimeOnSimulationTime}");
         }
