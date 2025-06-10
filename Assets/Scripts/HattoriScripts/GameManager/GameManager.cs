@@ -301,7 +301,7 @@ public class GameManager : NetworkBehaviour
     {
         return Runner.LocalPlayer;
     }
-    public NetworkObject GetMyNetworkObject()
+    public NetworkObject GetMyPlayer()
     {
         return Runner.GetPlayerObject(Runner.LocalPlayer);
     }

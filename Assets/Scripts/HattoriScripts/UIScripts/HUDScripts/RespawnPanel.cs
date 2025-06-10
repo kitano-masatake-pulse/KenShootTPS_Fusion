@@ -13,7 +13,7 @@ public class RespawnPanel : MonoBehaviour, IHUDPanel
     [SerializeField] private Button respawnBtn;
     [SerializeField] private Image fadePanel;
     [Header("リスポーンUI表示のフェードと遅延の設定")]
-    [SerializeField] private float UIfadeTime = 0.5f, delay = 5f;
+    [SerializeField] private float UIfadeTime = 0.3f, delay = 5f;
     [Header("リスポーン時のフェード時間設定")]
     [SerializeField] private float respawnFadeTime = 3f;
 
@@ -43,6 +43,7 @@ public class RespawnPanel : MonoBehaviour, IHUDPanel
         respawnBtn.gameObject.SetActive(false);
         respawnPanelGroup.alpha = 0; 
         respawnPanelGroup.blocksRaycasts = true;
+        respawnPanelGroup.interactable = true;
         killerText.text = "";
         countdownText.text = "";
 
@@ -71,18 +72,23 @@ public class RespawnPanel : MonoBehaviour, IHUDPanel
     // リスポーンボタンが押された時の処理
     public void OnRespawnClick()
     {
+        respawnPanelGroup.interactable = false; // ボタンを無効
         StopAllCoroutines();
-        respawnPanelGroup.alpha = 1;
+        respawnPanelGroup.alpha = 0;
         respawnPanelGroup.blocksRaycasts = false;
         killerText.text = "";
-        countdownText.text = "";
 
         if (fadePanel == null)
             Debug.LogError("Fade Image がアサインされていません");
         fadePanel.color = new Color(0, 0, 0, 0);
         FadeOut(() =>
         {
+            Debug.Log("RespawnPanel:リスポーンボタンが押されました");
             OnRespawnClicked?.Invoke();
+            FadeIn(() =>
+            {
+                //数秒後に無敵化を解く処理など
+            });
         });
     }
     /// <summary>
@@ -108,18 +114,18 @@ public class RespawnPanel : MonoBehaviour, IHUDPanel
     private IEnumerator FadeRoutine(float fromAlpha, float toAlpha, float duration, System.Action onComplete)
     {
         float elapsed = 0f;
-        Color c = fadePanel.color;
+        Color panelColor = fadePanel.color;
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
             float t = Mathf.Clamp01(elapsed / duration);
-            c.a = Mathf.Lerp(fromAlpha, toAlpha, t);
-            fadePanel.color = c;
+            panelColor.a = Mathf.Lerp(fromAlpha, toAlpha, t);
+            fadePanel.color = panelColor;
             yield return null;
         }
         // 最終値を確実にセット
-        c.a = toAlpha;
-        fadePanel.color = c;
+        panelColor.a = toAlpha;
+        fadePanel.color = panelColor;
         currentFade = null;
         onComplete?.Invoke();
     }
