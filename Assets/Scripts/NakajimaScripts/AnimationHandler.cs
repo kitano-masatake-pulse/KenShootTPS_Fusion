@@ -13,7 +13,7 @@ public class AnimationHandler : NetworkBehaviour
     [SerializeField] private Transform modelTransform;
 
     [Header("Animation Settings")]
-    private const float MoveDeltaAmplify = 1000f;      // 移動差分が小さくなりすぎないように拡大
+    private const float MoveDeltaAmplify = 100f;      // 移動差分が小さくなりすぎないように拡大
     private const float DampTime = 0.001f;             // アニメーション補間に使う dampTime
 
     [Header("Animation State")]
@@ -77,6 +77,7 @@ public class AnimationHandler : NetworkBehaviour
                     Debug.Log($"IsADS True");
                     animator.SetBool("IsADS", true);
                     break;
+
                 case ActionType.ADS_Off:
                     Debug.Log($"IsADS False");
                     animator.SetBool("IsADS", false);
