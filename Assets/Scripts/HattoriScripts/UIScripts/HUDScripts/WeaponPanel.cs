@@ -24,7 +24,7 @@ public class WeaponPanel : MonoBehaviour, IHUDPanel
         weaponState.OnAmmoChanged += UpdateAmmoText;
         // ‰Šú’l‚Ìİ’è
         WeaponType currentWeapon = weaponState.CurrentWeapon;
-        UpdateWeaponImage(currentWeapon, weaponState.WeaponClassDictionary[currentWeapon].CurrentMagazine, weaponState.WeaponClassDictionary[currentWeapon].CurrentReserve);
+        UpdateWeaponImage(currentWeapon, weaponState.WeaponClassDictionary[currentWeapon].currentMagazine, weaponState.WeaponClassDictionary[currentWeapon].currentReserve);
     }
     public void Cleanup()
     {
