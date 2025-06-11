@@ -3,22 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
 
+// リスポーン管理クラス
 public class RespawnManager : NetworkBehaviour
 {
-    //シングルトン
+    // シングルトンインスタンス
     public static RespawnManager Instance { get; private set; }
 
     private void Awake()
     {
-        // シングルトンのインスタンスを設定
+
         if (Instance == null)
         {
             Instance = this;
-            //DontDestroyOnLoad(gameObject); // シーンを跨いでオブジェクトを保持
         }
         else
         {
-            Destroy(gameObject); // 既に存在する場合は新しいインスタンスを破棄
+            Destroy(gameObject);
         }
     }
 
@@ -34,60 +34,45 @@ public class RespawnManager : NetworkBehaviour
         }
         Debug.Log($"RPC_RequestRespawn: Player {playerObject.InputAuthority} requested respawn.");
         // リスポーン処理を実行
-        RespawnPlayer(playerObject);
+        InitializePlayerInHost(playerObject);
     }
-    //プレイヤーのリスポーン処理
-    private void RespawnPlayer(NetworkObject playerObject)
+
+    private void InitializePlayerInHost(NetworkObject playerObject)
     {
-        //ホストのみ
-        if(!Object.HasStateAuthority)
+        //ホストのみ実行
+        if(!Object.HasStateAuthority) return;        
+
+        //HPの初期化・無敵化
+        var playerState = playerObject.GetComponent<PlayerNetworkState>();
+        if (playerState != null)
         {
-            return;
+            Debug.Log($"InitializePlayerInHost： {playerObject.InputAuthority} HP initialized.");
+            playerState.SetInvincible(true); 
+            playerState.InitializeHP();
         }
-        if (playerObject != null && playerObject.IsValid)
-        {
-            // プレイヤーの位置をリスポーン地点に設定
-            var playerAvatar = playerObject.GetComponent<PlayerAvatar>();
-            if (playerAvatar != null)
-            {
-                Debug.Log($"RespawnPlayer： {playerObject.InputAuthority} at initial spawn point.");
-                playerAvatar.TeleportToInitialSpawnPoint(GetRespawnPoint());
-                //フラグのリセット???ちょっと後でちゃんと見るべき
-                playerAvatar.IsHoming = false;
-                playerAvatar.SetFollowingCameraForward(true);
-            }
-
-            //HPの初期化
-            var playerState = playerObject.GetComponent<PlayerNetworkState>();
-            if (playerState != null)
-            {
-                Debug.Log($"RespawnPlayer： {playerObject.InputAuthority} HP initialized.");
-                playerState.SetInvincible(true); // 無敵状態にする
-                playerState.InitializeHP();
-            }
-
-        }
-
+        
         //RPCを呼び出して、クライアント側でもリスポーン処理を実行
-        RPC_RespawnPlayerClient(playerObject);
+        RPC_InitializePlayerInAll(playerObject);
 
     }
 
     //クライアント側のリスポーン処理
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RPC_RespawnPlayerClient(NetworkObject playerObject)
+    public void RPC_InitializePlayerInAll(NetworkObject playerObject)
     {
-        Debug.Log($"RPC_RespawnPlayerClient: Player {playerObject.InputAuthority} Local Initialized");
-        // クライアント側でのリスポーン処理
+        Debug.Log($"InitializePlayerInAll: Player {playerObject.InputAuthority} Local Initialized");
+
         if (playerObject != null && playerObject.IsValid)
         {
-            // プレイヤーのアニメーションをリセット
+            // プレイヤーのアニメーションをアイドル状態に
             var animator = playerObject.GetComponent<Animator>();
             if (animator != null)
             {
                 animator.Play("Idle");
             }
         }
+        
+
         //Collider 有効化(レイヤー切り替え)
         foreach (var col in playerObject.GetComponentsInChildren<Collider>())
             col.gameObject.layer = LayerMask.NameToLayer("Player");
@@ -101,10 +86,23 @@ public class RespawnManager : NetworkBehaviour
         }
     }
     //リスポーン地点の取得
-    public Vector3 GetRespawnPoint()
+    
+
+    //ホスト側のリスポーン終了時の処理
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void RPC_RespawnEnd(NetworkObject playerObject)
     {
-        var randomValue = UnityEngine.Random.insideUnitCircle * 5f;
-        var spawnPosition = new Vector3(randomValue.x, 5f, randomValue.y);
-        return spawnPosition;
+        if (playerObject == null || !playerObject.IsValid)
+        {
+            Debug.LogWarning("RPC_RespawnEnd: Invalid player object.");
+            return;
+        }
+        Debug.Log($"RPC_RespawnEnd: Player {playerObject.InputAuthority} respawn finished.");
+        // プレイヤーの無敵状態を解除
+        var playerState = playerObject.GetComponent<PlayerNetworkState>();
+        if (playerState != null)
+        {
+            playerState.SetInvincible(false);
+        }
     }
 }

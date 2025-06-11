@@ -50,7 +50,7 @@ public class PlayerAvatar : NetworkBehaviour
     private bool isImmobilized = false; //行動不能中かどうか(移動・ジャンプもできない)
     private bool isHoming = false; // ホーミング中かどうか
     private bool isFollowingCameraForward = true; //カメラの前方向に向くかどうか(デフォルトはtrue)
-    private bool isInvincible = false; //無敵状態かどうか(デフォルトはfalse)
+    //private bool isInvincible = false; //無敵状態かどうか(デフォルトはfalse)
 
 
     //各変数のgetter/setter
@@ -76,11 +76,11 @@ public class PlayerAvatar : NetworkBehaviour
         set { isFollowingCameraForward = value; }
     }
 
-    public bool IsInvincible
-    {
-        get { return isInvincible; }
-        set { isInvincible = value; }
-    }
+    //public bool IsInvincible
+    //{
+    //    get { return isInvincible; }
+    //    set { isInvincible = value; }
+    //}
 
 
 
@@ -812,16 +812,6 @@ public class PlayerAvatar : NetworkBehaviour
       
             return true;
            
-    }
-
-    public void SetDuringWeaponAction(bool flag)
-    { 
-        isDuringWeaponAction = flag; 
-    }
-
-    public void SetImmobilized(bool flag)
-    {
-        isImmobilized = flag; //行動不能フラグを立てる
     }
 
 

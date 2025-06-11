@@ -12,7 +12,7 @@ public class PlayerDeathHandler : NetworkBehaviour
     {
         if(GameManager.Instance != null)
         {
-            GameManager.Instance.OnMyPlayerDied += HandleDeath;
+            GameManager.Instance.OnAnyPlayerDied += HandleDeath;
         }
         
     }
@@ -21,19 +21,25 @@ public class PlayerDeathHandler : NetworkBehaviour
     {
         if (GameManager.Instance != null)
         {
-            GameManager.Instance.OnMyPlayerDied -= HandleDeath;
+            GameManager.Instance.OnAnyPlayerDied -= HandleDeath;
         }
     }
 
-    private void HandleDeath(PlayerRef killer, float hostTimeStamp)
-    {   
+    private void HandleDeath(PlayerRef victim, PlayerRef killer, float hostTimeStamp)
+    {
+        //このプレイヤーでない場合は何もしない
+        if (victim != Object.InputAuthority)
+        {
+            return;
+        }
+        Debug.Log($"PlayerDeathHandler: Player{victim.PlayerId} has died at {hostTimeStamp} by {killer.PlayerId}");
         //プレイヤーアバターに死亡アニメーションを設定
         playerAvatar.SetActionAnimationPlayList(ActionType.Dead, hostTimeStamp);
         //行動不能化
-        playerAvatar.SetDuringWeaponAction(true);
-        playerAvatar.SetImmobilized(true);
+        playerAvatar.IsDuringWeaponAction = true;
+        playerAvatar.IsImmobilized = true;
         //顔のカメラ追従を切る
-        playerAvatar.SetFollowingCameraForward(false);
+        playerAvatar.IsFollowingCameraForward = false;
         //Collider 無効化(レイヤー切り替え)
         foreach (var col in GetComponentsInChildren<Collider>())
             col.gameObject.layer = LayerMask.NameToLayer("DeadPlayer");

@@ -143,6 +143,7 @@ public class GameManager : NetworkBehaviour
         //自分のプレイヤーに対しては、OnMyPlayerDiedイベントも発火
         if (Runner.LocalPlayer == victim)
         {
+            Debug.Log($"GameManager : OnMyPlayerDied Invoked");
             OnMyPlayerDied?.Invoke(killer,timeStamp);
         }
 
