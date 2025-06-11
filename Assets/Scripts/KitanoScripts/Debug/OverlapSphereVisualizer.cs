@@ -9,6 +9,8 @@ public class OverlapSphereVisualizer : MonoBehaviour
     [SerializeField] private Material sphereMaterial; // Sprites/Default + Alpha付き推奨
                                                       //[SerializeField] private GameObject labelPrefab;  // UI Textを含むプレハブ（任意）
 
+    bool isVisualized = false; 
+
 
     private void Awake()
     {
@@ -24,6 +26,10 @@ public class OverlapSphereVisualizer : MonoBehaviour
 
     public void ShowSphere(Vector3 center, float radius, float duration, string label = "OverlapSphere", Color? color = null)
     {
+        isVisualized = SROptions.Current.isShowingAttackOverlapSphere;// SROptionsからのフラグ取得
+        
+        if(!isVisualized) return;
+
         GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         Destroy(sphere.GetComponent<Collider>());
 

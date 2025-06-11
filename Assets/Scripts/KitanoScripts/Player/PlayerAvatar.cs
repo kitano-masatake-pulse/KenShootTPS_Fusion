@@ -598,7 +598,7 @@ public class PlayerAvatar : NetworkBehaviour
         if (GetInput(out NetworkInputData data))
         {
             avatarPositionInHost = data.avatarPosition; //ホスト環境でのアバター位置を更新
-            cameraForwardInHost = data.cameraForward; //カメラの前方向を更新
+            cameraForwardInHost = data.headForward; //カメラの前方向を更新
             normalizedInputDirectionInHost = data.normalizedInputDirection; //入力方向を更新
         }
 

@@ -345,6 +345,7 @@ GameObject:
   - component: {fileID: 6887860513559479073}
   - component: {fileID: 7045168527131226642}
   - component: {fileID: 1857893055728629384}
+  - component: {fileID: 3897763908544282085}
   m_Layer: 10
   m_Name: DummyPlayer
   m_TagString: Untagged
@@ -534,6 +535,21 @@ MonoBehaviour:
   WordCount: 0
   _interpolationDataSource: 0
   playerNetworkState: {fileID: 6887860513559479073}
+--- !u!114 &3897763908544282085
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2852828816588928964}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5cb349b90b6afe47ad8fc0bddfb62c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isVisualized: 1
+  wireColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  scaleMultiplier: 1
 --- !u!1 &3204331734794187210
 GameObject:
   m_ObjectHideFlags: 0

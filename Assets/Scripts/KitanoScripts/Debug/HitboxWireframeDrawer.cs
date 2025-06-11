@@ -7,7 +7,7 @@ using System.Linq;
 public class HitboxWireframeDrawer : MonoBehaviour
 {
     [Header("表示フラグ")]
-    public bool visualize = true;
+    public bool isVisualized = true;
 
     [Header("色設定")]
     public Color wireColor = Color.yellow;
@@ -48,7 +48,8 @@ public class HitboxWireframeDrawer : MonoBehaviour
 
     private void OnRenderObject()
     {
-        if (!visualize || _hitboxes == null) return;
+        isVisualized= SROptions.Current.isShowingHitbox; // SROptionsからのフラグ取得
+        if (!isVisualized || _hitboxes == null) return;
 
         _lineMaterial.color = wireColor;      
         _lineMaterial.SetPass(0);

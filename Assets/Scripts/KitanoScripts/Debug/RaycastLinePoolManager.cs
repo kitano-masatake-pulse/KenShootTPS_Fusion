@@ -15,6 +15,8 @@ public class RaycastLinePoolManager : MonoBehaviour
     [Header("線の太さ")]
     [SerializeField] private float defaultWidth = 0.05f;
 
+    bool isVisualized = false; // SROptionsからのフラグ取得
+
     private readonly Queue<LineRenderer> pool = new();
 
     private void Awake()
@@ -47,6 +49,9 @@ public class RaycastLinePoolManager : MonoBehaviour
     /// </summary>
     public void ShowRay(Vector3 start, Vector3 end, Color? color ,float duration = 0.5f)
     {
+        isVisualized = SROptions.Current.isShowingAttackRaycast; // SROptionsからのフラグ取得
+        if (!isVisualized) return;
+
         if (pool.Count == 0)
         {
             Debug.LogWarning("RayLine Pool is empty!");

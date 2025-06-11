@@ -36,15 +36,15 @@ public partial class SROptions
 
     [Category("“–‚½‚è”»’è‚Ì‰Â‹‰»")]
     [DisplayName("Hitbox")]
-    public bool ShowHitbox { get; set; } = false;
+    public bool isShowingHitbox { get; set; } =true;
 
     [Category("“–‚½‚è”»’è‚Ì‰Â‹‰»")]
-    [DisplayName("1ƒtƒŒ[ƒ€‚ÌUŒ‚”»’è")]
-    public bool ShowCollisionOneFrame { get; set; } = false;
+    [DisplayName("UŒ‚‘¤OverlapSphere")]
+    public bool isShowingAttackOverlapSphere { get; set; } = true;
 
     [Category("“–‚½‚è”»’è‚Ì‰Â‹‰»")]
-    [DisplayName("‘±‚·‚éUŒ‚”»’è")]
-    public bool ShowCollisionSustain { get; set; } = false;
+    [DisplayName("UŒ‚‘¤Raycast")]
+    public bool isShowingAttackRaycast { get; set; } = true;
 
 
 

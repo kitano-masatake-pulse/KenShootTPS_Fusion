@@ -190,19 +190,20 @@ public class Sword : WeaponBase
             if (RaycastLinePoolManager.Instance != null)
             { 
                 Vector3 rayEnd= Vector3.zero;
-                rayEnd = swordRoot.position + direction * swordLength; // ヒットポイントがない場合は剣の長さまでのRayを描画
-
-
-                //if ( hit.Point != null)
-                //{
-                //    rayEnd = hit.Point; // ヒットしたポイントがある場合はそこまでのRayを描画
-                //}
-                //else
-                //{ 
-                //    rayEnd = swordRoot.position + direction * swordLength*5; // ヒットポイントがない場合は剣の長さまでのRayを描画
-
-                //}
                 
+                //rayEnd = swordRoot.position + direction * swordLength; // ヒットポイントがない場合は剣の長さまでのRayを描画
+
+
+                if (hit.Point != null)
+                {
+                    rayEnd = hit.Point; // ヒットしたポイントがある場合はそこまでのRayを描画
+                }
+                else
+                {
+                    rayEnd = swordRoot.position + direction * swordLength * 5; // ヒットポイントがない場合は剣の長さまでのRayを描画
+
+                }
+
                 RaycastLinePoolManager.Instance.ShowRay(swordRoot.position,rayEnd, Color.red,rayDrawingDuration);
             }
 
