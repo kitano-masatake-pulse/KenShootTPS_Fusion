@@ -51,7 +51,7 @@ public class PlayerAvatar : NetworkBehaviour
     private bool isImmobilized = false; //行動不能中かどうか(移動・ジャンプもできない)
     private bool isHoming = false; // ホーミング中かどうか
     private bool isFollowingCameraForward = true; //カメラの前方向に向くかどうか(デフォルトはtrue)
-    private bool isInvincible = false; //無敵状態かどうか(デフォルトはfalse)
+    //private bool isInvincible = false; //無敵状態かどうか(デフォルトはfalse)
 
 
     //各変数のgetter/setter
@@ -77,11 +77,11 @@ public class PlayerAvatar : NetworkBehaviour
         set { isFollowingCameraForward = value; }
     }
 
-    public bool IsInvincible
-    {
-        get { return isInvincible; }
-        set { isInvincible = value; }
-    }
+    //public bool IsInvincible
+    //{
+    //    get { return isInvincible; }
+    //    set { isInvincible = value; }
+    //}
 
 
 
@@ -209,9 +209,16 @@ public class PlayerAvatar : NetworkBehaviour
     
 
 
-    void TeleportToInitialSpawnPoint()
+    public void TeleportToInitialSpawnPoint()
     {         // 初期スポーンポイントにテレポートする
         Vector3 initialSpawnPoint = new Vector3(UnityEngine.Random.Range(0,5f), 1f, UnityEngine.Random.Range(0, 5f)); // 初期スポーンポイントの座標を設定
+        transform.position = initialSpawnPoint; // プレイヤーの位置を初期スポーンポイントに設定
+        characterController.enabled = false; // CharacterControllerを一時的に無効化
+        characterController.enabled = true; // 再度有効化して、衝突判定をリセット
+    }
+
+    public void TeleportToInitialSpawnPoint(Vector3 initialSpawnPoint)
+    {         // 初期スポーンポイントにテレポートする
         transform.position = initialSpawnPoint; // プレイヤーの位置を初期スポーンポイントに設定
         characterController.enabled = false; // CharacterControllerを一時的に無効化
         characterController.enabled = true; // 再度有効化して、衝突判定をリセット
@@ -835,16 +842,6 @@ public class PlayerAvatar : NetworkBehaviour
       
             return true;
            
-    }
-
-    public void SetDuringWeaponAction(bool flag)
-    { 
-        isDuringWeaponAction = flag; 
-    }
-
-    public void SetImmobilized(bool flag)
-    {
-        isImmobilized = flag; //行動不能フラグを立てる
     }
 
 

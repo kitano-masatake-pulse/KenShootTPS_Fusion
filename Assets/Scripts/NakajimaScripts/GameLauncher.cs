@@ -36,7 +36,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     public TextMeshProUGUI sessionNameText;
 
     [Header("デバッグ用：ダミーアバターの生成数(0で無効)")]
-    public int dummyAvatarCount = 1;
+    public int dummyAvatarCount = 0;
 
 
 

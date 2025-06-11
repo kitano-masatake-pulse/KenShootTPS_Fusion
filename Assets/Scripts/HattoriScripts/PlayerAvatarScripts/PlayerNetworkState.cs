@@ -34,9 +34,17 @@ public class PlayerNetworkState : NetworkBehaviour
 
     public float HpNormalized => MaxHP > 0 ? (float)CurrentHP / MaxHP : 0f;
 
+
+    //無敵状態かどうか
+    [Networked]
+    public bool IsInvincible { get; private set; } = false;
+
+
     // 装備中の武器(サーバーから見て)
     [Networked(OnChanged = nameof(WeaponChangedCallback))]
     public WeaponType CurrentWeapon_Network { get; private set; } = WeaponType.Sword;
+
+
 
     #endregion
 
@@ -85,6 +93,7 @@ public class PlayerNetworkState : NetworkBehaviour
         Debug.Log($"DamageHPMethod");
         if (!HasStateAuthority) return;
         if (CurrentHP <= 0) return; // 既に死亡しているなら無視
+        if (IsInvincible) return; // 無敵状態なら無視
 
         CurrentHP = Mathf.Max(0, CurrentHP - damage);
 
@@ -104,6 +113,13 @@ public class PlayerNetworkState : NetworkBehaviour
     {
         if (!HasStateAuthority) return;
         CurrentHP = Mathf.Min(MaxHP, CurrentHP + heal);
+    }
+
+    //無敵フラグ変更
+    public void SetInvincible(bool isInvincible)
+    {
+        if (!HasStateAuthority) return;
+        IsInvincible = isInvincible;
     }
 
     public void InitializeHP()

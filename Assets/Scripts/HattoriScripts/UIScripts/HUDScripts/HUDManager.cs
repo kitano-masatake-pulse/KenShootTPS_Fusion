@@ -7,7 +7,8 @@ public class HUDManager : MonoBehaviour
     [SerializeField] private ScorePanel score;
     [SerializeField] private WeaponPanel weapon;
     [SerializeField] private TimerPanel timer;
-    [SerializeField] private RespawnPanel resp;
+    [SerializeField] private RespawnPanel respawn;
+    [SerializeField] private CountDownPanel countdown;
 
 
     private void OnEnable()
@@ -39,8 +40,9 @@ public class HUDManager : MonoBehaviour
         // GameManagerÇ™èâä˙âªÇ≥ÇÍÇΩå„Ç…åƒÇ—èoÇ≥ÇÍÇÈ
         Debug.Log("GameHUDInitialize called");
         score.Initialize(null, null);
-        resp.Initialize(null, null);
+        respawn.Initialize(null, null);
         timer.Initialize(null, null);
+        countdown.Initialize(null, null);
     }
 
     private void CleanupAll()
@@ -48,7 +50,8 @@ public class HUDManager : MonoBehaviour
         hp.Cleanup();
         score.Cleanup();
         weapon.Cleanup();
-        resp.Cleanup();
+        respawn.Cleanup();
         timer.Cleanup();
+        countdown.Cleanup();
     }
 }
