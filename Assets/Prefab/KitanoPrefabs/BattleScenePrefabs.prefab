@@ -321,8 +321,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd95e69430e83ae4db118825334a9d82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerPrefab:
-    RawGuidValue: acb1ae8f636808e4e91f7a9c4901b855
+  playerAvatarPrefab:
+    RawGuidValue: a3718fe59095f894493f872e2da81e0c
+  dummyAvatarPrefab:
+    RawGuidValue: 21efbc1a8c65855478e1cb3748d2fe84
+  dummyAvatarCount: 1
   TPSCamera: {fileID: 4034807735841001655}
 --- !u!1 &5539363467412110152
 GameObject:

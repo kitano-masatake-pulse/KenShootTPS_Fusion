@@ -56,6 +56,7 @@ public class NetworkInputManager : MonoBehaviour,INetworkRunnerCallbacks
         data.normalizedInputDirection=myPlayerAvatar.normalizedInputDirection;
         data.cameraForward = tpsCameraController.GetTPSCameraTransform().forward;
 
+
         input.Set(data);
     }
 
