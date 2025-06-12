@@ -495,6 +495,7 @@ MonoBehaviour:
   _interpolationDataSource: 0
   _CurrentHP: 100
   _MaxHP: 100
+  _IsInvincible: 0
   _CurrentWeapon_Network: 0
 --- !u!114 &7045168527131226642
 MonoBehaviour:

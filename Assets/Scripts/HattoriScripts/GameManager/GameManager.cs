@@ -144,6 +144,7 @@ public class GameManager : NetworkBehaviour
         //自分のプレイヤーに対しては、OnMyPlayerDiedイベントも発火
         if (Runner.LocalPlayer == victim)
         {
+            Debug.Log($"GameManager : OnMyPlayerDied Invoked");
             OnMyPlayerDied?.Invoke(killer,timeStamp);
         }
 
@@ -301,6 +302,10 @@ public class GameManager : NetworkBehaviour
     public PlayerRef GetMyPlayerRef()
     {
         return Runner.LocalPlayer;
+    }
+    public NetworkObject GetMyPlayer()
+    {
+        return Runner.GetPlayerObject(Runner.LocalPlayer);
     }
     /// <summary>
     /// 現在のサーバー時間でのタイムスタンプを取得するメソッド

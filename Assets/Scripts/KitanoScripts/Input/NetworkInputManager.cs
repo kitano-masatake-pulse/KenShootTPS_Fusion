@@ -56,6 +56,7 @@ public class NetworkInputManager : MonoBehaviour,INetworkRunnerCallbacks
         data.normalizedInputDirection=myPlayerAvatar.normalizedInputDirection;
         data.headForward = myPlayerAvatar.headObject.transform.forward;
 
+
         input.Set(data);
     }
 
