@@ -108,6 +108,94 @@ public static class WeaponTypeExtensions
     }
 
 
+    #region Recoil Methods
+
+    //リコイルの角度(degree)
+    public static float RecoilAmount_Pitch(this WeaponType weaponType)
+    {
+        return weaponType switch
+        {
+            WeaponType.Sword => 0f, // 剣はリコイルなし
+            WeaponType.AssaultRifle => 10f,
+            WeaponType.SemiAutoRifle => 20f,
+            WeaponType.Grenade => 0.2f,
+            _ => 0f
+        };
+    }
+
+    public static float RecoilAmount_Yaw(this WeaponType weaponType)
+    {
+        return weaponType switch
+        {
+            WeaponType.Sword => 0f, // 剣はリコイルなし
+            WeaponType.AssaultRifle => 0.5f,
+            WeaponType.SemiAutoRifle => 0.3f,
+            WeaponType.Grenade => 0.2f,
+            _ => 0f
+        };
+    }
+
+
+
+
+    //リコイルの角速度(degree/second)
+    public static float RecoilAngularVelocity_Pitch(this WeaponType weaponType)
+    {
+        return weaponType switch
+        {
+            WeaponType.Sword => 0f, // 剣はリコイルなし
+            WeaponType.AssaultRifle => 100f,
+            WeaponType.SemiAutoRifle => 200f,
+            WeaponType.Grenade => 0.2f,
+            _ => 0f
+        };
+    }
+
+    public static float RecoilAngularVelocity_Yaw(this WeaponType weaponType)
+    {
+        return weaponType switch
+        {
+            WeaponType.Sword => 0f, // 剣はリコイルなし
+            WeaponType.AssaultRifle => 0.5f,
+            WeaponType.SemiAutoRifle => 0.3f,
+            WeaponType.Grenade => 0.2f,
+            _ => 0f
+        };
+    }
+
+
+
+
+
+    //リコイルの回復角速度(degree/second)
+    public static float RecoverAngularVelocity_Pitch(this WeaponType weaponType)
+    {
+        return weaponType switch
+        {
+            WeaponType.Sword => 0f, // 剣はリコイルなし
+            WeaponType.AssaultRifle => 50f,
+            WeaponType.SemiAutoRifle => 0.3f,
+            WeaponType.Grenade => 0.2f,
+            _ => 0f
+        };
+    }
+
+    public static float RecoverAngularVelocity_Yaw(this WeaponType weaponType)
+    {
+        return weaponType switch
+        {
+            WeaponType.Sword => 0f, // 剣はリコイルなし
+            WeaponType.AssaultRifle => 50,
+            WeaponType.SemiAutoRifle => 0.3f,
+            WeaponType.Grenade => 0.2f,
+            _ => 0f
+        };
+    }
+
+
+    #endregion
+
+
 
     #region Return ActionType Methods
 

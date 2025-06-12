@@ -19,6 +19,8 @@ public class PlayerAvatar : NetworkBehaviour
     private　CharacterController characterController;
     [SerializeField] private HitboxRoot myPlayerHitboxRoot;
 
+    TPSCameraController tpsCameraController; //TPSカメラコントローラーの参照
+
     // プレイヤーの身体能力を設定するための変数群
     [SerializeField] float moveSpeed = 3f;
     [SerializeField] float gravity = -9.81f;
@@ -145,7 +147,7 @@ public class PlayerAvatar : NetworkBehaviour
         if (HasInputAuthority)
         {
             //自分のアバターなら、TPSカメラに紐づける
-            TPSCameraController tpsCameraController = FindObjectOfType<TPSCameraController>();
+            tpsCameraController = FindObjectOfType<TPSCameraController>();
 
             tpsCameraTransform = tpsCameraController.transform;
 
