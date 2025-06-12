@@ -25,7 +25,7 @@ public class PlayerDeathHandler : NetworkBehaviour
         }
     }
 
-    private void HandleDeath(PlayerRef victim, PlayerRef killer, float hostTimeStamp)
+    private void HandleDeath( float hostTimeStamp, PlayerRef victim, PlayerRef killer)
     {
         //‚±‚ÌƒvƒŒƒCƒ„[‚Å‚È‚¢ê‡‚Í‰½‚à‚µ‚È‚¢
         if (victim != Object.InputAuthority)

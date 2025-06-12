@@ -15,6 +15,9 @@ public class PlayerNetworkState : NetworkBehaviour
     /// <summary>武器切替がサーバー正史で確定したとき</summary>
     public event Action<WeaponType> OnWeaponChanged_Network;
 
+    /// <summary>チームが変更されたとき</summary>
+    public event Action<TeamType> OnTeamChanged;
+
     // ローカルプレイヤー生成時
     public static event Action<PlayerNetworkState> OnLocalPlayerSpawned;
     
@@ -44,7 +47,9 @@ public class PlayerNetworkState : NetworkBehaviour
     [Networked(OnChanged = nameof(WeaponChangedCallback))]
     public WeaponType CurrentWeapon_Network { get; private set; } = WeaponType.Sword;
 
-
+    //所属チーム
+    [Networked(OnChanged =nameof(TeamChangedCallback))]
+    public TeamType Team { get; private set; } = TeamType.None;
 
     #endregion
 
@@ -54,10 +59,13 @@ public class PlayerNetworkState : NetworkBehaviour
         =>changed.Behaviour.RaiseHPChanged();
     static void WeaponChangedCallback(Changed<PlayerNetworkState> changed)
         => changed.Behaviour.RaiseWeaponChanged();
+    static void TeamChangedCallback(Changed<PlayerNetworkState> changed)
+        => changed.Behaviour.RaiseTeamChanged();
 
 
     void RaiseHPChanged() => OnHPChanged?.Invoke(HpNormalized);
     void RaiseWeaponChanged() => OnWeaponChanged_Network?.Invoke(CurrentWeapon_Network);
+    void RaiseTeamChanged() => OnTeamChanged?.Invoke(Team);
     #endregion
 
     #region Unity Callbacks
@@ -88,10 +96,11 @@ public class PlayerNetworkState : NetworkBehaviour
     //―――― サーバー→クライアント：ステータス変更 ――――
     //ホスト側のみが呼び出すメソッド
     /// <summary>HPを減らす</summary>
-    public void DamageHP(int damage, PlayerRef attacker = default)
+    public void DamageHP(int damage, PlayerRef attacker = default, TeamType atkTeam = default)
     {
         Debug.Log($"DamageHPMethod");
         if (!HasStateAuthority) return;
+        if(Team != TeamType.None && atkTeam != TeamType.None && Team == atkTeam) return; // 同じチームからの攻撃は無効
         if (CurrentHP <= 0) return; // 既に死亡しているなら無視
         if (IsInvincible) return; // 無敵状態なら無視
 
@@ -102,7 +111,7 @@ public class PlayerNetworkState : NetworkBehaviour
             if (GameManager.Instance != null)
             {
                 //GameManagerに死亡を通知
-                GameManager.Instance.NotifyDeath(Object.InputAuthority, attacker, Runner.SimulationTime);
+                GameManager.Instance.NotifyDeath(Runner.SimulationTime,Object.InputAuthority, attacker);
             }
             
         }
@@ -121,6 +130,14 @@ public class PlayerNetworkState : NetworkBehaviour
         if (!HasStateAuthority) return;
         IsInvincible = isInvincible;
     }
+
+    //チーム設定
+    public void SetTeam(TeamType team)
+    {
+        if (!HasStateAuthority) return;
+        Team = team;
+    }
+
 
     public void InitializeHP()
     {

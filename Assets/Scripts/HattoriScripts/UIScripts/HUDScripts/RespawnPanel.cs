@@ -30,7 +30,7 @@ public class RespawnPanel : MonoBehaviour, IHUDPanel
         GameManager.Instance.OnMyPlayerDied -= DisplayRespawnPanel;
     }
 
-    private void DisplayRespawnPanel(PlayerRef killer, float hostTimeStamp)
+    private void DisplayRespawnPanel(float hostTimeStamp, PlayerRef killer)
     {
         if (co != null) StopCoroutine(co);
         co = StartCoroutine(WaitRespawnCoroutine(killer));
