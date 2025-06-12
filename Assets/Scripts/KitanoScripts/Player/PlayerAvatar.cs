@@ -264,7 +264,9 @@ public class PlayerAvatar : NetworkBehaviour
                 bodyObject.transform.forward = bodyForward;
             }
 
-            headObject.transform.up = lookForwardDir.normalized; // カメラの方向を頭の向きに設定(アバターの頭の軸によって変えること)
+            Debug.Log($"lookForwardDir. {lookForwardDir}"); //デバッグログ
+
+            headObject.transform.forward = lookForwardDir.normalized; // カメラの方向を頭の向きに設定(アバターの頭の軸によって変えること)
 
         }
         else 
@@ -539,7 +541,7 @@ public class PlayerAvatar : NetworkBehaviour
                 bodyObject.transform.forward = bodyForward;
             }
 
-            headObject.transform.up = cameraForwardInHost.normalized; // カメラの方向を頭の向きに設定(アバターの頭の軸(upなのかforwardなのか)によって変えること)
+            headObject.transform.forward = cameraForwardInHost.normalized; // カメラの方向を頭の向きに設定(アバターの頭の軸(upなのかforwardなのか)によって変えること)
             bodyObject.transform.position = avatarPositionInHost;
 
         
