@@ -30,8 +30,8 @@ public class Grenade : WeaponBase
     bool isAttackActive = false; // 攻撃がアクティブかどうかのフラグ
 
     //Raycastの方向を計算するための変数
-    float cornRayAngleDeg = 30f; // 円錐形の角度
-    int cornRayNum = 10; // 円錐形の放射状のRayの本数
+    [SerializeField]float cornRayAngleDeg = 30f; // 円錐形の角度
+    [SerializeField]int cornRayNum = 10; // 円錐形の放射状のRayの本数
 
 
     // Start is called before the first frame update
@@ -65,6 +65,17 @@ public class Grenade : WeaponBase
         float elapsed = 0f;
         List<HitboxRoot> alreadyDamagedPlayers = new List<HitboxRoot>(); // すでにダメージを与えたプレイヤーを記録するリスト(今のフレームでダメージが確定した人も含む)
         isAttackActive = true; // 攻撃判定を有効にする
+
+        // 爆発範囲の描画
+        if (OverlapSphereVisualizer.Instance != null)
+        {
+            OverlapSphereVisualizer.Instance.ShowSphere(explosionCenter.position, blastHitRadius, rayDrawingDuration, "Sword Attack Area", Color.blue); // 攻撃判定の範囲を可視化する
+        }
+        else
+        {
+            Debug.LogWarning("OverlapSphereVisualizer.Instance is null! Please ensure it is set up in the scene.");
+        }
+
         while (elapsed < damageDuration)
         {
             CollisionDetection(alreadyDamagedPlayers);
@@ -92,7 +103,9 @@ public class Grenade : WeaponBase
             HitOptions.IgnoreInputAuthority // HitOptions.Noneを使用して、すべてのヒットを取得する
             );
 
-       
+        
+
+
 
         if (hitCount > 0)
         {
@@ -169,8 +182,28 @@ public class Grenade : WeaponBase
             );
 
 
-            Debug.DrawRay(explosionCenter.position, direction * blastHitRadius, Color.blue, rayDrawingDuration);
+            //Debug.DrawRay(explosionCenter.position, direction * blastHitRadius, Color.blue, rayDrawingDuration);
 
+
+            if (RaycastLinePoolManager.Instance != null)
+            {
+                Vector3 rayEnd = Vector3.zero;
+                
+                //rayEnd = explosionCenter.position + direction * blastHitRadius; // ヒットポイントがない場合は剣の長さまでのRayを描画
+
+
+                if (hitResult.Point != null)
+                {
+                    rayEnd = hitResult.Point; // ヒットしたポイントがある場合はそこまでのRayを描画
+                }
+                else
+                {
+                    rayEnd = explosionCenter.position + direction * blastHitRadius; // ヒットポイントがない場合は爆風範囲までのRayを描画
+
+                }
+
+                RaycastLinePoolManager.Instance.ShowRay(explosionCenter.position, rayEnd, Color.blue, rayDrawingDuration);
+            }
 
 
             //最近接の着弾位置を更新 
@@ -249,18 +282,18 @@ public class Grenade : WeaponBase
     }
 
 
-    void OnDrawGizmos()
-    {
-        if (isAttackActive)
-        {
+    //void OnDrawGizmos()
+    //{
+    //    if (isAttackActive)
+    //    {
 
-            // Gizmosを使用して攻撃判定の範囲を可視化
-            Gizmos.color = Color.blue;
-            Gizmos.DrawWireSphere( explosionCenter.position, blastHitRadius);
+    //        // Gizmosを使用して攻撃判定の範囲を可視化
+    //        Gizmos.color = Color.blue;
+    //        Gizmos.DrawWireSphere( explosionCenter.position, blastHitRadius);
 
-        }
+    //    }
 
-    }
+    //}
 
 }
 

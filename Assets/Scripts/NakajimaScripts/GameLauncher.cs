@@ -107,7 +107,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
 
 
-    public void CreateDummyAvatars(NetworkRunner runner  ,int DummyCount)
+    public void CreateDummyAvatars(int DummyCount)
     {
         for (int i = 0; i < DummyCount; i++)
         {
@@ -116,7 +116,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
             var randomValue = UnityEngine.Random.insideUnitCircle * 5f;
             var spawnPosition = new Vector3(randomValue.x, 5f, randomValue.y);
 
-            var avatar = runner.Spawn(dummyAvatarPrefab, spawnPosition  , Quaternion.identity, PlayerRef.None);
+            var avatar = networkRunner.Spawn(dummyAvatarPrefab, spawnPosition  , Quaternion.identity, PlayerRef.None);
             // PlayerRef.Noneを使用して、ダミーアバターはプレイヤーに関連付けない
 
 
@@ -173,7 +173,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
         if (runner.IsServer && player == runner.LocalPlayer)
         {
-            CreateDummyAvatars(runner ,dummyAvatarCount);
+            CreateDummyAvatars(dummyAvatarCount);
 
 
         }
