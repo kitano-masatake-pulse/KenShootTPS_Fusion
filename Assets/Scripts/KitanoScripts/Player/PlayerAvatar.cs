@@ -176,6 +176,13 @@ public class PlayerAvatar : NetworkBehaviour
         if (Object.InputAuthority == PlayerRef.None) { isDummy = true;  }//ダミーキャラならisDummyをtrueにする
         else { isDummy = false; } //ダミーキャラでなければisDummyをfalseにする
 
+        //Debug用のHitbox可視化
+        HitboxRoot root = GetComponent<HitboxRoot>();
+        if (HitboxDebugVisualizer.Instance != null)
+        {
+            HitboxDebugVisualizer.Instance.Register(root);
+        }
+
 
         TeleportToInitialSpawnPoint(); // 初期スポーンポイントにテレポートする
 
@@ -202,6 +209,9 @@ public class PlayerAvatar : NetworkBehaviour
 
         //FindObjectOfType<HUDManager>()?.WeaponHUDInitialize(this);
         OnWeaponSpawned?.Invoke(this); //武器生成イベントを発火
+
+
+
 
 
 
