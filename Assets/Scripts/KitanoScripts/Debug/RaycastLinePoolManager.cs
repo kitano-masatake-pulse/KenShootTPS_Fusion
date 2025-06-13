@@ -28,6 +28,7 @@ public class RaycastLinePoolManager : MonoBehaviour
         }
 
         Instance = this;
+        DontDestroyOnLoad(this.gameObject);
         InitializePool();
     }
 

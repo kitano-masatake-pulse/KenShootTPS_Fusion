@@ -30,8 +30,8 @@ public static class WeaponTypeExtensions
         return weaponType switch
         {
             WeaponType.Sword => 0,
-            WeaponType.AssaultRifle => 20,
-            WeaponType.SemiAutoRifle => 5,
+            WeaponType.AssaultRifle => 200,
+            WeaponType.SemiAutoRifle => 500,
             WeaponType.Grenade => 1,
             _ => 0
         };
@@ -41,8 +41,8 @@ public static class WeaponTypeExtensions
         return weaponType switch
         {
             WeaponType.Sword => 0,
-            WeaponType.AssaultRifle => 100,
-            WeaponType.SemiAutoRifle => 15,
+            WeaponType.AssaultRifle => 1000,
+            WeaponType.SemiAutoRifle => 1500,
             WeaponType.Grenade => 5,
             _ => 0
         };
@@ -116,8 +116,8 @@ public static class WeaponTypeExtensions
         return weaponType switch
         {
             WeaponType.Sword => 0f, // 剣はリコイルなし
-            WeaponType.AssaultRifle => 10f,
-            WeaponType.SemiAutoRifle => 20f,
+            WeaponType.AssaultRifle => 5f,
+            WeaponType.SemiAutoRifle => 30f,
             WeaponType.Grenade => 0.2f,
             _ => 0f
         };
@@ -144,8 +144,8 @@ public static class WeaponTypeExtensions
         return weaponType switch
         {
             WeaponType.Sword => 0f, // 剣はリコイルなし
-            WeaponType.AssaultRifle => 100f,
-            WeaponType.SemiAutoRifle => 200f,
+            WeaponType.AssaultRifle => 40f,
+            WeaponType.SemiAutoRifle => 180f,
             WeaponType.Grenade => 0.2f,
             _ => 0f
         };
@@ -173,8 +173,8 @@ public static class WeaponTypeExtensions
         return weaponType switch
         {
             WeaponType.Sword => 0f, // 剣はリコイルなし
-            WeaponType.AssaultRifle => 50f,
-            WeaponType.SemiAutoRifle => 0.3f,
+            WeaponType.AssaultRifle => 30f,
+            WeaponType.SemiAutoRifle => 45f,
             WeaponType.Grenade => 0.2f,
             _ => 0f
         };
@@ -185,8 +185,23 @@ public static class WeaponTypeExtensions
         return weaponType switch
         {
             WeaponType.Sword => 0f, // 剣はリコイルなし
-            WeaponType.AssaultRifle => 50,
+            WeaponType.AssaultRifle => 20,
             WeaponType.SemiAutoRifle => 0.3f,
+            WeaponType.Grenade => 0.2f,
+            _ => 0f
+        };
+    }
+
+
+
+    //リコイルの角度制限(degree)
+    public static float RecoilLimit_Pitch(this WeaponType weaponType)
+    {
+        return weaponType switch
+        {
+            WeaponType.Sword => 0f, // 剣はリコイルなし
+            WeaponType.AssaultRifle => 30f,
+            WeaponType.SemiAutoRifle => 30f,
             WeaponType.Grenade => 0.2f,
             _ => 0f
         };

@@ -173,7 +173,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
         if (runner.IsServer && player == runner.LocalPlayer)
         {
-            CreateDummyAvatars(dummyAvatarCount);
+            //CreateDummyAvatars(dummyAvatarCount);
 
 
         }

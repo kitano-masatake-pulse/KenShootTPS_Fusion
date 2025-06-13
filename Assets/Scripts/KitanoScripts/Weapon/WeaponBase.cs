@@ -61,6 +61,12 @@ public abstract class WeaponBase : NetworkBehaviour
         Debug.Log($"{weaponType.GetName()} fired! Current Magazine: {currentMagazine}, Current Reserve: {currentReserve}");
     }
 
+    public virtual void FireUp()
+    {
+       
+        Debug.Log($"{weaponType.GetName()} fired up! Current Magazine: {currentMagazine}, Current Reserve: {currentReserve}");
+    }
+
 
     public virtual bool IsMagazineEmpty()
     {

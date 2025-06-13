@@ -161,6 +161,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 8158480803757446394}
     - target: {fileID: 5254638866690879586, guid: ae1d5ef37f3ed3245a94ed95ec9d90a4, type: 3}
+      propertyPath: nextScene
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5254638866690879586, guid: ae1d5ef37f3ed3245a94ed95ec9d90a4, type: 3}
       propertyPath: sessionNameText
       value: 
       objectReference: {fileID: 4837962720996736568}
