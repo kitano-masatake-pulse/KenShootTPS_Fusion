@@ -21,7 +21,8 @@ public class OverlapSphereVisualizer : MonoBehaviour
         }
 
         Instance = this;
-        
+        DontDestroyOnLoad(gameObject);
+
     }
 
     public void ShowSphere(Vector3 center, float radius, float duration, string label = "OverlapSphere", Color? color = null)

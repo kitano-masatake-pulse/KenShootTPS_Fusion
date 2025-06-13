@@ -19,6 +19,8 @@ public class PlayerAvatar : NetworkBehaviour
     private　CharacterController characterController;
     [SerializeField] private HitboxRoot myPlayerHitboxRoot;
 
+    TPSCameraController tpsCameraController; //TPSカメラコントローラーの参照
+
     // プレイヤーの身体能力を設定するための変数群
     [SerializeField] float moveSpeed = 3f;
     [SerializeField] float gravity = -9.81f;
@@ -145,7 +147,7 @@ public class PlayerAvatar : NetworkBehaviour
         if (HasInputAuthority)
         {
             //自分のアバターなら、TPSカメラに紐づける
-            TPSCameraController tpsCameraController = FindObjectOfType<TPSCameraController>();
+            tpsCameraController = FindObjectOfType<TPSCameraController>();
 
             tpsCameraTransform = tpsCameraController.transform;
 
@@ -199,6 +201,16 @@ public class PlayerAvatar : NetworkBehaviour
                 weaponClassDictionary.Add(weapon.weaponType, weapon);
                 weapon.currentMagazine = weapon.weaponType.MagazineCapacity(); //初期マガジンは最大値に設定
                 weapon.currentReserve = weapon.weaponType.ReserveCapacity(); //初期リザーブは50
+
+                if (weapon.weaponType == WeaponType.AssaultRifle)
+                {
+                    AssaultRifle rifle = weapon as AssaultRifle; //AssaultRifle型にキャスト
+                    if (rifle != null)
+                    {
+                        rifle.muzzleTransform = tpsCameraTransform; //マズルのTransformをカメラのTransformに設定
+
+                    }
+                }
             }
             else
             {
@@ -209,11 +221,6 @@ public class PlayerAvatar : NetworkBehaviour
 
         //FindObjectOfType<HUDManager>()?.WeaponHUDInitialize(this);
         OnWeaponSpawned?.Invoke(this); //武器生成イベントを発火
-
-
-
-
-
 
     }
     
@@ -685,8 +692,12 @@ public class PlayerAvatar : NetworkBehaviour
                 }
                 else
                 {
+
+                    isDuringWeaponAction = true;
                     weaponClassDictionary[currentWeapon].FireDown(); //現在の武器の発射処理を呼ぶ
                     SetActionAnimationPlayList(currentWeapon.FireDownAction(), Runner.SimulationTime); //アクションアニメーションのリストに発射ダウンを追加
+
+                    tpsCameraController.StartRecoil(currentWeapon);//リコイル開始
 
                     OnAmmoChanged?.Invoke(weaponClassDictionary[currentWeapon].currentMagazine, weaponClassDictionary[currentWeapon].currentReserve); //弾薬変更イベントを発火
 
@@ -699,11 +710,13 @@ public class PlayerAvatar : NetworkBehaviour
             {
                 //近接武器の処理
                 isImmobilized = true; //行動不能
+                isDuringWeaponAction = true;
                 isFollowingCameraForward = false; // カメラの向きに追従しないように設定
 
                 //攻撃の当たり判定やアニメーションは変わらないので共通
                 weaponClassDictionary[currentWeapon].FireDown(); //現在の武器の発射処理を呼ぶ
                 SetActionAnimationPlayList(currentWeapon.FireDownAction(), Runner.SimulationTime); //アクションアニメーションのリストに発射ダウンを追加
+                
                 StartCoroutine(PostAttackDelayCoroutine()); //攻撃後の硬直時間を管理するコルーチンを開始
 
                 if (TryGetClosestTargetInRange(headObject.transform.position, bodyObject.transform.forward, chaseRange, chaseAngle, out Transform targetTransform))
@@ -742,8 +755,11 @@ public class PlayerAvatar : NetworkBehaviour
         if (!currentWeapon.isOneShotWeapon() &&  CanWeaponAction()   && !weaponClassDictionary[currentWeapon].IsMagazineEmpty() ) //連射武器で、かつ発射可能な場合
         {
 
+            isDuringWeaponAction = true;
 
             weaponClassDictionary[currentWeapon].Fire(); //現在の武器の発射処理を呼ぶ
+
+            tpsCameraController.StartRecoil(currentWeapon); //リコイル開始
 
             OnAmmoChanged?.Invoke(weaponClassDictionary[currentWeapon].currentMagazine, weaponClassDictionary[currentWeapon].currentReserve); //弾薬変更イベントを発火
             StartCoroutine(FireRoutine(currentWeapon.FireWaitTime())); //発射ダウンのコルーチンを開始
@@ -760,6 +776,7 @@ public class PlayerAvatar : NetworkBehaviour
         if (CanWeaponAction() && !currentWeapon.isOneShotWeapon()) //連射武器で、かつ発射可能な場合
         {
             SetActionAnimationPlayList(currentWeapon.FireUpAction(), Runner.SimulationTime); //アクションアニメーションのリストに発射ダウンを追加
+            tpsCameraController.EndFiring();
             //ここにもコルーチンつける？→一旦つけない
             //Debug.Log($"FireUp {currentWeapon.GetName()}"); //デバッグログ
         }

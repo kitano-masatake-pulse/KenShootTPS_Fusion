@@ -27,6 +27,7 @@ public class HitboxDebugVisualizer : MonoBehaviour
             return;
         }
         Instance = this;
+        DontDestroyOnLoad(gameObject);
 
         if (lineMat == null)
         {
