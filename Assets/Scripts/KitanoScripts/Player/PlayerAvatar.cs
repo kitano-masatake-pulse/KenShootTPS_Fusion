@@ -266,8 +266,11 @@ public class PlayerAvatar : NetworkBehaviour
 
             Debug.Log($"lookForwardDir. {lookForwardDir}"); //デバッグログ
 
-            headObject.transform.forward = lookForwardDir.normalized; // カメラの方向を頭の向きに設定(アバターの頭の軸によって変えること)
-
+            ;
+            // headObject.transform.forward = lookForwardDir.normalized; // カメラの方向を頭の向きに設定(アバターの頭の軸によって変えること)
+            Quaternion currentRotation = headObject.transform.rotation;
+            Quaternion targetRotation = Quaternion.LookRotation(lookForwardDir.normalized);
+            headObject.transform.rotation = Quaternion.Slerp(currentRotation, targetRotation, Time.deltaTime * 10f);
         }
         else 
         {

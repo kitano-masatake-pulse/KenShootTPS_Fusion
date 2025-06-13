@@ -1249,14 +1249,14 @@ MonoBehaviour:
   smoothTurnTowardsTarget: 1
   maxRadiansDelta: 3
   maxMagnitudeDelta: 3
-  slerpSpeed: 3
+  slerpSpeed: 100
   smoothDampTime: 0
   pivotOffsetFromRoot: {x: 0, y: 1, z: 0}
   minDistance: 1
   offset: {x: 0, y: 0, z: 0}
-  maxRootAngle: 45
+  maxRootAngle: 0
   turnToTarget: 0
-  turnToTargetTime: 0.2
+  turnToTargetTime: 0
   useAnimatedAimDirection: 0
   animatedAimDirection: {x: 0, y: 0, z: 1}
 --- !u!1 &2822452212972808736
@@ -3858,7 +3858,7 @@ Transform:
   m_GameObject: {fileID: 8125208558984841086}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 50}
+  m_LocalPosition: {x: 0, y: 0, z: 10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
