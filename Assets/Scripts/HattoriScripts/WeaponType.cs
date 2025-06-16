@@ -107,6 +107,18 @@ public static class WeaponTypeExtensions
         return 0f; // 全ての武器で同じ時間を設定
     }
 
+    public static bool CanADS(this WeaponType weaponType)
+    {
+        return weaponType switch
+        {
+            WeaponType.Sword => false, // 剣はADS不可
+            WeaponType.AssaultRifle => true,
+            WeaponType.SemiAutoRifle => true,
+            WeaponType.Grenade => false, // グレネードはADS不可
+            _ => false
+        };
+    }
+
 
     #region Recoil Methods
 
@@ -118,7 +130,7 @@ public static class WeaponTypeExtensions
             WeaponType.Sword => 0f, // 剣はリコイルなし
             WeaponType.AssaultRifle => 5f,
             WeaponType.SemiAutoRifle => 30f,
-            WeaponType.Grenade => 0.2f,
+            WeaponType.Grenade => 0f,
             _ => 0f
         };
     }
@@ -130,7 +142,7 @@ public static class WeaponTypeExtensions
             WeaponType.Sword => 0f, // 剣はリコイルなし
             WeaponType.AssaultRifle => 0.5f,
             WeaponType.SemiAutoRifle => 0.3f,
-            WeaponType.Grenade => 0.2f,
+            WeaponType.Grenade => 0f,
             _ => 0f
         };
     }
@@ -202,7 +214,7 @@ public static class WeaponTypeExtensions
             WeaponType.Sword => 0f, // 剣はリコイルなし
             WeaponType.AssaultRifle => 30f,
             WeaponType.SemiAutoRifle => 30f,
-            WeaponType.Grenade => 0.2f,
+            WeaponType.Grenade => 30f,
             _ => 0f
         };
     }

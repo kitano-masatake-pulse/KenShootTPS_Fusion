@@ -1,5 +1,6 @@
 using Cinemachine;
 using Fusion;
+using RootMotion.Demos;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,27 +15,14 @@ public class TPSCameraController : MonoBehaviour
     [Header("Cinemachine Virtual Camera")]
     [SerializeField] private CinemachineVirtualCamera virtualCamera;
     [Header("マウス操作")]
-    [SerializeField] private float sensitivityX = 3f;
-    [SerializeField] private float sensitivityY = 1.5f;
+
     [SerializeField] private float minVerticalAngle = -40f;
     [SerializeField] private float maxVerticalAngle = 75f;
     private float yaw = 0f;
     private float pitch = 0f;
     public Transform cameraTarget;
-    
-
-
 
     bool isSetCameraTarget=true;
-
-    private NetworkRunner runner;
-
-
-    private PlayerAvatar myPlayerAvatar;
-
-  
-
-
     bool cursorLocked = true;
 
     //リコイル関連の変数(すべてdegree　かつ　マウス操作でのカメラ角度を0としたときの差分)
@@ -48,6 +36,8 @@ public class TPSCameraController : MonoBehaviour
 
     bool isRecoiling = false; // リコイル中かどうかのフラグ
     bool isRecovering = false; // リコイル回復中かどうかのフラグ
+
+
 
     [Header("リコイルのdebug用")]
     //リコイルのdebug用
@@ -70,13 +60,51 @@ public class TPSCameraController : MonoBehaviour
     [SerializeField]bool isDebugParameter = false; // デバッグモードかどうかのフラグ
     int recoilPatternIndex=0; // リコイルパターンのインデックス（ヨー）
 
+
+    #region ADS関連
+
+    [Header("References")]
+    private Cinemachine3rdPersonFollow thirdPersonFollow;
+
+    [Header("Camera Transition Settings")]
+    [SerializeField] private Vector3 normalShoulderOffset = new Vector3(0.5f, 0, 0f);
+    [SerializeField] private Vector3 adsShoulderOffset = new Vector3(0f, 0f, 0f);
+    [SerializeField] private float normalDistance = 3.5f;
+    [SerializeField] private float adsDistance = 2.0f;
+    [SerializeField] private float offsetLerpSpeed = 10f;
+
+    [Header("FOV Settings")]
+    [SerializeField] private float normalFOV = 60f;
+    [SerializeField] private float adsFOV = 30f;
+    [SerializeField] private float fovLerpSpeed = 15f;
+
+    [Header("Mouse Sensitivity")]
+    [SerializeField] private Vector2 normalSensitivity = new Vector2(3.0f,1.5f);
+    [SerializeField] private Vector2 adsSensitivity = new Vector2(1.5f, 0.75f);
+    private Vector2 currentSensitivity;
+
+    [SerializeField]float ADSRecoilMultiplier = 0.5f; // ADS時のリコイル倍率
+    float currentRecoilMultiplier = 1f; // 現在のリコイル倍率
+
+
+    private Vector3 targetOffset;
+    private float targetDistance;
+    private float targetFOV;
+
+    private bool isADS = false;
+
     
+
+    CameraInputData cameraInputData; // カメラ入力データ
+
+    #endregion
 
     void Start()
     {
-        runner = FindObjectOfType<NetworkRunner>();
         LockCursor();
 
+        thirdPersonFollow = virtualCamera.GetCinemachineComponent<Cinemachine3rdPersonFollow>();
+        InitializeADS(); // ADSの初期化
 
         foreach (WeaponType type in Enum.GetValues(typeof(WeaponType)))
         {
@@ -90,13 +118,16 @@ public class TPSCameraController : MonoBehaviour
     }
     void Update()
     {
-        
+
+
+        cameraInputData=LocalInputHandler.CollectCameraInput(); // カメラ入力データを取得
+
         ApplyRecoil(WeaponType.AssaultRifle); // 仮の武器タイプを指定。実際には現在の武器タイプに応じて変更する必要があります
 
         if ( isSetCameraTarget)
            {
-            float mouseX = Input.GetAxis("Mouse X") * sensitivityX;
-            float mouseY = Input.GetAxis("Mouse Y") * sensitivityY;
+            float mouseX = cameraInputData.mouseMovement.x * currentSensitivity.x;
+            float mouseY = cameraInputData.mouseMovement.y * currentSensitivity.y;
 
             //Debug.Log($"Mouse X: {mouseX}, Mouse Y: {mouseY}"); // デバッグ用ログ出力
             yaw += mouseX;
@@ -111,21 +142,19 @@ public class TPSCameraController : MonoBehaviour
             //yaw +=; // リコイルのヨーを適用
             //pitch -= currentRecoil_Pitch; // リコイルのピッチを適用
 
-            //Debug.Log($"Adjusted yaw: {yaw}, Adjusted pitch: {pitch}"); // リコイル適用後の角度をログ出力
-
             pitch = Mathf.Clamp(pitch, minVerticalAngle, maxVerticalAngle);
             Quaternion rotation = Quaternion.Euler(pitch - currentRecoil_Pitch, yaw + currentRecoil_Yaw, 0f);
             cameraTarget.rotation = rotation;
 
             //myPlayerAvatar.ChangeTransformLocally(); // アバターの向きをカメラ方向に合わせる処理を呼び出す
+            if (thirdPersonFollow == null) return;
 
-           
-
+            ADStransition(); // ADSの補間処理を呼び出す
 
         }
 
         // Escapeキーでモード切り替え
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (cameraInputData.cursorLockButton)
         {
             if (cursorLocked)
                 UnlockCursor();
@@ -159,17 +188,19 @@ public class TPSCameraController : MonoBehaviour
 
         if (isDebugParameter)
         {
-            recoilTarget_Pitch = Mathf.Min(currentRecoil_Pitch + debug_recoilAmount_Pitch, debug_recoilLimit_Pitch); // ピッチのリコイル目標（仮の値）
-            recoilTarget_Yaw = currentRecoil_Yaw + recoilRandomPatterns_Yaw[weaponType][recoilPatternIndex] * debug_recoilAmount_Yaw; // ヨーのリコイル目標（仮の値）
+            recoilTarget_Pitch = Mathf.Min(currentRecoil_Pitch + debug_recoilAmount_Pitch, debug_recoilLimit_Pitch) * currentRecoilMultiplier; // ピッチのリコイル目標（仮の値）
+            recoilTarget_Yaw = currentRecoil_Yaw + recoilRandomPatterns_Yaw[weaponType][recoilPatternIndex] * debug_recoilAmount_Yaw * currentRecoilMultiplier; // ヨーのリコイル目標（仮の値）
         }
         else
         {
 
 
-            recoilTarget_Pitch = Mathf.Min(currentRecoil_Pitch + weaponType.RecoilAmount_Pitch(), debug_recoilLimit_Yaw); // ピッチのリコイル目標（仮の値）
-            recoilTarget_Yaw = currentRecoil_Yaw + recoilRandomPatterns_Yaw[weaponType][recoilPatternIndex]*weaponType.RecoilAmount_Yaw(); // ヨーのリコイル目標（仮の値）
+            recoilTarget_Pitch = Mathf.Min(currentRecoil_Pitch + weaponType.RecoilAmount_Pitch(), debug_recoilLimit_Yaw) * currentRecoilMultiplier; // ピッチのリコイル目標（仮の値）
+            recoilTarget_Yaw = currentRecoil_Yaw + recoilRandomPatterns_Yaw[weaponType][recoilPatternIndex]*weaponType.RecoilAmount_Yaw() *currentRecoilMultiplier ; // ヨーのリコイル目標（仮の値）
 
         }
+
+       
             
         recoilPatternIndex++;
         if (recoilPatternIndex >= recoilRandomPatterns_Yaw[weaponType].Count)
@@ -183,20 +214,23 @@ public class TPSCameraController : MonoBehaviour
     // リコイル中の処理
     void Recoil(WeaponType weaponType)
     {
+
         //リコイルの目標角度に向かって現在のリコイル角度を更新
         if (isDebugParameter)
         {
-            currentRecoil_Pitch = Mathf.MoveTowards(currentRecoil_Pitch, recoilTarget_Pitch, debug_recoilSpeed_Pitch * Time.deltaTime);
-            currentRecoil_Yaw = Mathf.MoveTowards(currentRecoil_Yaw, recoilTarget_Yaw, debug_recoilSpeed_Yaw * Time.deltaTime); // ヨーのリコイル角度も更新
+            currentRecoil_Pitch = Mathf.MoveTowards(currentRecoil_Pitch, recoilTarget_Pitch, debug_recoilSpeed_Pitch * currentRecoilMultiplier * Time.deltaTime);
+            currentRecoil_Yaw = Mathf.MoveTowards(currentRecoil_Yaw, recoilTarget_Yaw, debug_recoilSpeed_Yaw * currentRecoilMultiplier * Time.deltaTime); // ヨーのリコイル角度も更新
 
         }
         else
         {
            
 
-            currentRecoil_Pitch = Mathf.MoveTowards(currentRecoil_Pitch, recoilTarget_Pitch, weaponType.RecoilAngularVelocity_Pitch() * Time.deltaTime);
-            currentRecoil_Yaw = Mathf.MoveTowards(currentRecoil_Yaw, recoilTarget_Yaw, weaponType.RecoilAngularVelocity_Yaw() * Time.deltaTime); // ヨーのリコイル角度も更新
+            currentRecoil_Pitch = Mathf.MoveTowards(currentRecoil_Pitch, recoilTarget_Pitch, weaponType.RecoilAngularVelocity_Pitch() * currentRecoilMultiplier * Time.deltaTime);
+            currentRecoil_Yaw = Mathf.MoveTowards(currentRecoil_Yaw, recoilTarget_Yaw, weaponType.RecoilAngularVelocity_Yaw() * currentRecoilMultiplier * Time.deltaTime); // ヨーのリコイル角度も更新
         }
+
+
 
         //目標に達したらリコイルを終了
         if (Mathf.Approximately( currentRecoil_Pitch, recoilTarget_Pitch  ))
@@ -230,14 +264,14 @@ public class TPSCameraController : MonoBehaviour
         
         if (isDebugParameter)
         {
-            currentRecoil_Pitch = Mathf.MoveTowards(currentRecoil_Pitch, recoverTarget_Pitch, debug_recoverSpeed_Pitch * Time.deltaTime);
-            currentRecoil_Yaw = Mathf.MoveTowards(currentRecoil_Yaw, recoverTarget_Yaw, debug_recoverSpeed_Yaw * Time.deltaTime); // ヨーのリコイル回復角度も更新
+            currentRecoil_Pitch = Mathf.MoveTowards(currentRecoil_Pitch, recoverTarget_Pitch, debug_recoverSpeed_Pitch * currentRecoilMultiplier * Time.deltaTime);
+            currentRecoil_Yaw = Mathf.MoveTowards(currentRecoil_Yaw, recoverTarget_Yaw, debug_recoverSpeed_Yaw * currentRecoilMultiplier * Time.deltaTime); // ヨーのリコイル回復角度も更新
 
         }
         else
         {
-            currentRecoil_Pitch = Mathf.MoveTowards(currentRecoil_Pitch, recoverTarget_Pitch, weaponType.RecoverAngularVelocity_Pitch() * Time.deltaTime);
-            currentRecoil_Yaw = Mathf.MoveTowards(currentRecoil_Yaw, recoverTarget_Yaw, weaponType.RecoverAngularVelocity_Yaw() * Time.deltaTime); // ヨーのリコイル回復角度も更新
+            currentRecoil_Pitch = Mathf.MoveTowards(currentRecoil_Pitch, recoverTarget_Pitch, weaponType.RecoverAngularVelocity_Pitch() * currentRecoilMultiplier * Time.deltaTime);
+            currentRecoil_Yaw = Mathf.MoveTowards(currentRecoil_Yaw, recoverTarget_Yaw, weaponType.RecoverAngularVelocity_Yaw() * currentRecoilMultiplier * Time.deltaTime); // ヨーのリコイル回復角度も更新
         }
 
         // 目標に達したらリコイル回復を終了
@@ -289,7 +323,82 @@ public class TPSCameraController : MonoBehaviour
 
     #endregion
 
+    #region ADS関連
 
+    public void SetADS(bool ADSflag)
+    {
+        isADS= ADSflag;
+
+        // カメラ寄せ・FOV切り替え
+        targetOffset = ADSflag ? adsShoulderOffset : normalShoulderOffset;
+        targetDistance = ADSflag ? adsDistance : normalDistance;
+        targetFOV = ADSflag ? adsFOV : normalFOV;
+
+
+        // 感度とリコイル倍率
+        currentSensitivity = ADSflag ? adsSensitivity : normalSensitivity;
+        currentRecoilMultiplier = ADSflag ? ADSRecoilMultiplier : 1f; // ADS時のリコイル倍率を適用
+
+
+        //currentRecoilMultiplier = isADS ? adsRecoilMultiplier : normalRecoilMultiplier;
+
+        // サイトUI
+        //if (adsSightUI != null)
+        //    adsSightUI.SetActive(isADS);
+    }
+
+    void ADStransition()
+    {
+        // 補間処理
+        thirdPersonFollow.ShoulderOffset = Vector3.Lerp(
+            thirdPersonFollow.ShoulderOffset,
+            targetOffset,
+            Time.deltaTime * offsetLerpSpeed
+        );
+
+        thirdPersonFollow.CameraDistance = Mathf.Lerp(
+            thirdPersonFollow.CameraDistance,
+            targetDistance,
+            Time.deltaTime * offsetLerpSpeed
+        );
+
+        virtualCamera.m_Lens.FieldOfView = Mathf.Lerp(
+            virtualCamera.m_Lens.FieldOfView,
+            targetFOV,
+            Time.deltaTime * fovLerpSpeed
+        );
+
+    }
+
+    void InitializeADS()
+    {
+        isADS = false;
+        targetOffset = normalShoulderOffset;
+        targetDistance = normalDistance;
+        targetFOV = normalFOV;
+        currentSensitivity = normalSensitivity;
+        currentRecoilMultiplier= 1f;
+
+    }
+
+    public void CancelADS()
+    {
+        InitializeADS();
+        thirdPersonFollow.ShoulderOffset= normalShoulderOffset;
+        thirdPersonFollow.CameraDistance = normalDistance;
+        virtualCamera.m_Lens.FieldOfView = normalFOV;
+        currentSensitivity = normalSensitivity;
+        currentRecoilMultiplier = 1f;
+
+
+
+    }
+
+
+
+
+
+    #endregion
 
 
     #region カーソル関連
