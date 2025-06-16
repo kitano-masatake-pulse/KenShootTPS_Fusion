@@ -311,10 +311,13 @@ public class GameManager : NetworkBehaviour
     /// </summary>
     public IReadOnlyList<KeyValuePair<PlayerRef, PlayerScore>> GetSortedScores()
     {
-        var SortedScores = PlayerScores
-            .OrderByDescending(kvp => kvp.Value.Kills)
-            .ToList();
-        return SortedScores;
+        var sortedScores = PlayerScores
+         .OrderByDescending(kvp => kvp.Value.Kills)     // キル数が多い順
+         .ThenBy(kvp => kvp.Value.Deaths)               // デス数が少ない順
+         .ThenBy(kvp => kvp.Key.RawEncoded)             // PlayerRefの数値が小さい順
+         .ToList();
+
+        return sortedScores;
     }
 
     ///<summary>
