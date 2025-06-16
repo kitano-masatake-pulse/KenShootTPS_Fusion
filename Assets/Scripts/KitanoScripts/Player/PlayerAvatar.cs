@@ -45,7 +45,8 @@ public class PlayerAvatar : NetworkBehaviour
     [Networked] public Vector3 cameraForwardInHost { get; set; } = Vector3.zero; //カメラの向き(入力権限のあるプレイヤーの回転を参照するために使用)
     [Networked] public Vector3 normalizedInputDirectionInHost { get; set; } = Vector3.zero; //入力権限のあるプレイヤーの入力方向を参照するために使用
 
-    [SerializeField] bool isDummy = false;
+    //ダミーキャラかどうかのフラグ.変更を起こすため
+    public bool isDummy = false;
 
     #region フラグ管理
     //行動可能かどうかのフラグ
