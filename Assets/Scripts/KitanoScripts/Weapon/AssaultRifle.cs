@@ -59,9 +59,7 @@ public class AssaultRifle : WeaponBase
     #endregion
 
 
-
-    bool isADSNow = false; //ADS中かどうかのフラグ
-    bool isConvergenceNow = false; //収束中かどうかのフラグ
+    //bool isConvergenceNow = false; //収束中かどうかのフラグ
     int  spreadPatternIndex = 0; //スプレッドのパターンのインデックス
 
 

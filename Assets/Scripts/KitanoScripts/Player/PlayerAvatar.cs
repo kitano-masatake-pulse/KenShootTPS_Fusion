@@ -455,7 +455,7 @@ public class PlayerAvatar : NetworkBehaviour
         Collider[] hits = Physics.OverlapSphere(origin, range, playerLayer); // プレイヤーのレイヤーマスクを使用して近くの敵を検出
         float closestDistance = Mathf.Infinity;
         targetTransform = null;
-        float minDistance = Mathf.Infinity;
+        //float minDistance = Mathf.Infinity;
 
 
 

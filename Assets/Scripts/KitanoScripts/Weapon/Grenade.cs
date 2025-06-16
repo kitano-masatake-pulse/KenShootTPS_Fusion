@@ -27,7 +27,7 @@ public class Grenade : WeaponBase
     [SerializeField] private Transform explosionCenter; // 爆発の中心位置
 
     private float rayDrawingDuration=1f; // Rayの描画時間
-    bool isAttackActive = false; // 攻撃がアクティブかどうかのフラグ
+
 
     //Raycastの方向を計算するための変数
     [SerializeField]float cornRayAngleDeg = 30f; // 円錐形の角度
@@ -53,18 +53,20 @@ public class Grenade : WeaponBase
         base.FireDown();
         Debug.Log($"{weaponType.GetName()} fired down!");
         // 爆発までの遅延時間を待つ
-        StartCoroutine(DamageRoutine());
+        StartCoroutine(DamageCoroutine());
     }
 
 
 
 
 
-    private IEnumerator DamageRoutine()
+    private IEnumerator DamageCoroutine()
     {
+        yield return new WaitForSeconds(explosionDelay); // 爆発までの遅延時間を待つ
+
         float elapsed = 0f;
         List<HitboxRoot> alreadyDamagedPlayers = new List<HitboxRoot>(); // すでにダメージを与えたプレイヤーを記録するリスト(今のフレームでダメージが確定した人も含む)
-        isAttackActive = true; // 攻撃判定を有効にする
+
 
         // 爆発範囲の描画
         if (OverlapSphereVisualizer.Instance != null)
@@ -86,7 +88,7 @@ public class Grenade : WeaponBase
         }
         //ダメージ用のリストをクリア
         alreadyDamagedPlayers.Clear();
-        isAttackActive = false; // 攻撃判定を無効にする
+ 
     }
 
     void CollisionDetection(List<HitboxRoot> alreadyDamaged)
