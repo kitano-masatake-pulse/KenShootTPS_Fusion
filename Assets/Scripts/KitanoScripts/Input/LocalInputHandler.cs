@@ -11,6 +11,7 @@ public struct PlayerInputData
     public bool FirePressedUp; 
     public bool ReloadPressedDown; //リロードボタンが押されたかどうか
     public float weaponChangeScroll;
+    public bool ADSPressedDown; //ADSボタンが押されたかどうか
 }
 
 public struct UIInputData
@@ -33,6 +34,7 @@ public static class LocalInputHandler
         input.FirePressedUp = Input.GetMouseButtonUp(0);
         input.ReloadPressedDown = Input.GetKeyDown(KeyCode.R);
         input.weaponChangeScroll = Input.GetAxis("Mouse ScrollWheel");
+        input.ADSPressedDown = Input.GetMouseButtonDown(1); // 右クリックでADS
 
         return input;
     }

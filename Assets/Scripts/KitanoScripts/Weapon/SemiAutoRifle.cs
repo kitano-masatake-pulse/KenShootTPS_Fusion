@@ -16,7 +16,7 @@ public class SemiAutoRifle : WeaponBase
     [SerializeField] private LayerMask obstructionLayer;
     public override LayerMask ObstructionLayer => obstructionLayer;
 
-
+    float rayDrawingDuration = 1 / 60f; // Rayの描画時間(1/60秒)
 
     public override void FireDown()
     {
@@ -39,10 +39,24 @@ public class SemiAutoRifle : WeaponBase
              playerLayer | obstructionLayer, //判定を行うレイヤーを制限する
               HitOptions.IgnoreInputAuthority);
 
-        Debug.DrawRay(
-            origin,
-            direction * fireDistance,
-            Color.red, 1f);
+        if (RaycastLinePoolManager.Instance != null)
+        {
+            Vector3 rayEnd = Vector3.zero;
+            
+            //rayEnd = origin + direction * fireDistance; // ヒットポイントがない場合は剣の長さまでのRayを描画
+
+            if (hit.Point != null)
+            {
+                rayEnd = hit.Point; // ヒットしたポイントがある場合はそこまでのRayを描画
+            }
+            else
+            {
+                rayEnd = origin + direction * fireDistance;  // ヒットポイントがない場合は剣の長さまでのRayを描画
+
+            }
+
+            RaycastLinePoolManager.Instance.ShowRay(origin, rayEnd, Color.red, rayDrawingDuration);
+        }
 
 
         Debug.Log("Hit?" + hit.GameObject);

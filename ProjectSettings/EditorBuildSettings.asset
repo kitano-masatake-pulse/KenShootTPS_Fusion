@@ -5,10 +5,10 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/TitleScene.unity
     guid: 354f0525665b3ac4e8470b226367f034
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/LobbyScene.unity
     guid: f0ecc3e7905d4204395db64c5ea7e28f
   - enabled: 0
@@ -20,17 +20,19 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/TestScenes/KitanoLobbyTest.unity
     guid: 79f3f708b647e7a47b64db6cf5dc90f0
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/TestScenes/HattoriBattleTestScene.unity
     guid: 334425b9b8dbfca40bbdcd2dc6b6684c
   - enabled: 0
     path: Assets/Scenes/TestScenes/KitanoBattleTestScene.unity
     guid: afa1b91c649f6e846a1344ed09140ba1
-  - enabled: 0
+  - enabled: 1
+    path: Assets/Scenes/TestScenes/NakajimaLobby.unity
+    guid: 9443c08952c7d6941ae9f0ee7207f1ba
+  - enabled: 1
     path: Assets/Scenes/TestScenes/NakajimaBattleTestScene.unity
     guid: 393fae35ff1590042a18c5388972468d
   - enabled: 0
     path: Assets/Scenes/TestScenes/Test_PlayerMove.unity
     guid: e4c756f6e7541014ba26c65ef70a9c2a
-
   m_configObjects: {}
