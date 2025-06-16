@@ -13,6 +13,12 @@ public struct PlayerInputData
     public float weaponChangeScroll;
 }
 
+public struct UIInputData
+{
+    public bool ScoreBoardPressdDown;
+    public bool ScoreBoardPressdUp;
+}
+
 
 // This class is responsible for handling local player input.
 public static class LocalInputHandler 
@@ -28,6 +34,14 @@ public static class LocalInputHandler
         input.ReloadPressedDown = Input.GetKeyDown(KeyCode.R);
         input.weaponChangeScroll = Input.GetAxis("Mouse ScrollWheel");
 
+        return input;
+    }
+
+    public static UIInputData CollectUIInput()
+    {
+        UIInputData input;
+        input.ScoreBoardPressdDown = Input.GetKeyDown(KeyCode.Tab);
+        input.ScoreBoardPressdUp = Input.GetKeyUp(KeyCode.Tab);
         return input;
     }
 }

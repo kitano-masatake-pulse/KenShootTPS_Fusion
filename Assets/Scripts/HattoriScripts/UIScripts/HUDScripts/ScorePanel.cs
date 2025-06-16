@@ -1,6 +1,5 @@
 using TMPro;
 using UnityEngine;
-using Fusion;
 
 // スコア用パネル  
 public class ScorePanel : MonoBehaviour, IHUDPanel

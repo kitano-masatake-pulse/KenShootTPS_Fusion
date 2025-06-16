@@ -309,7 +309,7 @@ public class GameManager : NetworkBehaviour
     /// <summary>
     ///キル数降順でソートされたスコアデータ(keyとvalueを持つリスト)を返すメソッド
     /// </summary>
-    public IReadOnlyCollection<KeyValuePair<PlayerRef, PlayerScore>> GetSortedScores()
+    public IReadOnlyList<KeyValuePair<PlayerRef, PlayerScore>> GetSortedScores()
     {
         var SortedScores = PlayerScores
             .OrderByDescending(kvp => kvp.Value.Kills)
