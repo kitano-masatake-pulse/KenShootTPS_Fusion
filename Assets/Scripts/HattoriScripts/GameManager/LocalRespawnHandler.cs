@@ -16,7 +16,7 @@ public class LocalRespawnHandler: MonoBehaviour
     [SerializeField] private float respawnFadeInTime = 1f;
     //çdíºéûä‘
     [SerializeField] private float respawnStunDuration = 3f;
-    [SerializeField] private RespawnPanel respawnPanel;
+    [SerializeField] private RespawnUI respawnPanel;
 
     private Coroutine currentFade;
     private NetworkObject myPlayer;

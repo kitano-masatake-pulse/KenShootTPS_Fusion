@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 // リスポーン用パネル
-public class RespawnPanel : MonoBehaviour, IHUDPanel
+public class RespawnUI : MonoBehaviour,IUIPanel
 {
     [SerializeField] private CanvasGroup respawnPanelGroup;
     [SerializeField] private TMP_Text countdownText, killerText;
@@ -15,22 +15,29 @@ public class RespawnPanel : MonoBehaviour, IHUDPanel
     [Header("リスポーンUI表示のフェードと遅延の設定")]
     [SerializeField] private float UIfadeTime = 0.3f, delay = 5f;
 
-    [SerializeField] private LocalRespawnHandler respawnHandler;
+    private LocalRespawnHandler respawnHandler;
 
 
     private Coroutine co;
 
-    public void Initialize(PlayerNetworkState _, PlayerAvatar __)
+    public void Initialize()
     {
         GameManager.Instance.OnMyPlayerDied -= DisplayRespawnPanel;
         GameManager.Instance.OnMyPlayerDied += DisplayRespawnPanel;
+        ResetUI(); // UIをリセット
     }
     public void Cleanup()
     {
         GameManager.Instance.OnMyPlayerDied -= DisplayRespawnPanel;
+        ResetUI(); // UIをリセット
     }
 
-    private void DisplayRespawnPanel(PlayerRef killer, float hostTimeStamp)
+    public void SetRespawnHandler(LocalRespawnHandler handler)
+    {
+        respawnHandler = handler;
+    }
+
+    private void DisplayRespawnPanel(float hostTimeStamp, PlayerRef killer)
     {
         if (co != null) StopCoroutine(co);
         co = StartCoroutine(WaitRespawnCoroutine(killer));
@@ -88,12 +95,17 @@ public class RespawnPanel : MonoBehaviour, IHUDPanel
     //UIの初期化
     public void ResetUI()
     {
-        respawnPanelGroup.alpha = 0;
-        respawnPanelGroup.blocksRaycasts = false;
-        respawnPanelGroup.interactable = false;
-        killerText.text = "";
-        countdownText.text = "";
-        respawnBtn.gameObject.SetActive(false);
+        SetVisible(false);
+    }
+
+    public void SetVisible(bool visible)
+    {
+        respawnPanelGroup.alpha = visible ? 1 : 0;
+        respawnPanelGroup.blocksRaycasts = visible;
+        respawnPanelGroup.interactable = visible;
+        killerText.text = visible ? "Test Now" : "";
+        countdownText.text ="";
+        respawnBtn.gameObject.SetActive(visible);
     }
 
 }

@@ -14,6 +14,12 @@ public struct PlayerInputData
     public bool ADSPressedDown; //ADSボタンが押されたかどうか
 }
 
+public struct UIInputData
+{
+    public bool ScoreBoardPressdDown;
+    public bool ScoreBoardPressdUp;
+}
+
 
 // This class is responsible for handling local player input.
 public static class LocalInputHandler 
@@ -30,6 +36,14 @@ public static class LocalInputHandler
         input.weaponChangeScroll = Input.GetAxis("Mouse ScrollWheel");
         input.ADSPressedDown = Input.GetMouseButtonDown(1); // 右クリックでADS
 
+        return input;
+    }
+
+    public static UIInputData CollectUIInput()
+    {
+        UIInputData input;
+        input.ScoreBoardPressdDown = Input.GetKeyDown(KeyCode.Tab);
+        input.ScoreBoardPressdUp = Input.GetKeyUp(KeyCode.Tab);
         return input;
     }
 }

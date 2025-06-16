@@ -34,6 +34,9 @@ public class PlayerWorldUIController : NetworkBehaviour
         nameLabel.gameObject.SetActive(!isLocal);
         hpBar.gameObject.SetActive(!isLocal);
         weaponImage.gameObject.SetActive(!isLocal);
+
+        //チームカラーを適用
+        nameLabel.color = pNState.Team.GetColor(); 
         // イベント登録
         InitializeSubscriptions();
         // 初期値も反映
@@ -46,10 +49,12 @@ public class PlayerWorldUIController : NetworkBehaviour
         // 先に解除してから
         pNState.OnHPChanged -= UpdateWorldHPBar;
         pNState.OnWeaponChanged_Network -= UpdateWorldWeapon;
+        pNState.OnTeamChanged -= UpdateNemeColor;
 
         // 改めて登録
         pNState.OnHPChanged += UpdateWorldHPBar;
         pNState.OnWeaponChanged_Network += UpdateWorldWeapon;
+        pNState.OnTeamChanged += UpdateNemeColor;
     }
 
 
@@ -75,6 +80,11 @@ public class PlayerWorldUIController : NetworkBehaviour
         var rt = weaponImage.rectTransform;
         rt.sizeDelta = sp.rect.size * scale;
 
+    }
+
+    private void UpdateNemeColor(TeamType team)
+    {
+        nameLabel.color = team.GetColor();
     }
 
     public override void Despawned(NetworkRunner runner, bool hasState)
