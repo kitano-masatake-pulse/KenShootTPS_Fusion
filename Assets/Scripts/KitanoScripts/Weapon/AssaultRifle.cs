@@ -31,8 +31,8 @@ public class AssaultRifle : WeaponBase
 
     float liftingSpreadRate = 0.1f; // Spread‚ÌŠgU‘¬“x(spreadGauge‚ª1”­Œ‚‚Â‚Æ‚¢‚­‚ç‘‚¦‚é‚©)
     float randomSpreadate = 0.1f; // Spread‚ÌŠgU‘¬“x(spreadGauge‚ª1”­Œ‚‚Â‚Æ‚¢‚­‚ç‘‚¦‚é‚©)
-    float liftingConvergenceRate = 0.3f; // Spread‚Ìû‘©‘¬“x(preadGauge‚ª•bŠÔ‚¢‚­‚çŒ¸‚é‚©)
-    float randomConvergenceRate = 0.3f; // Spread‚Ìû‘©‘¬“x(preadGauge‚ª•bŠÔ‚¢‚­‚çŒ¸‚é‚©)
+    float liftingConvergenceRate = 0.3f; // Spread‚Ìû‘©‘¬“x(spreadGauge‚ª•bŠÔ‚¢‚­‚çŒ¸‚é‚©)
+    float randomConvergenceRate = 0.3f; // Spread‚Ìû‘©‘¬“x(spreadGauge‚ª•bŠÔ‚¢‚­‚çŒ¸‚é‚©)
 
     //spraedGauge,moveSpeed‚É‘Î‚·‚éŠgU‚ÌŒÀŠE’l
     [SerializeField] float liftingSpreadLimit = 1f;

@@ -53,6 +53,8 @@ public class PlayerAvatar : NetworkBehaviour
     private bool isImmobilized = false; //行動不能中かどうか(移動・ジャンプもできない)
     private bool isHoming = false; // ホーミング中かどうか
     private bool isFollowingCameraForward = true; //カメラの前方向に向くかどうか(デフォルトはtrue)
+
+    bool isADS = false;
     //private bool isInvincible = false; //無敵状態かどうか(デフォルトはfalse)
 
 
@@ -911,6 +913,47 @@ public class PlayerAvatar : NetworkBehaviour
 
     #endregion
 
+    #region ADS関連
+
+    void SwitchADS()
+    { 
+        isADS=!isADS; //ADS状態を切り替える
+
+
+        if(isADS)
+        {
+            ADSOn();
+        }
+        else
+        {
+            ADSOff();
+            //ADS状態を解除する処理を追加
+            //例えば、カメラのFOVを元に戻すなど
+            
+        }
+
+
+    }
+
+    void ADSOn()
+    {
+        
+        //tpsCameraController.StartADS(currentWeapon); //ADS開始処理を呼ぶ
+        //SetActionAnimationPlayList(currentWeapon.ADSOnAction(), Runner.SimulationTime); //アクションアニメーションのリストにADSオンを追加
+        //Debug.Log($"ADS On for {currentWeapon.GetName()}"); //デバッグログ
+    }
+
+    void ADSOff()
+    {
+
+        //tpsCameraController.EndADS(currentWeapon); //ADS終了処理を呼ぶ
+        //SetActionAnimationPlayList(currentWeapon.ADSOffAction(), Runner.SimulationTime); //アクションアニメーションのリストにADSオフを追加
+        //Debug.Log($"ADS Off for {currentWeapon.GetName()}"); //デバッグログ
+    }
+
+
+    #endregion
+
 
     #region Action共通
 
@@ -978,7 +1021,13 @@ public class PlayerAvatar : NetworkBehaviour
 
     #endregion
 
+    void InitializeOnRespawned()
+    {
 
+        tpsCameraController.ResetOnRespawned(); //TPSカメラのリセット処理を呼ぶ
+        isADS = false; //ADS状態を解除
+
+    }
   
     
 

@@ -166,7 +166,7 @@ public class TPSCameraController : MonoBehaviour
         {
 
 
-            recoilTarget_Pitch = Mathf.Min(currentRecoil_Pitch + weaponType.RecoilAmount_Pitch(), debug_recoilLimit_Yaw); // ピッチのリコイル目標（仮の値）
+            recoilTarget_Pitch = Mathf.Min(currentRecoil_Pitch + weaponType.RecoilAmount_Pitch(), weaponType.RecoilLimit_Pitch() ); // ピッチのリコイル目標（仮の値）
             recoilTarget_Yaw = currentRecoil_Yaw + recoilRandomPatterns_Yaw[weaponType][recoilPatternIndex]*weaponType.RecoilAmount_Yaw(); // ヨーのリコイル目標（仮の値）
 
         }
@@ -283,6 +283,15 @@ public class TPSCameraController : MonoBehaviour
     {
         recoilPatternIndex= 0; // リコイルパターンのインデックスをリセット
 
+
+    }
+
+    public void ResetOnRespawned()
+    {
+        ResetRecoil(); // リコイルをリセット
+        //UnlockCursor(); // カーソルをアンロック
+        isSetCameraTarget = true; // カメラターゲットの設定を有効にする
+        recoilPatternIndex = 0; // リコイルパターンのインデックスをリセット
 
     }
 
