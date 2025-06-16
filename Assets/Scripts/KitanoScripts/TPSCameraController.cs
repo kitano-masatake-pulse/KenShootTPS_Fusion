@@ -23,7 +23,7 @@ public class TPSCameraController : MonoBehaviour
     public Transform cameraTarget;
     
 
-    bool isBattleScene = false;
+
 
     bool isSetCameraTarget=true;
 
@@ -32,7 +32,7 @@ public class TPSCameraController : MonoBehaviour
 
     private PlayerAvatar myPlayerAvatar;
 
-    bool isADSNow = false; //ADS’†‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO
+  
 
 
     bool cursorLocked = true;

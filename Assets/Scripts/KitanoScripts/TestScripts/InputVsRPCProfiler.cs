@@ -21,7 +21,7 @@ public class InputVsRPCProfiler : NetworkBehaviour,INetworkRunnerCallbacks
     public static InputVsRPCProfiler  Instance { get; private set; }
 
 
-    private bool jumpPressedLocal;
+
     private int localSentTick;
 
     private int? receivedInputTick = null;
@@ -58,7 +58,7 @@ public class InputVsRPCProfiler : NetworkBehaviour,INetworkRunnerCallbacks
         if (Input.GetKeyDown(KeyCode.Space))
         {
             localSentTick = Runner.Tick;
-            jumpPressedLocal = true;
+
 
             // Debug.Log($" Space pressed locally at tick: {localSentTick}, time: {Time.time}");
 
