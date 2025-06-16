@@ -10,6 +10,7 @@ public enum GameRule
     None
 }
 
+
 public class GameRuleSettings : MonoBehaviour
 {
     public static GameRuleSettings Instance;

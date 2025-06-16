@@ -10,7 +10,7 @@ using Cinemachine;
 
 public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 {
-    //ƒVƒ“ƒOƒ‹ƒgƒ“‚ÌéŒ¾
+    //ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ã®å®£è¨€
     public static GameLauncher Instance { get; private set; }
 
 
@@ -35,12 +35,12 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
     public TextMeshProUGUI sessionNameText;
 
-    [Header("ƒfƒoƒbƒO—pFƒ_ƒ~[ƒAƒoƒ^[‚Ì¶¬”(0‚Å–³Œø)")]
+    [Header("ãƒ‡ãƒãƒƒã‚°ç”¨ï¼šãƒ€ãƒŸãƒ¼ã‚¢ãƒã‚¿ãƒ¼ã®ç”Ÿæˆæ•°(0ã§ç„¡åŠ¹)")]
     public int dummyAvatarCount = 1;
 
 
 
-    [Header("Ÿ‚É‘JˆÚ‚·‚éƒV[ƒ“(ƒfƒtƒHƒ‹ƒgBattleScene)")]
+    [Header("æ¬¡ã«é·ç§»ã™ã‚‹ã‚·ãƒ¼ãƒ³(ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆBattleScene)")]
     public  SceneType nextScene= SceneType.Battle;
 
 
@@ -49,18 +49,20 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     {
         if (Instance != null)
         {
-            Destroy(gameObject); // “ñd¶¬–h~
+            Destroy(gameObject); // äºŒé‡ç”Ÿæˆé˜²æ­¢
             return;
         }
         Instance = this;
     }
+    //ã‚¿ã‚¤ãƒˆãƒ«ã‚·ãƒ¼ãƒ³ã§ãƒ‡ã‚¹ãƒãƒƒãƒãªã®ã‹ãƒãƒ¼ãƒ ãƒ‡ã‚¹ãƒãƒƒãƒã‹ã‚’é¸æŠã™ã‚‹
+    //ãã®æƒ…å ±ã‚’æŒã£ã¦ã€ã‚»ãƒƒã‚·ãƒ§ãƒ³ã«å‚åŠ ã™ã‚‹
 
 
     private async void Start()
     {
-        // NetworkRunner‚ğ¶¬‚·‚é
+        // NetworkRunnerã‚’ç”Ÿæˆã™ã‚‹
         networkRunner = Instantiate(networkRunnerPrefab);
-        // NetworkRunner‚ÌƒR[ƒ‹ƒoƒbƒN‘ÎÛ‚ÉA‚±‚ÌƒXƒNƒŠƒvƒgiGameLauncherj‚ğ“o˜^‚·‚é
+        // NetworkRunnerã®ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯å¯¾è±¡ã«ã€ã“ã®ã‚¹ã‚¯ãƒªãƒ—ãƒˆï¼ˆGameLauncherï¼‰ã‚’ç™»éŒ²ã™ã‚‹
         networkRunner.AddCallbacks(this);
 
         
@@ -82,7 +84,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         }
 
 
-        // StartGameArgs‚É“n‚µ‚½İ’è‚ÅAƒZƒbƒVƒ‡ƒ“‚ÉQ‰Á‚·‚é
+        // StartGameArgsã«æ¸¡ã—ãŸè¨­å®šã§ã€ã‚»ãƒƒã‚·ãƒ§ãƒ³ã«å‚åŠ ã™ã‚‹
         var result = await networkRunner.StartGame(new StartGameArgs
         {
             GameMode = GameMode.AutoHostOrClient,
@@ -97,11 +99,11 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
         if (result.Ok)
         {
-            Debug.Log("¬Œ÷I");
+            Debug.Log("æˆåŠŸï¼");
         }
         else
         {
-            Debug.Log("¸”sI");
+            Debug.Log("å¤±æ•—ï¼");
         }
 }
 
@@ -112,12 +114,12 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         for (int i = 0; i < DummyCount; i++)
         {
 
-            // ƒ‰ƒ“ƒ_ƒ€‚È¶¬ˆÊ’ui”¼Œa5‚Ì‰~‚Ì“à•”j‚ğæ“¾‚·‚é
+            // ãƒ©ãƒ³ãƒ€ãƒ ãªç”Ÿæˆä½ç½®ï¼ˆåŠå¾„5ã®å††ã®å†…éƒ¨ï¼‰ã‚’å–å¾—ã™ã‚‹
             var randomValue = UnityEngine.Random.insideUnitCircle * 5f;
             var spawnPosition = new Vector3(randomValue.x, 5f, randomValue.y);
 
             var avatar = networkRunner.Spawn(dummyAvatarPrefab, spawnPosition  , Quaternion.identity, PlayerRef.None);
-            // PlayerRef.None‚ğg—p‚µ‚ÄAƒ_ƒ~[ƒAƒoƒ^[‚ÍƒvƒŒƒCƒ„[‚ÉŠÖ˜A•t‚¯‚È‚¢
+            // PlayerRef.Noneã‚’ä½¿ç”¨ã—ã¦ã€ãƒ€ãƒŸãƒ¼ã‚¢ãƒã‚¿ãƒ¼ã¯ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã«é–¢é€£ä»˜ã‘ãªã„
 
 
         }
@@ -126,7 +128,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
 
 
-    // INetworkRunnerCallbacksƒCƒ“ƒ^[ƒtƒF[ƒX‚Ì‹óÀ‘•
+    // INetworkRunnerCallbacksã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹ã®ç©ºå®Ÿè£…
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
 
@@ -154,22 +156,23 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
 
 
-        // ƒzƒXƒgiƒT[ƒo[Œ“ƒNƒ‰ƒCƒAƒ“ƒgj‚©‚Ç‚¤‚©‚ÍIsServer‚Å”»’è‚Å‚«‚é
+        // ãƒ›ã‚¹ãƒˆï¼ˆã‚µãƒ¼ãƒãƒ¼å…¼ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆï¼‰ã‹ã©ã†ã‹ã¯IsServerã§åˆ¤å®šã§ãã‚‹
         if (!runner.IsServer) { return; }
-        // ƒ‰ƒ“ƒ_ƒ€‚È¶¬ˆÊ’ui”¼Œa5‚Ì‰~‚Ì“à•”j‚ğæ“¾‚·‚é
+        // ãƒ©ãƒ³ãƒ€ãƒ ãªç”Ÿæˆä½ç½®ï¼ˆåŠå¾„5ã®å††ã®å†…éƒ¨ï¼‰ã‚’å–å¾—ã™ã‚‹
         var randomValue = UnityEngine.Random.insideUnitCircle * 5f;
         var spawnPosition = new Vector3(randomValue.x, 5f, randomValue.y);
-        // Q‰Á‚µ‚½ƒvƒŒƒCƒ„[‚ÌƒAƒoƒ^[‚ğ¶¬‚·‚é
+        // å‚åŠ ã—ãŸãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ã‚¢ãƒã‚¿ãƒ¼ã‚’ç”Ÿæˆã™ã‚‹
         var avatar = runner.Spawn(playerAvatarPrefab, spawnPosition, Quaternion.identity, player);
-        // ƒvƒŒƒCƒ„[iPlayerRefj‚ÆƒAƒoƒ^[iNetworkObjectj‚ğŠÖ˜A•t‚¯‚é
+        // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ï¼ˆPlayerRefï¼‰ã¨ã‚¢ãƒã‚¿ãƒ¼ï¼ˆNetworkObjectï¼‰ã‚’é–¢é€£ä»˜ã‘ã‚‹
         runner.SetPlayerObject(player, avatar);
 
-        //ƒzƒXƒg‚Ì‚İƒoƒgƒ‹ƒXƒ^[ƒgƒ{ƒ^ƒ“‚ğ•\¦
+        //ãƒ›ã‚¹ãƒˆã®ã¿ãƒãƒˆãƒ«ã‚¹ã‚¿ãƒ¼ãƒˆãƒœã‚¿ãƒ³ã‚’è¡¨ç¤º
         if (runner.IsServer && player == runner.LocalPlayer)
         {
-            Debug.Log("ƒzƒXƒg‚ªQ‰Á ¨ ƒ{ƒ^ƒ“•\¦w¦");
+            Debug.Log("ãƒ›ã‚¹ãƒˆãŒå‚åŠ  â†’ ãƒœã‚¿ãƒ³è¡¨ç¤ºæŒ‡ç¤º");
             lobbyUI.ShowStartButton(runner);
         }
+
 
         if (runner.IsServer && player == runner.LocalPlayer)
         {
@@ -182,20 +185,13 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) {
         if (!runner.IsServer) { return; }
-        // ‘Şo‚µ‚½ƒvƒŒƒCƒ„[‚ÌƒAƒoƒ^[‚ğ”jŠü‚·‚é
+        // é€€å‡ºã—ãŸãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ã‚¢ãƒã‚¿ãƒ¼ã‚’ç ´æ£„ã™ã‚‹
         if (runner.TryGetPlayerObject(player, out var avatar))
         {
             runner.Despawn(avatar);
         }
     }
 
-    //public void OnInput(NetworkRunner runner, NetworkInput input) {
-    //    var data = new NetworkInputData();
-
-    //    data.Direction = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
-
-    //    input.Set(data);
-    //}
 
     public void OnInput(NetworkRunner runner, NetworkInput input) { }
 

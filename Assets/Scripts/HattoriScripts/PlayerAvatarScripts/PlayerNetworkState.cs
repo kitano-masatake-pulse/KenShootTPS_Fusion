@@ -3,29 +3,29 @@ using UnityEngine;
 using Fusion;
 
 
-// ŠeƒvƒŒƒCƒ„[‚ÌƒXƒe[ƒ^ƒX‚ğŠÇ—‚·‚éƒNƒ‰ƒX
+// å„ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’ç®¡ç†ã™ã‚‹ã‚¯ãƒ©ã‚¹
 public class PlayerNetworkState : NetworkBehaviour
 {
     #region Events
 
-    // ƒCƒ“ƒXƒ^ƒ“ƒXƒCƒxƒ“ƒg
-    /// <summary>HP‚ª•ÏX‚³‚ê‚½‚Æ‚«</summary>
+    // ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚¤ãƒ™ãƒ³ãƒˆ
+    /// <summary>HPãŒå¤‰æ›´ã•ã‚ŒãŸã¨ã</summary>
     public event Action<float> OnHPChanged;
 
-    /// <summary>•ŠíØ‘Ö‚ªƒT[ƒo[³j‚ÅŠm’è‚µ‚½‚Æ‚«</summary>
+    /// <summary>æ­¦å™¨åˆ‡æ›¿ãŒã‚µãƒ¼ãƒãƒ¼æ­£å²ã§ç¢ºå®šã—ãŸã¨ã</summary>
     public event Action<WeaponType> OnWeaponChanged_Network;
 
-    // ƒ[ƒJƒ‹ƒvƒŒƒCƒ„[¶¬
+    // ãƒ­ãƒ¼ã‚«ãƒ«ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç”Ÿæˆæ™‚
     public static event Action<PlayerNetworkState> OnLocalPlayerSpawned;
     
-    /// <summary>ƒvƒŒƒCƒ„[€–S(Victim,Killer)</summary>
+    /// <summary>ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æ­»äº¡æ™‚(Victim,Killer)</summary>
     public event Action<PlayerRef, PlayerRef> OnPlayerDied;
 
     #endregion
 
     #region Networked Properties
 
-    // HP (Œ»İ / Å‘å)
+    // HP (ç¾åœ¨ / æœ€å¤§)
     [Networked(OnChanged = nameof(HPChangedCallback))]
     public int CurrentHP { get; private set; }
 
@@ -35,12 +35,12 @@ public class PlayerNetworkState : NetworkBehaviour
     public float HpNormalized => MaxHP > 0 ? (float)CurrentHP / MaxHP : 0f;
 
 
-    //–³“Gó‘Ô‚©‚Ç‚¤‚©
+    //ç„¡æ•µçŠ¶æ…‹ã‹ã©ã†ã‹
     [Networked]
     public bool IsInvincible { get; private set; } = false;
 
 
-    // ‘•”õ’†‚Ì•Ší(ƒT[ƒo[‚©‚çŒ©‚Ä)
+    // è£…å‚™ä¸­ã®æ­¦å™¨(ã‚µãƒ¼ãƒãƒ¼ã‹ã‚‰è¦‹ã¦)
     [Networked(OnChanged = nameof(WeaponChangedCallback))]
     public WeaponType CurrentWeapon_Network { get; private set; } = WeaponType.Sword;
 
@@ -72,50 +72,51 @@ public class PlayerNetworkState : NetworkBehaviour
   
     }
 
-    //ƒfƒoƒbƒO—p 
+    //ãƒ‡ãƒãƒƒã‚°ç”¨ 
     void Update()
     {
 
         if (HasInputAuthority && Input.GetKeyDown(KeyCode.K))
         {
-            // ©•ª‚ğ‘¦€‚³‚¹‚é
+            // è‡ªåˆ†ã‚’å³æ­»ã•ã›ã‚‹
             RPC_RequestDamageHP(int.MaxValue, PlayerRef.None);
         }
     }
     #endregion
 
     #region Public Methods
-    //\\\\ ƒT[ƒo[¨ƒNƒ‰ƒCƒAƒ“ƒgFƒXƒe[ƒ^ƒX•ÏX \\\\
-    //ƒzƒXƒg‘¤‚Ì‚İ‚ªŒÄ‚Ño‚·ƒƒ\ƒbƒh
-    /// <summary>HP‚ğŒ¸‚ç‚·</summary>
+    //â€•â€•â€•â€• ã‚µãƒ¼ãƒãƒ¼â†’ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆï¼šã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹å¤‰æ›´ â€•â€•â€•â€•
+    //ãƒ›ã‚¹ãƒˆå´ã®ã¿ãŒå‘¼ã³å‡ºã™ãƒ¡ã‚½ãƒƒãƒ‰
+    /// <summary>HPã‚’æ¸›ã‚‰ã™</summary>
     public void DamageHP(int damage, PlayerRef attacker = default)
     {
         Debug.Log($"DamageHPMethod");
         if (!HasStateAuthority) return;
-        if (CurrentHP <= 0) return; // Šù‚É€–S‚µ‚Ä‚¢‚é‚È‚ç–³‹
-        if (IsInvincible) return; // –³“Gó‘Ô‚È‚ç–³‹
+        if (CurrentHP <= 0) return; // æ—¢ã«æ­»äº¡ã—ã¦ã„ã‚‹ãªã‚‰ç„¡è¦–
+        if (IsInvincible) return; // ç„¡æ•µçŠ¶æ…‹ãªã‚‰ç„¡è¦–
 
         CurrentHP = Mathf.Max(0, CurrentHP - damage);
 
         if (CurrentHP <= 0)
         {
+
             if (GameManager.Instance != null)
             {
-                //GameManager‚É€–S‚ğ’Ê’m
+                //GameManagerã«æ­»äº¡ã‚’é€šçŸ¥
                 GameManager.Instance.NotifyDeath(Object.InputAuthority, attacker, Runner.SimulationTime);
             }
-            
+
         }
     }
 
-    /// <summary>HP‚ğ‰ñ•œ‚·‚é</summary>
+    /// <summary>HPã‚’å›å¾©ã™ã‚‹</summary>
     public void HealHP(int heal)
     {
         if (!HasStateAuthority) return;
         CurrentHP = Mathf.Min(MaxHP, CurrentHP + heal);
     }
 
-    //–³“Gƒtƒ‰ƒO•ÏX
+    //ç„¡æ•µãƒ•ãƒ©ã‚°å¤‰æ›´
     public void SetInvincible(bool isInvincible)
     {
         if (!HasStateAuthority) return;
@@ -125,17 +126,17 @@ public class PlayerNetworkState : NetworkBehaviour
     public void InitializeHP()
     {
         if (!HasStateAuthority) return;
-        CurrentHP = MaxHP = 100; // ‰ŠúHP‚ğ100‚Éİ’è
+        CurrentHP = MaxHP = 100; // åˆæœŸHPã‚’100ã«è¨­å®š
     }
 
-    //\\\\ ƒNƒ‰ƒCƒAƒ“ƒg¨ƒT[ƒo[F•ŠíØ‘ÖƒŠƒNƒGƒXƒg \\\\
-    //ƒNƒ‰ƒCƒAƒ“ƒg‘¤‚©‚çŒÄ‚Ño‚·ƒƒ\ƒbƒh
+    //â€•â€•â€•â€• ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆâ†’ã‚µãƒ¼ãƒãƒ¼ï¼šæ­¦å™¨åˆ‡æ›¿ãƒªã‚¯ã‚¨ã‚¹ãƒˆ â€•â€•â€•â€•
+    //ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆå´ã‹ã‚‰å‘¼ã³å‡ºã™ãƒ¡ã‚½ãƒƒãƒ‰
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_RequestWeaponChange(WeaponType newWeapon)
     {
         CurrentWeapon_Network = newWeapon;
     }
-    //ƒNƒ‰ƒCƒAƒ“ƒg‘¤‚©‚çHP‚ğŒ¸‚ç‚·ƒŠƒNƒGƒXƒg(ƒfƒoƒbƒO—p)
+    //ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆå´ã‹ã‚‰HPã‚’æ¸›ã‚‰ã™ãƒªã‚¯ã‚¨ã‚¹ãƒˆ(ãƒ‡ãƒãƒƒã‚°ç”¨)
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_RequestDamageHP(int damage, PlayerRef attacker = default)
     {

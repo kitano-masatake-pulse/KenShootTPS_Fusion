@@ -18,6 +18,9 @@ public enum ActionType
 
     Dead,
 
+    ADS_On,
+    ADS_Off,
+
     Fire_Sword,
     FireStart_AssaultRifle,
     FireEnd_AssaultRifle,
