@@ -90,6 +90,7 @@ public class PlayerNetworkState : NetworkBehaviour
 
         if (CurrentHP <= 0)
         {
+            Debug.Log($"Player {Object.InputAuthority} took {damage} damage from {attacker}, remaining HP: {CurrentHP}");
             //GameManager‚ÉŽ€–S‚ð’Ê’m
             GameManager.Instance.NotifyDeath(Object.InputAuthority, attacker,Runner.SimulationTime);
         }
