@@ -7,12 +7,12 @@ public class ScorePanel : MonoBehaviour, IHUDPanel
 {
     [SerializeField] private TMP_Text killCount, deathCount;
 
-    public void Initialize(PlayerNetworkState _, WeaponLocalState __)
+    public void Initialize(PlayerNetworkState _, PlayerAvatar __)
     {
 
 
-        GameManager.Instance.OnManagerScoreChanged -= UpdateScoreText;
-        GameManager.Instance.OnManagerScoreChanged += UpdateScoreText;
+        GameManager.Instance.OnScoreChanged -= UpdateScoreText;
+        GameManager.Instance.OnScoreChanged += UpdateScoreText;
         //èâä˙ílê›íË  
         UpdateScoreText();
 
@@ -21,7 +21,7 @@ public class ScorePanel : MonoBehaviour, IHUDPanel
 
     public void Cleanup()
     {
-        GameManager.Instance.OnManagerScoreChanged -= UpdateScoreText;
+        GameManager.Instance.OnScoreChanged -= UpdateScoreText;
     }
 
   

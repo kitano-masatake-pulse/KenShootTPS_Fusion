@@ -54,7 +54,8 @@ public class NetworkInputManager : MonoBehaviour,INetworkRunnerCallbacks
         data.avatarPosition = myPlayerAvatar.transform.position;
         //data.avatarRotation = myPlayerAvatar.transform.rotation.eulerAngles;
         data.normalizedInputDirection=myPlayerAvatar.normalizedInputDirection;
-        data.cameraForward = tpsCameraController.GetTPSCameraTransform().forward;
+        data.headForward = myPlayerAvatar.headObject.transform.forward;
+
 
         input.Set(data);
     }

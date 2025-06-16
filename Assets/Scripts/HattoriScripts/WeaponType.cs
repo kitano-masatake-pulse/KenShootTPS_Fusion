@@ -30,8 +30,8 @@ public static class WeaponTypeExtensions
         return weaponType switch
         {
             WeaponType.Sword => 0,
-            WeaponType.AssaultRifle => 20,
-            WeaponType.SemiAutoRifle => 5,
+            WeaponType.AssaultRifle => 200,
+            WeaponType.SemiAutoRifle => 500,
             WeaponType.Grenade => 1,
             _ => 0
         };
@@ -41,8 +41,8 @@ public static class WeaponTypeExtensions
         return weaponType switch
         {
             WeaponType.Sword => 0,
-            WeaponType.AssaultRifle => 100,
-            WeaponType.SemiAutoRifle => 15,
+            WeaponType.AssaultRifle => 1000,
+            WeaponType.SemiAutoRifle => 1500,
             WeaponType.Grenade => 5,
             _ => 0
         };
@@ -106,6 +106,109 @@ public static class WeaponTypeExtensions
     {
         return 0f; // 全ての武器で同じ時間を設定
     }
+
+
+    #region Recoil Methods
+
+    //リコイルの角度(degree)
+    public static float RecoilAmount_Pitch(this WeaponType weaponType)
+    {
+        return weaponType switch
+        {
+            WeaponType.Sword => 0f, // 剣はリコイルなし
+            WeaponType.AssaultRifle => 5f,
+            WeaponType.SemiAutoRifle => 30f,
+            WeaponType.Grenade => 0.2f,
+            _ => 0f
+        };
+    }
+
+    public static float RecoilAmount_Yaw(this WeaponType weaponType)
+    {
+        return weaponType switch
+        {
+            WeaponType.Sword => 0f, // 剣はリコイルなし
+            WeaponType.AssaultRifle => 0.5f,
+            WeaponType.SemiAutoRifle => 0.3f,
+            WeaponType.Grenade => 0.2f,
+            _ => 0f
+        };
+    }
+
+
+
+
+    //リコイルの角速度(degree/second)
+    public static float RecoilAngularVelocity_Pitch(this WeaponType weaponType)
+    {
+        return weaponType switch
+        {
+            WeaponType.Sword => 0f, // 剣はリコイルなし
+            WeaponType.AssaultRifle => 40f,
+            WeaponType.SemiAutoRifle => 180f,
+            WeaponType.Grenade => 0.2f,
+            _ => 0f
+        };
+    }
+
+    public static float RecoilAngularVelocity_Yaw(this WeaponType weaponType)
+    {
+        return weaponType switch
+        {
+            WeaponType.Sword => 0f, // 剣はリコイルなし
+            WeaponType.AssaultRifle => 0.5f,
+            WeaponType.SemiAutoRifle => 0.3f,
+            WeaponType.Grenade => 0.2f,
+            _ => 0f
+        };
+    }
+
+
+
+
+
+    //リコイルの回復角速度(degree/second)
+    public static float RecoverAngularVelocity_Pitch(this WeaponType weaponType)
+    {
+        return weaponType switch
+        {
+            WeaponType.Sword => 0f, // 剣はリコイルなし
+            WeaponType.AssaultRifle => 30f,
+            WeaponType.SemiAutoRifle => 45f,
+            WeaponType.Grenade => 0.2f,
+            _ => 0f
+        };
+    }
+
+    public static float RecoverAngularVelocity_Yaw(this WeaponType weaponType)
+    {
+        return weaponType switch
+        {
+            WeaponType.Sword => 0f, // 剣はリコイルなし
+            WeaponType.AssaultRifle => 20,
+            WeaponType.SemiAutoRifle => 0.3f,
+            WeaponType.Grenade => 0.2f,
+            _ => 0f
+        };
+    }
+
+
+
+    //リコイルの角度制限(degree)
+    public static float RecoilLimit_Pitch(this WeaponType weaponType)
+    {
+        return weaponType switch
+        {
+            WeaponType.Sword => 0f, // 剣はリコイルなし
+            WeaponType.AssaultRifle => 30f,
+            WeaponType.SemiAutoRifle => 30f,
+            WeaponType.Grenade => 0.2f,
+            _ => 0f
+        };
+    }
+
+
+    #endregion
 
 
 

@@ -7,7 +7,7 @@ public class HPPanel : MonoBehaviour, IHUDPanel
     [SerializeField] private Slider hpSlider;
     private PlayerNetworkState playerState;
 
-    public void Initialize(PlayerNetworkState pState, WeaponLocalState _)
+    public void Initialize(PlayerNetworkState pState, PlayerAvatar _)
     {
         playerState = pState;
         // ƒCƒxƒ“ƒg“o˜^

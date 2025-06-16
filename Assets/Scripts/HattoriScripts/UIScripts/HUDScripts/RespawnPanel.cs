@@ -1,7 +1,9 @@
-using System.Collections;
 using Fusion;
+using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 // リスポーン用パネル
@@ -10,12 +12,15 @@ public class RespawnPanel : MonoBehaviour, IHUDPanel
     [SerializeField] private CanvasGroup respawnPanelGroup;
     [SerializeField] private TMP_Text countdownText, killerText;
     [SerializeField] private Button respawnBtn;
-    [Header("フェードと遅延の設定")]
-    [SerializeField] private float fadeTime = 1f, delay = 5f;
+    [Header("リスポーンUI表示のフェードと遅延の設定")]
+    [SerializeField] private float UIfadeTime = 0.3f, delay = 5f;
+
+    [SerializeField] private LocalRespawnHandler respawnHandler;
+
 
     private Coroutine co;
 
-    public void Initialize(PlayerNetworkState _, WeaponLocalState __)
+    public void Initialize(PlayerNetworkState _, PlayerAvatar __)
     {
         GameManager.Instance.OnMyPlayerDied -= DisplayRespawnPanel;
         GameManager.Instance.OnMyPlayerDied += DisplayRespawnPanel;
@@ -28,26 +33,24 @@ public class RespawnPanel : MonoBehaviour, IHUDPanel
     private void DisplayRespawnPanel(PlayerRef killer, float hostTimeStamp)
     {
         if (co != null) StopCoroutine(co);
-        co = StartCoroutine(DoRespawn(killer));
+        co = StartCoroutine(WaitRespawnCoroutine(killer));
     }
 
-    private IEnumerator DoRespawn(PlayerRef killer)
+    private IEnumerator WaitRespawnCoroutine(PlayerRef killer)
     {
-        respawnBtn.gameObject.SetActive(false);
-        respawnPanelGroup.alpha = 0; 
+        ResetUI(); // UIをリセット
         respawnPanelGroup.blocksRaycasts = true;
-        killerText.text = "";
-        countdownText.text = "";
+        respawnPanelGroup.interactable = true;
 
         // フェードイン
         float t = 0;
-        while (t < fadeTime)
+        while (t < UIfadeTime)
         {
             t += Time.deltaTime;
-            respawnPanelGroup.alpha = t / fadeTime;
+            respawnPanelGroup.alpha = t / UIfadeTime;
             yield return null;
         }
-        respawnPanelGroup.alpha = 1; 
+        respawnPanelGroup.alpha = 1;
         killerText.text = $"You were killed by {killer.PlayerId}";
 
         // カウントダウン開始
@@ -64,8 +67,34 @@ public class RespawnPanel : MonoBehaviour, IHUDPanel
     // リスポーンボタンが押された時の処理
     public void OnRespawnClick()
     {
-        StopAllCoroutines();
-        respawnPanelGroup.alpha = 0; 
-        respawnPanelGroup.blocksRaycasts = false;
+        Debug.Log("RespawnPanel:リスポーンボタンが押されました。リスポーン処理を開始します。");
+
+        // コルーチンを停止
+        if (co != null)
+        {
+            StopCoroutine(co);
+            co = null;
+        }
+        respawnPanelGroup.interactable = false;
+        killerText.text = "Now Respawning…";
+
+        // UI選択状態を解除
+        EventSystem.current.SetSelectedGameObject(null);
+
+        // リスポーン要求
+        respawnHandler.RespawnStart();
     }
+
+    //UIの初期化
+    public void ResetUI()
+    {
+        respawnPanelGroup.alpha = 0;
+        respawnPanelGroup.blocksRaycasts = false;
+        respawnPanelGroup.interactable = false;
+        killerText.text = "";
+        countdownText.text = "";
+        respawnBtn.gameObject.SetActive(false);
+    }
+
 }
+

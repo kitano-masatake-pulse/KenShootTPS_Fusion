@@ -11,8 +11,13 @@ public class Sword : WeaponBase
     protected override WeaponType weapon => WeaponType.Sword; // 武器の種類を指定
 
 
-    [SerializeField]private LayerMask playerLayer;
-    [SerializeField]private LayerMask obstructionMask;
+    [SerializeField] private LayerMask playerLayer;
+    public override LayerMask PlayerLayer => playerLayer;
+
+    [SerializeField] private LayerMask obstructionLayer;
+    public override LayerMask ObstructionLayer => obstructionLayer;
+
+
     [SerializeField] Transform swordRoot;//球状の判定の中心位置
     float swordLength = 1f; // 球状の判定の半径
     float timeUntilAttack= 1f; // モーション開始から攻撃判定までの時間
@@ -23,13 +28,15 @@ public class Sword : WeaponBase
     float cornRayAngleDeg = 30f; // 円錐形の角度
     int cornRayNum = 10; // 円錐形の放射状のRayの本数
 
+    private float rayDrawingDuration = 0.5f; // Rayの描画時間
+
 
     PlayerAvatar myPlayerAvatar;
 
 
     
 
-    [SerializeField] private float attackActiveTime = 0.5f; // 当たり判定が出る時間
+    [SerializeField] private float attackActiveTime = 1f; // 当たり判定が出る時間
 
     
     
@@ -68,7 +75,7 @@ public class Sword : WeaponBase
         isAttackActive = true; // 攻撃判定を有効にする
         GenerateCollisionDetection(); // 攻撃判定を生成
         Debug.Log("Attack Collision Detection Generated!");
-        yield return new WaitForSeconds(1f); // モーション開始から攻撃判定までの時間を待つ
+        yield return new WaitForSeconds(rayDrawingDuration); // モーション開始から攻撃判定までの時間を待つ
         isAttackActive = false; // 攻撃判定を無効にする
 
 
@@ -86,29 +93,28 @@ public class Sword : WeaponBase
             hits, 
             playerLayer,
             //HitOptions.IgnoreInputAuthority
-            HitOptions.None // HitOptions.Noneを使用して、すべてのヒットを取得する
+            HitOptions.IgnoreInputAuthority // HitOptions.Noneを使用して、すべてのヒットを取得する
             );
+
+        if (OverlapSphereVisualizer.Instance != null)
+        {
+            OverlapSphereVisualizer.Instance.ShowSphere(swordRoot.position, swordLength, rayDrawingDuration, "Sword Attack Area", Color.red); // 攻撃判定の範囲を可視化する
+        }
+        else
+        {
+            Debug.LogWarning("OverlapSphereVisualizer.Instance is null! Please ensure it is set up in the scene.");
+        }
+
 
         Debug.Log($"OverlapSphere hit count: {hitCount}");
 
-        //bool rayHit=Runner.LagCompensation.Raycast(
-        //                swordRoot.position,
-        //                transform.forward,
-        //                swordLength * 5,   // 剣の長さの5倍の距離でレイキャスト
-        //                Object.InputAuthority,
-        //                out LagCompensatedHit hitRes,
-        //                playerLayer | obstructionMask, // 判定を行うレイヤーを制限する。プレイヤーと障害物のレイヤーを指定
-        //                HitOptions.IgnoreInputAuthority
-
-        //            );
-
-        //Debug.Log($"Raycast hit: {rayHit}");
 
 
         if (hitCount > 0)
         {
+            List<HitboxRoot> damagedHitboxRoots = new List<HitboxRoot>(); // ヒットしたHitboxのRootを記録するリスト
+            List<LagCompensatedHit> damagedHits = new List<LagCompensatedHit>(); // このフレームでダメージを与えるヒット情報を記録するリスト
 
-            Dictionary<PlayerRef,LagCompensatedHit> damagedPlayerWithHit= new Dictionary<PlayerRef, LagCompensatedHit>();
 
             Debug.Log($"Detected {hitCount} hits!");
             foreach (var hit in hits)
@@ -119,18 +125,18 @@ public class Sword : WeaponBase
                 // 当たった対象がPlayerHitboxを持っていたら障害物の判定
                 if (hit.Hitbox is PlayerHitbox playerHitbox)
                 {
-                    PlayerRef targetPlayerRef = playerHitbox.hitPlayerRef;
+                    HitboxRoot targetPlayerRoot= playerHitbox.Root;
 
-                    if(damagedPlayerWithHit.ContainsKey(targetPlayerRef)) // 既にダメージを与えたプレイヤーならスキップ
+                    if(damagedHitboxRoots.Contains(targetPlayerRoot)) // 既にダメージを与えたプレイヤーならスキップ
                     {
-                        Debug.Log($"Already hit player {targetPlayerRef}, skipping damage.");
+                        Debug.Log($"Already hit player {targetPlayerRoot}, skipping damage.");
                         continue;
                     }
 
-                    if (TryRaycastCornRadiial(hit))// 円錐形のRaycastを行う
+                    if (TryRaycastCornRadial(hit,out LagCompensatedHit raycastHit))// 円錐形のRaycastを行う
                     {
-
-                        damagedPlayerWithHit[targetPlayerRef]= hit; // ダメージを与えたプレイヤーとヒット情報を記録
+                        damagedHitboxRoots.Add(targetPlayerRoot); // ヒットしたプレイヤーのRootを記録
+                        damagedHits.Add(raycastHit);
                     }
                 }
                 else
@@ -140,22 +146,30 @@ public class Sword : WeaponBase
             }
 
             // damagedPlayerWithHitに含まれるプレイヤーにダメージを与える
+            Debug.Log($"Damaged players count: {damagedHitboxRoots.Count}");
 
-            foreach (var kv　in damagedPlayerWithHit)
+            foreach (var hit in damagedHits)
             {
-                CauseDamage(kv.Value, weaponType.Damage());
+                CauseDamage(hit, weaponType.Damage());
             }
+
+            //ダメージ用のリストをクリア
+            damagedHitboxRoots.Clear();
+            damagedHits.Clear();
 
         }
         else 
         { 
             Debug.Log("No hits detected!");
         }
+
+        
     }
 
-
-    bool TryRaycastCornRadiial(LagCompensatedHit hit)
+    // 円錐形のRaycastを行う
+    bool TryRaycastCornRadial(LagCompensatedHit hit,out LagCompensatedHit raycastHit)
     {
+        raycastHit= default; // 初期化
         Vector3 swordDirection = hit.GameObject.transform.position - swordRoot.position; // 剣の方向を計算(後々、被弾側のspineを参照するようにする)
         List<Vector3> rayDirections = CornRaycastDirections(swordDirection, cornRayAngleDeg, cornRayNum); // 30度の円錐形の方向に4本のRayを放射状に飛ばす
 
@@ -164,25 +178,48 @@ public class Sword : WeaponBase
             Runner.LagCompensation.Raycast(
            swordRoot.position,
            direction,
-           swordLength * 5,   // 剣の長さの5倍の距離でレイキャスト
+           swordLength,   // 剣の長さの距離でレイキャスト
            Object.InputAuthority,
            out LagCompensatedHit hitResult,
-           playerLayer | obstructionMask, // 判定を行うレイヤーを制限する。プレイヤーと障害物のレイヤーを指定
+           playerLayer | obstructionLayer, // 判定を行うレイヤーを制限する。プレイヤーと障害物のレイヤーを指定
            HitOptions.IgnoreInputAuthority
 
             );
 
 
-            Debug.DrawRay(swordRoot.position, direction * swordLength * 5, Color.red, 1f);
+            if (RaycastLinePoolManager.Instance != null)
+            { 
+                Vector3 rayEnd= Vector3.zero;
+                
+                //rayEnd = swordRoot.position + direction * swordLength; // ヒットポイントがない場合は剣の長さまでのRayを描画
+
+
+                if (hit.Point != null)
+                {
+                    rayEnd = hit.Point; // ヒットしたポイントがある場合はそこまでのRayを描画
+                }
+                else
+                {
+                    rayEnd = swordRoot.position + direction * swordLength * 5; // ヒットポイントがない場合は剣の長さまでのRayを描画
+
+                }
+
+                RaycastLinePoolManager.Instance.ShowRay(swordRoot.position,rayEnd, Color.red,rayDrawingDuration);
+            }
+
+            //Debug.DrawRay(swordRoot.position, direction * swordLength, Color.red, rayDrawingDuration);
 
 
             // レイキャストの結果を確認,何回も刺さないように注意
             //着弾処理 
-            if (hit.GameObject != null)
-            {
-                Debug.Log("Hit!" + hit.GameObject);
 
-                CauseDamage(hit, weaponType.Damage()); //PlayerHitboxかどうかの確認が必要？
+            Debug.Log($"Raycast hitReslut Layer: {hitResult.GameObject.layer}");
+            if (hitResult.GameObject != null && ((1<<hitResult.GameObject.layer) &playerLayer) !=0) // プレイヤーのレイヤーにヒットしたか確認
+            {
+
+                Debug.Log("Hit!" + hitResult.GameObject);
+
+                raycastHit=hitResult; // ヒットした情報を返す
 
                 return true; // ヒットした場合はtrueを返す
 
@@ -235,18 +272,18 @@ public class Sword : WeaponBase
         return directions;
     }
 
-    void OnDrawGizmos()
-    {
-        if (isAttackActive)
-        {
+    //void OnDrawGizmos()
+    //{
+    //    if (isAttackActive)
+    //    {
 
-            // Gizmosを使用して攻撃判定の範囲を可視化
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(swordRoot.position, swordLength);
+    //        // Gizmosを使用して攻撃判定の範囲を可視化
+    //        Gizmos.color = Color.red;
+    //        Gizmos.DrawWireSphere(swordRoot.position, swordLength);
    
-        }
+    //    }
         
-    }
+    //}
 
 
 
