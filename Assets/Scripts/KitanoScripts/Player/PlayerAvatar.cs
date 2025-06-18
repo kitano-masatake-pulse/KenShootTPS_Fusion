@@ -383,7 +383,7 @@ public class PlayerAvatar : NetworkBehaviour
                 bodyObject.transform.forward = bodyForward;
             }
 
-            Debug.Log($"lookForwardDir. {lookForwardDir}"); //デバッグログ
+            //Debug.Log($"lookForwardDir. {lookForwardDir}"); //デバッグログ
 
             ;
             // headObject.transform.forward = lookForwardDir.normalized; // カメラの方向を頭の向きに設定(アバターの頭の軸によって変えること)

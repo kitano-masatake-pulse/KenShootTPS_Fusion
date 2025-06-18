@@ -93,7 +93,9 @@ public class TPSCameraController : MonoBehaviour
 
     private bool isADS = false;
 
-    
+    WeaponType currentRecoilingWeapon= WeaponType.AssaultRifle; // 現在リコイル中の武器タイプ（仮にAssaultRifleを使用）
+
+
 
     CameraInputData cameraInputData; // カメラ入力データ
 
@@ -108,11 +110,10 @@ public class TPSCameraController : MonoBehaviour
 
         foreach (WeaponType type in Enum.GetValues(typeof(WeaponType)))
         {
-            if (type.RecoilAmount_Yaw() > 0f)
-            {
+           
                 // 各武器タイプのリコイル乱数パターンを生成
                 recoilRandomPatterns_Yaw[type] = GenerateRandomPattern(seed_recoilYaw, type.MagazineCapacity(), -1f, 1f); 
-            }
+            
         }
 
     }
@@ -122,7 +123,8 @@ public class TPSCameraController : MonoBehaviour
 
         cameraInputData=LocalInputHandler.CollectCameraInput(); // カメラ入力データを取得
 
-        ApplyRecoil(WeaponType.AssaultRifle); // 仮の武器タイプを指定。実際には現在の武器タイプに応じて変更する必要があります
+        //ApplyRecoil(WeaponType.AssaultRifle); // 仮の武器タイプを指定。実際には現在の武器タイプに応じて変更する必要があります
+        ApplyRecoil(currentRecoilingWeapon); //リコイルの適用
 
         if ( isSetCameraTarget)
            {
@@ -135,7 +137,7 @@ public class TPSCameraController : MonoBehaviour
 
             //Debug.Log($"yaw: {yaw}, pitch: {pitch}"); // デバッグ用ログ出力
 
-            ApplyRecoil(WeaponType.AssaultRifle); //リコイルの適用
+            //ApplyRecoil(currentRecoilingWeapon); //リコイルの適用
 
             
 
@@ -182,6 +184,8 @@ public class TPSCameraController : MonoBehaviour
         // リコイル開始時の処理
         isRecoiling = true;
         isRecovering = false;
+        currentRecoilingWeapon = weaponType; 
+
 
 
         // リコイルの目標角度を設定（仮の値。実際には武器タイプに応じて調整する必要があります）
@@ -189,14 +193,14 @@ public class TPSCameraController : MonoBehaviour
         if (isDebugParameter)
         {
             recoilTarget_Pitch = Mathf.Min(currentRecoil_Pitch + debug_recoilAmount_Pitch, debug_recoilLimit_Pitch) * currentRecoilMultiplier; // ピッチのリコイル目標（仮の値）
-            recoilTarget_Yaw = currentRecoil_Yaw + recoilRandomPatterns_Yaw[weaponType][recoilPatternIndex] * debug_recoilAmount_Yaw * currentRecoilMultiplier; // ヨーのリコイル目標（仮の値）
+            if (weaponType.RecoilAmount_Yaw() > 0f) recoilTarget_Yaw = currentRecoil_Yaw + recoilRandomPatterns_Yaw[weaponType][recoilPatternIndex] * debug_recoilAmount_Yaw * currentRecoilMultiplier; // ヨーのリコイル目標（仮の値）
         }
         else
         {
 
 
-            recoilTarget_Pitch = Mathf.Min(currentRecoil_Pitch + weaponType.RecoilAmount_Pitch(), debug_recoilLimit_Yaw) * currentRecoilMultiplier; // ピッチのリコイル目標（仮の値）
-            recoilTarget_Yaw = currentRecoil_Yaw + recoilRandomPatterns_Yaw[weaponType][recoilPatternIndex]*weaponType.RecoilAmount_Yaw() *currentRecoilMultiplier ; // ヨーのリコイル目標（仮の値）
+            recoilTarget_Pitch = Mathf.Min(currentRecoil_Pitch + weaponType.RecoilAmount_Pitch(), weaponType.RecoilLimit_Pitch()) * currentRecoilMultiplier; // ピッチのリコイル目標（仮の値）
+            if (weaponType.RecoilAmount_Yaw() > 0f) recoilTarget_Yaw = currentRecoil_Yaw + recoilRandomPatterns_Yaw[weaponType][recoilPatternIndex]*weaponType.RecoilAmount_Yaw() *currentRecoilMultiplier ; // ヨーのリコイル目標（仮の値）
 
         }
 
@@ -219,7 +223,7 @@ public class TPSCameraController : MonoBehaviour
         if (isDebugParameter)
         {
             currentRecoil_Pitch = Mathf.MoveTowards(currentRecoil_Pitch, recoilTarget_Pitch, debug_recoilSpeed_Pitch * currentRecoilMultiplier * Time.deltaTime);
-            currentRecoil_Yaw = Mathf.MoveTowards(currentRecoil_Yaw, recoilTarget_Yaw, debug_recoilSpeed_Yaw * currentRecoilMultiplier * Time.deltaTime); // ヨーのリコイル角度も更新
+           currentRecoil_Yaw = Mathf.MoveTowards(currentRecoil_Yaw, recoilTarget_Yaw, debug_recoilSpeed_Yaw * currentRecoilMultiplier * Time.deltaTime); // ヨーのリコイル角度も更新
 
         }
         else

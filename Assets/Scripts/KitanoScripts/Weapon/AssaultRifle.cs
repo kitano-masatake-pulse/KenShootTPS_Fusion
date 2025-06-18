@@ -30,7 +30,7 @@ public class AssaultRifle : WeaponBase
     [SerializeField] float randomSpreadGauge = 0f; // Spreadの計算に使う連射時間を蓄積する変数、最大は1
 
     float liftingSpreadRate = 0.1f; // Spreadの拡散速度(spreadGaugeが1発撃つといくら増えるか)
-    float randomSpreadate = 0.1f; // Spreadの拡散速度(spreadGaugeが1発撃つといくら増えるか)
+    float randomSpreadRate = 0.1f; // Spreadの拡散速度(spreadGaugeが1発撃つといくら増えるか)
     float liftingConvergenceRate = 0.3f; // Spreadの収束速度(preadGaugeが秒間いくら減るか)
     float randomConvergenceRate = 0.3f; // Spreadの収束速度(preadGaugeが秒間いくら減るか)
 
@@ -67,7 +67,7 @@ public class AssaultRifle : WeaponBase
     [SerializeField]float debug_moveSpeed = 0f; //デバッグ用の移動速度(実際の移動速度を代入する)
 
 
-    [SerializeField] float ADSspreadReduction = 0.5f; //ADS中かどうかのフラグ
+    [SerializeField] float ADSspreadReduction = 0.8f; //ADS中かどうかのフラグ
     bool isADS = false;
 
 
@@ -108,10 +108,19 @@ public class AssaultRifle : WeaponBase
         base.FireDown();
         spreadPatternIndex = 0; //スプレッドパターンのインデックスをリセット
 
-        Vector3 spreadDirection = SpreadRaycastDirection(muzzleTransform.forward, liftingSpreadGauge, randomSpreadGauge, debug_moveSpeed, spreadPatternIndex,isADS); //射線の拡散を計算
+        Vector3 spreadDirection = 
+            SpreadRaycastDirection
+            (muzzleTransform.forward, 
+            liftingSpreadGauge, 
+            randomSpreadGauge, 
+            avatarCharacterController.velocity.magnitude,
+            spreadPatternIndex,
+            isADS); //射線の拡散を計算
+
+
         GunRaycast(muzzleTransform.position, spreadDirection);
      
-        UpdateSpreadGauge(liftingSpreadRate, randomSpreadate); //弾の拡散を更新
+        UpdateSpreadGauge(liftingSpreadRate, randomSpreadRate); //弾の拡散を更新
 
     }
 
@@ -137,7 +146,7 @@ public class AssaultRifle : WeaponBase
         
         
         GunRaycast(muzzleTransform.position,spreadDirection);
-        UpdateSpreadGauge(liftingSpreadRate, randomSpreadate); //弾の拡散を更新
+        UpdateSpreadGauge(liftingSpreadRate, randomSpreadRate); //弾の拡散を更新
         // ここにアサルトライフル特有の発射処理を追加することができます
     }
 
