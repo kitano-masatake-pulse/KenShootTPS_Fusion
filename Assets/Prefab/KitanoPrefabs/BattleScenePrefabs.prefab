@@ -277,6 +277,15 @@ MonoBehaviour:
   minVerticalAngle: -40
   maxVerticalAngle: 75
   cameraTarget: {fileID: 6543666962089211255}
+  debug_recoilAmount_Pitch: 5
+  debug_recoilSpeed_Pitch: 100
+  debug_recoverSpeed_Pitch: 50
+  debug_recoilLimit_Pitch: 30
+  debug_recoilAmount_Yaw: 0.5
+  debug_recoilSpeed_Yaw: 10
+  debug_recoverSpeed_Yaw: 5
+  debug_recoilLimit_Yaw: 3
+  isDebugParameter: 0
 --- !u!1 &5054851137017500103
 GameObject:
   m_ObjectHideFlags: 0
@@ -598,9 +607,17 @@ PrefabInstance:
       propertyPath: respawnHandler
       value: 
       objectReference: {fileID: 3132664435497451401}
+    - target: {fileID: 3552913918929426940, guid: e12adb180934bb64cafeb29f7cb286ea, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0.00012207031
+      objectReference: {fileID: 0}
     - target: {fileID: 3891842262533108736, guid: e12adb180934bb64cafeb29f7cb286ea, type: 3}
       propertyPath: m_SortingOrder
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5706731746832349406, guid: e12adb180934bb64cafeb29f7cb286ea, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0.00012207031
       objectReference: {fileID: 0}
     - target: {fileID: 6332229834333346394, guid: e12adb180934bb64cafeb29f7cb286ea, type: 3}
       propertyPath: m_Pivot.x
@@ -686,6 +703,14 @@ PrefabInstance:
       propertyPath: respawnHandler
       value: 
       objectReference: {fileID: 3132664435497451401}
+    - target: {fileID: 8692362347480608216, guid: e12adb180934bb64cafeb29f7cb286ea, type: 3}
+      propertyPath: m_Alpha
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8692362347480608216, guid: e12adb180934bb64cafeb29f7cb286ea, type: 3}
+      propertyPath: m_BlocksRaycasts
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 9145679657124643002, guid: e12adb180934bb64cafeb29f7cb286ea, type: 3}
       propertyPath: m_Name
       value: EventUICanvas

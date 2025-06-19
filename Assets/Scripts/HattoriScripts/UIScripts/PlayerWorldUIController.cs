@@ -59,7 +59,7 @@ public class PlayerWorldUIController : NetworkBehaviour
 
 
     //HPが変化した時だけ呼ばれてHPバーを更新する
-    public void UpdateWorldHPBar(float normalized)
+    public void UpdateWorldHPBar(float normalized, PlayerRef _)
     {
         hpBar.value = normalized;
     }

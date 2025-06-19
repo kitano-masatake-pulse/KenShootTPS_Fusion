@@ -21,6 +21,7 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
     private GameObject TPSCamera;
 
 
+
     void Start()
     {
         runner = FindObjectOfType<NetworkRunner>();
@@ -49,7 +50,9 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
             CreateDummyAvatars(runner, dummyAvatarCount);
         }
 
-
+        //ランナーが存在するか確認
+        Debug.Log($"Battle Scene：Runner exists: {runner != null}");
+        GameManager.Instance.SceneLoaded(); // GameManagerの初期化
 
     }
 

@@ -1205,7 +1205,7 @@ MonoBehaviour:
   - {fileID: 21300038, guid: 6674e8c43c63e4f4184cbd009379498d, type: 3}
   - {fileID: 21300044, guid: 6674e8c43c63e4f4184cbd009379498d, type: 3}
   - {fileID: 21300008, guid: 6674e8c43c63e4f4184cbd009379498d, type: 3}
-  - {fileID: 21300032, guid: 6674e8c43c63e4f4184cbd009379498d, type: 3}
+  - {fileID: 21300020, guid: 5163ae49a0de665458bba61cd20c99b1, type: 3}
   RifleScale: 0.53
   GrenadeLauncherScale: 0.53
 --- !u!1 &4574412081104268530

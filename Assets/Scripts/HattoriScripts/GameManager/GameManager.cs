@@ -7,15 +7,19 @@ using UnityEngine;
 
 
 //ゲーム時間、キルデス、スコア管理を行うクラス
-public class GameManager : NetworkBehaviour
+public class GameManager : NetworkBehaviour,IAfterSpawned
 {
     // シングルトンインスタンス
     public static GameManager Instance { get; private set; }
+    //初期化のためのフラグ
+    private bool _afterSpawned = false;
+    private bool _sceneLoaded = false;
+    
     //生成時イベント
     public static event Action OnGameManagerSpawned;
     
     //チーム分け辞書
-    public Dictionary<PlayerRef, TeamType> PlayerTeams { get; private set; } 
+    public Dictionary<PlayerRef, TeamType> PlayerTeams { get; private set; }
 
     //============================================
     //キルデス関係
@@ -61,6 +65,19 @@ public class GameManager : NetworkBehaviour
     public bool IsTimerRunning { get; private set; } = false;
     public event Action<int> OnTimeChanged;
 
+    //============================================
+    // イベント発火用フラグ
+    //=============================================
+    private bool _scoreDirty = false;
+    private struct DeathEventData
+    {
+        public float timeStamp;
+        public PlayerRef victim;
+        public PlayerRef killer;
+        public bool isMyPlayer;
+    }
+    private Queue<DeathEventData> deathEventQueue = new Queue<DeathEventData>();
+    [Networked] TickTimer NextTickTimer { get; set; }
     //===========================================
     //初期化処理
     //===========================================
@@ -74,15 +91,39 @@ public class GameManager : NetworkBehaviour
         {
             Destroy(gameObject);
         }
+    }
+    public void SceneLoaded()
+    {
+        _sceneLoaded = true;
+        TryInitialize();
+    }
+
+    public void AfterSpawned()
+    {
+        _afterSpawned = true;
+        TryInitialize();
+    }
+
+    private void TryInitialize()
+    {
+        if (_afterSpawned && _sceneLoaded)
+        {
+            InitializeGameManager();
+        }
+    }
+    private void InitializeGameManager()
+    {
+        if (Runner == null)
+        {
+            Debug.LogError("GameManager: Spawned > Runner is null. ");
+            return;
+        }
+
         PlayerScores = new Dictionary<PlayerRef, PlayerScore>();
         PlayerScoresRed = new Dictionary<PlayerRef, PlayerScore>();
         PlayerScoresBlue = new Dictionary<PlayerRef, PlayerScore>();
         PlayerTeams = new Dictionary<PlayerRef, TeamType>();
-    }
-    public override void Spawned()
-    {
-        
-        Debug.Log($"ScoreManager Spawned. Current Player Count: {Runner.ActivePlayers.Count()}");
+
         foreach (var playerRef in Runner.ActivePlayers)
         {
             PlayerScore playerScore = new PlayerScore(0, 0);
@@ -110,11 +151,15 @@ public class GameManager : NetworkBehaviour
                     }
                 }
             }
+            else
+            {
+                Debug.LogWarning($"GameManager: Player {playerRef} has no associated NetworkObject.");
+            }
 
         }
-        PrintAllScore();
+        //PrintAllScore();
 
-        if(Object.HasStateAuthority)
+        if (Object.HasStateAuthority)
         {
             RemainingSeconds = initialTimeSec;
             startSimTime = Runner.SimulationTime;
@@ -154,16 +199,15 @@ public class GameManager : NetworkBehaviour
         {
             killLogs.RemoveAt(0); 
         }
+        NextTickTimer =    // 次ティック後にExpiredになる
+            TickTimer.CreateFromTicks(Runner, 2);
 
         AddScore(victim, killer);
 
-        OnAnyPlayerDied?.Invoke(timeStamp,victim, killer);
-
-        //自分のプレイヤーに対しては、OnMyPlayerDiedイベントも発火
-        if (Runner.LocalPlayer == victim)
+        OnAnyPlayerDied?.Invoke(timeStamp, victim, killer);
+        if (IsMyPlayer(victim))
         {
-            Debug.Log($"GameManager : OnMyPlayerDied Invoked");
-            OnMyPlayerDied?.Invoke(timeStamp,killer);
+            OnMyPlayerDied?.Invoke(timeStamp, killer);
         }
 
     }
@@ -171,7 +215,22 @@ public class GameManager : NetworkBehaviour
     //時間更新
     public override void FixedUpdateNetwork()
     {
-        if(!Object.HasStateAuthority) return;
+        if (NextTickTimer.Expired(Runner))
+        {
+            NextTickTimer = TickTimer.None;   // リセット
+            if (_scoreDirty)
+            {
+                //スコア変更イベントを発火
+                OnScoreChanged?.Invoke();
+                _scoreDirty = false;
+            }
+
+        }
+
+        
+
+        // タイマー更新処理
+        if (!Object.HasStateAuthority) return;
         if(!IsTimerRunning) return;
 
         double elapsed = Runner.SimulationTime - startSimTime;
@@ -245,8 +304,9 @@ public class GameManager : NetworkBehaviour
         }
         //キルプレイヤーがいない(None)ならスコアは加算しない
 
+        _scoreDirty = true;
         // スコア変更イベントを発火
-        OnScoreChanged?.Invoke();
+        //OnScoreChanged?.Invoke();
     }
 
     //時間更新時のコールバックなど
