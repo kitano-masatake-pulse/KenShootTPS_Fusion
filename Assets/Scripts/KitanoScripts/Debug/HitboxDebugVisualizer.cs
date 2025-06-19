@@ -50,6 +50,14 @@ public class HitboxDebugVisualizer : MonoBehaviour
         }
     }
 
+    public void Unregister(HitboxRoot root)
+    {
+        if (registeredRoots.Contains(root))
+        {
+            registeredRoots.Remove(root);
+        }
+    }
+
     private void OnRenderObject()
     {
 

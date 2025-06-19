@@ -1,13 +1,16 @@
+using Cinemachine;
+using Fusion;
+using Fusion.Sockets;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Fusion;
-using Fusion.Sockets;
-using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
-using Cinemachine;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
+
+//[DefaultExecutionOrder(-100)]
 public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 {
     //シングルトンの宣言
@@ -31,6 +34,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     [SerializeField]
     private int maxPlayerNum=3;
 
+    [SerializeField]
     private NetworkRunner networkRunner;
 
     public TextMeshProUGUI sessionNameText;
@@ -43,6 +47,12 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     [Header("次に遷移するシーン(デフォルトBattleScene)")]
     public  SceneType nextScene= SceneType.Battle;
 
+    public static Action<NetworkRunner> OnNetworkRunnerGenerated;
+
+
+    //デバッグ用
+    [SerializeField] LobbyPingDisplay lobbyPingDisplay;
+
 
 
     void Awake()
@@ -53,23 +63,63 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
             return;
         }
         Instance = this;
+
+        OnNetworkRunnerGenerated -= AddCallbackMe;
+        OnNetworkRunnerGenerated += AddCallbackMe;
     }
     //タイトルシーンでデスマッチなのかチームデスマッチかを選択する
     //その情報を持って、セッションに参加する
 
+    void AddCallbackMe(NetworkRunner runner)
+        {
+        // NetworkRunnerのコールバック対象に、このスクリプト（GameLauncher）を登録する
+        if (runner != null)
+        {
+            runner.AddCallbacks(this);
+        }
+    }
+
+
+    void OnEnable()
+    {
+      
+     
+    }
+
+    private void OnDestroy()
+    {
+        OnNetworkRunnerGenerated -= AddCallbackMe;
+    }
+
+
 
     private async void Start()
     {
+
+
+
+
         // NetworkRunnerを生成する
-        networkRunner = Instantiate(networkRunnerPrefab);
+
+
+        //networkRunner = Instantiate(networkRunnerPrefab);
+
+        networkRunner=FindObjectOfType<NetworkRunner>();
+
+        networkRunner.transform.parent = null; // NetworkRunnerをシーンのルートに移動する
+
+        //AddCallbackMe(networkRunner);
+
         // NetworkRunnerのコールバック対象に、このスクリプト（GameLauncher）を登録する
-        networkRunner.AddCallbacks(this);
-
-        
-        networkRunner.AddCallbacks(networkInputManager);
+        //networkRunner.AddCallbacks(this);
 
 
 
+
+        //networkRunner.AddCallbacks(networkInputManager);
+
+
+        //OnNetworkRunnerGenerated?.Invoke(networkRunner);
 
 
         var customProps = new Dictionary<string, SessionProperty>();
@@ -84,18 +134,44 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         }
 
 
+
+
+
+        //StartCoroutine(StartGameCoroutine(new StartGameArgs
+        //{
+        //    GameMode = GameMode.AutoHostOrClient,
+        //    SessionProperties = customProps,
+        //    PlayerCount = maxPlayerNum,
+        //    Scene = SceneManager.GetActiveScene().buildIndex,
+        //    SceneManager = networkRunner.GetComponent<NetworkSceneManagerDefault>()
+        //}));
+
+
+        OnNetworkRunnerGenerated?.Invoke(networkRunner);
+
+
+        Debug.Log($"GameLauncher.PreStartGame called. {Time.time} {networkRunner.Tick},{networkRunner.SimulationTime} ");
+
+        bool existRunner = lobbyPingDisplay.CheckMyRunner();
+
+        Debug.Log($"called Runner exists  Pre : {existRunner}");
+
         // StartGameArgsに渡した設定で、セッションに参加する
         var result = await networkRunner.StartGame(new StartGameArgs
         {
             GameMode = GameMode.AutoHostOrClient,
             SessionProperties = customProps,
             PlayerCount = maxPlayerNum,
+            Scene = SceneManager.GetActiveScene().buildIndex,
             SceneManager = networkRunner.GetComponent<NetworkSceneManagerDefault>()
         });
 
+        Debug.Log($"GameLauncher.PostStartGame called. {Time.time} {networkRunner.Tick},{networkRunner.SimulationTime} ");
 
+        bool existRunnerPost = lobbyPingDisplay.CheckMyRunner();
 
-        
+        Debug.Log($"called Runner exists  Post : {existRunnerPost}");
+
 
         if (result.Ok)
         {
@@ -105,7 +181,26 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         {
             Debug.Log("失敗！");
         }
-}
+
+
+
+    }
+
+    IEnumerator StartGameCoroutine(StartGameArgs args)
+    {
+        yield return null; // フレーム待機してから実行するためのコルーチン
+        // StartGameを非同期で実行
+        var result = networkRunner.StartGame(args);
+        yield return new WaitUntil(() => result.IsCompleted);
+        if (result.IsCompletedSuccessfully)
+        {
+            Debug.Log("ゲーム開始成功！");
+        }
+        else
+        {
+            Debug.LogError("ゲーム開始失敗！: " + result.Exception);
+        }
+    }
 
 
 
@@ -124,6 +219,19 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
         }
 
+    }
+
+
+
+    //退出処理
+    public void LeaveRoom()
+    {
+        // すべてのコールバックを削除
+        networkRunner.RemoveCallbacks(this);
+        // Runnerを停止
+        networkRunner.Shutdown();
+        // シーンをタイトルシーンに戻す
+        SceneManager.LoadScene("TitleScene");
     }
 
 

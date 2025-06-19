@@ -10,15 +10,20 @@ public class LobbyUIController : MonoBehaviour
     [Header("バトルシーン開始ボタン")] 
     public Button startBattleButton;
 
+    [Header("退出ボタン")]
+    public Button leaveRoomButton;
+
     private NetworkRunner runner;
 
-    [SerializeField] GameLauncher gameLauncher;
+    //[SerializeField] GameLauncher gameLauncher;
 
     void Start()
     {
         // 初期非表示
         startBattleButton.gameObject.SetActive(false);
         startBattleButton.onClick.AddListener(OnStartBattleClicked);
+        leaveRoomButton.onClick.AddListener(OnLeaveRoomClicked);
+
     }
 
     public void ShowStartButton(NetworkRunner runner)
@@ -33,7 +38,7 @@ public class LobbyUIController : MonoBehaviour
         {
             // バトルシーンに遷移
             Debug.Log("バトルシーンに遷移します");
-            string sceneName = gameLauncher.nextScene.ToSceneName();
+            string sceneName = GameLauncher.Instance.nextScene.ToSceneName();
             runner.SetActiveScene(sceneName);
         }
         else
@@ -41,4 +46,14 @@ public class LobbyUIController : MonoBehaviour
             Debug.LogError("クライアントはバトル開始ボタンを押せません");
         }
     }
+
+
+    void OnLeaveRoomClicked()
+    {
+        GameLauncher.Instance.LeaveRoom();
+
+
+
+    }
+
 }
