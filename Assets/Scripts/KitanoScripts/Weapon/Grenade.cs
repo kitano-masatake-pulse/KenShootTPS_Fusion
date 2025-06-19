@@ -100,7 +100,7 @@ public class Grenade : WeaponBase
             hits,
             playerLayer,
             //HitOptions.IgnoreInputAuthority
-            HitOptions.IgnoreInputAuthority // HitOptions.Noneを使用して、すべてのヒットを取得する
+            HitOptions.None // HitOptions.Noneを使用して、すべてのヒットを取得する
             );
 
         

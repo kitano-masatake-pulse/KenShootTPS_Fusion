@@ -52,6 +52,9 @@ public class PlayerAvatar : NetworkBehaviour
     private bool isDuringWeaponAction = false; //武器アクション(射撃、リロード、武器切り替え)中かどうか
     private bool isImmobilized = false; //行動不能中かどうか(移動・ジャンプもできない)
 
+    public bool wasGraunded;
+    public bool isGraundedNow;
+
 
 
     //ADS中かどうか(エイムダウンサイト、スコープ覗き込み)
@@ -253,8 +256,6 @@ public class PlayerAvatar : NetworkBehaviour
 
 
     #region Update系
-    public bool wasGraunded;
-    public bool isGraundedNow;
     void Update()
     {
         
@@ -262,14 +263,6 @@ public class PlayerAvatar : NetworkBehaviour
         {
             InputCheck();
         }
-
-        isGraundedNow = characterController.isGrounded; // 現在の接地判定を取得
-        if (!wasGraunded && isGraundedNow)
-        {
-            // 接地した瞬間に呼ばれる処理
-            Land();
-        }
-        wasGraunded = isGraundedNow; // 前回の接地状態を更新
 
 
         if (isDummy) //ダミーキャラなら、ダミー落下処理を行う
@@ -285,7 +278,8 @@ public class PlayerAvatar : NetworkBehaviour
         SynchronizeTransform();
     }
 
-
+    int groundBufferFrames = 3;
+    int ungroundedFrameCount = 0;
 
     // 入力をチェック、接地判定などアクションの実行可否は判定しない
     //順序管理のため、PlayerCallOrderから呼ばれる
@@ -304,6 +298,8 @@ public class PlayerAvatar : NetworkBehaviour
             {
                 Jump();
             }
+
+            CheckLand();
 
 
             if (localInputData.FirePressedDown) //発射ボタンが押されたら、武器の発射処理を呼ぶ
@@ -705,6 +701,21 @@ public class PlayerAvatar : NetworkBehaviour
             SetActionAnimationPlayListForAllClients(ActionType.Jump); //アクションアニメーションのリストに追加
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity); //ローカルでジャンプの初速度(velocity.y)を与える
         }
+    }
+
+    private float groundCheckDistance = 0.2f; // 接地判定の距離
+    void CheckLand()
+    {
+        Vector3 origin = transform.position + Vector3.up *  0.1f; // キャラクターの中心位置を基準にする
+        float rayLength = groundCheckDistance + 0.1f;
+        isGraundedNow = Physics.Raycast(origin, Vector3.down, out RaycastHit hit, rayLength); // プレイヤーのレイヤーマスクを使用して接地判定
+
+        if(!wasGraunded && isGraundedNow)
+        {
+            Land();
+        }
+
+        wasGraunded = isGraundedNow; // 前回の接地状態を更新
     }
 
     void Land()

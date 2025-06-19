@@ -1,3 +1,4 @@
+using UnityEditor;
 using UnityEngine;
 
 public class GrenadeThrower : MonoBehaviour
@@ -8,7 +9,6 @@ public class GrenadeThrower : MonoBehaviour
     public TrajectoryDrawer trajectoryDrawer;
 
     private bool isAiming;
-
     void Update()
     {
         if (Input.GetMouseButtonDown(0))
@@ -21,14 +21,14 @@ public class GrenadeThrower : MonoBehaviour
             Vector3 throwDirection = throwPoint.forward;
             Vector3 velocity = throwDirection * throwForce;
 
-            trajectoryDrawer.DrawTrajectory(throwPoint.position, velocity);
+            trajectoryDrawer.SphereCastDrawTrajectory(throwPoint.position, velocity);
         }
 
         if (Input.GetMouseButtonUp(0) && isAiming)
         {
-            ThrowGrenade();
-            isAiming = false;
-            trajectoryDrawer.HideTrajectory();
+                ThrowGrenade();
+                isAiming = false;
+                trajectoryDrawer.HideTrajectory();
         }
     }
 
