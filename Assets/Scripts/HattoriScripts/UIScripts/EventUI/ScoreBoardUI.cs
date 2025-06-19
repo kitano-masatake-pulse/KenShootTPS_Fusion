@@ -3,12 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ScoreBoardUI : MonoBehaviour, IUIPanel
 {
     [SerializeField] private CanvasGroup scoreboardGroup;
     [SerializeField] private Transform contentParent;
     [SerializeField] private GameObject scoreRowPrefab;
+    [SerializeField] private HPObserver hpObserver; 
 
     private Dictionary<PlayerRef, GameObject> rowInstances = new();
 
@@ -16,6 +18,8 @@ public class ScoreBoardUI : MonoBehaviour, IUIPanel
     {
         GameManager.Instance.OnScoreChanged -= UpdateAllRows;
         GameManager.Instance.OnScoreChanged += UpdateAllRows;
+        hpObserver.OnAnyHPChanged -= UpdateLivingStates;
+        hpObserver.OnAnyHPChanged += UpdateLivingStates;
         scoreboardGroup.alpha = 0;
         scoreboardGroup.interactable = false;
         scoreboardGroup.blocksRaycasts = false;
@@ -25,6 +29,7 @@ public class ScoreBoardUI : MonoBehaviour, IUIPanel
     public void Cleanup()
     {
         GameManager.Instance.OnScoreChanged -= UpdateAllRows;
+        hpObserver.OnAnyHPChanged -= UpdateLivingStates;
         // すべての行を削除
         foreach (var row in rowInstances.Values)
         {
@@ -62,12 +67,39 @@ public class ScoreBoardUI : MonoBehaviour, IUIPanel
         }
     }
 
+    public void UpdateLivingStates() 
+    {
+        if (hpObserver == null) return; // HPObserverが設定されていない場合は何もしない
+        foreach (var pair in rowInstances)
+        {
+            var playerRef = pair.Key;
+            var row = pair.Value;
+            if (hpObserver.PlayerHPDict.TryGetValue(playerRef, out float hpNormalized))
+            {
+                var deathImage = row.transform.Find("LivingStateImage/DeathImage").GetComponent<Image>();
+                var color = deathImage.color;
+                if (hpNormalized > 0)
+                {
+                    // 生存中は透明にする
+                    color.a = 0f;
+                }
+                else
+                {
+                    // 死亡中は不透明にする
+                    color.a = 1f;
+                }
+                Debug.Log($"ScoreBoardUI : Player {playerRef.PlayerId} HP Normalized: {hpNormalized}, DeathImage Alpha: {color.a}");
+                deathImage.color = color;
+            }
+        }
+    }
+
     private void UpdateRow(GameObject row, PlayerRef playerRef, PlayerScore score)
     {
         row.transform.Find("PlayerNameText").GetComponent<TMP_Text>().text = $"Player {playerRef.PlayerId}"; // or custom name
         row.transform.Find("KillScoreImage/KillCountText").GetComponent<TMP_Text>().text = score.Kills.ToString();
         row.transform.Find("DeathScoreImage/DeathCountText").GetComponent<TMP_Text>().text = score.Deaths.ToString();
-        //自分ならハイライトする
+        // 自分ならハイライトする
         if (playerRef == GameManager.Instance.GetMyPlayerRef())
         {
             row.transform.Find("ColorBar").gameObject.SetActive(true); // 自分の行はハイライト
@@ -76,9 +108,6 @@ public class ScoreBoardUI : MonoBehaviour, IUIPanel
         {
             row.transform.Find("ColorBar").gameObject.SetActive(false);
         }
-
-
-
     }
 
 }

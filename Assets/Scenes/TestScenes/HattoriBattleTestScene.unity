@@ -4785,6 +4785,78 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3507529684465261469, guid: c5c251c4f6ea3694285b311cea75f2a2, type: 3}
   m_PrefabInstance: {fileID: 1563162452}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1595545123
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1595545126}
+  - component: {fileID: 1595545125}
+  - component: {fileID: 1595545124}
+  m_Layer: 0
+  m_Name: HPObserver
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1595545124
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1595545123}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObjectInterest: 1
+  DefaultInterestGroups: []
+  DestroyWhenStateAuthorityLeaves: 0
+  AllowStateAuthorityOverride: 1
+  AoiPositionSource: {fileID: 0}
+  Flags: 2561
+  NetworkGuid:
+    RawGuidValue: d8ca9d1870354e5cb8b035adc234e326
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 1595545125}
+  SimulationBehaviours: []
+--- !u!114 &1595545125
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1595545123}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5f884f91f3437842b32e13f7e4085ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  WordOffset: 0
+  WordCount: 0
+  _interpolationDataSource: 0
+--- !u!4 &1595545126
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1595545123}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1005.1204, y: 395.77048, z: -427.55927}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1599807265
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5272,6 +5344,14 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1516604608215421652, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
+      propertyPath: hpObserver
+      value: 
+      objectReference: {fileID: 1595545125}
+    - target: {fileID: 1516604608215421652, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
+      propertyPath: gameManager
+      value: 
+      objectReference: {fileID: 75697187}
+    - target: {fileID: 1516604608215421652, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
       propertyPath: playerPrefab.RawGuidValue.Array.data[0]
       value: -7712249912312761949
       objectReference: {fileID: 0}
@@ -5323,6 +5403,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.x
       value: 23
       objectReference: {fileID: 0}
+    - target: {fileID: 3166721216759619376, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
+      propertyPath: hpObserver
+      value: 
+      objectReference: {fileID: 1595545125}
     - target: {fileID: 3518879278692763671, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1.4
@@ -5971,3 +6055,4 @@ SceneRoots:
   - {fileID: 1797863535}
   - {fileID: 75697188}
   - {fileID: 691113515}
+  - {fileID: 1595545126}

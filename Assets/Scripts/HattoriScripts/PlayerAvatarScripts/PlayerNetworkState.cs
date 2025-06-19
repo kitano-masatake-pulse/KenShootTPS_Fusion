@@ -6,11 +6,13 @@ using Fusion;
 // 各プレイヤーのステータスを管理するクラス
 public class PlayerNetworkState : NetworkBehaviour
 {
+    [SerializeField] private PlayerAvatar playerAvatar; // PlayerAvatarコンポーネントへの参照
+
     #region Events
 
     // インスタンスイベント
     /// <summary>HPが変更されたとき</summary>
-    public event Action<float> OnHPChanged;
+    public event Action<float, PlayerRef> OnHPChanged;
 
     /// <summary>武器切替がサーバー正史で確定したとき</summary>
     public event Action<WeaponType> OnWeaponChanged_Network;
@@ -64,7 +66,7 @@ public class PlayerNetworkState : NetworkBehaviour
         => changed.Behaviour.RaiseTeamChanged();
 
 
-    void RaiseHPChanged() => OnHPChanged?.Invoke(HpNormalized);
+    void RaiseHPChanged() => OnHPChanged?.Invoke(HpNormalized,Object.InputAuthority);
     void RaiseWeaponChanged() => OnWeaponChanged_Network?.Invoke(CurrentWeapon_Network);
     void RaiseTeamChanged() => OnTeamChanged?.Invoke(Team);
     #endregion
@@ -77,8 +79,25 @@ public class PlayerNetworkState : NetworkBehaviour
         {   
             //FindObjectOfType<HUDManager>()?.PlayerHUDInitialize(this);
             OnLocalPlayerSpawned?.Invoke(this);
+            playerAvatar.OnWeaponChanged += RequestWeaponChange;
         }    
   
+    }
+
+    public override void Despawned(NetworkRunner runner, bool hasStateChanged)
+    {
+        // 破棄時にイベントを解除
+        OnHPChanged = null;
+        OnWeaponChanged_Network = null;
+        OnTeamChanged = null;
+        OnLocalPlayerSpawned = null;
+        OnPlayerDied = null;
+        playerAvatar.OnWeaponChanged -= RequestWeaponChange;
+    }
+
+    private void RequestWeaponChange(WeaponType newWeapon, int _, int __)
+    {
+        RPC_RequestWeaponChange(newWeapon);
     }
 
     //デバッグ用 
@@ -95,16 +114,16 @@ public class PlayerNetworkState : NetworkBehaviour
 
     #region Public Methods
 
-    //�\�\�\�\ �T�[�o�[���N���C�A���g�F�X�e�[�^�X�ύX �\�\�\�\
-    //�z�X�g���݂̂��Ăяo�����\�b�h
-    /// <summary>HP�����炷</summary>
+
+    /// <summary>HPを減らすメソッド</summary>
     public void DamageHP(int damage, PlayerRef attacker = default, TeamType atkTeam = default)
     {
         Debug.Log($"DamageHPMethod");
         if (!HasStateAuthority) return;
-        if(Team != TeamType.None && atkTeam != TeamType.None && Team == atkTeam) return; // �����`�[������̍U���͖���
-        if (CurrentHP <= 0) return; // ���Ɏ��S���Ă���Ȃ疳��
-        if (IsInvincible) return; // ���G��ԂȂ疳��
+        if(Team != TeamType.None && atkTeam != TeamType.None && Team == atkTeam) return; //同じチームならダメージ無効
+        if (CurrentHP <= 0) return; //死亡しているならダメージ無効
+        if (IsInvincible) return; //無敵ならダメージ無効
+
 
 
         CurrentHP = Mathf.Max(0, CurrentHP - damage);
@@ -115,7 +134,7 @@ public class PlayerNetworkState : NetworkBehaviour
             if (GameManager.Instance != null)
             {
 
-                //GameManager�Ɏ��S��ʒm
+                //GameManagerに通知を送る
                 GameManager.Instance.NotifyDeath(Runner.SimulationTime,Object.InputAuthority, attacker);
 
             }
@@ -137,7 +156,7 @@ public class PlayerNetworkState : NetworkBehaviour
         IsInvincible = isInvincible;
     }
 
-    //�`�[���ݒ�
+    //チーム設定
     public void SetTeam(TeamType team)
     {
         if (!HasStateAuthority) return;

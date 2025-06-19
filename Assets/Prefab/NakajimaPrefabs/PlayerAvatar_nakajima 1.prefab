@@ -644,8 +644,26 @@ MonoBehaviour:
   WordOffset: 0
   WordCount: 0
   _interpolationDataSource: 0
-  CurrentMagazine: 0
-  CurrentReserve: 0
+  playerCamera: {fileID: 0}
+  fireDistance: 100
+  currentMagazine: 0
+  currentReserve: 0
+  muzzleTransform: {fileID: 0}
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  obstructionLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  liftingSpreadGauge: 0
+  randomSpreadGauge: 0
+  liftingSpreadLimit: 1
+  randomSpreadLimit: 1
+  runninngSpreadLimit: 1
+  liftingSpreadMultiplier: {x: 5, y: 0}
+  randomSpreadMultiplier: {x: 3, y: 6}
+  runninngSpreadMultiplier: {x: 3, y: 6}
+  debug_moveSpeed: 0
 --- !u!1 &1999383711037729311
 GameObject:
   m_ObjectHideFlags: 0
@@ -1426,7 +1444,7 @@ MonoBehaviour:
   _interpolationDataSource: 0
   headObject: {fileID: 2171211468819611867}
   bodyObject: {fileID: 2852828816588928964}
-  myPlayerHitbox: {fileID: 11149558625110233}
+  myPlayerHitboxRoot: {fileID: 0}
   moveSpeed: 3
   gravity: -9.8
   jumpHeight: 2
@@ -1435,6 +1453,7 @@ MonoBehaviour:
   _avatarPositionInHost: {x: 0, y: 0, z: 0}
   _cameraForwardInHost: {x: 0, y: 0, z: 0}
   _normalizedInputDirectionInHost: {x: 0, y: 0, z: 0}
+  isDummy: 0
   chaseAngle: 90
   chaseRange: 5
   chaseSpeed: 6
@@ -1466,9 +1485,12 @@ MonoBehaviour:
   WordOffset: 0
   WordCount: 0
   _interpolationDataSource: 0
+  playerAvatar: {fileID: 2456749128542381984}
   _CurrentHP: 100
   _MaxHP: 100
+  _IsInvincible: 0
   _CurrentWeapon_Network: 0
+  _Team: 0
 --- !u!114 &-4328647438270834359
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2788,8 +2810,24 @@ MonoBehaviour:
   WordOffset: 0
   WordCount: 0
   _interpolationDataSource: 0
-  CurrentMagazine: 0
-  CurrentReserve: 0
+  playerCamera: {fileID: 0}
+  fireDistance: 100
+  currentMagazine: 0
+  currentReserve: 0
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  obstructionLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  directHitRadius: 1
+  blastHitRadius: 5
+  minBlastDamage: 20
+  damageDuration: 1
+  explosionDelay: 3
+  explosionCenter: {fileID: 0}
+  cornRayAngleDeg: 30
+  cornRayNum: 10
 --- !u!1 &5448576454554301088
 GameObject:
   m_ObjectHideFlags: 0
@@ -3368,14 +3406,16 @@ MonoBehaviour:
   WordOffset: 0
   WordCount: 0
   _interpolationDataSource: 0
-  CurrentMagazine: 0
-  CurrentReserve: 0
+  playerCamera: {fileID: 0}
+  fireDistance: 100
+  currentMagazine: 0
+  currentReserve: 0
   playerLayer:
     serializedVersion: 2
     m_Bits: 1088
-  obstructionMask:
+  obstructionLayer:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 0
   swordRoot: {fileID: 4914010022876409462}
   attackActiveTime: 0.5
 --- !u!1 &7002177026448560468
@@ -3692,7 +3732,6 @@ MonoBehaviour:
   Offset: {x: 0, y: 0, z: 0}
   Root: {fileID: 0}
   GizmosColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  myPlayerAvatar: {fileID: 0}
 --- !u!1 &7554588070204959923
 GameObject:
   m_ObjectHideFlags: 0
@@ -3870,8 +3909,17 @@ MonoBehaviour:
   WordOffset: 0
   WordCount: 0
   _interpolationDataSource: 0
-  CurrentMagazine: 0
-  CurrentReserve: 0
+  playerCamera: {fileID: 0}
+  fireDistance: 100
+  currentMagazine: 0
+  currentReserve: 0
+  muzzleTransform: {fileID: 0}
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  obstructionLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!1 &7746169022328754119
 GameObject:
   m_ObjectHideFlags: 0
