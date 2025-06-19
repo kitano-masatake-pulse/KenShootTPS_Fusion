@@ -250,6 +250,18 @@ public class PlayerAvatar : NetworkBehaviour
     }
 
 
+    public override void Despawned(NetworkRunner runner, bool hasState)
+    {
+        //Debug用のHitbox可視化
+        HitboxRoot root = GetComponent<HitboxRoot>();
+        if (HitboxDebugVisualizer.Instance != null)
+        {
+            HitboxDebugVisualizer.Instance.Unregister(root);
+        }
+
+    }
+
+
     #endregion
 
 
@@ -1066,6 +1078,17 @@ public class PlayerAvatar : NetworkBehaviour
     //自分はローカルで、他クライアントはRPCでプレイリストを更新する(時間付き)
     public void SetActionAnimationPlayListForAllClients(ActionType actionType)
     {
+
+        if(isDummy)
+        {
+            //ダミーならアニメーションはしない
+            Debug.Log("Don't Set Animation because it's dummy" );
+            return; 
+        
+        }
+
+
+
         float calledTime = Runner.SimulationTime; //アクションが呼ばれた時間を取得
 
         SetActionAnimationPlayList(actionType, calledTime); //アクションアニメーションのリストにジャンプを追加

@@ -86,6 +86,11 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
      
     }
 
+    private void OnDestroy()
+    {
+        OnNetworkRunnerGenerated -= AddCallbackMe;
+    }
+
 
 
     private async void Start()
@@ -100,6 +105,8 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         //networkRunner = Instantiate(networkRunnerPrefab);
 
         networkRunner=FindObjectOfType<NetworkRunner>();
+
+        networkRunner.transform.parent = null; // NetworkRunnerをシーンのルートに移動する
 
         //AddCallbackMe(networkRunner);
 
@@ -212,6 +219,19 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
         }
 
+    }
+
+
+
+    //退出処理
+    public void LeaveRoom()
+    {
+        // すべてのコールバックを削除
+        networkRunner.RemoveCallbacks(this);
+        // Runnerを停止
+        networkRunner.Shutdown();
+        // シーンをタイトルシーンに戻す
+        SceneManager.LoadScene("TitleScene");
     }
 
 

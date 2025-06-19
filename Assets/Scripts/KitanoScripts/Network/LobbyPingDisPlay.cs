@@ -199,7 +199,7 @@ public class LobbyPingDisplay : NetworkBehaviour ,INetworkRunnerCallbacks
         {
             if (_entries.TryGetValue(player, out var txt))
             {
-                Destroy(txt.rectTransform.root.gameObject);
+                Destroy(txt.rectTransform.gameObject);
                 _entries.Remove(player);
             }
         }
