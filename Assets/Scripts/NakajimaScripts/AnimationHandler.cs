@@ -27,13 +27,23 @@ public class AnimationHandler : NetworkBehaviour
     // Update is called once per frame
     private void Update()
     {
-
+        
         if (Runner.Simulation.Tick != LastTick)
         {
             MovementAnimation();
             LastTick = Runner.Simulation.Tick;
         }
         SetAnimationFromPlayList();
+
+        //ˆÈ‰º‚ÍƒeƒXƒg
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            animator.SetBool("IsGrenadePreparation", true);
+        }
+        if (Input.GetKeyDown(KeyCode.Y))
+        {
+            animator.SetBool("IsGrenadePreparation", false);
+        }
     }
 
 

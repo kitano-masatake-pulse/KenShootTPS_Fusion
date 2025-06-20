@@ -8,6 +8,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using static TMPro.Examples.ObjectSpin;
+using static UnityEngine.UI.Image;
 
 public class PlayerAvatar : NetworkBehaviour
 {
@@ -52,8 +53,8 @@ public class PlayerAvatar : NetworkBehaviour
     private bool isDuringWeaponAction = false; //武器アクション(射撃、リロード、武器切り替え)中かどうか
     private bool isImmobilized = false; //行動不能中かどうか(移動・ジャンプもできない)
 
-    public bool wasGraunded;
-    public bool isGraundedNow;
+    public bool wasGrounded;
+    public bool isGroundedNow;
 
 
 
@@ -299,6 +300,7 @@ public class PlayerAvatar : NetworkBehaviour
                 Jump();
             }
 
+            // 接地判定
             CheckLand();
 
 
@@ -336,7 +338,6 @@ public class PlayerAvatar : NetworkBehaviour
         if (localInputData.ADSPressedDown) //ADSボタンが押されたら、ADSの処理を呼ぶ
         {
             ADS();
-            Debug.Log($"ADSPressedDown"); //デバッグログ
         }
 
 
@@ -346,6 +347,7 @@ public class PlayerAvatar : NetworkBehaviour
 
 
             ChangeTransformLocally(normalizedInputDirection, tpsCameraTransform.forward);//ジャンプによる初速度も考慮して移動する
+
         }
     }
 
@@ -690,12 +692,14 @@ public class PlayerAvatar : NetworkBehaviour
 
     #endregion
 
-
+　　private float extraRayLength = 1.0f;
+    private float groundCheckDistance = 0.2f; // 接地判定の距離
     #region Jump関連
     void Jump()
     {
-        bool isGrounded = characterController.isGrounded; // 接地判定を取得
-        if (isGrounded) 
+        isGroundedNow = CheckGround(); // 接地判定を行う
+
+        if (isGroundedNow) 
         {
 
             SetActionAnimationPlayListForAllClients(ActionType.Jump); //アクションアニメーションのリストに追加
@@ -703,24 +707,28 @@ public class PlayerAvatar : NetworkBehaviour
         }
     }
 
-    private float groundCheckDistance = 0.2f; // 接地判定の距離
+    bool CheckGround()
+    {
+        Vector3 origin = transform.position; // キャラクターの中心位置を基準にする
+        float rayLength = 1.5f; // レイの長さを設定
+        return Physics.Raycast(origin, Vector3.down, rayLength);
+    }
+
     void CheckLand()
     {
-        Vector3 origin = transform.position + Vector3.up *  0.1f; // キャラクターの中心位置を基準にする
-        float rayLength = groundCheckDistance + 0.1f;
-        isGraundedNow = Physics.Raycast(origin, Vector3.down, out RaycastHit hit, rayLength); // プレイヤーのレイヤーマスクを使用して接地判定
+        isGroundedNow = CheckGround(); // 接地判定を行う
 
-        if(!wasGraunded && isGraundedNow)
+        if (!wasGrounded && isGroundedNow)
         {
             Land();
         }
 
-        wasGraunded = isGraundedNow; // 前回の接地状態を更新
+        wasGrounded = isGroundedNow; // 前回の接地状態を更新
     }
 
     void Land()
     {
-        if (!wasGraunded && isGraundedNow)
+        if (!wasGrounded && isGroundedNow)
         {
             SetActionAnimationPlayListForAllClients(ActionType.Land);
         }
