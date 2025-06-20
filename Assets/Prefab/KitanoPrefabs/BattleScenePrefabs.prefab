@@ -272,8 +272,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   virtualCamera: {fileID: 2803574880307493053}
-  sensitivityX: 3
-  sensitivityY: 1.5
   minVerticalAngle: -40
   maxVerticalAngle: 75
   cameraTarget: {fileID: 6543666962089211255}
@@ -286,6 +284,17 @@ MonoBehaviour:
   debug_recoverSpeed_Yaw: 5
   debug_recoilLimit_Yaw: 3
   isDebugParameter: 0
+  normalShoulderOffset: {x: 0.5, y: 0, z: 0}
+  adsShoulderOffset: {x: 0, y: 0, z: 0}
+  normalDistance: 3.5
+  adsDistance: 2
+  offsetLerpSpeed: 10
+  normalFOV: 60
+  adsFOV: 30
+  fovLerpSpeed: 15
+  normalSensitivity: {x: 3, y: 1.5}
+  adsSensitivity: {x: 1.5, y: 0.75}
+  ADSRecoilMultiplier: 0.5
 --- !u!1 &5054851137017500103
 GameObject:
   m_ObjectHideFlags: 0
