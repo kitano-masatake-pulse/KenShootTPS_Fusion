@@ -36,11 +36,11 @@ public class AnimationHandler : NetworkBehaviour
         SetAnimationFromPlayList();
 
         //以下はテスト
-        if (Input.GetKeyDown(KeyCode.T))
+        if (Input.GetMouseButton(0)) // 左クリックでジャンプ
         {
             animator.SetBool("IsGrenadePreparation", true);
         }
-        if (Input.GetKeyDown(KeyCode.Y))
+        if (Input.GetMouseButtonUp(0))
         {
             animator.SetBool("IsGrenadePreparation", false);
         }
