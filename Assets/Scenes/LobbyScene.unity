@@ -339,6 +339,10 @@ PrefabInstance:
       value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 5111644406287013726, guid: 2a4b62eb3579ad94fac6651beacd874e, type: 3}
+      propertyPath: dummyAvatarCount
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5111644406287013726, guid: 2a4b62eb3579ad94fac6651beacd874e, type: 3}
       propertyPath: dummyAvatarPrefab.RawGuidValue.Array.data[0]
       value: 6090385723506880289
       objectReference: {fileID: 0}

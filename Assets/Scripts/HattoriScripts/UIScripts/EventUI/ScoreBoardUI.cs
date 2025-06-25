@@ -10,7 +10,6 @@ public class ScoreBoardUI : MonoBehaviour, IUIPanel
     [SerializeField] private CanvasGroup scoreboardGroup;
     [SerializeField] private Transform contentParent;
     [SerializeField] private GameObject scoreRowPrefab;
-    [SerializeField] private HPObserver hpObserver; 
 
     private Dictionary<PlayerRef, GameObject> rowInstances = new();
 
@@ -18,8 +17,8 @@ public class ScoreBoardUI : MonoBehaviour, IUIPanel
     {
         GameManager.Instance.OnScoreChanged -= UpdateAllRows;
         GameManager.Instance.OnScoreChanged += UpdateAllRows;
-        hpObserver.OnAnyHPChanged -= UpdateLivingStates;
-        hpObserver.OnAnyHPChanged += UpdateLivingStates;
+        HPObserver.Instance.OnAnyHPChanged -= UpdateLivingStates;
+        HPObserver.Instance.OnAnyHPChanged += UpdateLivingStates;
         scoreboardGroup.alpha = 0;
         scoreboardGroup.interactable = false;
         scoreboardGroup.blocksRaycasts = false;
@@ -29,7 +28,7 @@ public class ScoreBoardUI : MonoBehaviour, IUIPanel
     public void Cleanup()
     {
         GameManager.Instance.OnScoreChanged -= UpdateAllRows;
-        hpObserver.OnAnyHPChanged -= UpdateLivingStates;
+        HPObserver.Instance.OnAnyHPChanged -= UpdateLivingStates;
         // Ç∑Ç◊ÇƒÇÃçsÇçÌèú
         foreach (var row in rowInstances.Values)
         {
@@ -69,12 +68,12 @@ public class ScoreBoardUI : MonoBehaviour, IUIPanel
 
     public void UpdateLivingStates() 
     {
-        if (hpObserver == null) return; // HPObserverÇ™ê›íËÇ≥ÇÍÇƒÇ¢Ç»Ç¢èÍçáÇÕâΩÇ‡ÇµÇ»Ç¢
+        if (HPObserver.Instance == null) return; // HPObserverÇ™ê›íËÇ≥ÇÍÇƒÇ¢Ç»Ç¢èÍçáÇÕâΩÇ‡ÇµÇ»Ç¢
         foreach (var pair in rowInstances)
         {
             var playerRef = pair.Key;
             var row = pair.Value;
-            if (hpObserver.PlayerHPDict.TryGetValue(playerRef, out float hpNormalized))
+            if (HPObserver.Instance.PlayerHPDict.TryGetValue(playerRef, out float hpNormalized))
             {
                 var deathImage = row.transform.Find("LivingStateImage/DeathImage").GetComponent<Image>();
                 var color = deathImage.color;

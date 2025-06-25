@@ -14,7 +14,8 @@ public class NetworkInputManager : MonoBehaviour,INetworkRunnerCallbacks
     public TPSCameraController tpsCameraController;
 
     public PlayerAvatar myPlayerAvatar;
-   
+    private NetworkRunner runner;
+
 
 
     //private void Awake()
@@ -44,17 +45,18 @@ public class NetworkInputManager : MonoBehaviour,INetworkRunnerCallbacks
     // Start is called before the first frame update
     void Start()
     {
-        //NetworkRunner networkRunner = FindObjectOfType<NetworkRunner>();
-        //if (networkRunner != null)
-        //{ networkRunner.AddCallbacks(this); }
 
-        //GameLauncher.Instance.OnNetworkRunnerGenerated -= AddCallbackMe;
-        //GameLauncher.Instance.OnNetworkRunnerGenerated += AddCallbackMe;
-
+        runner = FindObjectOfType<NetworkRunner>();
+        if (runner != null)
+        { runner.AddCallbacks(this); }
+        
     }
 
-  
-
+    void OnDisable()
+    {
+        if (runner != null)
+            runner.RemoveCallbacks(this); 
+    }
 
 
 
@@ -68,7 +70,7 @@ public class NetworkInputManager : MonoBehaviour,INetworkRunnerCallbacks
         //Debug.Log($"{runner.LocalPlayer} NetworkInputManager.OnInput called.");
         if (myPlayerAvatar==null)
         {
-            //ƒAƒoƒ^[‚ª•R‚Ã‚¢‚Ä‚¢‚È‚¢‚È‚çA“ü—Í‚ğó‚¯•t‚¯‚È‚¢
+            //ã‚¢ãƒã‚¿ãƒ¼ãŒç´ã¥ã„ã¦ã„ãªã„ãªã‚‰ã€å…¥åŠ›ã‚’å—ã‘ä»˜ã‘ãªã„
             input.Set(new NetworkInputData());
             return;
         }

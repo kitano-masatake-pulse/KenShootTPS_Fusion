@@ -10,7 +10,7 @@ using UnityEngine.UI;
 
 public class LocalRespawnHandler: MonoBehaviour
 {
-    [SerializeField] private Image fadePanel;
+    [SerializeField] private FadeUI fadeUI;
     [Header("リスポーン時のフェード時間設定")]
     [SerializeField] private float respawnFadeOutTime = 3f;
     [SerializeField] private float respawnFadeInTime = 1f;
@@ -39,14 +39,14 @@ public class LocalRespawnHandler: MonoBehaviour
         InitializeBeforeFade();
 
         // 2. フェードアウト
-        yield return StartCoroutine(FadeAlpha(0f, 1f, respawnFadeOutTime));
+        yield return StartCoroutine(fadeUI.FadeAlpha(0f, 1f, respawnFadeOutTime));
 
         // 3. フェードアウト後処理
         Debug.Log("LocalRespawnHandler: リスポーン処理を開始します。");
         InitializeAfterFade();
 
         // 4. フェードイン
-        yield return StartCoroutine(FadeAlpha(1f, 0f, respawnFadeInTime));
+        yield return StartCoroutine(fadeUI.FadeAlpha(1f, 0f, respawnFadeInTime));
 
         // 5. フェードイン後処理
         OnRespawnStuned?.Invoke(respawnStunDuration);
@@ -88,33 +88,6 @@ public class LocalRespawnHandler: MonoBehaviour
         RespawnManager.Instance.RPC_RespawnEnd(myPlayer);
     }
 
-
-
-    // from→to のアルファ値を duration 秒かけて補間するコルーチン
-    private IEnumerator FadeAlpha(float from, float to, float duration)
-    {
-        if (currentFade != null) StopCoroutine(currentFade);
-        currentFade = StartCoroutine(FadeRoutine(from, to, duration));
-        yield return currentFade;
-    }
-
-    // 実際のフェード処理
-    private IEnumerator FadeRoutine(float fromAlpha, float toAlpha, float duration)
-    {
-        float elapsed = 0f;
-        Color panelColor = fadePanel.color;
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / duration);
-            panelColor.a = Mathf.Lerp(fromAlpha, toAlpha, t);
-            fadePanel.color = panelColor;
-            yield return null;
-        }
-        panelColor.a = toAlpha;
-        fadePanel.color = panelColor;
-        currentFade = null;
-    }
 
     public Vector3 GetRespawnPoint()
     {
