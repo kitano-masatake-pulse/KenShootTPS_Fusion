@@ -68,24 +68,19 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     //その情報を持って、セッションに参加する
 
     void AddCallbackMe(NetworkRunner runner)
-        {
+    {
         // NetworkRunnerのコールバック対象に、このスクリプト（GameLauncher）を登録する
         if (runner != null)
         {
             runner.AddCallbacks(this);
+            Debug.Log("GameLauncher.AddCallbackMe called.");
         }
-    }
-
-
-    void OnEnable()
-    {
-      
-     
     }
 
     private void OnDestroy()
     {
         OnNetworkRunnerGenerated -= AddCallbackMe;
+        networkRunner.RemoveCallbacks(this);
     }
 
 
@@ -96,18 +91,17 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         //ランナーが場になければ
         // NetworkRunnerを生成する
         networkRunner = FindObjectOfType<NetworkRunner>();
-        networkRunner.transform.parent = null;
         if (networkRunner != null)
         {
             Debug.Log("GameLauncher: Found existing NetworkRunner in the scene.");
-            networkRunner.AddCallbacks(this);
-            
+            OnNetworkRunnerGenerated?.Invoke(networkRunner);
+
         }
         else if(networkRunner == null)
         {
             //シーンにNetworkRunnerが存在しない場合は、Prefabから生成
             networkRunner = Instantiate(networkRunnerPrefab);
-            networkRunner.AddCallbacks(this);
+            OnNetworkRunnerGenerated?.Invoke(networkRunner);
 
             var customProps = new Dictionary<string, SessionProperty>();
 
@@ -119,8 +113,6 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
             {
                 customProps["GameRule"] = (int)GameRule.DeathMatch;
             }
-
-            OnNetworkRunnerGenerated?.Invoke(networkRunner);
 
 
             Debug.Log($"GameLauncher.PreStartGame called. {Time.time} {networkRunner.Tick},{networkRunner.SimulationTime} ");
@@ -150,34 +142,9 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
         }
 
-
-
-
-    }
-
-    IEnumerator StartGameCoroutine(StartGameArgs args)
-    {
-        yield return null; // フレーム待機してから実行するためのコルーチン
-        // StartGameを非同期で実行
-        var result = networkRunner.StartGame(args);
-        yield return new WaitUntil(() => result.IsCompleted);
-        if (result.IsCompletedSuccessfully)
-        {
-            Debug.Log("ゲーム開始成功！");
-        }
-        else
-        {
-            Debug.LogError("ゲーム開始失敗！: " + result.Exception);
-        }
     }
 
 
-    }
-
-    private void OnDisable()
-    {
-        networkRunner.RemoveCallbacks(this);
-    }
 
     public void CreateDummyAvatars(int DummyCount)
     {
@@ -277,6 +244,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
     public void OnSceneLoadDone(NetworkRunner runner) 
     {
+        Debug.Log($"GameLauncher:OnSceneLoadDone called. {Time.time} {runner.Tick},{runner.SimulationTime} ");
         if (runner.SessionInfo != null && runner.SessionInfo.Properties != null)
         {
             if (runner.SessionInfo.Properties.TryGetValue("GameRule", out var gameRuleProp))
