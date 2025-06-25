@@ -18,15 +18,34 @@ public class NetworkInputManager : MonoBehaviour,INetworkRunnerCallbacks
 
 
 
-    private void Awake()
+    //private void Awake()
+    //{
+    //    GameLauncher.Instance.OnNetworkRunnerGenerated -= AddCallbackMe;
+    //    GameLauncher.Instance.OnNetworkRunnerGenerated += AddCallbackMe;
+    //}
+
+    private void AddCallbackMe(NetworkRunner runner)
     {
-        
+        //Debug.Log("NetworkInputManager.AddCallbackMe called.");
+        if (runner != null)
+        {
+            runner.AddCallbacks(this);
+        }
+    }
+
+
+    void OnEnable()
+    {
+        //Debug.Log("NetworkInputManager.OnEnable called.");
+        GameLauncher.OnNetworkRunnerGenerated -= AddCallbackMe;
+        GameLauncher.OnNetworkRunnerGenerated += AddCallbackMe;
     }
 
 
     // Start is called before the first frame update
     void Start()
     {
+
         runner = FindObjectOfType<NetworkRunner>();
         if (runner != null)
         { runner.AddCallbacks(this); }
@@ -51,7 +70,7 @@ public class NetworkInputManager : MonoBehaviour,INetworkRunnerCallbacks
         //Debug.Log($"{runner.LocalPlayer} NetworkInputManager.OnInput called.");
         if (myPlayerAvatar==null)
         {
-            //ƒAƒoƒ^[‚ª•R‚Ã‚¢‚Ä‚¢‚È‚¢‚È‚çA“ü—Í‚ğó‚¯•t‚¯‚È‚¢
+            //ã‚¢ãƒã‚¿ãƒ¼ãŒç´ã¥ã„ã¦ã„ãªã„ãªã‚‰ã€å…¥åŠ›ã‚’å—ã‘ä»˜ã‘ãªã„
             input.Set(new NetworkInputData());
             return;
         }

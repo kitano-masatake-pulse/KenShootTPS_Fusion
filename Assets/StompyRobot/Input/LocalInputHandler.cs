@@ -20,6 +20,12 @@ public struct UIInputData
     public bool ScoreBoardPressdUp;
 }
 
+public class CameraInputData
+{
+    public Vector2  mouseMovement ;
+    public bool cursorLockButton;
+}
+
 
 // This class is responsible for handling local player input.
 public static class LocalInputHandler 
@@ -46,4 +52,13 @@ public static class LocalInputHandler
         input.ScoreBoardPressdUp = Input.GetKeyUp(KeyCode.Tab);
         return input;
     }
+    public static CameraInputData CollectCameraInput()
+    {
+        CameraInputData input = new CameraInputData(); // Initialize the variable to avoid CS0165
+        input.mouseMovement = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
+        input.cursorLockButton = Input.GetKeyDown(KeyCode.Escape); // 中クリックでカーソルロック
+        return input;
+    }
+
+
 }

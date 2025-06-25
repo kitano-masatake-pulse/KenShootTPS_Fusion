@@ -106,4 +106,10 @@ public abstract class WeaponBase : NetworkBehaviour
     {
         Debug.Log("カチッ（弾切れSE）");
     }
+
+    public virtual void SetADS(bool ADSflag)
+    {
+       
+    }
+
 }
