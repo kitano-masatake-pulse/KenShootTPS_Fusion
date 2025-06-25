@@ -17,7 +17,9 @@ public class GameManager : NetworkBehaviour,IAfterSpawned
     
     //生成時イベント
     public static event Action OnGameManagerSpawned;
-    
+    //試合終了イベント
+    public event Action OnTimeUp;
+
     //チーム分け辞書
     public Dictionary<PlayerRef, TeamType> PlayerTeams { get; private set; }
 
@@ -244,7 +246,8 @@ public class GameManager : NetworkBehaviour,IAfterSpawned
             if (RemainingSeconds <= 0)
             {
                 IsTimerRunning = false;
-                Debug.Log("Game Over! Time's up!");
+                //試合終了処理を開始
+                EndGame();
             }
         }
     }
@@ -266,6 +269,15 @@ public class GameManager : NetworkBehaviour,IAfterSpawned
         RemainingSeconds = initialTimeSec;
 
         startSimTime = Runner.SimulationTime;
+    }
+
+    private void EndGame()
+    {
+        if (!Object.HasStateAuthority) return;
+        Debug.Log("GameManager: EndGame called. Game has ended.");
+        //試合終了イベントを発火
+        OnTimeUp?.Invoke();
+
     }
 
     //===========================================
@@ -372,7 +384,7 @@ public class GameManager : NetworkBehaviour,IAfterSpawned
     public IReadOnlyList<KeyValuePair<PlayerRef, PlayerScore>> GetSortedScores()
     {
         var sortedScores = PlayerScores
-         .OrderByDescending(kvp => kvp.Value.Kills)     // キル数が多い順
+         .OrderByDescending(kvp => kvp.Value.Kills)     // キル数が多い順iko
          .ThenBy(kvp => kvp.Value.Deaths)               // デス数が少ない順
          .ThenBy(kvp => kvp.Key.RawEncoded)             // PlayerRefの数値が小さい順
          .ToList();
@@ -515,16 +527,16 @@ public class GameManager : NetworkBehaviour,IAfterSpawned
         NotifyDeath(Runner.SimulationTime, victim, killer);
     }
     //===========================================
-    /*
+    
     private void Update()
     {
-        //デバッグ用：キーを押すとランダムなキルを発生させる
-        if (Input.GetKeyDown(KeyCode.L))
+        
+        if (Input.GetKeyDown(KeyCode.N))
         {
-            DebugRandomKill();
+            OnTimeUp?.Invoke();
         }
     }
-    */
+   
 }
 
 

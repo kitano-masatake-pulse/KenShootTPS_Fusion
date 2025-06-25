@@ -14,6 +14,7 @@ public class NetworkInputManager : MonoBehaviour,INetworkRunnerCallbacks
     public TPSCameraController tpsCameraController;
 
     public PlayerAvatar myPlayerAvatar;
+    private NetworkRunner runner;
 
 
 
@@ -26,12 +27,17 @@ public class NetworkInputManager : MonoBehaviour,INetworkRunnerCallbacks
     // Start is called before the first frame update
     void Start()
     {
-        NetworkRunner networkRunner = FindObjectOfType<NetworkRunner>();
-        if (networkRunner != null)
-        { networkRunner.AddCallbacks(this); }
+        runner = FindObjectOfType<NetworkRunner>();
+        if (runner != null)
+        { runner.AddCallbacks(this); }
         
     }
 
+    void OnDisable()
+    {
+        if (runner != null)
+            runner.RemoveCallbacks(this); 
+    }
 
 
 

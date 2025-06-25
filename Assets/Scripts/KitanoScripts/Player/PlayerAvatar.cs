@@ -981,6 +981,12 @@ public class PlayerAvatar : NetworkBehaviour
     //自分はローカルで、他クライアントはRPCでプレイリストを更新する(時間付き)
     public void SetActionAnimationPlayListForAllClients(ActionType actionType)
     {
+        if (isDummy) //ダミーキャラなら何もしない
+        {
+            Debug.Log($"Dummy {Object.InputAuthority} is not allowed to perform actions.");
+            return;
+        }
+
         float calledTime = Runner.SimulationTime; //アクションが呼ばれた時間を取得
 
         SetActionAnimationPlayList(actionType, calledTime); //アクションアニメーションのリストにジャンプを追加

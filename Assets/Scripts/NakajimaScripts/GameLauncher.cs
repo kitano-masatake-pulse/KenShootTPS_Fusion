@@ -38,8 +38,6 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     [Header("デバッグ用：ダミーアバターの生成数(0で無効)")]
     public int dummyAvatarCount = 1;
 
-
-
     [Header("次に遷移するシーン(デフォルトBattleScene)")]
     public  SceneType nextScene= SceneType.Battle;
 
@@ -53,6 +51,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
             return;
         }
         Instance = this;
+        Debug.Log("GameLauncher: Awake Called");
     }
     //タイトルシーンでデスマッチなのかチームデスマッチかを選択する
     //その情報を持って、セッションに参加する
@@ -60,54 +59,61 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
     private async void Start()
     {
+        Debug.Log("GameLauncher: Start Called");
+        //ランナーが場になければ
         // NetworkRunnerを生成する
-        networkRunner = Instantiate(networkRunnerPrefab);
-        // NetworkRunnerのコールバック対象に、このスクリプト（GameLauncher）を登録する
-        networkRunner.AddCallbacks(this);
-
-        
-        networkRunner.AddCallbacks(networkInputManager);
-
-
-
-
-
-        var customProps = new Dictionary<string, SessionProperty>();
-
-        if (GameRuleSettings.Instance != null)
+        networkRunner = FindObjectOfType<NetworkRunner>();
+        if (networkRunner != null)
         {
-            customProps["GameRule"] = (int)GameRuleSettings.Instance.selectedRule;
+            Debug.Log("GameLauncher: Found existing NetworkRunner in the scene.");
+            networkRunner.AddCallbacks(this);
+            
         }
-        else
+        else if(networkRunner == null)
         {
-            customProps["GameRule"] = (int)GameRule.DeathMatch;
+            //シーンにNetworkRunnerが存在しない場合は、Prefabから生成
+            networkRunner = Instantiate(networkRunnerPrefab);
+            networkRunner.AddCallbacks(this);
+
+            var customProps = new Dictionary<string, SessionProperty>();
+
+            if (GameRuleSettings.Instance != null)
+            {
+                customProps["GameRule"] = (int)GameRuleSettings.Instance.selectedRule;
+            }
+            else
+            {
+                customProps["GameRule"] = (int)GameRule.DeathMatch;
+            }
+
+
+            // StartGameArgsに渡した設定で、セッションに参加する
+            var result = await networkRunner.StartGame(new StartGameArgs
+            {
+                GameMode = GameMode.AutoHostOrClient,
+                SessionProperties = customProps,
+                PlayerCount = maxPlayerNum,
+                SceneManager = networkRunner.GetComponent<NetworkSceneManagerDefault>()
+            });
+
+
+            if (result.Ok)
+            {
+                Debug.Log("成功！");
+            }
+            else
+            {
+                Debug.Log("失敗！");
+            }
+
         }
 
+    }
 
-        // StartGameArgsに渡した設定で、セッションに参加する
-        var result = await networkRunner.StartGame(new StartGameArgs
-        {
-            GameMode = GameMode.AutoHostOrClient,
-            SessionProperties = customProps,
-            PlayerCount = maxPlayerNum,
-            SceneManager = networkRunner.GetComponent<NetworkSceneManagerDefault>()
-        });
-
-
-
-        
-
-        if (result.Ok)
-        {
-            Debug.Log("成功！");
-        }
-        else
-        {
-            Debug.Log("失敗！");
-        }
-}
-
-
+    private void OnDisable()
+    {
+        networkRunner.RemoveCallbacks(this);
+    }
 
     public void CreateDummyAvatars(int DummyCount)
     {
@@ -125,12 +131,22 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         }
 
     }
+    //PlayerRefを指定して、アバターを生成し、紐づけまでする
+    private void CreatePlayerAvatar(NetworkRunner runner, PlayerRef player)
+    {
+        if (!runner.IsServer) { return; }
+        var randomValue = UnityEngine.Random.insideUnitCircle * 5f;
+        var spawnPosition = new Vector3(randomValue.x, 5f, randomValue.y);
+        var avatar = runner.Spawn(playerAvatarPrefab, spawnPosition, Quaternion.identity, player);
+        runner.SetPlayerObject(player, avatar);
+    }
 
 
 
     // INetworkRunnerCallbacksインターフェースの空実装
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
+        Debug.Log($"GameLauncher:OnPlayerJoined.");
 
         if (runner.SessionInfo != null && runner.SessionInfo.Properties != null)
         {
@@ -153,18 +169,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         }
 
 
-
-
-
-        // ホスト（サーバー兼クライアント）かどうかはIsServerで判定できる
-        if (!runner.IsServer) { return; }
-        // ランダムな生成位置（半径5の円の内部）を取得する
-        var randomValue = UnityEngine.Random.insideUnitCircle * 5f;
-        var spawnPosition = new Vector3(randomValue.x, 5f, randomValue.y);
-        // 参加したプレイヤーのアバターを生成する
-        var avatar = runner.Spawn(playerAvatarPrefab, spawnPosition, Quaternion.identity, player);
-        // プレイヤー（PlayerRef）とアバター（NetworkObject）を関連付ける
-        runner.SetPlayerObject(player, avatar);
+        CreatePlayerAvatar(runner, player);
 
         //ホストのみバトルスタートボタンを表示
         if (runner.IsServer && player == runner.LocalPlayer)
@@ -176,7 +181,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
         if (runner.IsServer && player == runner.LocalPlayer)
         {
-            //CreateDummyAvatars(dummyAvatarCount);
+            CreateDummyAvatars(dummyAvatarCount);
 
 
         }
@@ -193,6 +198,41 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     }
 
 
+    public void OnSceneLoadDone(NetworkRunner runner) 
+    {
+        if (runner.SessionInfo != null && runner.SessionInfo.Properties != null)
+        {
+            if (runner.SessionInfo.Properties.TryGetValue("GameRule", out var gameRuleProp))
+            {
+                int gameRuleValue = (int)gameRuleProp;
+                string sessionName = runner.SessionInfo.Name;
+                Debug.Log($"GameRule from SessionProperties: {gameRuleValue}");
+                Debug.Log($"RoomName from SessionProperties: {sessionName}");
+
+                if (sessionNameText != null)
+                {
+                    sessionNameText.SetText($"RoomID: {sessionName}");
+                }
+            }
+            else
+            {
+                Debug.Log("GameRule not found in SessionProperties.");
+            }
+        }
+
+        //以降の処理はホストのみ実行
+        if (!runner.IsServer) return;
+
+        foreach (var player in runner.ActivePlayers)
+        {
+            CreatePlayerAvatar(runner,player);
+        }
+
+        Debug.Log("ホストが参加 → ボタン表示指示");
+        lobbyUI.ShowStartButton(runner);
+
+    }
+
     public void OnInput(NetworkRunner runner, NetworkInput input) { }
 
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
@@ -206,7 +246,6 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
     public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) { }
     public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ArraySegment<byte> data) { }
-    public void OnSceneLoadDone(NetworkRunner runner) { }
     public void OnSceneLoadStart(NetworkRunner runner) { }
 
 
