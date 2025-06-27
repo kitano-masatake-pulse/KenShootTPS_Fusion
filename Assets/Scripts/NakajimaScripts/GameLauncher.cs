@@ -48,9 +48,11 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     public static Action<NetworkRunner> OnNetworkRunnerGenerated;
 
 
+
     //デバッグ用
     [SerializeField] LobbyPingDisplay lobbyPingDisplay;
 
+    private bool _isFirstTime = true;
 
 
     void Awake()
@@ -93,12 +95,14 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         networkRunner = FindObjectOfType<NetworkRunner>();
         if (networkRunner != null)
         {
+            _isFirstTime = false;
             Debug.Log("GameLauncher: Found existing NetworkRunner in the scene.");
             OnNetworkRunnerGenerated?.Invoke(networkRunner);
-
+            
         }
         else if(networkRunner == null)
         {
+            _isFirstTime = true;
             //シーンにNetworkRunnerが存在しない場合は、Prefabから生成
             networkRunner = Instantiate(networkRunnerPrefab);
             OnNetworkRunnerGenerated?.Invoke(networkRunner);
@@ -175,12 +179,12 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
 
     //退出処理
-    public void LeaveRoom()
+    public async void LeaveRoom()
     {
         // すべてのコールバックを削除
         networkRunner.RemoveCallbacks(this);
         // Runnerを停止
-        networkRunner.Shutdown();
+        await networkRunner.Shutdown();
         // シーンをタイトルシーンに戻す
         SceneManager.LoadScene("TitleScene");
     }
@@ -191,6 +195,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
         Debug.Log($"GameLauncher:OnPlayerJoined.");
+        
 
         if (runner.SessionInfo != null && runner.SessionInfo.Properties != null)
         {
@@ -212,6 +217,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
             }
         }
 
+        if (!_isFirstTime) return; // 1回目のみ処理を実行
 
         CreatePlayerAvatar(runner, player);
 
@@ -244,6 +250,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
     public void OnSceneLoadDone(NetworkRunner runner) 
     {
+        if(_isFirstTime) return; // 2回目以降のみ処理を実行
         Debug.Log($"GameLauncher:OnSceneLoadDone called. {Time.time} {runner.Tick},{runner.SimulationTime} ");
         if (runner.SessionInfo != null && runner.SessionInfo.Properties != null)
         {
