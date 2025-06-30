@@ -16,7 +16,7 @@ public class GameManager : NetworkBehaviour,IAfterSpawned
     private bool _sceneLoaded = false;
     
     //生成時イベント
-    public static event Action OnGameManagerSpawned;
+    public static event Action OnManagerInitialized;
     //試合終了イベント
     public event Action OnTimeUp;
 
@@ -85,7 +85,6 @@ public class GameManager : NetworkBehaviour,IAfterSpawned
     //===========================================
     private void Awake()
     {
-        Debug.Log("GameManager Awake called.");
         if (Instance == null)
         {
             Instance = this;
@@ -96,32 +95,16 @@ public class GameManager : NetworkBehaviour,IAfterSpawned
         }
     }
 
-    public override void Spawned()
-    {
-        Debug.Log("GameManager Spawned called.");
-       
-    }
-
-    public void SceneLoaded()
-    {
-        _sceneLoaded = true;
-        TryInitialize();
-    }
-
     public void AfterSpawned()
     {
-        _afterSpawned = true;
-        TryInitialize();
+        if (!Runner.IsServer)
+        {
+            InitializeGameManager(); // クライアント側で初期化を行う
+        }
+
     }
 
-    private void TryInitialize()
-    {
-        if (_afterSpawned && _sceneLoaded)
-        {
-            InitializeGameManager();
-        }
-    }
-    private void InitializeGameManager()
+    public void InitializeGameManager()
     {
         if (Runner == null)
         {
@@ -175,7 +158,7 @@ public class GameManager : NetworkBehaviour,IAfterSpawned
             startSimTime = Runner.SimulationTime;
             TimerStart();
         }
-        OnGameManagerSpawned?.Invoke();
+        OnManagerInitialized?.Invoke();
     }
 
     //===========================================

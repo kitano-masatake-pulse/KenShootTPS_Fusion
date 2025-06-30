@@ -343,6 +343,12 @@ MonoBehaviour:
     RawGuidValue: a3718fe59095f894493f872e2da81e0c
   dummyAvatarPrefab:
     RawGuidValue: 21efbc1a8c65855478e1cb3748d2fe84
+  gameManagerPrefab:
+    RawGuidValue: 6e3ac7a9c6975374fbfe4b53732b488b
+  hpObserverPrefab:
+    RawGuidValue: e4e261b42213c5a46a2541e82aa71434
+  battleEndPrefab:
+    RawGuidValue: 16ff2504d6661514faa04c89a6db8024
   dummyAvatarCount: 1
   TPSCamera: {fileID: 4034807735841001655}
 --- !u!1 &5539363467412110152

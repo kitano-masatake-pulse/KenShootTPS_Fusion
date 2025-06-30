@@ -1,23 +1,57 @@
 using System.Collections;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
 
 public class BattleEndProcessor : NetworkBehaviour
 {
-    [SerializeField] private FadeUI fadeUI;
+    //シングルトン化
+    public static BattleEndProcessor Instance { get; private set; }
+    [SerializeField] private SceneChangeFade fadeUI;
     [Header("次に遷移するシーン(デフォルトBattleScene)")]
     public SceneType nextScene = SceneType.Result;
-    public event Action OnGameEnd;
+    public event Action OnBattleEnd;
 
+
+    private void Awake()
+    {
+        //シングルトンのインスタンスを設定
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this.gameObject);
+            return;
+        }
+        Instance = this;
+    }   
     private void OnEnable()
+    {
+        GameManager.OnManagerInitialized -= SubscribeEvent;
+        GameManager.OnManagerInitialized += SubscribeEvent;
+    }
+
+    public override void Spawned()
+    {
+        fadeUI = FindObjectOfType<SceneChangeFade>();
+        if (fadeUI == null)
+        {
+            Debug.LogError("FadeUI component not found in the scene. Please ensure it is present.");
+            return;
+        }
+        
+    }
+
+    private void SubscribeEvent()
     {
         GameManager.Instance.OnTimeUp -= HandleBattleEnd;
         GameManager.Instance.OnTimeUp += HandleBattleEnd;
+
     }
+
+
     private void OnDisable()
     {
+        GameManager.OnManagerInitialized -= SubscribeEvent;
+        if (GameManager.Instance == null) return;
         GameManager.Instance.OnTimeUp -= HandleBattleEnd;
     }
 
@@ -41,26 +75,32 @@ public class BattleEndProcessor : NetworkBehaviour
     private void RPC_EndBattle()
     {
         //試合終了イベントを発火
-        OnGameEnd?.Invoke();
+        OnBattleEnd?.Invoke();
         //試合終了時のプレイヤー処理
         //全プレイヤー(自分のプレイヤー)の行動を停止
         NetworkObject myPlayer = GameManager.Instance.GetMyPlayer();
         PlayerAvatar playerAvatar = myPlayer.GetComponent<PlayerAvatar>();
         playerAvatar.IsDuringWeaponAction = true;
         playerAvatar.IsImmobilized = true;
-        StartCoroutine(FadeToBlack(3f));
+        StartCoroutine(FadeSceneChange(3f));
     }
 
     //コルーチン
-    private IEnumerator FadeToBlack(float duration)
+    private IEnumerator FadeSceneChange(float duration)
     {
         yield return fadeUI.FadeAlpha(0f, 1f, duration);
+
+        //暗転中の処理
+        yield return Resources.UnloadUnusedAssets();        
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+
         //リザルト画面へ遷移
         if (Runner.IsServer)
         {
             string sceneName = nextScene.ToSceneName();
             //シーン遷移
-            Runner.SetActiveScene(sceneName);
+            yield return Runner.SetActiveScene(sceneName);
         }
         
     }

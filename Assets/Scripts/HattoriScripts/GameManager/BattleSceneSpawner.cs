@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static Unity.Collections.Unicode;
 
 
 public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
@@ -12,6 +13,14 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
     private NetworkPrefabRef playerAvatarPrefab;
     [SerializeField]
     private NetworkPrefabRef dummyAvatarPrefab;
+    [SerializeField]
+    private NetworkPrefabRef gameManagerPrefab;
+    [SerializeField]
+    private NetworkPrefabRef hpObserverPrefab; // HP監視用のプレハブ
+    [SerializeField]
+    private NetworkPrefabRef battleEndPrefab;
+
+
     private NetworkRunner runner;
     private HashSet<PlayerRef> spawnedPlayers = new();
 
@@ -39,6 +48,11 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
         //Debug.Log($"BattleSceneSpawner:OnSceneLoadDone");
         if (runner.IsServer)
         {
+            runner.Spawn(battleEndPrefab); 
+            runner.Spawn(hpObserverPrefab);
+            runner.Spawn(gameManagerPrefab);
+            
+
             //ホストが全員分のアバターを生成
             foreach (var player in runner.ActivePlayers)
             {
@@ -53,15 +67,14 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
                 Debug.Log($"[Spawn] プレイヤー {player} をスポーンしました");
             }
 
-            //CreateDummyAvatars(runner, dummyAvatarCount);
+            CreateDummyAvatars(runner, dummyAvatarCount);
+            GameManager.Instance.InitializeGameManager(); // GameManagerの初期化
         }
 
         //ランナーが存在するか確認
         Debug.Log($"Battle Scene：Runner exists: {runner != null}");
-        Debug.Log($"Battle Scene：SceneLoaded Pre called");
-        Debug.Log($"GameManager called {GameManager.Instance != null} ");
-        GameManager.Instance.SceneLoaded(); // GameManagerの初期化
-        Debug.Log($"Battle Scene：SceneLoaded Post called");
+        
+
     }
 
     public void CreateDummyAvatars(NetworkRunner runner, int DummyCount)
