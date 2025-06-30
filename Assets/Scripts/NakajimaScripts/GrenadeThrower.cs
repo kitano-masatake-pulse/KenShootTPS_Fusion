@@ -7,6 +7,8 @@ public class GrenadeThrower : MonoBehaviour
     public Transform throwPoint;
     public float throwForce = 15f;
     public TrajectoryDrawer trajectoryDrawer;
+    private Vector3 lastPosition;
+    
 
     private bool isAiming;
     void Update()
@@ -35,7 +37,12 @@ public class GrenadeThrower : MonoBehaviour
     void ThrowGrenade()
     {
         GameObject grenade = Instantiate(grenadePrefab, throwPoint.position, Quaternion.identity);
-        Rigidbody rb = grenade.GetComponent<Rigidbody>();
-        rb.velocity = throwPoint.forward * throwForce;
+
+        Vector3 throwDirection = throwPoint.forward;
+        Vector3 initialVelocity = throwDirection * throwForce;
+
+        // Rigidbody ÇÕégÇÌÇ∏ÅABouncyGrenade Ç…èâë¨ÇìnÇ∑
+        BouncyGrenade bouncy = grenade.GetComponent<BouncyGrenade>();
+        bouncy.Initialize(initialVelocity);
     }
 }
