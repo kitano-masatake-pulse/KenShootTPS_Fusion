@@ -2390,11 +2390,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1516604608215421652, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
       propertyPath: gameManagerPrefab.RawGuidValue.Array.data[0]
-      value: 8382210210974349934
+      value: 4935402262864281812
       objectReference: {fileID: 0}
     - target: {fileID: 1516604608215421652, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
       propertyPath: gameManagerPrefab.RawGuidValue.Array.data[1]
-      value: -8410424529795678469
+      value: -277026979621507064
       objectReference: {fileID: 0}
     - target: {fileID: 2130494428451515322, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
       propertyPath: battleEndProcessor
