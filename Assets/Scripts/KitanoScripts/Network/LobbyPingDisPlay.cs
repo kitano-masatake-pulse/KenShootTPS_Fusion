@@ -25,7 +25,7 @@ public class LobbyPingDisplay : NetworkBehaviour ,INetworkRunnerCallbacks
         GeneratePingOfAlreadyPlayers(Runner);
         bool existRunner = CheckMyRunner();
         Debug.Log($"LobbyPingDisplay.Spawned called.{Time.time} {Runner.Tick},{Runner.SimulationTime},Runner exist {existRunner}  ");
-
+        this.transform.SetParent(FindObjectOfType<MenberListGenerator>()?.transform, false);
     }
 
     void Awake()
@@ -134,7 +134,7 @@ public class LobbyPingDisplay : NetworkBehaviour ,INetworkRunnerCallbacks
 
 
 
-    private void AddCallbackMe(NetworkRunner runner)
+   public void AddCallbackMe(NetworkRunner runner)
         {
             //Debug.Log("LobbyPingDisplay.AddCallbackMe called.");
             if (runner != null)
@@ -199,7 +199,7 @@ public class LobbyPingDisplay : NetworkBehaviour ,INetworkRunnerCallbacks
         {
             if (_entries.TryGetValue(player, out var txt))
             {
-                Destroy(txt.rectTransform.gameObject);
+               Destroy(txt.rectTransform.gameObject);
                 _entries.Remove(player);
             }
         }

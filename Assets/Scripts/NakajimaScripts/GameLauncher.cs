@@ -4,6 +4,7 @@ using Fusion.Sockets;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -118,7 +119,8 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         //networkRunner = Instantiate(networkRunnerPrefab);
 
         networkRunner=FindObjectOfType<NetworkRunner>();
-
+        networkRunner.AddCallbacks(this); // コールバックを登録する
+        networkRunner.AddCallbacks(networkInputManager); // NetworkInputManagerもコールバックを登録する
         networkRunner.transform.parent = null; // NetworkRunnerをシーンのルートに移動する
 
         NetworkRunner.CloudConnectionLost -= HandleDisconnect;
@@ -139,11 +141,10 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
         Debug.Log($"GameLauncher.PreStartGame called. {Time.time} {networkRunner.Tick},{networkRunner.SimulationTime} ");
 
-        bool existRunner = lobbyPingDisplay.CheckMyRunner();
+       // bool existRunner = lobbyPingDisplay.CheckMyRunner();
 
-        Debug.Log($"called Runner exists  Pre : {existRunner}");
+        //Debug.Log($"called Runner exists  Pre : {existRunner}");
 
-        OnNetworkRunnerGenerated?.Invoke(networkRunner);
 
         startGameArgs=
             new StartGameArgs
@@ -158,13 +159,14 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         // StartGameArgsに渡した設定で、セッションに参加する
         var result = await networkRunner.StartGame(startGameArgs );
 
-        
+
+        OnNetworkRunnerGenerated?.Invoke(networkRunner);
 
         Debug.Log($"GameLauncher.PostStartGame called. {Time.time} {networkRunner.Tick},{networkRunner.SimulationTime} ");
 
-        bool existRunnerPost = lobbyPingDisplay.CheckMyRunner();
+        //bool existRunnerPost = lobbyPingDisplay.CheckMyRunner();
 
-        Debug.Log($"called Runner exists  Post : {existRunnerPost}");
+       // Debug.Log($"called Runner exists  Post : {existRunnerPost}");
 
 
         if (result.Ok)
@@ -263,6 +265,8 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
 
+
+        Debug.Log($"GameLauncher.OnPlayerJoined called. Player: {player}, PlayerCount{runner.ActivePlayers.Count()} Runner: {runner}");
         if (runner.SessionInfo != null && runner.SessionInfo.Properties != null)
         {
             if (runner.SessionInfo.Properties.TryGetValue("GameRule", out var gameRuleProp))
@@ -329,6 +333,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     }
 
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) {
+        Debug.Log($"GameLauncher.OnPlayerLeft called. Player: {player}, PlayerCount{runner.ActivePlayers.Count()} Runner: {runner}");
         if (!runner.IsServer) { return; }
         // 退出したプレイヤーのアバターを破棄する
         if (runner.TryGetPlayerObject(player, out var avatar))
@@ -349,9 +354,9 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     public void OnDisconnectedFromServer(NetworkRunner runner) 
     { 
             Debug.Log($"GameLauncher runner Disconnected . OnDisconnectedFromServer called. Runner: {runner}");
-        StartCoroutine(TryReconnectCorpoutine()); // 再接続を試みる
+        StartCoroutine(TryReconnectCoroutine()); // 再接続を試みる
     }
-    IEnumerator TryReconnectCorpoutine()
+    IEnumerator TryReconnectCoroutine()
     {
 
         float startTime = Time.time;

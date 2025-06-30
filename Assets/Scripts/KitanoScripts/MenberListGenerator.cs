@@ -8,7 +8,7 @@ public class MenberListGenerator : MonoBehaviour
 {
     // Start is called before the first frame update
 
-    [SerializeField] GameObject memberListPrefab; // プレハブの参照
+    [SerializeField] NetworkObject memberListPrefab; // プレハブの参照
 
     void Awake()
     {
@@ -35,17 +35,26 @@ public class MenberListGenerator : MonoBehaviour
             Debug.LogError("NetworkRunner is null. Cannot spawn member list.");
             return;
         }
-
-        _runner.Spawn(
-        memberListPrefab,
-        Vector3.zero,
-        Quaternion.identity,
-        PlayerRef.None,
-        // ← ここが OnBeforeSpawned デリゲート
-        (runner, spawnedObj) => {
-            spawnedObj.transform.SetParent(this.transform, false);
+        if (_runner.IsServer == false)
+        {
+            Debug.LogWarning("This method should only be called on the server.");
+            return;
         }
+
+        NetworkObject menberlist = _runner.Spawn(
+        memberListPrefab,
+        //Vector3.zero,
+        new Vector3(1, 1, 1), // 位置を指定
+        Quaternion.identity,
+        PlayerRef.None
+        // ← ここが OnBeforeSpawned デリゲート
+        //,(runner, spawnedObj) => {spawnedObj.transform.SetParent(this.transform, false); }
+
+        
+
     );
+
+        menberlist.gameObject.GetComponent<LobbyPingDisplay>().AddCallbackMe(_runner);
 
     }
     void Start()

@@ -1103,7 +1103,7 @@ public class PlayerAvatar : NetworkBehaviour
     public void RPC_RequestActionAnimation(ActionType actionType, float calledTime, RpcInfo info = default)
     {
         // RPC送信（即送信）
-        Debug.Log($" {info.Source} Requests Jump. {info.Tick} SimuTime: {calledTime}");
+        //Debug.Log($" {info.Source} Requests Jump. {info.Tick} SimuTime: {calledTime}");
         RPC_ApplyActionAnimation(info.Source,actionType, calledTime); //アクションアニメーションのリストに追加するだけ(接地判定も座標変化もしない)
 
 
@@ -1112,18 +1112,18 @@ public class PlayerAvatar : NetworkBehaviour
     [Rpc(RpcSources.StateAuthority, RpcTargets.All, HostMode = RpcHostMode.SourceIsHostPlayer, TickAligned = false)]
     public void RPC_ApplyActionAnimation(PlayerRef sourcePlayer, ActionType actionType, float calledTime, RpcInfo info = default)
     {
-        Debug.Log($"LocalPlayer {Runner.LocalPlayer}");
-        Debug.Log($"SourcePlayer {sourcePlayer}");
+        //Debug.Log($"LocalPlayer {Runner.LocalPlayer}");
+        //Debug.Log($"SourcePlayer {sourcePlayer}");
         if (Runner.LocalPlayer != sourcePlayer)
         {
-            Debug.Log($" Apply Jump of  {sourcePlayer}. Tick:{info.Tick} SimuTime: {Runner.SimulationTime}");
+            //Debug.Log($" Apply Jump of  {sourcePlayer}. Tick:{info.Tick} SimuTime: {Runner.SimulationTime}");
 
             SetActionAnimationPlayList(actionType, calledTime);  // アクションアニメーションのリストにジャンプを追加
 
         }
         else
         {
-            Debug.Log($"Don't Apply Jump because I'm source  {sourcePlayer}.  {info.Tick} SimuTime: {Runner.SimulationTime}");
+           // Debug.Log($"Don't Apply Jump because I'm source  {sourcePlayer}.  {info.Tick} SimuTime: {Runner.SimulationTime}");
         }
 
     }
@@ -1137,7 +1137,7 @@ public class PlayerAvatar : NetworkBehaviour
             actionCalledTimeOnSimulationTime = calledtime
         });
 
-        Debug.Log($"Play List Added: {actiontype} at {calledtime}");
+       // Debug.Log($"Play List Added: {actiontype} at {calledtime}");
 
     }
 
