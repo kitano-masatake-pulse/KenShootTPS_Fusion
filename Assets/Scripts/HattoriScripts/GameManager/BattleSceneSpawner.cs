@@ -53,13 +53,15 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
                 Debug.Log($"[Spawn] プレイヤー {player} をスポーンしました");
             }
 
-            CreateDummyAvatars(runner, dummyAvatarCount);
+            //CreateDummyAvatars(runner, dummyAvatarCount);
         }
 
         //ランナーが存在するか確認
         Debug.Log($"Battle Scene：Runner exists: {runner != null}");
+        Debug.Log($"Battle Scene：SceneLoaded Pre called");
+        Debug.Log($"GameManager called {GameManager.Instance != null} ");
         GameManager.Instance.SceneLoaded(); // GameManagerの初期化
-
+        Debug.Log($"Battle Scene：SceneLoaded Post called");
     }
 
     public void CreateDummyAvatars(NetworkRunner runner, int DummyCount)

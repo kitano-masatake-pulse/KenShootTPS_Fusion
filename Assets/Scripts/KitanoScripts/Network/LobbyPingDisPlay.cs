@@ -25,6 +25,9 @@ public class LobbyPingDisplay : NetworkBehaviour ,INetworkRunnerCallbacks
         GeneratePingOfAlreadyPlayers(Runner);
         bool existRunner = CheckMyRunner();
         Debug.Log($"LobbyPingDisplay.Spawned called.{Time.time} {Runner.Tick},{Runner.SimulationTime},Runner exist {existRunner}  ");
+        this.transform.SetParent(FindObjectOfType<MenberListGenerator>()?.transform, false);
+
+        Runner?.AddCallbacks(this);
 
     }
 
@@ -38,11 +41,6 @@ public class LobbyPingDisplay : NetworkBehaviour ,INetworkRunnerCallbacks
 
     void OnEnable()
     {
-        //Debug.Log("LobbyPingDisplay.OnEnable called.");
-        GameLauncher.OnNetworkRunnerGenerated -= AddCallbackMe;
-        GameLauncher.OnNetworkRunnerGenerated += AddCallbackMe;
-        //GameLauncher.Instance.OnNetworkRunnerGenerated -= AddCallbackMe;
-        //GameLauncher.Instance.OnNetworkRunnerGenerated += AddCallbackMe;
 
         bool existRunner = CheckMyRunner();
         Debug.Log($"LobbyPingDisplay.OnEnable called.{Time.time},Runner exist {existRunner}  ");
@@ -53,16 +51,12 @@ public class LobbyPingDisplay : NetworkBehaviour ,INetworkRunnerCallbacks
     {
         bool existRunner = CheckMyRunner();
         Debug.Log($"LobbyPingDisplay.OnDisable called.{Time.time} ,Runner exist {existRunner}");
+        Runner?.RemoveCallbacks(this);
     }
 
     void Start()
-            {
-        //Debug.Log("LobbyPingDisplay.Start called.");
-        //GameLauncher.Instance.OnNetworkRunnerGenerated -= AddCallbackMe;
-        //GameLauncher.Instance.OnNetworkRunnerGenerated += AddCallbackMe;
-        //Runner = FindObjectOfType<NetworkRunner>();
-        //if (Runner != null) { Runner.AddCallbacks(this); }
-        Debug.Log($"LobbyPingDisplay.Start called.{Time.time} ");
+    {
+
     }
 
 
@@ -78,19 +72,6 @@ public class LobbyPingDisplay : NetworkBehaviour ,INetworkRunnerCallbacks
 
     void Update()
     {
-       
-           // Runner = FindObjectOfType<NetworkRunner>();
-     //if (Runner != null && !isAddedCallback)
-     //   { 
-
-     //          Runner.AddCallbacks(this);
-     //           isAddedCallback = true;
-     //       }
-        
-            
-       
-
-
 
         elapsedTime += Time.deltaTime;
         if (elapsedTime >= pingDisplayInterval)
@@ -134,7 +115,7 @@ public class LobbyPingDisplay : NetworkBehaviour ,INetworkRunnerCallbacks
 
 
 
-    private void AddCallbackMe(NetworkRunner runner)
+    public void AddCallbackMe(NetworkRunner runner)
         {
             //Debug.Log("LobbyPingDisplay.AddCallbackMe called.");
             if (runner != null)
@@ -207,7 +188,14 @@ public class LobbyPingDisplay : NetworkBehaviour ,INetworkRunnerCallbacks
         // 他のコールバックは空実装で OK
         public void OnInput(NetworkRunner runner, NetworkInput input) { }
         public void OnShutdown(NetworkRunner runner, ShutdownReason reason) { }
-        public void OnConnectedToServer(NetworkRunner runner) { }
+        public void OnConnectedToServer(NetworkRunner runner) 
+    
+    {  
+    
+        Debug.Log($"LobbyPingDisplay.OnConnectedToServer called.{Time.time} ");
+ 
+
+    }
         public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason) { }
         public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token) { }
         public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message) { }
