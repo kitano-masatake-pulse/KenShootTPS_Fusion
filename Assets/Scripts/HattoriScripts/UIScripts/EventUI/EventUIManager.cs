@@ -12,9 +12,15 @@ public class EventUIManager : MonoBehaviour
     RespawnUI respawnUI;
     [SerializeField]
     CountDownUI countDownUI;
+    [SerializeField]
+    GameEndUI gameEndUI;
+    [SerializeField]
+    FadeUI fadeUI;
 
     [SerializeField]
     LocalRespawnHandler respawnHandler;
+    [SerializeField]
+    BattleEndProcessor battleEndProcessor;
 
 
     private UIInputData localInputData;
@@ -41,6 +47,11 @@ public class EventUIManager : MonoBehaviour
         countDownUI.SetRespawnHandler(respawnHandler);
         countDownUI.Initialize();
 
+        gameEndUI.SetEndProcessor(battleEndProcessor);
+        gameEndUI.Initialize();
+
+        fadeUI.Initialize();
+
     }
 
     private void CleanupAll()
@@ -48,6 +59,8 @@ public class EventUIManager : MonoBehaviour
         scoreboardUI.Cleanup();
         respawnUI.Cleanup();
         countDownUI.Cleanup();
+        gameEndUI.Cleanup();
+        fadeUI.Cleanup();
     }
 
     void Update()

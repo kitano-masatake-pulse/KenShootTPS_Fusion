@@ -1,8 +1,9 @@
+using Fusion;
+using Fusion.Sockets;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Fusion;
-using Fusion.Sockets;
+using UnityEngine.SceneManagement;
 
 
 public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
@@ -21,16 +22,21 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
     private GameObject TPSCamera;
 
 
-
     void Start()
     {
+        //Debug.Log($"BattleSceneSpawner: Start called");
         runner = FindObjectOfType<NetworkRunner>();
         runner.AddCallbacks(this); // コールバック登録
 
     }
+    private void OnDisable()
+    {
+        runner.RemoveCallbacks(this); // コールバック登録解除
+    }
+
     public void OnSceneLoadDone(NetworkRunner runner)
     {
-
+        //Debug.Log($"BattleSceneSpawner:OnSceneLoadDone");
         if (runner.IsServer)
         {
             //ホストが全員分のアバターを生成
@@ -78,7 +84,8 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
 
 
 
-    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player){ }
+    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player){ 
+    }
 
     // 他のINetworkRunnerCallbacksは空実装でOK
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) 

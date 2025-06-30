@@ -1079,6 +1079,7 @@ public class PlayerAvatar : NetworkBehaviour
     public void SetActionAnimationPlayListForAllClients(ActionType actionType)
     {
 
+
         if(isDummy)
         {
             //ダミーならアニメーションはしない
@@ -1086,8 +1087,6 @@ public class PlayerAvatar : NetworkBehaviour
             return; 
         
         }
-
-
 
         float calledTime = Runner.SimulationTime; //アクションが呼ばれた時間を取得
 

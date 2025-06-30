@@ -6,11 +6,23 @@ using System;
 
 public class HPObserver : NetworkBehaviour
 {
+    public static HPObserver Instance { get; private set; }
+
     private Dictionary<PlayerRef, float> playerHPDict = new Dictionary<PlayerRef, float>();
     private Dictionary<PlayerRef, float> playerHPDictRed = new Dictionary<PlayerRef, float>();
     private Dictionary<PlayerRef, float> playerHPDictBlue = new Dictionary<PlayerRef, float>();
     public IReadOnlyDictionary<PlayerRef, float> PlayerHPDict => playerHPDict;
     public event Action OnAnyHPChanged;
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this.gameObject);
+            return;
+        }
+        Instance = this;
+    }
 
     private void OnEnable()
     {
@@ -23,7 +35,6 @@ public class HPObserver : NetworkBehaviour
 
     public void Initialize()
     {
-
         SubscribeAllPlayers();
     }
 
@@ -46,11 +57,13 @@ public class HPObserver : NetworkBehaviour
             networkState.OnHPChanged += UpdateHPDict;
 
             playerHPDict[playerRef] = 1f;
-            if (GameManager.Instance.PlayerTeams[playerRef]==TeamType.Red)
+            if (GameManager.Instance.PlayerTeams[playerRef] == TeamType.Red)
             {
                 playerHPDictRed[playerRef] = 1f;
-            }else if (GameManager.Instance.PlayerTeams[playerRef] == TeamType.Blue)
-            {   playerHPDictBlue[playerRef] = 1f;
+            }
+            else if (GameManager.Instance.PlayerTeams[playerRef] == TeamType.Blue)
+            {
+                playerHPDictBlue[playerRef] = 1f;
             }
         }
         LogAllPlayerHP();
@@ -82,5 +95,4 @@ public class HPObserver : NetworkBehaviour
             Debug.Log($"Player {kvp.Key.PlayerId}: HP = {kvp.Value}");
         }
     }
-
 }

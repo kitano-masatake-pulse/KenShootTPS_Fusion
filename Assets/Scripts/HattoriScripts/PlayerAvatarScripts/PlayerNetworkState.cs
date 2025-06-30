@@ -25,7 +25,7 @@ public class PlayerNetworkState : NetworkBehaviour
     public static event Action<PlayerNetworkState> OnLocalPlayerSpawned;
     
     /// <summary>プレイヤー死亡時(Victim,Killer)</summary>
-    public event Action<PlayerRef, PlayerRef> OnPlayerDied;
+    //public event Action<PlayerRef, PlayerRef> OnPlayerDied;
 
     #endregion
 
@@ -91,8 +91,9 @@ public class PlayerNetworkState : NetworkBehaviour
         OnWeaponChanged_Network = null;
         OnTeamChanged = null;
         OnLocalPlayerSpawned = null;
-        OnPlayerDied = null;
-        playerAvatar.OnWeaponChanged -= RequestWeaponChange;
+        //OnPlayerDied = null;
+        if (playerAvatar != null)
+            playerAvatar.OnWeaponChanged -= RequestWeaponChange;
     }
 
     private void RequestWeaponChange(WeaponType newWeapon, int _, int __)
