@@ -110,11 +110,11 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
             _isFirstTime = false;
             Debug.Log("GameLauncher: Found existing NetworkRunner in the scene.");
             OnNetworkRunnerGenerated?.Invoke(networkRunner);
-            
+
         }
-        else if(networkRunner == null)
+        else if (networkRunner == null)
         {
-           _isFirstTime = true;
+            _isFirstTime = true;
             //シーンにNetworkRunnerが存在しない場合は、Prefabから生成
             networkRunner = Instantiate(networkRunnerPrefab);
             OnNetworkRunnerGenerated?.Invoke(networkRunner);
@@ -129,8 +129,8 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
             {
                 customProps["GameRule"] = (int)GameRule.DeathMatch;
             }
-            
-            startGameArgs=
+
+            startGameArgs =
             new StartGameArgs
             {
                 GameMode = GameMode.AutoHostOrClient,
@@ -140,10 +140,10 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
                 SceneManager = networkRunner.GetComponent<NetworkSceneManagerDefault>()
             };
 
-        // StartGameArgsに渡した設定で、セッションに参加する
-        var result = await networkRunner.StartGame(startGameArgs );  
-        
-        Debug.Log($"GameLauncher.PreStartGame called. {Time.time} {networkRunner.Tick},{networkRunner.SimulationTime} ");
+            // StartGameArgsに渡した設定で、セッションに参加する
+            var result = await networkRunner.StartGame(startGameArgs);
+
+            Debug.Log($"GameLauncher.PreStartGame called. {Time.time} {networkRunner.Tick},{networkRunner.SimulationTime} ");
 
 
             if (result.Ok)
@@ -155,10 +155,11 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
                 Debug.Log("失敗！");
             }
 
-        OnStartedGame?.Invoke(networkRunner);
-            
-            
-       }    
+            OnStartedGame?.Invoke(networkRunner);
+
+
+        }
+    }
 
     public void CreateDummyAvatars(int DummyCount)
     {
@@ -487,7 +488,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
     }
 
-    public void OnInput(NetworkRunner runner, NetworkInput input) { }
+
     
     public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message) { }
     public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList) { }
