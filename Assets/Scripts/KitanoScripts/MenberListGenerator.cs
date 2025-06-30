@@ -17,11 +17,23 @@ public class MenberListGenerator : MonoBehaviour
         {
             Debug.LogError("Member List Prefab is not assigned in the inspector.");
         }
-
-        // NetworkRunnerの生成を待つために、OnNetworkRunnerGeneratedイベントを登録
-        GameLauncher.OnNetworkRunnerGenerated -= GenerateMenberList;
-        GameLauncher.OnNetworkRunnerGenerated += GenerateMenberList;
     }
+
+    private void OnEnable()
+    {
+        // NetworkRunnerの生成を待つために、OnNetworkRunnerGeneratedイベントを登録
+        GameLauncher.OnStartedGame -= GenerateMenberList;
+        GameLauncher.OnStartedGame += GenerateMenberList;
+    }
+
+    private void OnDisable()
+    {
+        // イベントの登録を解除
+        GameLauncher.OnStartedGame -= GenerateMenberList;
+    }
+
+
+
     void GenerateMenberList(NetworkRunner _runner )
     { 
 

@@ -49,6 +49,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     public  SceneType nextScene= SceneType.Battle;
 
     public static Action<NetworkRunner> OnNetworkRunnerGenerated;
+    public static Action<NetworkRunner> OnStartedGame;
 
 
     private StartGameArgs startGameArgs;
@@ -146,6 +147,8 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
         // StartGameArgsに渡した設定で、セッションに参加する
         var result = await networkRunner.StartGame(startGameArgs );  
+
+        OnStartedGame?.Invoke(networkRunner);
 
         if (result.Ok)
         {
