@@ -110,6 +110,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
             _isFirstTime = false;
             Debug.Log("GameLauncher: Found existing NetworkRunner in the scene.");
             OnNetworkRunnerGenerated?.Invoke(networkRunner);
+            
 
         }
         else if (networkRunner == null)
@@ -487,6 +488,8 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
         Debug.Log("ホストが参加 → ボタン表示指示");
         lobbyUI.ShowStartButton(runner);
+
+        OnStartedGame?.Invoke(networkRunner); // ゲーム開始のイベントを発火(NetworkObjectのSpawnなど)
 
     }
 
