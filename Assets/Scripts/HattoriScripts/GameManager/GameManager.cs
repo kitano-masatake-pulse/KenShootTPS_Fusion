@@ -83,6 +83,7 @@ public class GameManager : NetworkBehaviour,IAfterSpawned
     //===========================================
     private void Awake()
     {
+        Debug.Log("GameManager Awake called.");
         if (Instance == null)
         {
             Instance = this;
@@ -92,6 +93,13 @@ public class GameManager : NetworkBehaviour,IAfterSpawned
             Destroy(gameObject);
         }
     }
+
+    public override void Spawned()
+    {
+        Debug.Log("GameManager Spawned called.");
+       
+    }
+
     public void SceneLoaded()
     {
         _sceneLoaded = true;

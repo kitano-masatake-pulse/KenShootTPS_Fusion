@@ -55,14 +55,11 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
 
     [SerializeField] private float reconnectTimeout = 30f;  // タイムアウト時間（秒）
+    string localUserId = ""; // ローカルユーザーIDを保存する変数
 
     //デバッグ用
     [SerializeField] LobbyPingDisplay lobbyPingDisplay;
-
-
-
-
-
+    private Dictionary<string, SessionProperty> customProps;
 
     void Awake()
     {
@@ -73,29 +70,31 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         }
         Instance = this;
 
-        OnNetworkRunnerGenerated -= AddCallbackMe;
-        OnNetworkRunnerGenerated += AddCallbackMe;
 
 
     }
     //タイトルシーンでデスマッチなのかチームデスマッチかを選択する
     //その情報を持って、セッションに参加する
 
+   
+
+
+    void OnEnable()
+    {
+
+        OnNetworkRunnerGenerated -= AddCallbackMe;
+        OnNetworkRunnerGenerated += AddCallbackMe;
+
+    }
+
     void AddCallbackMe(NetworkRunner runner)
-        {
+    {
         // NetworkRunnerのコールバック対象に、このスクリプト（GameLauncher）を登録する
         if (runner != null)
         {
             runner.AddCallbacks(this);
             NetworkRunner.CloudConnectionLost += (NetworkRunner runner, ShutdownReason reason, bool reconnecting) => { };
         }
-    }
-
-
-    void OnEnable()
-    {
-        
-
     }
 
     private void OnDestroy()
@@ -106,26 +105,25 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
 
 
+
+
     private async void Start()
     {
 
-
-
-
         // NetworkRunnerを生成する
+        networkRunner=Instantiate(networkRunnerPrefab, Vector3.zero, Quaternion.identity);
 
-
-        //networkRunner = Instantiate(networkRunnerPrefab);
-
-        networkRunner=FindObjectOfType<NetworkRunner>();
 
         networkRunner.transform.parent = null; // NetworkRunnerをシーンのルートに移動する
+
+        OnNetworkRunnerGenerated?.Invoke(networkRunner);
+        //networkRunner.AddCallbacks(this); // コールバックを登録する
 
         NetworkRunner.CloudConnectionLost -= HandleDisconnect;
         NetworkRunner.CloudConnectionLost+= HandleDisconnect;
 
 
-        var customProps = new Dictionary<string, SessionProperty>();
+       customProps = new Dictionary<string, SessionProperty>();
 
         if (GameRuleSettings.Instance != null)
         {
@@ -135,15 +133,6 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         {
             customProps["GameRule"] = (int)GameRule.DeathMatch;
         }
-
-
-        Debug.Log($"GameLauncher.PreStartGame called. {Time.time} {networkRunner.Tick},{networkRunner.SimulationTime} ");
-
-        bool existRunner = lobbyPingDisplay.CheckMyRunner();
-
-        Debug.Log($"called Runner exists  Pre : {existRunner}");
-
-        OnNetworkRunnerGenerated?.Invoke(networkRunner);
 
         startGameArgs=
             new StartGameArgs
@@ -156,16 +145,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
             };
 
         // StartGameArgsに渡した設定で、セッションに参加する
-        var result = await networkRunner.StartGame(startGameArgs );
-
-        
-
-        Debug.Log($"GameLauncher.PostStartGame called. {Time.time} {networkRunner.Tick},{networkRunner.SimulationTime} ");
-
-        bool existRunnerPost = lobbyPingDisplay.CheckMyRunner();
-
-        Debug.Log($"called Runner exists  Post : {existRunnerPost}");
-
+        var result = await networkRunner.StartGame(startGameArgs );  
 
         if (result.Ok)
         {
@@ -176,15 +156,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
             Debug.Log("失敗！");
         }
 
-
-
-
     }
-
-
-    
-
-
 
     public void CreateDummyAvatars(int DummyCount)
     {
@@ -259,10 +231,38 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
 
 
+
+
+
+
     // INetworkRunnerCallbacksインターフェースの空実装
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
 
+        Debug.Log($"OnPlayerJoined called. Join {player}!!");
+
+        ShowSessionInfo(runner);
+
+        // ホスト（サーバー兼クライアント）かどうかはIsServerで判定できる
+        if (runner.IsServer) 
+        {
+            //入室したクライアントのアバターを生成
+            ClientAvatarSpawn(runner, player);
+
+            if (player == runner.LocalPlayer)
+            {
+
+                //ホストのみバトルスタートボタンを表示
+                lobbyUI.ShowStartButton(runner);
+            }
+
+
+        }
+
+    }
+
+    void ShowSessionInfo(NetworkRunner runner)
+    {
         if (runner.SessionInfo != null && runner.SessionInfo.Properties != null)
         {
             if (runner.SessionInfo.Properties.TryGetValue("GameRule", out var gameRuleProp))
@@ -274,7 +274,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
                 if (sessionNameText != null)
                 {
-                    sessionNameText.SetText( $"RoomID: {sessionName}");
+                    sessionNameText.SetText($"RoomID: {sessionName}");
                 }
             }
             else
@@ -282,49 +282,22 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
                 Debug.Log("GameRule not found in SessionProperties.");
             }
         }
+    }
 
-
-
-
-        // ホスト（サーバー兼クライアント）かどうかはIsServerで判定できる
-        if (!runner.IsServer) { return; }
-
+    void ClientAvatarSpawn(NetworkRunner runner, PlayerRef player)
+    {
 
         // ランダムな生成位置（半径5の円の内部）を取得する
         var randomValue = UnityEngine.Random.insideUnitCircle * 5f;
 
         var spawnPosition = new Vector3(randomValue.x, 5f, randomValue.y);
-     
+
         // 参加したプレイヤーのアバターを生成する
         var avatar = runner.Spawn(playerAvatarPrefab, spawnPosition, Quaternion.identity, player);
-   
+
         // プレイヤー（PlayerRef）とアバター（NetworkObject）を関連付ける
         runner.SetPlayerObject(player, avatar);
 
-
-
-
-
-
-        //ホストのみバトルスタートボタンを表示
-        if (runner.IsServer && player == runner.LocalPlayer)
-        {
-            Debug.Log("ホストが参加 → ボタン表示指示");
-            lobbyUI.ShowStartButton(runner);
-        }
-        else
-        {
-            Debug.Log($"runner.IsServer{runner.IsServer} runner.LocalPlayer {player == runner.LocalPlayer}");
-            
-        }
-
-
-        if (runner.IsServer && player == runner.LocalPlayer)
-        {
-            //CreateDummyAvatars(dummyAvatarCount);
-
-
-        }
 
     }
 
@@ -337,18 +310,27 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         }
     }
 
+    public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
+
 
     public void OnInput(NetworkRunner runner, NetworkInput input) { }
 
-    public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
+    
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) 
     {
-        Debug.Log($"GameLauncher runner Disconnected . OnShutdown called. Reason: {shutdownReason}");
+        Debug.Log($"GameLauncher runner Shutdown. OnShutdown called. Reason: {shutdownReason}");
     }
-    public void OnConnectedToServer(NetworkRunner runner) { }
+    public void OnConnectedToServer(NetworkRunner runner) 
+    
+    { 
+
+        Debug.Log($"GameLauncher runner Connected . OnConnectedToServer called. Runner: {runner}");
+        //runner.Spawn(dummyAvatarPrefab, Vector3.zero, Quaternion.identity, PlayerRef.None);
+
+    }
     public void OnDisconnectedFromServer(NetworkRunner runner) 
     { 
-            Debug.Log($"GameLauncher runner Disconnected . OnDisconnectedFromServer called. Runner: {runner}");
+        Debug.Log($"GameLauncher runner Disconnected . OnDisconnectedFromServer called. Runner: {runner}");
         StartCoroutine(TryReconnectCorpoutine()); // 再接続を試みる
     }
     IEnumerator TryReconnectCorpoutine()
@@ -398,8 +380,8 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         // 1. いったんセッションを終了（Shutdown が完了するまで待つ）
         if (networkRunner != null)
         { 
-            //await networkRunner.Shutdown();
-            Destroy(networkRunner.gameObject); // Runnerを破棄
+            await networkRunner.Shutdown(destroyGameObject : false);
+            //Destroy(networkRunner.gameObject); // Runnerを破棄
 
 
         }
@@ -409,6 +391,19 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
         // 2. 必要ならコールバック再登録
         networkRunner.AddCallbacks(this);
+        networkRunner.AddCallbacks(networkInputManager);
+        OnNetworkRunnerGenerated?.Invoke(networkRunner);
+
+
+        startGameArgs =
+            new StartGameArgs
+            {
+                GameMode = GameMode.AutoHostOrClient,
+                SessionProperties = customProps,
+                PlayerCount = maxPlayerNum,
+                Scene = SceneManager.GetActiveScene().buildIndex,
+                SceneManager = networkRunner.GetComponent<NetworkSceneManagerDefault>()
+            };
 
         // 3. 前回と同じ Args で再起動
         var result = await networkRunner.StartGame(startGameArgs);
@@ -420,14 +415,34 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     }
 
 
-    public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token) { }
-    public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason) { }
+    public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token) {
+    
+        Debug.Log($"OnConnectRequest called. Request from ");
+        // ここで接続リクエストを処理することができます
+        // 例えば、特定の条件を満たすプレイヤーのみを許可するなど
+        // runner.Accept(request); // 接続を許可する場合
+        // runner.Deny(request); // 接続を拒否する場合
+    }
+    public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason) { 
+    
+        Debug.LogError($"OnConnectFailed called. Reason: {reason} Remote Address: {remoteAddress}");
+        // 接続失敗時の処理をここに記述できます
+        // 例えば、ユーザーにエラーメッセージを表示するなど
+
+    }
     public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message) { }
     public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList) { }
     public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
     public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) { }
     public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ArraySegment<byte> data) { }
-    public void OnSceneLoadDone(NetworkRunner runner) { }
+    public void OnSceneLoadDone(NetworkRunner runner) {
+    
+    
+        Debug.Log($"OnSceneLoadDone called. Runner: {runner}");
+        // シーンロード完了後の処理をここに記述できます
+        // 例えば、UIの更新やゲーム開始の準備など
+        
+    }
     public void OnSceneLoadStart(NetworkRunner runner) { }
 
 

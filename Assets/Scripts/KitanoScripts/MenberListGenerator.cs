@@ -8,7 +8,7 @@ public class MenberListGenerator : MonoBehaviour
 {
     // Start is called before the first frame update
 
-    [SerializeField] GameObject memberListPrefab; // プレハブの参照
+    [SerializeField] NetworkObject memberListPrefab; // プレハブの参照
 
     void Awake()
     {
@@ -25,6 +25,7 @@ public class MenberListGenerator : MonoBehaviour
     void GenerateMenberList(NetworkRunner _runner )
     { 
 
+        Debug.Log($"GenerateMenberList called. runner:{_runner}");
         if (memberListPrefab == null)
         {
             Debug.LogError("Member List Prefab is not assigned in the inspector.");
@@ -35,7 +36,14 @@ public class MenberListGenerator : MonoBehaviour
             Debug.LogError("NetworkRunner is null. Cannot spawn member list.");
             return;
         }
+        if (_runner != null)
+        { Debug.Log($"NetworkRunner is not null. Runner:{_runner}"); }
 
+        if (_runner.IsServer == false)
+        {
+            Debug.LogWarning("NetworkRunner is not a server. Cannot spawn member list.");
+            return;
+        }
         _runner.Spawn(
         memberListPrefab,
         Vector3.zero,
