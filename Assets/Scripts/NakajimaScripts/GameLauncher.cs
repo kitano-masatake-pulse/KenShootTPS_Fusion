@@ -53,7 +53,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     private StartGameArgs startGameArgs;
     [SerializeField] private float reconnectTimeout = 30f;  // タイムアウト時間（秒）
     string localUserId = ""; // ローカルユーザーIDを保存する変数
-    private bool _isFirstTime = true;
+    [SerializeField] private bool _isFirstTime = true;
 
     //デバッグ用
     [SerializeField] LobbyPingDisplay lobbyPingDisplay;
@@ -261,9 +261,11 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         if (runner.IsServer) 
         {
             //入室したクライアントのアバターを生成
-            if(_isFirstTime){ClientAvatarSpawn(runner, player);}
+            //if(_isFirstTime){ClientAvatarSpawn(runner, player);}
+           
+            ClientAvatarSpawn(runner, player);
 
-            if (player == runner.LocalPlayer)
+                if (player == runner.LocalPlayer)
             {
 
                 //ホストのみバトルスタートボタンを表示
