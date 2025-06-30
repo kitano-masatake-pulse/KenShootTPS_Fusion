@@ -10,11 +10,11 @@ public class ScoreDebugUI : MonoBehaviour
 
     private void OnEnable()
     {
-        GameManager.OnGameManagerSpawned += StartDebugUI; // シーンロード完了時に初期化
+        GameManager.OnManagerInitialized += StartDebugUI; // シーンロード完了時に初期化
     }
     private void OnDisable()
     {
-        GameManager.OnGameManagerSpawned -= StartDebugUI; // イベント登録解除
+        GameManager.OnManagerInitialized -= StartDebugUI; // イベント登録解除
     }
 
     private void StartDebugUI()

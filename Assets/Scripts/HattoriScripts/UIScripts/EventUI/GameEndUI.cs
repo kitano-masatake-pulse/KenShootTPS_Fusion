@@ -7,17 +7,15 @@ public class GameEndUI : MonoBehaviour,IUIPanel
 {
     [SerializeField] private CanvasGroup scoreboardGroup;
     [SerializeField] private TMP_Text endMessageText;
-    private BattleEndProcessor battleEndProcessor;
 
     public void Initialize()
     {
-
-        battleEndProcessor.OnGameEnd -= ShowEndMessage;
-        battleEndProcessor.OnGameEnd += ShowEndMessage;
+        BattleEndProcessor.Instance.OnBattleEnd -= ShowEndMessage;
+        BattleEndProcessor.Instance.OnBattleEnd += ShowEndMessage;
     }
     public void Cleanup()
     {
-        battleEndProcessor.OnGameEnd -= ShowEndMessage;
+        BattleEndProcessor.Instance.OnBattleEnd -= ShowEndMessage;
     }
 
     public void SetVisible(bool visible)
@@ -25,10 +23,6 @@ public class GameEndUI : MonoBehaviour,IUIPanel
         scoreboardGroup.alpha = 1;
     }
 
-    public void SetEndProcessor(BattleEndProcessor bep)
-    {
-        battleEndProcessor = bep;
-    }
 
     public void ShowEndMessage()
     {

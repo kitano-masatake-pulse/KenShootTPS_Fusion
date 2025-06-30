@@ -16,11 +16,8 @@ public class EventUIManager : MonoBehaviour
     GameEndUI gameEndUI;
     [SerializeField]
     FadeUI fadeUI;
-
     [SerializeField]
     LocalRespawnHandler respawnHandler;
-    [SerializeField]
-    BattleEndProcessor battleEndProcessor;
 
 
     private UIInputData localInputData;
@@ -28,11 +25,11 @@ public class EventUIManager : MonoBehaviour
 
     private void OnEnable()
     {
-        GameManager.OnGameManagerSpawned += InitializeUI;
+        GameManager.OnManagerInitialized += InitializeUI;
     }
     private void OnDisable()
     {
-        GameManager.OnGameManagerSpawned -= InitializeUI;
+        GameManager.OnManagerInitialized -= InitializeUI;
         CleanupAll();
     }
 
@@ -47,7 +44,6 @@ public class EventUIManager : MonoBehaviour
         countDownUI.SetRespawnHandler(respawnHandler);
         countDownUI.Initialize();
 
-        gameEndUI.SetEndProcessor(battleEndProcessor);
         gameEndUI.Initialize();
 
         fadeUI.Initialize();

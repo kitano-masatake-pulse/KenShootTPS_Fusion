@@ -4,7 +4,7 @@ using UnityEngine;
 using Fusion;
 using System;
 
-public class HPObserver : NetworkBehaviour
+public class HPObserver : NetworkBehaviour, IAfterSpawned
 {
     public static HPObserver Instance { get; private set; }
 
@@ -26,16 +26,17 @@ public class HPObserver : NetworkBehaviour
 
     private void OnEnable()
     {
-        GameManager.OnGameManagerSpawned += SubscribeAllPlayers;
+        GameManager.OnManagerInitialized -= SubscribeAllPlayers;
+        GameManager.OnManagerInitialized += SubscribeAllPlayers;
     }
     private void OnDisable()
     {
-        GameManager.OnGameManagerSpawned -= SubscribeAllPlayers;
+        GameManager.OnManagerInitialized -= SubscribeAllPlayers;
     }
 
-    public void Initialize()
+    public void AfterSpawned()
     {
-        SubscribeAllPlayers();
+        Debug.Log($"MyTest:AfterSpawned called.{Runner.Tick}");
     }
 
     public void SubscribeAllPlayers()

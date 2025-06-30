@@ -51,6 +51,7 @@ public class ResultDisplayController : NetworkBehaviour,IAfterSpawned
             }
             //役目を終えたらScoreTransferを削除
             Destroy(scoreTransfer.gameObject); 
+            scoreTransfer = null; // 参照をクリア
         }
 
 
