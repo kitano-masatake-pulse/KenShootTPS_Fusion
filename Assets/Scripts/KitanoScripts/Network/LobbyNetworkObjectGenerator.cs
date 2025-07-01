@@ -15,12 +15,18 @@ public class LobbyNetworkObjectGenerator : MonoBehaviour
     private void OnEnable()
     {
 
-        GameLauncher.OnNetworkRunnerGenerated += SpawnObjects;
+        GameLauncher.OnNetworkRunnerConnected += SpawnObjects;
     }
 
     void SpawnObjects(NetworkRunner runner )
     {
-        if (!runner.IsServer) { return; }
+        if (!runner.IsServer) 
+        { 
+            Debug.LogWarning("NetworkRunner is not a server. Cannot spawn objects."); 
+            return;
+        
+          
+        }
 
         foreach (var obj in spawnedNetworkObjects)
         {
