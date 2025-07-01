@@ -9,7 +9,7 @@ public class SceneChangeFade : MonoBehaviour
     [SerializeField] CanvasGroup canvasGroup;
     [SerializeField] private Image fadePanel;
     [SerializeField] private float fadeInDuration = 2f; // フェードのデフォルト時間
-    // Start is called before the first frame update
+
     private Coroutine currentFade;
 
 
@@ -26,14 +26,22 @@ public class SceneChangeFade : MonoBehaviour
         SceneManager.sceneLoaded -= SceneFadeIn; // シーンロード時のイベントを解除
     }
 
+   
     private void SceneFadeIn(Scene scene, LoadSceneMode mode)
     {
         //シーンロード後にフェードインを開始
         if (currentFade != null) StopCoroutine(currentFade);
         currentFade = StartCoroutine(FadeRoutine(1f, 0f, fadeInDuration)); // フェードインの時間を2秒に設定
     }
-    
 
+     //シーン遷移時に呼び出すメソッド
+    public IEnumerator SceneFadeOut(Scene scene)
+    {
+        //シーン遷移前にフェードアウトを開始
+        if (currentFade != null) StopCoroutine(currentFade);
+        currentFade = StartCoroutine(FadeRoutine(0f, 1f, fadeInDuration)); // フェードアウトの時間を2秒に設定
+        yield return currentFade; // フェードアウトが完了するまで待機
+    }
 
     public IEnumerator FadeAlpha(float from, float to, float duration)
     {
@@ -59,4 +67,6 @@ public class SceneChangeFade : MonoBehaviour
         fadePanel.color = panelColor;
         currentFade = null;
     }
+
+
 }
