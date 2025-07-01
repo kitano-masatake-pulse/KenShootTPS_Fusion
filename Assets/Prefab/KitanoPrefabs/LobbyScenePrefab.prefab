@@ -35,6 +35,7 @@ Transform:
   - {fileID: 7663152544308784040}
   - {fileID: 3297255523065405583}
   - {fileID: 7032502927850250433}
+  - {fileID: 8006299198598235002}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3541200610011326818
@@ -149,7 +150,54 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32814b520bb40e34787089847bafb213, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnedNetworkObjects: []
+  spawnedNetworkObjects:
+  - {fileID: 4715774240031911230, guid: 19f336bbc857fd245a6fb5067cf7b2f2, type: 3}
+  - {fileID: 3482040583240540441, guid: 10a4c904adda8094dab1a0efb7b48ed0, type: 3}
+--- !u!1 &8507043842453891624
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8006299198598235002}
+  - component: {fileID: 4152378728208197908}
+  m_Layer: 0
+  m_Name: ConnectionManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8006299198598235002
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8507043842453891624}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.49999976, y: 0.00000023841858, z: -1.999999}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5526528335563473999}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4152378728208197908
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8507043842453891624}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de992b4def0d24d4a9cf2c83d2c83d62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  localUserId: 
 --- !u!1001 &1016704884848437052
 PrefabInstance:
   m_ObjectHideFlags: 0

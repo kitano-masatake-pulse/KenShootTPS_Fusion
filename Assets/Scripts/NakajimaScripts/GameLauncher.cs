@@ -46,8 +46,8 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     [Header("次に遷移するシーン(デフォルトBattleScene)")]
     public  SceneType nextScene= SceneType.Battle;
 
-    public static Action<NetworkRunner> OnNetworkRunnerGenerated;
-    public static Action<NetworkRunner> OnStartedGame;
+    public static Action<NetworkRunner> OnNetworkRunnerGenerated;// Runnerが生成されたときのイベント、StartGame前
+    public static Action<NetworkRunner> OnNetworkRunnerConnected;// Runnerが接続されたときのイベント、StartGame後
 
 
     private StartGameArgs startGameArgs;
@@ -156,7 +156,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
                 Debug.Log("失敗！");
             }
 
-            OnStartedGame?.Invoke(networkRunner);
+            OnNetworkRunnerConnected?.Invoke(networkRunner);
 
 
         }
@@ -350,9 +350,9 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     public void OnDisconnectedFromServer(NetworkRunner runner) 
     { 
         Debug.Log($"GameLauncher runner Disconnected . OnDisconnectedFromServer called. Runner: {runner}");
-        StartCoroutine(TryReconnectCorpoutine()); // 再接続を試みる
+        StartCoroutine(TryReconnectCoroutine()); // 再接続を試みる
     }
-    IEnumerator TryReconnectCorpoutine()
+    IEnumerator TryReconnectCoroutine()
     {
 
         float startTime = Time.time;
@@ -489,7 +489,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         Debug.Log("ホストが参加 → ボタン表示指示");
         lobbyUI.ShowStartButton(runner);
 
-        OnStartedGame?.Invoke(networkRunner); // ゲーム開始のイベントを発火(NetworkObjectのSpawnなど)
+        OnNetworkRunnerConnected?.Invoke(networkRunner); // ゲーム開始のイベントを発火(NetworkObjectのSpawnなど)
 
     }
 
