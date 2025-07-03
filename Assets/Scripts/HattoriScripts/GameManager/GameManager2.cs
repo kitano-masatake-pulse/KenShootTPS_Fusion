@@ -25,6 +25,7 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
     //ユーザーデータ関係
     //============================================
     public UserData[] UserDataArray { get; private set; } = new UserData[50];
+    bool isUserDataArrayDirty = false; // 最新のUserDataArrayが同期がまだされていないかどうかのフラグ
 
 
     //============================================
@@ -115,6 +116,9 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
 
         //ここにUserDataの初期化処理を追加する
 
+
+
+
         if (Object.HasStateAuthority)
         {
             RemainingSeconds = initialTimeSec;
@@ -123,6 +127,147 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
         }
         OnManagerInitialized?.Invoke();
     }
+
+
+    // ① ホスト→全クライアント 要求
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_RequestId()
+    {
+        // クライアントは自分の ID を送信する
+        if (Runner.IsServer && ConnectionManager.Instance != null)
+        {
+            ConnectionManager.Instance.RPC_SubmitIdToHost();
+        }
+        else if (Runner.IsClient)
+        {
+            Debug.LogError("GameManager2: RPC_RequestId called but not valid");
+        }
+    }
+
+    public void RegisterUserID(String userID, PlayerRef player)
+    {
+        if (!Runner.IsServer) { return; }
+        //UserDataArrayの中からplayerに一致する要素を探す
+        int index = Array.FindIndex(UserDataArray, u => u.userID == userID);
+        if (index >= 0)
+        {
+
+
+
+
+            //見つかった場合は更新
+            UserDataArray[index].playerRef = player;
+            UserDataArray[index].userConnectionState = ConnectionState.Connected; // 接続状態を更新
+
+
+
+
+        }
+        else
+        {
+
+            var newUserData = new UserData
+            {
+                userID = userID,
+                playerRef = player,
+                userScore = new PlayerScore(), // スコアは初期化
+                userTeam = TeamType.None, // チームは初期化
+                userConnectionState = ConnectionState.Connected, // 接続状態は接続中に設定
+                userName = $"Player {userID}" // ユーザー名はデフォルト設定
+            };
+
+            AddUserData(newUserData);
+        }
+
+        isUserDataArrayDirty = true; // UserDataArrayの同期が必要であることを示すフラグを立てる
+
+    }
+
+
+
+    void AddUserData(UserData userData)
+    {
+        //見つからなかった場合は追加
+        for (int i = 0; i < UserDataArray.Length; i++)
+        {
+            if (UserDataArray[i].Equals(default(UserData)))
+            {
+                UserDataArray[i] = userData;
+                break;
+            }
+        }
+
+
+
+    }
+
+    public void UpdateConnectionState(PlayerRef player, ConnectionState state)
+    { 
+        if (!Runner.IsServer) { return; }
+        //UserDataArrayの中からplayerに一致する要素を探す
+        int index = Array.FindIndex(UserDataArray, u => u.playerRef == player);
+        if (index >= 0)
+        {
+            //見つかった場合は更新
+            UserDataArray[index].userConnectionState = state; // 接続状態を更新
+            isUserDataArrayDirty = true; // UserDataArrayの同期が必要であることを示すフラグを立てる
+        }
+        else
+        {
+            Debug.LogWarning($"Player {player} not found in UserDataArray.");
+        }
+
+    }
+
+
+
+    //ユーザーデータのチェックを行うメソッド
+    private bool CheckUserDataIsAbleToShare(UserData[] userDataArray)
+    {
+        if (!Runner.IsServer) { return  false; }
+        
+        int validCount = userDataArray.Count(d => d.userID != "");
+        if (validCount < Runner.ActivePlayers.Count() )
+        {
+            
+            return false;
+        }
+        else 
+        {
+            foreach (PlayerRef activePlayer in Runner.ActivePlayers)
+            {
+                // 各プレイヤーのUserDataが存在するかチェック
+                //PlayerRefでチェックしてるが、ほんとうに正確にやるならUserIDを照合したほうがいい？
+                if (!userDataArray.Any(d => d.playerRef == activePlayer && d.userID != ""))
+                {
+                    Debug.LogWarning($"UserData for player {activePlayer} is missing or invalid.");
+                    return false;
+                }
+                
+
+            }
+
+            return true; // 全てのプレイヤーのUserDataが存在する場合はtrueを返す
+        }
+
+
+    }
+
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_ShareUserData(UserData[] updatedUserDataArray)
+    {
+        UserDataArray= updatedUserDataArray;
+        _scoreDirty = true; // スコアが更新されたことを示すフラグを立てる
+
+
+
+    }
+
+
+
+
+
 
     //===========================================
     //ホスト環境でのみ呼ばれるメソッド群
@@ -171,6 +316,19 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
     //時間更新
     public override void FixedUpdateNetwork()
     {
+        if ( isUserDataArrayDirty && Runner.IsServer && CheckUserDataIsAbleToShare(UserDataArray))
+        {
+
+            RPC_ShareUserData(UserDataArray);
+            isUserDataArrayDirty = false; // 同期が完了したのでフラグをリセット
+        }
+
+
+
+
+
+
+
         if (NextTickTimer.Expired(Runner))
         {
             NextTickTimer = TickTimer.None;   // リセット

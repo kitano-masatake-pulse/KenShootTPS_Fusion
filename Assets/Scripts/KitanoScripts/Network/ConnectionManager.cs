@@ -1,9 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using Fusion;
 using Fusion.Sockets;
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using static Unity.Collections.Unicode;
 
 
 public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
@@ -70,7 +71,7 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
     {
         Debug.Log("Scene load done.");
 
-        if (GameManager.Instance != null)
+        if (GameManager2.Instance != null)
         {
 
            // InquireGameManager(GameManager.Instance);
@@ -79,20 +80,27 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
         }
     }
 
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
 
-    
+    public void RPC_SubmitIdToHost( RpcInfo info = default)
+    {
+        PlayerRef sender = info.Source;            // どの PlayerRef から来たか
 
-    ////GameManagerに問い合わせる
-    //void InquireGameManager(GameManager  gameManager)
-    //{
-      
-    //        Debug.Log("GameManager found: " + gameManager.name);
-    //    // ここでGameManagerにアクセスして必要な処理を行う
+        if (GameManager2.Instance != null)
+        {
+            GameManager2.Instance.RegisterUserID( localUserId, sender); // GameManager2のメソッドを呼び出してユーザーIDを登録
 
-    //    // var score = gameManager.RegisterUserId(localUserId); // ユーザーIDを登録し、スコアをもらう
-    //    // HUDMAnager.Instance.UpdateScore(score); // HUDManagerにスコアを更新する
+        }
+        else 
+        { 
+            Debug.LogError("GameManager2 instance is not available.");
+        }
+        
+    }
 
-    //}
+
+
+   
 
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
@@ -100,8 +108,18 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
 
 
         if (player==runner.LocalPlayer && localUserId == "") { localUserId = runner.UserId; }
-       
-        
+
+        if(GameManager2.Instance != null)
+        {
+            // GameManager2のメソッドを呼び出してユーザーIDを登録
+            GameManager2.Instance.RegisterUserID(localUserId, player);
+        }
+        else
+        {
+            Debug.LogWarning("GameManager2 instance is not available.");
+        }
+
+
 
     }
     
@@ -116,7 +134,7 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
 
     public void OnInput(NetworkRunner runner, NetworkInput input)
     {
-        Debug.Log("Input received.");
+        //Debug.Log("Input received.");
     }
 
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input)

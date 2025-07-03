@@ -67,8 +67,26 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
                 Debug.Log($"[Spawn] プレイヤー {player} をスポーンしました");
             }
 
-            CreateDummyAvatars(runner, dummyAvatarCount);
-            GameManager.Instance.InitializeGameManager(); // GameManagerの初期化
+            //CreateDummyAvatars(runner, dummyAvatarCount);
+
+
+            if (GameManager2.Instance != null)
+            {
+                // GameManager2の初期化
+                GameManager2.Instance.InitializeGameManager();
+            }
+            else if (GameManager.Instance != null)
+            {
+                // GameManagerの初期化
+                GameManager.Instance.InitializeGameManager();
+            }
+            else
+            {
+                Debug.LogError("GameManager instance is not available.");
+            }
+
+
+            
         }
 
         //ランナーが存在するか確認
@@ -107,8 +125,21 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
         if (runner.IsServer && runner.TryGetPlayerObject(player, out var avatar))
         {
             runner.Despawn(avatar);
+
+            if (GameManager2.Instance != null)
+            {
+                GameManager2.Instance.UpdateConnectionState(player, ConnectionState.Disconnected);
+
+
+
+            }
         }
+
+
     }
+
+
+
     public void OnInput(NetworkRunner runner, NetworkInput input) { }
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
