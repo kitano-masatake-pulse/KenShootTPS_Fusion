@@ -3,33 +3,42 @@ using UnityEngine;
 public class BouncyGrenade : MonoBehaviour
 {
     private Vector3 velocity;
-    private float gravity = -9.81f;
-    private float drag = 0.98f;
+    private Rigidbody rb;
+    private Vector3 lastPosition;
 
-    public void Initialize(Vector3 initialVelocity)
+    private Vector3 twolastPosition;
+
+    private int bounceCount = 0;    
+
+    void Start()
     {
-        velocity = initialVelocity;
+        rb = GetComponent<Rigidbody>();
     }
 
     void FixedUpdate()
     {
-        // d—Í‰ÁŽZ
-        velocity.y += gravity * Time.fixedDeltaTime;
+        ////Vector3 delta = transform.position - lastPosition;
+        //Vector3 delta = lastPosition - twolastPosition;
 
-        velocity *= drag;
+        //float distance = delta.magnitude;
 
-        Vector3 direction = velocity.normalized;
-        float distance = velocity.magnitude * Time.fixedDeltaTime;
+        //Vector3 direction = (distance > 0f) ? delta.normalized : Vector3.zero;
 
-        if (Physics.Raycast(transform.position, direction, out RaycastHit hit, distance))
-        {
-            velocity = Vector3.Reflect(velocity, hit.normal);
-            transform.position = hit.point + hit.normal * 0.01f;
+        //velocity = rb.velocity;
 
-        }
-        else
-        {
-            transform.position += velocity * Time.fixedDeltaTime;
-        }
+        //if (Physics.Raycast(lastPosition, direction, out RaycastHit hit, distance))
+        //{
+        //    if (hit.collider.gameObject != this.gameObject)
+        //    {
+        //        velocity = Vector3.Reflect(velocity, hit.normal);
+        //        Debug.Log("Hit: " + hit.collider.name + " bounceCount " + bounceCount);
+        //        bounceCount++;
+        //    }
+        //}
+        //rb.velocity = velocity;
+
+        //lastPosition = transform.position;
+
+        ////twolastPosition = lastPosition;
     }
 }
