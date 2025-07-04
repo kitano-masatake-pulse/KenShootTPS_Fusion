@@ -115,7 +115,12 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
         }
 
         //ここにUserDataの初期化処理を追加する
-
+        if (Runner.IsServer)
+        {
+            RPC_RequestId(); // ホストから全クライアントにID要求を送信
+        }
+        
+        
 
 
 
@@ -151,17 +156,13 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
         int index = Array.FindIndex(UserDataArray, u => u.userID == userID);
         if (index >= 0)
         {
-
-
-
-
             //見つかった場合は更新
             UserDataArray[index].playerRef = player;
             UserDataArray[index].userConnectionState = ConnectionState.Connected; // 接続状態を更新
 
 
-
-
+            // デバッグ用に情報を表示
+            UserDataArray[index].DisplayUserInfo(); 
         }
         else
         {
@@ -177,6 +178,8 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
             };
 
             AddUserData(newUserData);
+            // デバッグ用に情報を表示
+            newUserData.DisplayUserInfo();
         }
 
         isUserDataArrayDirty = true; // UserDataArrayの同期が必要であることを示すフラグを立てる
