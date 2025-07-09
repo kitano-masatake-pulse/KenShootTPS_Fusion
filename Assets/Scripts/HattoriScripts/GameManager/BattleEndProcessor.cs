@@ -25,8 +25,8 @@ public class BattleEndProcessor : NetworkBehaviour
     }   
     private void OnEnable()
     {
-        GameManager.OnManagerInitialized -= SubscribeEvent;
-        GameManager.OnManagerInitialized += SubscribeEvent;
+        GameManager2.OnManagerInitialized -= SubscribeEvent;
+        GameManager2.OnManagerInitialized += SubscribeEvent;
     }
 
     public override void Spawned()
@@ -50,7 +50,7 @@ public class BattleEndProcessor : NetworkBehaviour
 
     private void OnDisable()
     {
-        GameManager.OnManagerInitialized -= SubscribeEvent;
+        GameManager2.OnManagerInitialized -= SubscribeEvent;
         if (GameManager2.Instance == null) return;
         GameManager2.Instance.OnTimeUp -= HandleBattleEnd;
     }

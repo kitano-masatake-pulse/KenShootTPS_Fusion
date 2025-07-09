@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5851447903718070119}
   - component: {fileID: 3554085192460577126}
   - component: {fileID: 248200549586918643}
+  - component: {fileID: 8504846885355354619}
   m_Layer: 0
   m_Name: GameManager2Prefab
   m_TagString: Untagged
@@ -74,4 +75,20 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 3554085192460577126}
+  - {fileID: 8504846885355354619}
   SimulationBehaviours: []
+--- !u!114 &8504846885355354619
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3884317254460412259}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73c3504a2d10ec547b02f4426b4008f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  WordOffset: 0
+  WordCount: 0
+  _interpolationDataSource: 0

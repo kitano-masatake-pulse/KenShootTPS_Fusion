@@ -27,12 +27,12 @@ public class HPObserver : NetworkBehaviour, IAfterSpawned
 
     private void OnEnable()
     {
-        GameManager.OnManagerInitialized -= SubscribeAllPlayers;
-        GameManager.OnManagerInitialized += SubscribeAllPlayers;
+        GameManager2.OnManagerInitialized -= SubscribeAllPlayers;
+        GameManager2.OnManagerInitialized += SubscribeAllPlayers;
     }
     private void OnDisable()
     {
-        GameManager.OnManagerInitialized -= SubscribeAllPlayers;
+        GameManager2.OnManagerInitialized -= SubscribeAllPlayers;
     }
 
     public void AfterSpawned()

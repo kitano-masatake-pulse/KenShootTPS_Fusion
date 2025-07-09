@@ -116,6 +116,14 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
         //    return;
         //}
 
+        if (Runner.IsServer)
+        {
+            RemainingSeconds = initialTimeSec;
+            startSimTime = Runner.SimulationTime;
+            TimerStart();
+        }
+
+
         //ここにUserDataの初期化処理を追加する
         if (Runner.IsServer)
         {
@@ -133,13 +141,8 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
 
 
 
-        if (Object.HasStateAuthority)
-        {
-            RemainingSeconds = initialTimeSec;
-            startSimTime = Runner.SimulationTime;
-            TimerStart();
-        }
-        OnManagerInitialized?.Invoke();
+        
+        //OnManagerInitialized?.Invoke();
     }
 
 
@@ -340,7 +343,7 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
 
 
 
-
+        RPC_InitializeCompleted();// 初期化完了イベントを発火
         _scoreDirty = true; // スコアが更新されたことを示すフラグを立てる
 
 
@@ -377,6 +380,14 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
 
 
     }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All, HostMode = RpcHostMode.SourceIsHostPlayer)]
+    public void RPC_InitializeCompleted()
+    { 
+        OnManagerInitialized?.Invoke(); // 初期化完了イベントを発火
+
+    }
+
 
 
 
@@ -442,7 +453,7 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
             }
 
 
-
+        }
 
 
 
@@ -460,10 +471,15 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
             }
 
 
+            Debug.Log($"GameManager2: FixedUpdateNetwork called. UserDataArray is dirty. Sharing data with clients.");
+
 
             // タイマー更新処理
             if (!Object.HasStateAuthority) return;
             if (!IsTimerRunning) return;
+
+
+            Debug.Log($"GameManager2: FixedUpdateNetwork called. IsTimerRunning: {IsTimerRunning}, RemainingSeconds: {RemainingSeconds}");
 
             double elapsed = Runner.SimulationTime - startSimTime;
             int elapsedSeconds = Mathf.FloorToInt((float)elapsed);
@@ -480,7 +496,7 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
                     EndGame();
                 }
             }
-        }
+        
     }
 
     public void TimerStart()
