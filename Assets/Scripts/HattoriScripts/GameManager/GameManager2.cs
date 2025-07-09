@@ -124,6 +124,7 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
         }
         else 
         {
+            RPC_SubmitIdToHost(ConnectionManager.Instance.GetLocalID()); // クライアントは自分のIDをホストに送信
             Debug.Log("GameManager2: InitializeGameManager called on client. Waiting for RPC_RequestId.");
             // クライアント側ではRPC_RequestIdを待つ
         }
@@ -368,7 +369,7 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
             AddUserData(sharedUserData);
         }
         isUserDataArrayDirty = true; // UserDataArrayの同期が必要であることを示すフラグを立てる
-        Debug.Log($"UserData for player {sharedUserData.playerRef} updated or added.");
+        Debug.Log($"UserData for player {sharedUserData.playerRef} updated or added. UserID {sharedUserData.userGuid}");
 
 
         _scoreDirty = true; // スコアが更新されたことを示すフラグを立てる

@@ -77,7 +77,7 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
         if (GameManager2.Instance != null)
         {
 
-           // InquireGameManager(GameManager.Instance);
+           // InquireGameManager(GameManager2.Instance);
 
 
         }

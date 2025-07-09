@@ -35,12 +35,12 @@ public class ScoreDebugUI : MonoBehaviour
         GUILayout.Label("=== Player Scores ===");
 
         // ScoreManager から全スコア辞書を取得
-        var SortedScores = GameManager.Instance.GetSortedScores();
+        var SortedScores = GameManager2.Instance.GetSortedUserData();
 
-        foreach (var kvp in SortedScores)
+        foreach (var userData in SortedScores)
         {
-            var playerRef = kvp.Key;
-            var score = kvp.Value;
+            var playerRef = userData.playerRef;
+            var score = userData.userScore;
 
             // 行開始
             GUILayout.BeginHorizontal();

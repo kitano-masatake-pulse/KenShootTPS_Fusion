@@ -31,19 +31,19 @@ public class BattleEndProcessor : NetworkBehaviour
 
     public override void Spawned()
     {
-        fadeUI = FindObjectOfType<SceneChangeFade>();
-        if (fadeUI == null)
-        {
-            Debug.LogError("FadeUI component not found in the scene. Please ensure it is present.");
-            return;
-        }
+        //fadeUI = FindObjectOfType<SceneChangeFade>();
+        //if (fadeUI == null)
+        //{
+        //    Debug.LogError("FadeUI component not found in the scene. Please ensure it is present.");
+        //    return;
+        //}
         
     }
 
     private void SubscribeEvent()
     {
-        GameManager.Instance.OnTimeUp -= HandleBattleEnd;
-        GameManager.Instance.OnTimeUp += HandleBattleEnd;
+        GameManager2.Instance.OnTimeUp -= HandleBattleEnd;
+        GameManager2.Instance.OnTimeUp += HandleBattleEnd;
 
     }
 
@@ -51,8 +51,8 @@ public class BattleEndProcessor : NetworkBehaviour
     private void OnDisable()
     {
         GameManager.OnManagerInitialized -= SubscribeEvent;
-        if (GameManager.Instance == null) return;
-        GameManager.Instance.OnTimeUp -= HandleBattleEnd;
+        if (GameManager2.Instance == null) return;
+        GameManager2.Instance.OnTimeUp -= HandleBattleEnd;
     }
 
     private void HandleBattleEnd()
@@ -60,7 +60,7 @@ public class BattleEndProcessor : NetworkBehaviour
         //ホスト環境でのみ実行
         if (!Runner.IsServer) return;
         //GameManagerのスコア辞書を取得
-        var scoreList = GameManager.Instance.GetSortedScores();
+        var scoreList = GameManager2.Instance.GetSortedUserData();
 
         //データ移譲用オブジェクトを生成
         var scoreTransferObj = new GameObject("ScoreTransferObject");
@@ -78,7 +78,7 @@ public class BattleEndProcessor : NetworkBehaviour
         OnBattleEnd?.Invoke();
         //試合終了時のプレイヤー処理
         //全プレイヤー(自分のプレイヤー)の行動を停止
-        NetworkObject myPlayer = GameManager.Instance.GetMyPlayer();
+        NetworkObject myPlayer = GameManager2.Instance.GetMyPlayer();
         PlayerAvatar playerAvatar = myPlayer.GetComponent<PlayerAvatar>();
         playerAvatar.IsDuringWeaponAction = true;
         playerAvatar.IsImmobilized = true;

@@ -22,13 +22,13 @@ public class RespawnUI : MonoBehaviour,IUIPanel
 
     public void Initialize()
     {
-        GameManager.Instance.OnMyPlayerDied -= DisplayRespawnPanel;
-        GameManager.Instance.OnMyPlayerDied += DisplayRespawnPanel;
+        GameManager2.Instance.OnMyPlayerDied -= DisplayRespawnPanel;
+        GameManager2.Instance.OnMyPlayerDied += DisplayRespawnPanel;
         ResetUI(); // UIをリセット
     }
     public void Cleanup()
     {
-        GameManager.Instance.OnMyPlayerDied -= DisplayRespawnPanel;
+        GameManager2.Instance.OnMyPlayerDied -= DisplayRespawnPanel;
         ResetUI(); // UIをリセット
     }
 

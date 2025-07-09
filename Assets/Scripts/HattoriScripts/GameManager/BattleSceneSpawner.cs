@@ -75,10 +75,10 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
                 // GameManager2の初期化
                 GameManager2.Instance.InitializeGameManager();
             }
-            else if (GameManager.Instance != null)
+            else if (GameManager2.Instance != null)
             {
                 // GameManagerの初期化
-                GameManager.Instance.InitializeGameManager();
+                GameManager2.Instance.InitializeGameManager();
             }
             else
             {

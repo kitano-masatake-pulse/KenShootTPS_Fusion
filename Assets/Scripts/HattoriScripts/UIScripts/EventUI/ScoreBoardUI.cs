@@ -15,8 +15,8 @@ public class ScoreBoardUI : MonoBehaviour, IUIPanel
 
     public void Initialize()
     {
-        GameManager.Instance.OnScoreChanged -= UpdateAllRows;
-        GameManager.Instance.OnScoreChanged += UpdateAllRows;
+        GameManager2.Instance.OnScoreChanged -= UpdateAllRows;
+        GameManager2.Instance.OnScoreChanged += UpdateAllRows;
         HPObserver.Instance.OnAnyHPChanged -= UpdateLivingStates;
         HPObserver.Instance.OnAnyHPChanged += UpdateLivingStates;
         scoreboardGroup.alpha = 0;
@@ -27,7 +27,7 @@ public class ScoreBoardUI : MonoBehaviour, IUIPanel
 
     public void Cleanup()
     {
-        GameManager.Instance.OnScoreChanged -= UpdateAllRows;
+        GameManager2.Instance.OnScoreChanged -= UpdateAllRows;
         HPObserver.Instance.OnAnyHPChanged -= UpdateLivingStates;
         // すべての行を削除
         foreach (var row in rowInstances.Values)
@@ -45,13 +45,13 @@ public class ScoreBoardUI : MonoBehaviour, IUIPanel
 
     public void UpdateAllRows()
     {
-        var sortedScores = GameManager.Instance.GetSortedScores();
+        var sortedScores = GameManager2.Instance.GetSortedUserData();
 
         int index = 0;
-        foreach (var pair in sortedScores)
+        foreach (var userData in sortedScores)
         {
-            var playerRef = pair.Key;
-            var score = pair.Value;
+            var playerRef = userData.playerRef;
+            var score = userData.userScore;
             Debug.Log($"ScoreBoardUI : Updating score for Player {playerRef.PlayerId}: Kills={score.Kills}, Deaths={score.Deaths}");
             if (!rowInstances.TryGetValue(playerRef, out GameObject row))
             {
@@ -99,7 +99,7 @@ public class ScoreBoardUI : MonoBehaviour, IUIPanel
         row.transform.Find("KillScoreImage/KillCountText").GetComponent<TMP_Text>().text = score.Kills.ToString();
         row.transform.Find("DeathScoreImage/DeathCountText").GetComponent<TMP_Text>().text = score.Deaths.ToString();
         // 自分ならハイライトする
-        if (playerRef == GameManager.Instance.GetMyPlayerRef())
+        if (playerRef == GameManager2.Instance.GetMyPlayerRef())
         {
             row.transform.Find("ColorBar").gameObject.SetActive(true); // 自分の行はハイライト
         }

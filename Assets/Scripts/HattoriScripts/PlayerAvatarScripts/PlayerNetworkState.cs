@@ -132,11 +132,11 @@ public class PlayerNetworkState : NetworkBehaviour
         if (CurrentHP <= 0)
         {
 
-            if (GameManager.Instance != null)
+            if (GameManager2.Instance != null)
             {
 
                 //GameManagerに通知を送る
-                GameManager.Instance.NotifyDeath(Runner.SimulationTime,Object.InputAuthority, attacker);
+                GameManager2.Instance.NotifyDeath(Runner.SimulationTime,Object.InputAuthority, attacker);
 
             }
 
