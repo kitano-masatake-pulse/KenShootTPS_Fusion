@@ -1,8 +1,9 @@
+using Fusion;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Fusion;
 using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
 
 
 
@@ -108,19 +109,26 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
 
     public void InitializeGameManager()
     {
-        if (Runner == null)
-        {
-            Debug.LogError("GameManager2: Spawned > Runner is null. ");
-            return;
-        }
+        Debug.Log("GameManager2: InitializeGameManager called.");
+        //if (Runner == null)
+        //{
+        //    Debug.LogError("GameManager2: Spawned > Runner is null. ");
+        //    return;
+        //}
 
         //ここにUserDataの初期化処理を追加する
         if (Runner.IsServer)
         {
             RPC_RequestId(); // ホストから全クライアントにID要求を送信
+            Debug.Log("GameManager2: InitializeGameManager called on server. Requesting IDs from clients.");
         }
-        
-        
+        else 
+        {
+            Debug.Log("GameManager2: InitializeGameManager called on client. Waiting for RPC_RequestId.");
+            // クライアント側ではRPC_RequestIdを待つ
+        }
+
+
 
 
 
@@ -135,25 +143,48 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
 
 
     // ① ホスト→全クライアント 要求
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All, HostMode = RpcHostMode.SourceIsHostPlayer)]
     public void RPC_RequestId()
     {
+        Debug.Log("GameManager2: RPC_RequestId called. Requesting IDs from clients.");
         // クライアントは自分の ID を送信する
         if (Runner.IsServer && ConnectionManager.Instance != null)
         {
-            ConnectionManager.Instance.RPC_SubmitIdToHost();
+            RPC_SubmitIdToHost(ConnectionManager.Instance.GetLocalID());
         }
-        else if (Runner.IsClient)
+        else 
         {
-            Debug.LogError("GameManager2: RPC_RequestId called but not valid");
+            Debug.LogError($"GameManager2: RPC_RequestId called but not valid.  Runner.IsServer={Runner.IsServer}" +
+                $"Exist  ConnectionManager.Instance:{ConnectionManager.Instance != null}");
         }
     }
 
-    public void RegisterUserID(String userID, PlayerRef player)
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority, HostMode = RpcHostMode.SourceIsHostPlayer)]
+
+    public void RPC_SubmitIdToHost(Guid userID,RpcInfo info = default)
     {
+
+        Debug.Log("RPC_SubmitIdToHost called.");
+        PlayerRef sender = info.Source;            // どの PlayerRef から来たか
+
+        if (GameManager2.Instance != null)
+        {
+            GameManager2.Instance.RegisterUserID(userID, sender); // GameManager2のメソッドを呼び出してユーザーIDを登録
+
+        }
+        else
+        {
+            Debug.LogError("GameManager2 instance is not available.");
+        }
+
+    }
+
+    public void RegisterUserID(Guid userID, PlayerRef player)
+    {
+        Debug.Log($"RegisterUserID called with userID: {userID}, player: {player}");
         if (!Runner.IsServer) { return; }
         //UserDataArrayの中からplayerに一致する要素を探す
-        int index = Array.FindIndex(UserDataArray, u => u.userID == userID);
+        int index = Array.FindIndex(UserDataArray, u => u.userGuid == userID);
         if (index >= 0)
         {
             //見つかった場合は更新
@@ -169,12 +200,12 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
 
             var newUserData = new UserData
             {
-                userID = userID,
+                userGuid = userID,
                 playerRef = player,
                 userScore = new PlayerScore(), // スコアは初期化
                 userTeam = TeamType.None, // チームは初期化
                 userConnectionState = ConnectionState.Connected, // 接続状態は接続中に設定
-                userName = $"Player {userID}" // ユーザー名はデフォルト設定
+                //userName = $"Player {userID}" // ユーザー名はデフォルト設定
             };
 
             AddUserData(newUserData);
@@ -204,6 +235,40 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
 
     }
 
+
+    //ユーザーデータの更新を行うメソッド
+    void UpdateUserDataArray(UserData userData)
+    {
+
+        int index = Array.FindIndex(UserDataArray, u => u.userGuid==userData.userGuid);
+        if (index >= 0)
+        {
+            //見つかった場合は更新
+            UserDataArray[index] = userData;
+            
+        }
+        else
+        {
+
+            //var newUserData = new UserData
+            //{
+            //    userID = userID,
+            //    playerRef = player,
+            //    userScore = new PlayerScore(), // スコアは初期化
+            //    userTeam = TeamType.None, // チームは初期化
+            //    userConnectionState = ConnectionState.Connected, // 接続状態は接続中に設定
+            //    //userName = $"Player {userID}" // ユーザー名はデフォルト設定
+            //};
+
+            AddUserData(userData);
+            // デバッグ用に情報を表示
+            //newUserData.DisplayUserInfo();
+        }
+
+        isUserDataArrayDirty = true; // UserDataArrayの同期が必要であることを示すフラグを立てる
+
+    }
+
     public void UpdateConnectionState(PlayerRef player, ConnectionState state)
     { 
         if (!Runner.IsServer) { return; }
@@ -228,8 +293,8 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
     private bool CheckUserDataIsAbleToShare(UserData[] userDataArray)
     {
         if (!Runner.IsServer) { return  false; }
-        
-        int validCount = userDataArray.Count(d => d.userID != "");
+
+        int validCount = userDataArray.Count(d => d.userGuid != Guid.Empty); 
         if (validCount < Runner.ActivePlayers.Count() )
         {
             
@@ -241,7 +306,7 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
             {
                 // 各プレイヤーのUserDataが存在するかチェック
                 //PlayerRefでチェックしてるが、ほんとうに正確にやるならUserIDを照合したほうがいい？
-                if (!userDataArray.Any(d => d.playerRef == activePlayer && d.userID != ""))
+                if (!userDataArray.Any(d => d.playerRef == activePlayer ))
                 {
                     Debug.LogWarning($"UserData for player {activePlayer} is missing or invalid.");
                     return false;
@@ -257,15 +322,61 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
     }
 
 
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RPC_ShareUserData(UserData[] updatedUserDataArray)
+    
+    public void ShareUserDataArray(UserData[] updatedUserDataArray)
     {
-        UserDataArray= updatedUserDataArray;
+
+        int elementSize= System.Runtime.InteropServices.Marshal.SizeOf(typeof(UserData));
+        int totalSize = updatedUserDataArray.Length*elementSize ;
+        Debug.Log($"RPC_ShareUserData called. element size {elementSize} bytes. total size {totalSize} bytes. ");
+        UserDataArray = updatedUserDataArray;
+
+        foreach (var userData in UserDataArray)
+        {
+            if (userData.Equals(default(UserData))) continue; // 空要素を除外
+            RPC_ShareUserData(userData);
+        }
+
+
+
+
         _scoreDirty = true; // スコアが更新されたことを示すフラグを立てる
 
 
 
     }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All, HostMode = RpcHostMode.SourceIsHostPlayer)]
+    public void RPC_ShareUserData(UserData sharedUserData)
+    {
+
+        int elementSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(UserData));
+       
+        Debug.Log($"RPC_ShareUserData called. element size {elementSize} bytes.");
+
+
+        // UserDataArrayの中からplayerに一致する要素を探す
+        int index = Array.FindIndex(UserDataArray, u => u.playerRef == sharedUserData.playerRef);
+        if (index >= 0)
+        {
+            //見つかった場合は更新
+            UserDataArray[index] = sharedUserData;
+        }
+        else
+        {
+            //見つからなかった場合は追加
+            AddUserData(sharedUserData);
+        }
+        isUserDataArrayDirty = true; // UserDataArrayの同期が必要であることを示すフラグを立てる
+        Debug.Log($"UserData for player {sharedUserData.playerRef} updated or added.");
+
+
+        _scoreDirty = true; // スコアが更新されたことを示すフラグを立てる
+
+
+
+    }
+
 
 
 
@@ -319,50 +430,54 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
     //時間更新
     public override void FixedUpdateNetwork()
     {
-        if ( isUserDataArrayDirty && Runner.IsServer && CheckUserDataIsAbleToShare(UserDataArray))
+        if (isUserDataArrayDirty && Runner.IsServer && CheckUserDataIsAbleToShare(UserDataArray))
         {
-
-            RPC_ShareUserData(UserDataArray);
-            isUserDataArrayDirty = false; // 同期が完了したのでフラグをリセット
-        }
-
-
-
-
-
-
-
-        if (NextTickTimer.Expired(Runner))
-        {
-            NextTickTimer = TickTimer.None;   // リセット
-            if (_scoreDirty)
             {
-                //スコア変更イベントを発火
-                OnScoreChanged?.Invoke();
-                _scoreDirty = false;
+                int elementSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(UserData));
+                int totalSize = UserDataArray.Length * elementSize;
+                Debug.Log($"ShareUserData. element size {elementSize} bytes. total size {totalSize} bytes. ");
+                ShareUserDataArray(UserDataArray);
+                isUserDataArrayDirty = false; // 同期が完了したのでフラグをリセット
             }
 
-        }
 
-        
 
-        // タイマー更新処理
-        if (!Object.HasStateAuthority) return;
-        if(!IsTimerRunning) return;
 
-        double elapsed = Runner.SimulationTime - startSimTime;
-        int elapsedSeconds = Mathf.FloorToInt((float)elapsed);
 
-        int newRemainingSeconds = Mathf.Max(initialTimeSec - elapsedSeconds);
 
-        if (newRemainingSeconds != RemainingSeconds)
-        {
-            RemainingSeconds = newRemainingSeconds;
-            if (RemainingSeconds <= 0)
+
+            if (NextTickTimer.Expired(Runner))
             {
-                IsTimerRunning = false;
-                //試合終了処理を開始
-                EndGame();
+                NextTickTimer = TickTimer.None;   // リセット
+                if (_scoreDirty)
+                {
+                    //スコア変更イベントを発火
+                    OnScoreChanged?.Invoke();
+                    _scoreDirty = false;
+                }
+
+            }
+
+
+
+            // タイマー更新処理
+            if (!Object.HasStateAuthority) return;
+            if (!IsTimerRunning) return;
+
+            double elapsed = Runner.SimulationTime - startSimTime;
+            int elapsedSeconds = Mathf.FloorToInt((float)elapsed);
+
+            int newRemainingSeconds = Mathf.Max(initialTimeSec - elapsedSeconds);
+
+            if (newRemainingSeconds != RemainingSeconds)
+            {
+                RemainingSeconds = newRemainingSeconds;
+                if (RemainingSeconds <= 0)
+                {
+                    IsTimerRunning = false;
+                    //試合終了処理を開始
+                    EndGame();
+                }
             }
         }
     }

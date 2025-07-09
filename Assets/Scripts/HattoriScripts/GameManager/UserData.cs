@@ -2,31 +2,38 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
+using System;
 
-public struct UserData: INetworkStruct
+public struct UserData : INetworkStruct
 {
-
-    
-    public NetworkString<_32> userID;
+    // 16バイトのハッシュを固定長バッファで定義
+    //public fixed byte userID[16];
+    public Guid userGuid;
+    //public long userID_high ;
+    //public long userID_low;
     public PlayerRef playerRef;
     public PlayerScore userScore;
     public TeamType userTeam;
-    public NetworkString<_32> userName;
+    public NetworkString<_16> userName;
     public ConnectionState userConnectionState;
-    public UserData(string id, PlayerRef player, PlayerScore score = default,TeamType team = TeamType.None, string name = "Player",ConnectionState connectionState=ConnectionState.Dummy)
+
+    public UserData(Guid id, PlayerRef player, PlayerScore score = default, TeamType team = TeamType.None, string name = "Player", ConnectionState connectionState = ConnectionState.Dummy)
     {
-        userID = id;
+        //fixed{ }
+        userGuid = id;
         playerRef = player;
         userScore = score;
         userTeam = team;
         userName = name;
         userConnectionState = connectionState; // 初期状態はダミー
     }
-    
-    public void DisplayUserInfo()
+
+   
+    public  void DisplayUserInfo()
     {
-       Debug.Log($"User ID: {userID}, Player Ref: {playerRef}, Score: {userScore.Kills}/{userScore.Deaths}, Team: {userTeam.GetName()}, Name: {userName}");
+       Debug.Log($"Display UserInfo. User ID:{userGuid.ToString() } , Player Ref: {playerRef}, Score: {userScore.Kills}/{userScore.Deaths}, Team: {userTeam.GetName()} ");
     }
+
 }
 
 public enum ConnectionState

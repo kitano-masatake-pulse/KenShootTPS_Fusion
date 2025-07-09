@@ -3,6 +3,7 @@ using Fusion.Sockets;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using UnityEngine;
 using static Unity.Collections.Unicode;
 
@@ -13,7 +14,8 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
 
     public static ConnectionManager Instance;
 
-    [SerializeField]string localUserId = "";
+    Guid localUserGuid ;
+    [SerializeField] string guidValue;
 
 
     void Awake()
@@ -21,6 +23,7 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
         if (Instance == null)
         {
             Instance = this;
+            transform.SetParent(null);
             DontDestroyOnLoad(gameObject); // シーンをまたいで保持
         }
         else
@@ -80,22 +83,21 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
         }
     }
 
-    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
 
-    public void RPC_SubmitIdToHost( RpcInfo info = default)
+    public Guid GetLocalID()
+    { 
+    
+        return localUserGuid;
+    }
+
+    //NetworkRunner.UserIdを16bytesで表す
+    Guid SerializeUserIDToGUID(string userId)
     {
-        PlayerRef sender = info.Source;            // どの PlayerRef から来たか
 
-        if (GameManager2.Instance != null)
-        {
-            GameManager2.Instance.RegisterUserID( localUserId, sender); // GameManager2のメソッドを呼び出してユーザーIDを登録
-
-        }
-        else 
-        { 
-            Debug.LogError("GameManager2 instance is not available.");
-        }
         
+
+        return Guid.ParseExact(userId, "D");
+    
     }
 
 
@@ -107,12 +109,16 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
         Debug.Log($"Player {player} joined.");
 
 
-        if (player==runner.LocalPlayer && localUserId == "") { localUserId = runner.UserId; }
+        if (player==runner.LocalPlayer && localUserGuid == Guid.Empty) 
+        { 
+            localUserGuid = SerializeUserIDToGUID(runner.UserId); 
+            guidValue = localUserGuid.ToString("N"); // GUIDを文字列に変換して保持
+        }
 
         if(GameManager2.Instance != null)
         {
             // GameManager2のメソッドを呼び出してユーザーIDを登録
-            GameManager2.Instance.RegisterUserID(localUserId, player);
+            GameManager2.Instance.RegisterUserID(localUserGuid, player);
         }
         else
         {
