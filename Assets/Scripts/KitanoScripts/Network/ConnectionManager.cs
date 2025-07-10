@@ -141,6 +141,19 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
         Debug.Log($"Player {player} left.");
+        if (runner.IsServer)
+        { 
+            if (GameManager2.Instance != null)
+            {
+                // GameManager2のメソッドを呼び出してユーザーIDを削除
+                GameManager2.Instance.UpdateConnectionState(player,ConnectionState.Disconnected);
+            }
+            else
+            {
+                Debug.Log("GameManager2 instance is not available.");
+            }
+
+        }
     }
 
     public void OnInput(NetworkRunner runner, NetworkInput input)
