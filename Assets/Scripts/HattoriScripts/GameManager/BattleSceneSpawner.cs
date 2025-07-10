@@ -56,15 +56,10 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
             //ホストが全員分のアバターを生成
             foreach (var player in runner.ActivePlayers)
             {
-                if (spawnedPlayers.Contains(player)) continue;
-
-                var randomValue = UnityEngine.Random.insideUnitCircle * 5f;
-                var spawnPosition = new Vector3(randomValue.x, 5f, randomValue.y);
-                var avatar = runner.Spawn(playerAvatarPrefab, spawnPosition, Quaternion.identity, player);
-                spawnedPlayers.Add(player);
-                // プレイヤー（PlayerRef）とアバター（NetworkObject）を関連付ける
-                runner.SetPlayerObject(player, avatar);
-                Debug.Log($"[Spawn] プレイヤー {player} をスポーンしました");
+                if (spawnedPlayers.Contains(player))
+                {
+                    CreateAvatar(runner, player);
+                }
             }
 
             //CreateDummyAvatars(runner, dummyAvatarCount);
@@ -95,6 +90,20 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
 
     }
 
+    void CreateAvatar(NetworkRunner runner, PlayerRef player)
+    {
+        // ランダムな生成位置（半径5の円の内部）を取得する
+        var randomValue = UnityEngine.Random.insideUnitCircle * 5f;
+        var spawnPosition = new Vector3(randomValue.x, 5f, randomValue.y);
+        // アバターを生成
+        var avatar = runner.Spawn(playerAvatarPrefab, spawnPosition, Quaternion.identity, player);
+        spawnedPlayers.Add(player);
+        // PlayerRefを使用して、アバターはプレイヤーに関連付ける
+        runner.SetPlayerObject(player, avatar);
+       
+        Debug.Log($"[Spawn] プレイヤー {player} をスポーンしました");
+    }
+
     public void CreateDummyAvatars(NetworkRunner runner, int DummyCount)
     {
         for (int i = 0; i < DummyCount; i++)
@@ -115,7 +124,14 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
 
 
 
-    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player){ 
+    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
+    {
+        if (runner.IsServer)
+        {
+
+            CreateAvatar(runner, player);
+        }
+
     }
 
     // 他のINetworkRunnerCallbacksは空実装でOK
@@ -125,6 +141,7 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
         if (runner.IsServer && runner.TryGetPlayerObject(player, out var avatar))
         {
             runner.Despawn(avatar);
+            spawnedPlayers.Remove(player);
 
             if (GameManager2.Instance != null)
             {

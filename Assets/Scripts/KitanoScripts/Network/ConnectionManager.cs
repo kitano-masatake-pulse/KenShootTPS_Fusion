@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using static Unity.Collections.Unicode;
 
 
@@ -17,6 +18,12 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
     Guid localUserGuid ;
     [SerializeField] string guidValue;
 
+    NetworkRunner networkRunner;
+    private StartGameArgs startGameArgs;
+    private Dictionary<string, SessionProperty> customProps;
+    private int? maxPlayerNum=3;
+    private float  reconnectTimeout=30f;
+    [SerializeField]private NetworkRunner networkRunnerPrefab;
 
     void Awake()
     {
@@ -52,6 +59,7 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
         if (runner != null)
         {
             runner.AddCallbacks(this);
+            networkRunner = runner; // 現在のRunnerを保持
 
         }
     }
@@ -178,8 +186,89 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
 
     public void OnDisconnectedFromServer(NetworkRunner runner)
     {
-        Debug.Log("Disconnected from server.");
+        Debug.Log($"GameLauncher runner Disconnected . OnDisconnectedFromServer called. Runner: {runner}");
+        StartCoroutine(TryReconnectCoroutine()); // 再接続を試みる
     }
+    IEnumerator TryReconnectCoroutine()
+    {
+
+        float startTime = Time.time;
+
+        //いったんシャットダウンしておく
+        //networkRunner.Shutdown();
+
+
+        while (Time.time - startTime < reconnectTimeout)
+        {
+            // 少し待ってから再接続
+            yield return new WaitForSeconds(1f);
+
+            TryReconnect();
+
+
+            // 再接続が成功したか確認
+
+            yield return new WaitUntil(() => networkRunner.IsRunning);
+            Debug.Log("Reconnected to the Cloud!");
+
+
+
+
+
+            if (networkRunner.IsRunning)
+            {
+                Debug.Log("[Reconnect] Successfully reconnected!");
+                yield break;  // 成功したらリトライループを抜ける
+            }
+            else
+            {
+                Debug.Log("[Reconnect] Retry failed, trying again…");
+            }
+        }
+
+        // タイムアウト到達
+        Debug.LogWarning($"[Reconnect] Failed to reconnect within {reconnectTimeout}s.");
+        //ShowTimeoutDialog();
+    }
+
+    // 再接続時の処理例
+    async void TryReconnect()
+    {
+        // 1. いったんセッションを終了（Shutdown が完了するまで待つ）
+        if (networkRunner != null)
+        {
+            await networkRunner.Shutdown(destroyGameObject: true);
+            //Destroy(networkRunner.gameObject); // Runnerを破棄
+
+
+        }
+
+        networkRunner = Instantiate(networkRunnerPrefab);
+
+
+        // 2. 必要ならコールバック再登録
+        networkRunner.AddCallbacks(this);
+       
+
+        startGameArgs =
+            new StartGameArgs
+            {
+                GameMode = GameMode.AutoHostOrClient,
+                SessionProperties = customProps,
+                PlayerCount = maxPlayerNum,
+                Scene = SceneManager.GetActiveScene().buildIndex,
+                SceneManager = networkRunner.GetComponent<NetworkSceneManagerDefault>()
+            };
+
+        // 3. 前回と同じ Args で再起動
+        var result = await networkRunner.StartGame(startGameArgs);
+
+        if (result.Ok)
+            Debug.Log("Reconnected!");
+        else
+            Debug.LogError($"Reconnect failed: {result.ErrorMessage}");
+    }
+
 
     public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token)
     {
