@@ -117,12 +117,17 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
 
         if(GameManager2.Instance != null)
         {
-            // GameManager2のメソッドを呼び出してユーザーIDを登録
-            GameManager2.Instance.RegisterUserID(localUserGuid, player);
+            if (player == runner.LocalPlayer)
+            {
+                // GameManager2のメソッドを呼び出してユーザーIDを登録
+                GameManager2.Instance.RPC_SubmitIdToHost(localUserGuid);
+
+            }
+            
         }
         else
         {
-            Debug.LogWarning("GameManager2 instance is not available.");
+            Debug.Log("GameManager2 instance is not available.");
         }
 
 

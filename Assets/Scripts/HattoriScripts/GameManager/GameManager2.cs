@@ -197,7 +197,20 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
 
 
             // デバッグ用に情報を表示
-            UserDataArray[index].DisplayUserInfo(); 
+            UserDataArray[index].DisplayUserInfo();
+
+            //すでに登録されているのに再度登録しようとしたということは、再接続者と考えられる
+            Debug.Log($"UserData for player {player} already exists. Updated connection state and player reference. UserID: {userID}");
+            // ここで必要なら再接続時の処理を追加することも可能
+
+
+            // 例えば、スコアやチーム情報の再設定など
+            ShareUserDataArray(UserDataArray); // 再接続時に全クライアントに最新のUserDataArrayを共有する
+
+
+
+
+
         }
         else
         {
@@ -471,7 +484,7 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
             }
 
 
-            Debug.Log($"GameManager2: FixedUpdateNetwork called. UserDataArray is dirty. Sharing data with clients.");
+            //Debug.Log($"GameManager2: FixedUpdateNetwork called. UserDataArray is dirty. Sharing data with clients.");
 
 
             // タイマー更新処理
@@ -479,7 +492,7 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
             if (!IsTimerRunning) return;
 
 
-            Debug.Log($"GameManager2: FixedUpdateNetwork called. IsTimerRunning: {IsTimerRunning}, RemainingSeconds: {RemainingSeconds}");
+            //Debug.Log($"GameManager2: FixedUpdateNetwork called. IsTimerRunning: {IsTimerRunning}, RemainingSeconds: {RemainingSeconds}");
 
             double elapsed = Runner.SimulationTime - startSimTime;
             int elapsedSeconds = Mathf.FloorToInt((float)elapsed);
