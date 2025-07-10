@@ -28,7 +28,7 @@ public class LobbyReturnButton : MonoBehaviour
         if (runner != null&& runner.IsServer)
         {
             // ƒV[ƒ“‘JˆÚ
-            runner.SetActiveScene(sceneType.ToSceneName());
+            SceneTransitionManager.Instance.ChangeScene(sceneType);
         }
         else if(runner == null)
         {
