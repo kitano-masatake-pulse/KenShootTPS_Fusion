@@ -56,10 +56,10 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
             //ホストが全員分のアバターを生成
             foreach (var player in runner.ActivePlayers)
             {
-                if (spawnedPlayers.Contains(player))
-                {
-                    CreateAvatar(runner, player);
-                }
+                if (spawnedPlayers.Contains(player)) { continue; }
+                
+                CreateAvatar(runner, player);
+                
             }
 
             //CreateDummyAvatars(runner, dummyAvatarCount);

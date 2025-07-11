@@ -25,6 +25,10 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
     private float  reconnectTimeout=30f;
     [SerializeField]private NetworkRunner networkRunnerPrefab;
 
+
+
+    
+
     void Awake()
     {
         if (Instance == null)
@@ -248,7 +252,9 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
 
         // 2. 必要ならコールバック再登録
         networkRunner.AddCallbacks(this);
-       
+        FindObjectOfType<NetworkInputManager>().AddCallbackMe(networkRunner);
+
+
 
         startGameArgs =
             new StartGameArgs
