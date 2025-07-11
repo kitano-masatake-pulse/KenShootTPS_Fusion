@@ -7,7 +7,8 @@ public class BattleEndProcessor : NetworkBehaviour
 {
     //シングルトン化
     public static BattleEndProcessor Instance { get; private set; }
-    [SerializeField] private SceneChangeFade fadeUI;
+    [Header("試合終了時、フェードアウトするまでの待機時間")]
+    [SerializeField] private float waitingTime = 3f;
     [Header("次に遷移するシーン(デフォルトBattleScene)")]
     public SceneType nextScene = SceneType.Result;
     public event Action OnBattleEnd;
@@ -31,12 +32,6 @@ public class BattleEndProcessor : NetworkBehaviour
 
     public override void Spawned()
     {
-        fadeUI = FindObjectOfType<SceneChangeFade>();
-        if (fadeUI == null)
-        {
-            Debug.LogError("FadeUI component not found in the scene. Please ensure it is present.");
-            return;
-        }
         
     }
 
@@ -82,27 +77,17 @@ public class BattleEndProcessor : NetworkBehaviour
         PlayerAvatar playerAvatar = myPlayer.GetComponent<PlayerAvatar>();
         playerAvatar.IsDuringWeaponAction = true;
         playerAvatar.IsImmobilized = true;
-        StartCoroutine(FadeSceneChange(3f));
+        StartCoroutine(watingCoroutine(waitingTime));
     }
 
     //コルーチン
-    private IEnumerator FadeSceneChange(float duration)
+    private IEnumerator watingCoroutine(float duration)
     {
-        yield return fadeUI.FadeAlpha(0f, 1f, duration);
-
-        //暗転中の処理
-        yield return Resources.UnloadUnusedAssets();        
-        GC.Collect();
-        GC.WaitForPendingFinalizers();
-
-        //リザルト画面へ遷移
-        if (Runner.IsServer)
+        yield return new WaitForSeconds(duration);
+        if(Runner.IsServer)
         {
-            string sceneName = nextScene.ToSceneName();
-            //シーン遷移
-            yield return Runner.SetActiveScene(sceneName);
+            SceneTransitionManager.Instance.ChangeScene(nextScene);
         }
-        
     }
 
 }

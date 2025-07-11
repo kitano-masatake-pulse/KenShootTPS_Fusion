@@ -344,7 +344,7 @@ MonoBehaviour:
   dummyAvatarPrefab:
     RawGuidValue: 21efbc1a8c65855478e1cb3748d2fe84
   gameManagerPrefab:
-    RawGuidValue: 6e3ac7a9c6975374fbfe4b53732b488b
+    RawGuidValue: d440af8d35127e4408f075066ecd27fc
   hpObserverPrefab:
     RawGuidValue: e4e261b42213c5a46a2541e82aa71434
   battleEndPrefab:
