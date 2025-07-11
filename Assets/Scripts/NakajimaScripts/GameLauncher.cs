@@ -401,7 +401,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         // 1. いったんセッションを終了（Shutdown が完了するまで待つ）
         if (networkRunner != null)
         { 
-            await networkRunner.Shutdown(destroyGameObject : false);
+            await networkRunner.Shutdown();
             //Destroy(networkRunner.gameObject); // Runnerを破棄
 
 
