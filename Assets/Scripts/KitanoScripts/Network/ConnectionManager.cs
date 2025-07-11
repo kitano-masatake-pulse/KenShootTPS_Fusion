@@ -17,7 +17,7 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
 
     Guid localUserGuid ;
     [SerializeField] string guidValue;
-
+    private bool _isFirstTime=true;
     NetworkRunner networkRunner;
     private StartGameArgs startGameArgs;
     private Dictionary<string, SessionProperty> customProps;
@@ -26,8 +26,10 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
     [SerializeField]private NetworkRunner networkRunnerPrefab;
 
 
+    public static Action<NetworkRunner> OnNetworkRunnerGenerated;// Runnerが生成されたときのイベント、StartGame前
+    public static Action<NetworkRunner> OnSessionConnected;// Runnerが接続されたときのイベント、StartGame後
 
-    
+
 
     void Awake()
     {
@@ -48,13 +50,14 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
     void OnEnable()
     {
 
-        GameLauncher.OnNetworkRunnerGenerated -= AddCallbackMe;
-        GameLauncher.OnNetworkRunnerGenerated += AddCallbackMe;
+        OnNetworkRunnerGenerated -= AddCallbackMe;
+        OnNetworkRunnerGenerated += AddCallbackMe;
     }
 
     void OnDisable()
     {
-        GameLauncher.OnNetworkRunnerGenerated -= AddCallbackMe;
+        OnNetworkRunnerGenerated -= AddCallbackMe;
+        networkRunner.RemoveCallbacks(this);
     }
 
     void AddCallbackMe(NetworkRunner runner)
@@ -70,9 +73,75 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
 
 
 
-    void Start()
+    private async void Start()
     {
+        Debug.Log("GameLauncher: Start Called");
+        //ランナーが場になければ
+        // NetworkRunnerを生成する
+        networkRunner = FindObjectOfType<NetworkRunner>();
+        if (networkRunner != null)
+        {
+            _isFirstTime = false;
+            Debug.Log("GameLauncher: Found existing NetworkRunner in the scene.");
+            OnNetworkRunnerGenerated?.Invoke(networkRunner);
+
+
+        }
+        else if (networkRunner == null)
+        {
+            _isFirstTime = true;
+            //シーンにNetworkRunnerが存在しない場合は、Prefabから生成
+            networkRunner = Instantiate(networkRunnerPrefab);
+            OnNetworkRunnerGenerated?.Invoke(networkRunner);
+
+            StartSession(); // セッションを開始する
+
+
+            OnSessionConnected?.Invoke(networkRunner);
+
+
+        }
     }
+
+    async void StartSession()
+    {
+        var customProps = new Dictionary<string, SessionProperty>();
+
+        if (GameRuleSettings.Instance != null)
+        {
+            customProps["GameRule"] = (int)GameRuleSettings.Instance.selectedRule;
+        }
+        else
+        {
+            customProps["GameRule"] = (int)GameRule.DeathMatch;
+        }
+
+        startGameArgs =
+        new StartGameArgs
+        {
+            GameMode = GameMode.AutoHostOrClient,
+            SessionProperties = customProps,
+            PlayerCount = maxPlayerNum,
+            Scene = SceneManager.GetActiveScene().buildIndex,
+            SceneManager = networkRunner.GetComponent<NetworkSceneManagerDefault>()
+        };
+
+        // StartGameArgsに渡した設定で、セッションに参加する
+        var result = await networkRunner.StartGame(startGameArgs);
+
+        Debug.Log($"GameLauncher.PreStartGame called. {Time.time} {networkRunner.Tick},{networkRunner.SimulationTime} ");
+
+
+        if (result.Ok)
+        {
+            Debug.Log("成功！");
+        }
+        else
+        {
+            Debug.Log("失敗！");
+        }
+    }
+
 
     // Update is called once per frame  
     void Update()
@@ -93,6 +162,16 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
 
 
         }
+    }
+    //退出処理
+    public async void LeaveRoom()
+    {
+        // すべてのコールバックを削除
+        networkRunner.RemoveCallbacks(this);
+        // Runnerを停止
+        await networkRunner.Shutdown();
+        // シーンをタイトルシーンに戻す
+        SceneManager.LoadScene("TitleScene");
     }
 
 
@@ -249,30 +328,12 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
 
         networkRunner = Instantiate(networkRunnerPrefab);
 
-
-        // 2. 必要ならコールバック再登録
-        networkRunner.AddCallbacks(this);
-        FindObjectOfType<NetworkInputManager>().AddCallbackMe(networkRunner);
+        OnNetworkRunnerGenerated?.Invoke(networkRunner); // 新しいRunnerを生成したことを通知
 
 
+        StartSession(); // セッションを再開する
 
-        startGameArgs =
-            new StartGameArgs
-            {
-                GameMode = GameMode.AutoHostOrClient,
-                SessionProperties = customProps,
-                PlayerCount = maxPlayerNum,
-                Scene = SceneManager.GetActiveScene().buildIndex,
-                SceneManager = networkRunner.GetComponent<NetworkSceneManagerDefault>()
-            };
-
-        // 3. 前回と同じ Args で再起動
-        var result = await networkRunner.StartGame(startGameArgs);
-
-        if (result.Ok)
-            Debug.Log("Reconnected!");
-        else
-            Debug.LogError($"Reconnect failed: {result.ErrorMessage}");
+        OnSessionConnected?.Invoke(networkRunner); // 新しいRunnerが接続されたことを通知
     }
 
 

@@ -37,10 +37,10 @@ public class NetworkInputManager : MonoBehaviour,INetworkRunnerCallbacks
     void OnEnable()
     {
         //Debug.Log("NetworkInputManager.OnEnable called.");
-        GameLauncher.OnNetworkRunnerGenerated -= AddCallbackMe;
-        
+        ConnectionManager.OnNetworkRunnerGenerated -= AddCallbackMe;
 
-        GameLauncher.OnNetworkRunnerGenerated += AddCallbackMe;
+
+        ConnectionManager.OnNetworkRunnerGenerated += AddCallbackMe;
         
     }
 
@@ -49,15 +49,15 @@ public class NetworkInputManager : MonoBehaviour,INetworkRunnerCallbacks
     void Start()
     {
 
-        runner = FindObjectOfType<NetworkRunner>();
-        if (runner != null)
-        { runner.AddCallbacks(this); }
+        //runner = FindObjectOfType<NetworkRunner>();
+        //if (runner != null)
+        //{ runner.AddCallbacks(this); }
         
     }
 
     void OnDisable()
     {
-        GameLauncher.OnNetworkRunnerGenerated -= AddCallbackMe;
+        ConnectionManager.OnNetworkRunnerGenerated -= AddCallbackMe;
 
 
         if (runner != null)
