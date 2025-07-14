@@ -197,7 +197,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de992b4def0d24d4a9cf2c83d2c83d62, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  localUserId: 
+  guidValue: 
+  networkRunnerPrefab: {fileID: -4322884645509030759, guid: 3bd3b1f14f8d95446958652068d5a9ea, type: 3}
 --- !u!1001 &1016704884848437052
 PrefabInstance:
   m_ObjectHideFlags: 0

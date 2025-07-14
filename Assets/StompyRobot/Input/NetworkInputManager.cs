@@ -24,7 +24,7 @@ public class NetworkInputManager : MonoBehaviour,INetworkRunnerCallbacks
     //    GameLauncher.Instance.OnNetworkRunnerGenerated += AddCallbackMe;
     //}
 
-    private void AddCallbackMe(NetworkRunner runner)
+    public void AddCallbackMe(NetworkRunner runner)
     {
         //Debug.Log("NetworkInputManager.AddCallbackMe called.");
         if (runner != null)
@@ -37,8 +37,11 @@ public class NetworkInputManager : MonoBehaviour,INetworkRunnerCallbacks
     void OnEnable()
     {
         //Debug.Log("NetworkInputManager.OnEnable called.");
-        GameLauncher.OnNetworkRunnerGenerated -= AddCallbackMe;
-        GameLauncher.OnNetworkRunnerGenerated += AddCallbackMe;
+        ConnectionManager.OnNetworkRunnerGenerated -= AddCallbackMe;
+
+
+        ConnectionManager.OnNetworkRunnerGenerated += AddCallbackMe;
+        
     }
 
 
@@ -46,16 +49,21 @@ public class NetworkInputManager : MonoBehaviour,INetworkRunnerCallbacks
     void Start()
     {
 
-        runner = FindObjectOfType<NetworkRunner>();
-        if (runner != null)
-        { runner.AddCallbacks(this); }
+        //runner = FindObjectOfType<NetworkRunner>();
+        //if (runner != null)
+        //{ runner.AddCallbacks(this); }
         
     }
 
     void OnDisable()
     {
+        ConnectionManager.OnNetworkRunnerGenerated -= AddCallbackMe;
+
+
         if (runner != null)
             runner.RemoveCallbacks(this); 
+
+
     }
 
 

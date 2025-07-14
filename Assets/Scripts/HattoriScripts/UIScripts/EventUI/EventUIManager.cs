@@ -25,17 +25,17 @@ public class EventUIManager : MonoBehaviour
 
     private void OnEnable()
     {
-        GameManager.OnManagerInitialized += InitializeUI;
+        GameManager2.OnManagerInitialized += InitializeUI;
     }
     private void OnDisable()
     {
-        GameManager.OnManagerInitialized -= InitializeUI;
+        GameManager2.OnManagerInitialized -= InitializeUI;
         CleanupAll();
     }
 
     private void InitializeUI()
     {
-       
+       Debug.Log("EventUIManager: Initializing UI components.");
         scoreboardUI.Initialize();
 
         respawnUI.SetRespawnHandler(respawnHandler);

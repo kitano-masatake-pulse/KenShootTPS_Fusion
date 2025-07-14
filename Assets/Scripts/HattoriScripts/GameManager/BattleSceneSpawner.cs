@@ -45,7 +45,8 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
 
     public void OnSceneLoadDone(NetworkRunner runner)
     {
-        //Debug.Log($"BattleSceneSpawner:OnSceneLoadDone");
+
+        Debug.Log($"BattleSceneSpawner:OnSceneLoadDone");
         if (runner.IsServer)
         {
             runner.Spawn(battleEndPrefab); 
@@ -56,25 +57,53 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
             //ホストが全員分のアバターを生成
             foreach (var player in runner.ActivePlayers)
             {
-                if (spawnedPlayers.Contains(player)) continue;
-
-                var randomValue = UnityEngine.Random.insideUnitCircle * 5f;
-                var spawnPosition = new Vector3(randomValue.x, 5f, randomValue.y);
-                var avatar = runner.Spawn(playerAvatarPrefab, spawnPosition, Quaternion.identity, player);
-                spawnedPlayers.Add(player);
-                // プレイヤー（PlayerRef）とアバター（NetworkObject）を関連付ける
-                runner.SetPlayerObject(player, avatar);
-                Debug.Log($"[Spawn] プレイヤー {player} をスポーンしました");
+                if (spawnedPlayers.Contains(player)) { continue; }
+                
+                CreateAvatar(runner, player);
+                
             }
 
-            CreateDummyAvatars(runner, dummyAvatarCount);
-            GameManager.Instance.InitializeGameManager(); // GameManagerの初期化
+            //CreateDummyAvatars(runner, dummyAvatarCount);
+
+
+            if (GameManager2.Instance != null)
+            {
+                // GameManager2の初期化
+                GameManager2.Instance.InitializeGameManager();
+            }
+            else if (GameManager2.Instance != null)
+            {
+                // GameManagerの初期化
+                GameManager2.Instance.InitializeGameManager();
+            }
+            else
+            {
+                Debug.LogError("GameManager instance is not available.");
+            }
+
+
+            
         }
 
         //ランナーが存在するか確認
         Debug.Log($"Battle Scene：Runner exists: {runner != null}");
         
 
+    }
+
+    void CreateAvatar(NetworkRunner runner, PlayerRef player)
+    {
+        Debug.Log($"[Spawn] プレイヤー {player} のアバターを生成します。");
+        // ランダムな生成位置（半径5の円の内部）を取得する
+        var randomValue = UnityEngine.Random.insideUnitCircle * 5f;
+        var spawnPosition = new Vector3(randomValue.x, 5f, randomValue.y);
+        // アバターを生成
+        var avatar = runner.Spawn(playerAvatarPrefab, spawnPosition, Quaternion.identity, player);
+        spawnedPlayers.Add(player);
+        // PlayerRefを使用して、アバターはプレイヤーに関連付ける
+        runner.SetPlayerObject(player, avatar);
+       
+        Debug.Log($"[Spawn] プレイヤー {player} をスポーンしました");
     }
 
     public void CreateDummyAvatars(NetworkRunner runner, int DummyCount)
@@ -94,7 +123,18 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
 
     }
 
-    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player){ 
+
+
+
+    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
+    {
+        Debug.Log($"BattleSceneSpawner:OnPlayerJoined called. Player: {player}");
+        if (runner.IsServer)
+        {
+
+            CreateAvatar(runner, player);
+        }
+
     }
 
     // 他のINetworkRunnerCallbacksは空実装でOK
@@ -104,8 +144,22 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
         if (runner.IsServer && runner.TryGetPlayerObject(player, out var avatar))
         {
             runner.Despawn(avatar);
+            spawnedPlayers.Remove(player);
+
+            if (GameManager2.Instance != null)
+            {
+                GameManager2.Instance.UpdateConnectionState(player, ConnectionState.Disconnected);
+
+
+
+            }
         }
+
+
     }
+
+
+
     public void OnInput(NetworkRunner runner, NetworkInput input) { }
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }

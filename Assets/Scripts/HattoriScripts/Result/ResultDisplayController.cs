@@ -47,7 +47,7 @@ public class ResultDisplayController : NetworkBehaviour,IAfterSpawned
             var sortedScores = scoreTransfer.GetScores();
             foreach (var score in sortedScores)
             {
-                PlayerScores.Set(score.Key,score.Value); // スコアを辞書に追加
+                PlayerScores.Set(score.playerRef,score.userScore); // スコアを辞書に追加
             }
             //役目を終えたらScoreTransferを削除
             Destroy(scoreTransfer.gameObject); 

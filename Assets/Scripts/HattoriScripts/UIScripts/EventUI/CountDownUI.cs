@@ -16,6 +16,7 @@ public class CountDownUI : MonoBehaviour, IUIPanel
     // Cleanupメソッドは、パネルのクリーンアップを行う
     public void Initialize()
     {
+        Debug.Log($"CountDownUI: Initialize called, respawnHandler exist {respawnHandler!=null}");
         respawnHandler.OnRespawnStuned -= DisplayCountDownPanel;
         respawnHandler.OnRespawnStuned += DisplayCountDownPanel;
         countdownText.raycastTarget = false; // カウントダウンテキストはクリックできないようにする
@@ -24,7 +25,9 @@ public class CountDownUI : MonoBehaviour, IUIPanel
 
     public void Cleanup()
     {
+        Debug.Log($"CountDownUI: Cleanup called, removing event handler.handler exist {respawnHandler!=null}");
         respawnHandler.OnRespawnStuned -= DisplayCountDownPanel;
+        
         SetVisible(false); // パネルを非表示にする
     }
 
