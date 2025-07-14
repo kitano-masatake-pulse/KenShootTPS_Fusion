@@ -152,15 +152,19 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
     {
         Debug.Log("GameManager2: RPC_RequestId called. Requesting IDs from clients.");
         // クライアントは自分の ID を送信する
-        if (Runner.IsServer && ConnectionManager.Instance != null)
+        if (Runner.IsServer)
         {
-            RPC_SubmitIdToHost(ConnectionManager.Instance.GetLocalID());
-        }
-        else 
-        {
-            Debug.LogError($"GameManager2: RPC_RequestId called but not valid.  Runner.IsServer={Runner.IsServer}" +
-                $"Exist  ConnectionManager.Instance:{ConnectionManager.Instance != null}");
-        }
+            if (ConnectionManager.Instance != null)
+            {
+                RPC_SubmitIdToHost(ConnectionManager.Instance.GetLocalID());
+            }
+            else
+            {
+                Debug.LogError($"GameManager2: RPC_RequestId called but not valid.  Runner.IsServer={Runner.IsServer}" +
+                    $"Exist  ConnectionManager.Instance:{ConnectionManager.Instance != null}");
+
+            }
+    }
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority, HostMode = RpcHostMode.SourceIsHostPlayer)]
