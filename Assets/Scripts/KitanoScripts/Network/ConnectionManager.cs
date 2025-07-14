@@ -26,8 +26,8 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
     [SerializeField]private NetworkRunner networkRunnerPrefab;
 
 
-    public static Action<NetworkRunner> OnNetworkRunnerGenerated;// Runner‚ª¶¬‚³‚ê‚½‚Æ‚«‚ÌƒCƒxƒ“ƒgAStartGame‘O
-    public static Action<NetworkRunner> OnSessionConnected;// Runner‚ªÚ‘±‚³‚ê‚½‚Æ‚«‚ÌƒCƒxƒ“ƒgAStartGameŒã
+    public static Action<NetworkRunner> OnNetworkRunnerGenerated;// RunnerãŒç”Ÿæˆã•ã‚ŒãŸã¨ãã®ã‚¤ãƒ™ãƒ³ãƒˆã€StartGameå‰
+    public static Action<NetworkRunner> OnSessionConnected;// RunnerãŒæ¥ç¶šã•ã‚ŒãŸã¨ãã®ã‚¤ãƒ™ãƒ³ãƒˆã€StartGameå¾Œ
 
 
 
@@ -37,11 +37,11 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
         {
             Instance = this;
             transform.SetParent(null);
-            DontDestroyOnLoad(gameObject); // ƒV[ƒ“‚ğ‚Ü‚½‚¢‚Å•Û
+            DontDestroyOnLoad(gameObject); // ã‚·ãƒ¼ãƒ³ã‚’ã¾ãŸã„ã§ä¿æŒ
         }
         else
         {
-            Destroy(gameObject); // •¡”¶¬‚³‚ê‚È‚¢‚æ‚¤‚É
+            Destroy(gameObject); // è¤‡æ•°ç”Ÿæˆã•ã‚Œãªã„ã‚ˆã†ã«
         }
 
     }
@@ -62,11 +62,11 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
 
     void AddCallbackMe(NetworkRunner runner)
     {
-        // NetworkRunner‚ÌƒR[ƒ‹ƒoƒbƒN‘ÎÛ‚ÉA‚±‚ÌƒXƒNƒŠƒvƒgiGameLauncherj‚ğ“o˜^‚·‚é
+        // NetworkRunnerã®ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯å¯¾è±¡ã«ã€ã“ã®ã‚¹ã‚¯ãƒªãƒ—ãƒˆï¼ˆGameLauncherï¼‰ã‚’ç™»éŒ²ã™ã‚‹
         if (runner != null)
         {
             runner.AddCallbacks(this);
-            networkRunner = runner; // Œ»İ‚ÌRunner‚ğ•Û
+            networkRunner = runner; // ç¾åœ¨ã®Runnerã‚’ä¿æŒ
 
         }
     }
@@ -76,8 +76,8 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
     private async void Start()
     {
         Debug.Log("GameLauncher: Start Called");
-        //ƒ‰ƒ“ƒi[‚ªê‚É‚È‚¯‚ê‚Î
-        // NetworkRunner‚ğ¶¬‚·‚é
+        //ãƒ©ãƒ³ãƒŠãƒ¼ãŒå ´ã«ãªã‘ã‚Œã°
+        // NetworkRunnerã‚’ç”Ÿæˆã™ã‚‹
         networkRunner = FindObjectOfType<NetworkRunner>();
         if (networkRunner != null)
         {
@@ -90,11 +90,11 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
         else if (networkRunner == null)
         {
             _isFirstTime = true;
-            //ƒV[ƒ“‚ÉNetworkRunner‚ª‘¶İ‚µ‚È‚¢ê‡‚ÍAPrefab‚©‚ç¶¬
+            //ã‚·ãƒ¼ãƒ³ã«NetworkRunnerãŒå­˜åœ¨ã—ãªã„å ´åˆã¯ã€Prefabã‹ã‚‰ç”Ÿæˆ
             networkRunner = Instantiate(networkRunnerPrefab);
             OnNetworkRunnerGenerated?.Invoke(networkRunner);
 
-            StartSession(); // ƒZƒbƒVƒ‡ƒ“‚ğŠJn‚·‚é
+            StartSession(); // ã‚»ãƒƒã‚·ãƒ§ãƒ³ã‚’é–‹å§‹ã™ã‚‹
 
 
             OnSessionConnected?.Invoke(networkRunner);
@@ -126,7 +126,7 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
             SceneManager = networkRunner.GetComponent<NetworkSceneManagerDefault>()
         };
 
-        // StartGameArgs‚É“n‚µ‚½İ’è‚ÅAƒZƒbƒVƒ‡ƒ“‚ÉQ‰Á‚·‚é
+        // StartGameArgsã«æ¸¡ã—ãŸè¨­å®šã§ã€ã‚»ãƒƒã‚·ãƒ§ãƒ³ã«å‚åŠ ã™ã‚‹
         var result = await networkRunner.StartGame(startGameArgs);
 
         Debug.Log($"GameLauncher.PreStartGame called. {Time.time} {networkRunner.Tick},{networkRunner.SimulationTime} ");
@@ -134,11 +134,11 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
 
         if (result.Ok)
         {
-            Debug.Log("¬Œ÷I");
+            Debug.Log("æˆåŠŸï¼");
         }
         else
         {
-            Debug.Log("¸”sI");
+            Debug.Log("å¤±æ•—ï¼");
         }
     }
 
@@ -149,7 +149,7 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
     }
 
 
-    // INetworkRunnerCallbacks‚ÌÀ‘•
+    // INetworkRunnerCallbacksã®å®Ÿè£…
 
     public void OnSceneLoadDone(NetworkRunner runner)
     {
@@ -163,14 +163,14 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
 
         }
     }
-    //‘Şoˆ—
+    //é€€å‡ºå‡¦ç†
     public async void LeaveRoom()
     {
-        // ‚·‚×‚Ä‚ÌƒR[ƒ‹ƒoƒbƒN‚ğíœ
+        // ã™ã¹ã¦ã®ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã‚’å‰Šé™¤
         networkRunner.RemoveCallbacks(this);
-        // Runner‚ğ’â~
+        // Runnerã‚’åœæ­¢
         await networkRunner.Shutdown();
-        // ƒV[ƒ“‚ğƒ^ƒCƒgƒ‹ƒV[ƒ“‚É–ß‚·
+        // ã‚·ãƒ¼ãƒ³ã‚’ã‚¿ã‚¤ãƒˆãƒ«ã‚·ãƒ¼ãƒ³ã«æˆ»ã™
         SceneManager.LoadScene("TitleScene");
     }
 
@@ -181,7 +181,7 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
         return localUserGuid;
     }
 
-    //NetworkRunner.UserId‚ğ16bytes‚Å•\‚·
+    //NetworkRunner.UserIdã‚’16bytesã§è¡¨ã™
     Guid SerializeUserIDToGUID(string userId)
     {
 
@@ -198,19 +198,20 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
         Debug.Log($"Player {player} joined.");
+        NotificationViewer.Instance.ShowMessage($"Player {player} joined.");
 
 
         if (player==runner.LocalPlayer && localUserGuid == Guid.Empty) 
         { 
             localUserGuid = SerializeUserIDToGUID(runner.UserId); 
-            guidValue = localUserGuid.ToString("N"); // GUID‚ğ•¶š—ñ‚É•ÏŠ·‚µ‚Ä•Û
+            guidValue = localUserGuid.ToString("N"); // GUIDã‚’æ–‡å­—åˆ—ã«å¤‰æ›ã—ã¦ä¿æŒ
         }
 
         if(GameManager2.Instance != null)
         {
             if (player == runner.LocalPlayer)
             {
-                // GameManager2‚Ìƒƒ\ƒbƒh‚ğŒÄ‚Ño‚µ‚Äƒ†[ƒU[ID‚ğ“o˜^
+                // GameManager2ã®ãƒ¡ã‚½ãƒƒãƒ‰ã‚’å‘¼ã³å‡ºã—ã¦ãƒ¦ãƒ¼ã‚¶ãƒ¼IDã‚’ç™»éŒ²
                 GameManager2.Instance.RPC_SubmitIdToHost(localUserGuid);
 
             }
@@ -232,11 +233,14 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
         Debug.Log($"Player {player} left.");
+
+        NotificationViewer.Instance.ShowMessage($"Player {player} left.");
+
         if (runner.IsServer)
         { 
             if (GameManager2.Instance != null)
             {
-                // GameManager2‚Ìƒƒ\ƒbƒh‚ğŒÄ‚Ño‚µ‚Äƒ†[ƒU[ID‚ğíœ
+                // GameManager2ã®ãƒ¡ã‚½ãƒƒãƒ‰ã‚’å‘¼ã³å‡ºã—ã¦ãƒ¦ãƒ¼ã‚¶ãƒ¼IDã‚’å‰Šé™¤
                 GameManager2.Instance.UpdateConnectionState(player,ConnectionState.Disconnected);
             }
             else
@@ -245,6 +249,7 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
             }
 
         }
+
     }
 
     public void OnInput(NetworkRunner runner, NetworkInput input)
@@ -269,27 +274,31 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
 
     public void OnDisconnectedFromServer(NetworkRunner runner)
     {
+
+        Debug.Log("Disconnected from server.");
+        NotificationViewer.Instance.ShowMessage($"Disconnected from host.", true);
+
         Debug.Log($"GameLauncher runner Disconnected . OnDisconnectedFromServer called. Runner: {runner}");
-        StartCoroutine(TryReconnectCoroutine()); // ÄÚ‘±‚ğ‚İ‚é
+        StartCoroutine(TryReconnectCoroutine()); // å†æ¥ç¶šã‚’è©¦ã¿ã‚‹
     }
     IEnumerator TryReconnectCoroutine()
     {
 
         float startTime = Time.time;
 
-        //‚¢‚Á‚½‚ñƒVƒƒƒbƒgƒ_ƒEƒ“‚µ‚Ä‚¨‚­
+        //ã„ã£ãŸã‚“ã‚·ãƒ£ãƒƒãƒˆãƒ€ã‚¦ãƒ³ã—ã¦ãŠã
         //networkRunner.Shutdown();
 
 
         while (Time.time - startTime < reconnectTimeout)
         {
-            // ­‚µ‘Ò‚Á‚Ä‚©‚çÄÚ‘±
+            // å°‘ã—å¾…ã£ã¦ã‹ã‚‰å†æ¥ç¶š
             yield return new WaitForSeconds(1f);
 
             TryReconnect();
 
 
-            // ÄÚ‘±‚ª¬Œ÷‚µ‚½‚©Šm”F
+            // å†æ¥ç¶šãŒæˆåŠŸã—ãŸã‹ç¢ºèª
 
             yield return new WaitUntil(() => networkRunner.IsRunning);
             Debug.Log("Reconnected to the Cloud!");
@@ -301,39 +310,39 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
             if (networkRunner.IsRunning)
             {
                 Debug.Log("[Reconnect] Successfully reconnected!");
-                yield break;  // ¬Œ÷‚µ‚½‚çƒŠƒgƒ‰ƒCƒ‹[ƒv‚ğ”²‚¯‚é
+                yield break;  // æˆåŠŸã—ãŸã‚‰ãƒªãƒˆãƒ©ã‚¤ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
             }
             else
             {
-                Debug.Log("[Reconnect] Retry failed, trying againc");
+                Debug.Log("[Reconnect] Retry failed, trying againâ€¦");
             }
         }
 
-        // ƒ^ƒCƒ€ƒAƒEƒg“’B
+        // ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆåˆ°é”
         Debug.LogWarning($"[Reconnect] Failed to reconnect within {reconnectTimeout}s.");
         //ShowTimeoutDialog();
     }
 
-    // ÄÚ‘±‚Ìˆ——á
+    // å†æ¥ç¶šæ™‚ã®å‡¦ç†ä¾‹
     async void TryReconnect()
     {
-        // 1. ‚¢‚Á‚½‚ñƒZƒbƒVƒ‡ƒ“‚ğI—¹iShutdown ‚ªŠ®—¹‚·‚é‚Ü‚Å‘Ò‚Âj
+        // 1. ã„ã£ãŸã‚“ã‚»ãƒƒã‚·ãƒ§ãƒ³ã‚’çµ‚äº†ï¼ˆShutdown ãŒå®Œäº†ã™ã‚‹ã¾ã§å¾…ã¤ï¼‰
         if (networkRunner != null)
         {
             await networkRunner.Shutdown(destroyGameObject: true);
-            //Destroy(networkRunner.gameObject); // Runner‚ğ”jŠü
+            //Destroy(networkRunner.gameObject); // Runnerã‚’ç ´æ£„
 
 
         }
 
         networkRunner = Instantiate(networkRunnerPrefab);
 
-        OnNetworkRunnerGenerated?.Invoke(networkRunner); // V‚µ‚¢Runner‚ğ¶¬‚µ‚½‚±‚Æ‚ğ’Ê’m
+        OnNetworkRunnerGenerated?.Invoke(networkRunner); // æ–°ã—ã„Runnerã‚’ç”Ÿæˆã—ãŸã“ã¨ã‚’é€šçŸ¥
 
 
-        StartSession(); // ƒZƒbƒVƒ‡ƒ“‚ğÄŠJ‚·‚é
+        StartSession(); // ã‚»ãƒƒã‚·ãƒ§ãƒ³ã‚’å†é–‹ã™ã‚‹
 
-        OnSessionConnected?.Invoke(networkRunner); // V‚µ‚¢Runner‚ªÚ‘±‚³‚ê‚½‚±‚Æ‚ğ’Ê’m
+        OnSessionConnected?.Invoke(networkRunner); // æ–°ã—ã„RunnerãŒæ¥ç¶šã•ã‚ŒãŸã“ã¨ã‚’é€šçŸ¥
     }
 
 
