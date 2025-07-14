@@ -97,6 +97,7 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
         Debug.Log($"Player {player} joined.");
+        NotificationViewer.Instance.ShowMessage($"Player {player} joined.");
 
 
         if (player==runner.LocalPlayer && localUserId == "") { localUserId = runner.UserId; }
@@ -112,6 +113,7 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
         Debug.Log($"Player {player} left.");
+        NotificationViewer.Instance.ShowMessage($"Player {player} left.");
     }
 
     public void OnInput(NetworkRunner runner, NetworkInput input)
@@ -137,6 +139,7 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
     public void OnDisconnectedFromServer(NetworkRunner runner)
     {
         Debug.Log("Disconnected from server.");
+        NotificationViewer.Instance.ShowMessage($"Disconnected from host.", true);
     }
 
     public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token)
