@@ -27,7 +27,7 @@ public class LocalRespawnHandler: MonoBehaviour
     public void RespawnStart()
     {
         // プレイヤー情報取得
-        myPlayer = GameManager.Instance.GetMyPlayer();
+        myPlayer = GameManager2.Instance.GetMyPlayer();
         playerAvatar = myPlayer.GetComponent<PlayerAvatar>();
 
         // 流れを一つのコルーチンで実行

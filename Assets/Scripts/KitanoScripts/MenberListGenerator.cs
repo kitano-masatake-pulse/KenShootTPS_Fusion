@@ -22,14 +22,14 @@ public class MenberListGenerator : MonoBehaviour
     private void OnEnable()
     {
         // NetworkRunner‚Ì¶¬‚ğ‘Ò‚Â‚½‚ß‚ÉAOnNetworkRunnerGeneratedƒCƒxƒ“ƒg‚ğ“o˜^
-        GameLauncher.OnNetworkRunnerConnected -= GenerateMenberList;
-        GameLauncher.OnNetworkRunnerConnected += GenerateMenberList;
+        ConnectionManager.OnSessionConnected -= GenerateMenberList;
+        ConnectionManager.OnSessionConnected += GenerateMenberList;
     }
 
     private void OnDisable()
     {
         // ƒCƒxƒ“ƒg‚Ì“o˜^‚ğ‰ğœ
-        GameLauncher.OnNetworkRunnerConnected -= GenerateMenberList;
+        ConnectionManager.OnSessionConnected -= GenerateMenberList;
     }
 
 

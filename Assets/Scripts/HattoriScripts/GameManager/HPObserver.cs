@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
 using System;
+using System.Linq;
 
 public class HPObserver : NetworkBehaviour, IAfterSpawned
 {
@@ -26,12 +27,12 @@ public class HPObserver : NetworkBehaviour, IAfterSpawned
 
     private void OnEnable()
     {
-        GameManager.OnManagerInitialized -= SubscribeAllPlayers;
-        GameManager.OnManagerInitialized += SubscribeAllPlayers;
+        GameManager2.OnManagerInitialized -= SubscribeAllPlayers;
+        GameManager2.OnManagerInitialized += SubscribeAllPlayers;
     }
     private void OnDisable()
     {
-        GameManager.OnManagerInitialized -= SubscribeAllPlayers;
+        GameManager2.OnManagerInitialized -= SubscribeAllPlayers;
     }
 
     public void AfterSpawned()
@@ -58,11 +59,16 @@ public class HPObserver : NetworkBehaviour, IAfterSpawned
             networkState.OnHPChanged += UpdateHPDict;
 
             playerHPDict[playerRef] = 1f;
-            if (GameManager.Instance.PlayerTeams[playerRef] == TeamType.Red)
+
+            UserData? found = GameManager2.Instance.UserDataArray.FirstOrDefault(u => u.playerRef == playerRef);
+            TeamType team = found.HasValue ? found.Value.userTeam : TeamType.None;
+
+
+            if (team == TeamType.Red)
             {
                 playerHPDictRed[playerRef] = 1f;
             }
-            else if (GameManager.Instance.PlayerTeams[playerRef] == TeamType.Blue)
+            else if (team== TeamType.Blue)
             {
                 playerHPDictBlue[playerRef] = 1f;
             }
@@ -75,11 +81,15 @@ public class HPObserver : NetworkBehaviour, IAfterSpawned
         Debug.Log($"HPChangeTick：{Runner.Tick}");
         playerHPDict[playerRef] = hpNormalized;
         // 必要に応じてここで追加の処理を行う
-        if (GameManager.Instance.PlayerTeams[playerRef] == TeamType.Red)
+
+        UserData? found = GameManager2.Instance.UserDataArray.FirstOrDefault(u => u.playerRef == playerRef);
+        TeamType team = found.HasValue ? found.Value.userTeam : TeamType.None;
+
+        if (team == TeamType.Red)
         {
             playerHPDictRed[playerRef] = hpNormalized;
         }
-        else if (GameManager.Instance.PlayerTeams[playerRef] == TeamType.Blue)
+        else if (team == TeamType.Blue)
         {
             playerHPDictBlue[playerRef] = hpNormalized;
         }

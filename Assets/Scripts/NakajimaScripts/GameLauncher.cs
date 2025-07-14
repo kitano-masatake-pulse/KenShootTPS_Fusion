@@ -47,8 +47,8 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     [Header("戻り先のシーン(デフォルトLobbyScene)")]
     public SceneType returnScene = SceneType.Lobby;
 
-    public static Action<NetworkRunner> OnNetworkRunnerGenerated;// Runnerが生成されたときのイベント、StartGame前
-    public static Action<NetworkRunner> OnNetworkRunnerConnected;// Runnerが接続されたときのイベント、StartGame後
+    //public static Action<NetworkRunner> OnNetworkRunnerGenerated;// Runnerが生成されたときのイベント、StartGame前
+    //public static Action<NetworkRunner> OnNetworkRunnerConnected;// Runnerが接続されたときのイベント、StartGame後
 
 
     private StartGameArgs startGameArgs;
@@ -79,8 +79,8 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     void OnEnable()
     {
 
-        OnNetworkRunnerGenerated -= AddCallbackMe;
-        OnNetworkRunnerGenerated += AddCallbackMe;
+        ConnectionManager.OnNetworkRunnerGenerated -= AddCallbackMe;
+        ConnectionManager.OnNetworkRunnerGenerated += AddCallbackMe;
 
     }
 
@@ -89,79 +89,24 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         // NetworkRunnerのコールバック対象に、このスクリプト（GameLauncher）を登録する
         if (runner != null)
         {
+            networkRunner= runner; // 現在のRunnerを更新
             runner.AddCallbacks(this);
             NetworkRunner.CloudConnectionLost += (NetworkRunner runner, ShutdownReason reason, bool reconnecting) => { };
+            Debug.Log("GameLauncher.AddCallbackMe called. Runner: " + runner);
         }
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
-        OnNetworkRunnerGenerated -= AddCallbackMe;
-         networkRunner.RemoveCallbacks(this);
-    }
-
-    private async void Start()
-    {
-        Debug.Log("GameLauncher: Start Called");
-        //ランナーが場になければ
-        // NetworkRunnerを生成する
-        networkRunner = FindObjectOfType<NetworkRunner>();
+        ConnectionManager.OnNetworkRunnerGenerated -= AddCallbackMe;
+        
         if (networkRunner != null)
-        {
-            _isFirstTime = false;
-            Debug.Log("GameLauncher: Found existing NetworkRunner in the scene.");
-            OnNetworkRunnerGenerated?.Invoke(networkRunner);
-            
-
-        }
-        else if (networkRunner == null)
-        {
-            _isFirstTime = true;
-            //シーンにNetworkRunnerが存在しない場合は、Prefabから生成
-            networkRunner = Instantiate(networkRunnerPrefab);
-            OnNetworkRunnerGenerated?.Invoke(networkRunner);
-
-            var customProps = new Dictionary<string, SessionProperty>();
-
-            if (GameRuleSettings.Instance != null)
-            {
-                customProps["GameRule"] = (int)GameRuleSettings.Instance.selectedRule;
-            }
-            else
-            {
-                customProps["GameRule"] = (int)GameRule.DeathMatch;
-            }
-
-            startGameArgs =
-            new StartGameArgs
-            {
-                GameMode = GameMode.AutoHostOrClient,
-                SessionProperties = customProps,
-                PlayerCount = maxPlayerNum,
-                Scene = SceneManager.GetActiveScene().buildIndex,
-                SceneManager = networkRunner.GetComponent<NetworkSceneManagerDefault>()
-            };
-
-            // StartGameArgsに渡した設定で、セッションに参加する
-            var result = await networkRunner.StartGame(startGameArgs);
-
-            Debug.Log($"GameLauncher.PreStartGame called. {Time.time} {networkRunner.Tick},{networkRunner.SimulationTime} ");
-
-
-            if (result.Ok)
-            {
-                Debug.Log("成功！");
-            }
-            else
-            {
-                Debug.Log("失敗！");
-            }
-
-            OnNetworkRunnerConnected?.Invoke(networkRunner);
-
-
-        }
+        { 
+        networkRunner.RemoveCallbacks(this);
+            Debug.Log("GameLauncher.OnDisable called. Runner: " + networkRunner);
+        }   
     }
+
 
     public void CreateDummyAvatars(int DummyCount)
     {
@@ -205,15 +150,6 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     #region 異常系
 
 
-    void Update()
-    {
-        //// デバッグ用：ダミーアバターの生成数を変更できるようにする
-        //if (Input.GetKeyDown(KeyCode.F1))
-        //{
-        //    Destroy(networkRunner); // Runnerを停止
-        //}
-    }
-
     void HandleDisconnect(NetworkRunner runner, ShutdownReason reason, bool reconnecting)
     {
         if (reconnecting)
@@ -252,6 +188,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     // INetworkRunnerCallbacksインターフェースの空実装
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
+        networkRunner = runner; // 現在のRunnerを更新
         Debug.Log($"GameLauncher:OnPlayerJoined.");
         
 
@@ -351,89 +288,9 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     public void OnDisconnectedFromServer(NetworkRunner runner) 
     { 
         Debug.Log($"GameLauncher runner Disconnected . OnDisconnectedFromServer called. Runner: {runner}");
-        StartCoroutine(TryReconnectCoroutine()); // 再接続を試みる
+
     }
-    IEnumerator TryReconnectCoroutine()
-    {
-
-        float startTime = Time.time;
-
-        //いったんシャットダウンしておく
-        //networkRunner.Shutdown();
-
-
-        while (Time.time - startTime < reconnectTimeout)
-        {
-            // 少し待ってから再接続
-            yield return new WaitForSeconds(1f);
-
-            TryReconnect();
-
-
-            // 再接続が成功したか確認
-            
-                yield return new WaitUntil(() => networkRunner.IsRunning);
-                Debug.Log("Reconnected to the Cloud!");
-            
-
-
-
-
-            if (networkRunner.IsRunning)
-            {
-                Debug.Log("[Reconnect] Successfully reconnected!");
-                yield break;  // 成功したらリトライループを抜ける
-            }
-            else
-            {
-                Debug.Log("[Reconnect] Retry failed, trying again…");
-            }
-        }
-
-        // タイムアウト到達
-        Debug.LogWarning($"[Reconnect] Failed to reconnect within {reconnectTimeout}s.");
-        //ShowTimeoutDialog();
-    }
-
-    // 再接続時の処理例
-    async void TryReconnect()
-    {
-        // 1. いったんセッションを終了（Shutdown が完了するまで待つ）
-        if (networkRunner != null)
-        { 
-            await networkRunner.Shutdown();
-            //Destroy(networkRunner.gameObject); // Runnerを破棄
-
-
-        }
-
-        networkRunner=Instantiate(networkRunnerPrefab);
-
-
-        // 2. 必要ならコールバック再登録
-        networkRunner.AddCallbacks(this);
-        networkRunner.AddCallbacks(networkInputManager);
-        OnNetworkRunnerGenerated?.Invoke(networkRunner);
-
-
-        startGameArgs =
-            new StartGameArgs
-            {
-                GameMode = GameMode.AutoHostOrClient,
-                SessionProperties = customProps,
-                PlayerCount = maxPlayerNum,
-                Scene = SceneManager.GetActiveScene().buildIndex,
-                SceneManager = networkRunner.GetComponent<NetworkSceneManagerDefault>()
-            };
-
-        // 3. 前回と同じ Args で再起動
-        var result = await networkRunner.StartGame(startGameArgs);
-
-        if (result.Ok)
-            Debug.Log("Reconnected!");
-        else
-            Debug.LogError($"Reconnect failed: {result.ErrorMessage}");
-    }
+    
 
 
 
@@ -490,7 +347,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         Debug.Log("ホストが参加 → ボタン表示指示");
         lobbyUI.ShowStartButton(runner);
 
-        OnNetworkRunnerConnected?.Invoke(networkRunner); // ゲーム開始のイベントを発火(NetworkObjectのSpawnなど)
+        //ConnectionManager.OnNetworkRunnerConnected?.Invoke(networkRunner); // ゲーム開始のイベントを発火(NetworkObjectのSpawnなど)
 
     }
 

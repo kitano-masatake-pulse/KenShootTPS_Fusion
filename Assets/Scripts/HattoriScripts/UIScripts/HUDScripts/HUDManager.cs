@@ -14,13 +14,13 @@ public class HUDManager : MonoBehaviour
     {   
         PlayerNetworkState.OnLocalPlayerSpawned += PlayerHUDInitialize;
         PlayerAvatar.OnWeaponSpawned += WeaponHUDInitialize;
-        GameManager.OnManagerInitialized += GameHUDInitialize;
+        GameManager2.OnManagerInitialized += GameHUDInitialize;
     }
     private void OnDisable()
     {
         PlayerNetworkState.OnLocalPlayerSpawned -= PlayerHUDInitialize;
         PlayerAvatar.OnWeaponSpawned -= WeaponHUDInitialize;
-        GameManager.OnManagerInitialized -= GameHUDInitialize;
+        GameManager2.OnManagerInitialized -= GameHUDInitialize;
         CleanupAll();
     }
 
