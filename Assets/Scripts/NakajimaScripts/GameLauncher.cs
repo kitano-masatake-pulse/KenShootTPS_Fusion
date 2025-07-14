@@ -88,18 +88,21 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         // NetworkRunnerのコールバック対象に、このスクリプト（GameLauncher）を登録する
         if (runner != null)
         {
+            networkRunner= runner; // 現在のRunnerを更新
             runner.AddCallbacks(this);
             NetworkRunner.CloudConnectionLost += (NetworkRunner runner, ShutdownReason reason, bool reconnecting) => { };
+            Debug.Log("GameLauncher.AddCallbackMe called. Runner: " + runner);
         }
     }
 
     private void OnDisable()
     {
         ConnectionManager.OnNetworkRunnerGenerated -= AddCallbackMe;
-        networkRunner = FindObjectOfType<NetworkRunner>();
+        
         if (networkRunner != null)
         { 
         networkRunner.RemoveCallbacks(this);
+            Debug.Log("GameLauncher.OnDisable called. Runner: " + networkRunner);
         }   
     }
 
@@ -184,6 +187,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     // INetworkRunnerCallbacksインターフェースの空実装
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
+        networkRunner = runner; // 現在のRunnerを更新
         Debug.Log($"GameLauncher:OnPlayerJoined.");
         
 

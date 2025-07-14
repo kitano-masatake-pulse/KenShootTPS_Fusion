@@ -45,7 +45,8 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
 
     public void OnSceneLoadDone(NetworkRunner runner)
     {
-        //Debug.Log($"BattleSceneSpawner:OnSceneLoadDone");
+
+        Debug.Log($"BattleSceneSpawner:OnSceneLoadDone");
         if (runner.IsServer)
         {
             runner.Spawn(battleEndPrefab); 
@@ -92,6 +93,7 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
 
     void CreateAvatar(NetworkRunner runner, PlayerRef player)
     {
+        Debug.Log($"[Spawn] プレイヤー {player} のアバターを生成します。");
         // ランダムな生成位置（半径5の円の内部）を取得する
         var randomValue = UnityEngine.Random.insideUnitCircle * 5f;
         var spawnPosition = new Vector3(randomValue.x, 5f, randomValue.y);
@@ -126,6 +128,7 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
 
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
+        Debug.Log($"BattleSceneSpawner:OnPlayerJoined called. Player: {player}");
         if (runner.IsServer)
         {
 
