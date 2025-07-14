@@ -48,14 +48,14 @@ public class SceneTransitionManager : MonoBehaviour,INetworkRunnerCallbacks
     {
         SceneManager.sceneLoaded -= StartScene; 
         SceneManager.sceneLoaded += StartScene; 
-        GameLauncher.OnNetworkRunnerGenerated -= SubscribeRunner; 
-        GameLauncher.OnNetworkRunnerGenerated += SubscribeRunner;
+        ConnectionManager.OnNetworkRunnerGenerated -= SubscribeRunner;
+        ConnectionManager.OnNetworkRunnerGenerated += SubscribeRunner;
     }
     private void OnDisable()
     {
         StopAllCoroutines(); // 全てのコルーチンを停止
         SceneManager.sceneLoaded -= StartScene; // シーンロード時のイベントを解除
-        GameLauncher.OnNetworkRunnerGenerated -= SubscribeRunner;
+        ConnectionManager.OnNetworkRunnerGenerated -= SubscribeRunner;
     }
 
     private void SubscribeRunner(NetworkRunner newRunner)
