@@ -20,6 +20,7 @@ public class NotificationViewer : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
+            this.transform.SetParent(null);
             DontDestroyOnLoad(gameObject); // ƒV[ƒ“‚ğ‚Ü‚½‚¢‚Å•Û
         }
         else

@@ -2234,50 +2234,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8348473906653305165, guid: bb81a67ad1cf2984784527d333cae7d2, type: 3}
   m_PrefabInstance: {fileID: 665464734}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &691113513
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 691113515}
-  - component: {fileID: 691113514}
-  m_Layer: 0
-  m_Name: ScoreDebugUI
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &691113514
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 691113513}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7cc9cc36346e9854690cf0f8ad4cf0c7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!4 &691113515
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 691113513}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -2, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &693946186
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2381,6 +2337,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1516604608215421652, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
+      propertyPath: nextScene
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 1516604608215421652, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
       propertyPath: dummyAvatarCount
       value: 0
       objectReference: {fileID: 0}
@@ -2394,11 +2354,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1516604608215421652, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
       propertyPath: gameManagerPrefab.RawGuidValue.Array.data[0]
-      value: 4935402262864281812
+      value: 4930145172303938604
       objectReference: {fileID: 0}
     - target: {fileID: 1516604608215421652, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
       propertyPath: gameManagerPrefab.RawGuidValue.Array.data[1]
-      value: -277026979621507064
+      value: -1719017642509638181
       objectReference: {fileID: 0}
     - target: {fileID: 2130494428451515322, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
       propertyPath: battleEndProcessor
@@ -5840,4 +5800,3 @@ SceneRoots:
   - {fileID: 1296744509}
   - {fileID: 1266123149}
   - {fileID: 743888562}
-  - {fileID: 691113515}

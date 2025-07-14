@@ -30,6 +30,10 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
     [SerializeField]
     private GameObject TPSCamera;
 
+    [Header("移動先のシーン")]
+    [SerializeField]
+    private SceneType nextScene;
+
 
     void Start()
     {
@@ -49,7 +53,8 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
         Debug.Log($"BattleSceneSpawner:OnSceneLoadDone");
         if (runner.IsServer)
         {
-            runner.Spawn(battleEndPrefab); 
+            NetworkObject battleEndProcessor =  runner.Spawn(battleEndPrefab); 
+            battleEndProcessor.GetComponent<BattleEndProcessor>().nextScene = nextScene;
             runner.Spawn(hpObserverPrefab);
             runner.Spawn(gameManagerPrefab);
             

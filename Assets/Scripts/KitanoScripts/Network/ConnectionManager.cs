@@ -57,7 +57,8 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
     void OnDisable()
     {
         OnNetworkRunnerGenerated -= AddCallbackMe;
-        networkRunner.RemoveCallbacks(this);
+        if(networkRunner != null)
+            networkRunner.RemoveCallbacks(this);
     }
 
     void AddCallbackMe(NetworkRunner runner)

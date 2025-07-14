@@ -42,6 +42,7 @@ public class SceneTransitionManager : MonoBehaviour,INetworkRunnerCallbacks
             return;
         }
         Instance = this;
+        this.transform.SetParent(null); // 親オブジェクトを解除
         DontDestroyOnLoad(this.gameObject); 
     }
     public void OnEnable()
