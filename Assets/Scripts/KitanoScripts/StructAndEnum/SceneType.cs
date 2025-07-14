@@ -12,7 +12,8 @@ public enum SceneType
     NakajimaBattleTest,
     HattoriBattleTest,
     NakajimaLobby,
-    HattoriResult
+    HattoriResult,
+    HattoriTitle
 }
 
 public static class SceneTypeExtensions
@@ -34,6 +35,7 @@ public static class SceneTypeExtensions
             SceneType.HattoriBattleTest => "HattoriBattleTestScene",
             SceneType.NakajimaLobby => "NakajimaLobby",
             SceneType.HattoriResult => "HattoriResultScene",
+            SceneType.HattoriTitle => "HattoriTitleScene",
             _ => throw new ArgumentOutOfRangeException(nameof(type), $"–¢’è‹`‚ÌSceneType‚Å‚·: {type}")
         };
     }

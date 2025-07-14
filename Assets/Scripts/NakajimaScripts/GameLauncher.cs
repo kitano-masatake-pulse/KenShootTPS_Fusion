@@ -17,7 +17,6 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     //シングルトンの宣言
     public static GameLauncher Instance { get; private set; }
 
-
     [SerializeField]
     private NetworkRunner networkRunnerPrefab;
     [SerializeField]
@@ -45,6 +44,8 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
     [Header("次に遷移するシーン(デフォルトBattleScene)")]
     public  SceneType nextScene= SceneType.Battle;
+    [Header("戻り先のシーン(デフォルトLobbyScene)")]
+    public SceneType returnScene = SceneType.Lobby;
 
     //public static Action<NetworkRunner> OnNetworkRunnerGenerated;// Runnerが生成されたときのイベント、StartGame前
     //public static Action<NetworkRunner> OnNetworkRunnerConnected;// Runnerが接続されたときのイベント、StartGame後
@@ -138,12 +139,12 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     //退出処理
     public async void LeaveRoom()
     {
-        // すべてのコールバックを削除
-        networkRunner.RemoveCallbacks(this);
-        // Runnerを停止
-        await networkRunner.Shutdown();
-        // シーンをタイトルシーンに戻す
-        SceneManager.LoadScene("TitleScene");
+        if(networkRunner != null)
+        {
+            // すべてのコールバックを削除
+            networkRunner.RemoveCallbacks(this);
+        }
+        SceneTransitionManager.Instance.ChangeScene(returnScene,true); // 戻り先のシーンに遷移
     }
 
     #region 異常系
@@ -289,8 +290,6 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         Debug.Log($"GameLauncher runner Disconnected . OnDisconnectedFromServer called. Runner: {runner}");
 
     }
-    
-
     
 
 

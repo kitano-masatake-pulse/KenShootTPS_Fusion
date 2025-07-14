@@ -5,17 +5,18 @@ using Fusion;
 
 public class BattleEndProcessor : NetworkBehaviour
 {
-    //ƒVƒ“ƒOƒ‹ƒgƒ“‰»
+    //ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³åŒ–
     public static BattleEndProcessor Instance { get; private set; }
-    [SerializeField] private SceneChangeFade fadeUI;
-    [Header("Ÿ‚É‘JˆÚ‚·‚éƒV[ƒ“(ƒfƒtƒHƒ‹ƒgBattleScene)")]
+    [Header("è©¦åˆçµ‚äº†æ™‚ã€ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆã™ã‚‹ã¾ã§ã®å¾…æ©Ÿæ™‚é–“")]
+    [SerializeField] private float waitingTime = 3f;
+    [Header("æ¬¡ã«é·ç§»ã™ã‚‹ã‚·ãƒ¼ãƒ³(ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆBattleScene)")]
     public SceneType nextScene = SceneType.Result;
     public event Action OnBattleEnd;
 
 
     private void Awake()
     {
-        //ƒVƒ“ƒOƒ‹ƒgƒ“‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğİ’è
+        //ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’è¨­å®š
         if (Instance != null && Instance != this)
         {
             Destroy(this.gameObject);
@@ -31,12 +32,14 @@ public class BattleEndProcessor : NetworkBehaviour
 
     public override void Spawned()
     {
+
         //fadeUI = FindObjectOfType<SceneChangeFade>();
         //if (fadeUI == null)
         //{
         //    Debug.LogError("FadeUI component not found in the scene. Please ensure it is present.");
         //    return;
         //}
+
         
     }
 
@@ -57,12 +60,12 @@ public class BattleEndProcessor : NetworkBehaviour
 
     private void HandleBattleEnd()
     {
-        //ƒzƒXƒgŠÂ‹«‚Å‚Ì‚İÀs
+        //ãƒ›ã‚¹ãƒˆç’°å¢ƒã§ã®ã¿å®Ÿè¡Œ
         if (!Runner.IsServer) return;
-        //GameManager‚ÌƒXƒRƒA«‘‚ğæ“¾
+        //GameManagerã®ã‚¹ã‚³ã‚¢è¾æ›¸ã‚’å–å¾—
         var scoreList = GameManager2.Instance.GetSortedUserData();
 
-        //ƒf[ƒ^ˆÚ÷—pƒIƒuƒWƒFƒNƒg‚ğ¶¬
+        //ãƒ‡ãƒ¼ã‚¿ç§»è­²ç”¨ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ç”Ÿæˆ
         var scoreTransferObj = new GameObject("ScoreTransferObject");
         var scoreTransfer = scoreTransferObj.AddComponent<ScoreTransfer>();
         scoreTransfer.SetScores(scoreList);
@@ -74,35 +77,25 @@ public class BattleEndProcessor : NetworkBehaviour
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     private void RPC_EndBattle()
     {
-        //‡I—¹ƒCƒxƒ“ƒg‚ğ”­‰Î
+        //è©¦åˆçµ‚äº†ã‚¤ãƒ™ãƒ³ãƒˆã‚’ç™ºç«
         OnBattleEnd?.Invoke();
-        //‡I—¹‚ÌƒvƒŒƒCƒ„[ˆ—
-        //‘SƒvƒŒƒCƒ„[(©•ª‚ÌƒvƒŒƒCƒ„[)‚Ìs“®‚ğ’â~
+        //è©¦åˆçµ‚äº†æ™‚ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼å‡¦ç†
+        //å…¨ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼(è‡ªåˆ†ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼)ã®è¡Œå‹•ã‚’åœæ­¢
         NetworkObject myPlayer = GameManager2.Instance.GetMyPlayer();
         PlayerAvatar playerAvatar = myPlayer.GetComponent<PlayerAvatar>();
         playerAvatar.IsDuringWeaponAction = true;
         playerAvatar.IsImmobilized = true;
-        StartCoroutine(FadeSceneChange(3f));
+        StartCoroutine(watingCoroutine(waitingTime));
     }
 
-    //ƒRƒ‹[ƒ`ƒ“
-    private IEnumerator FadeSceneChange(float duration)
+    //ã‚³ãƒ«ãƒ¼ãƒãƒ³
+    private IEnumerator watingCoroutine(float duration)
     {
-        yield return fadeUI.FadeAlpha(0f, 1f, duration);
-
-        //ˆÃ“]’†‚Ìˆ—
-        yield return Resources.UnloadUnusedAssets();        
-        GC.Collect();
-        GC.WaitForPendingFinalizers();
-
-        //ƒŠƒUƒ‹ƒg‰æ–Ê‚Ö‘JˆÚ
-        if (Runner.IsServer)
+        yield return new WaitForSeconds(duration);
+        if(Runner.IsServer)
         {
-            string sceneName = nextScene.ToSceneName();
-            //ƒV[ƒ“‘JˆÚ
-            yield return Runner.SetActiveScene(sceneName);
+            SceneTransitionManager.Instance.ChangeScene(nextScene);
         }
-        
     }
 
 }

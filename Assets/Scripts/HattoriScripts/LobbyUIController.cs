@@ -39,7 +39,8 @@ public class LobbyUIController : MonoBehaviour
             // バトルシーンに遷移
             Debug.Log("バトルシーンに遷移します");
             string sceneName = GameLauncher.Instance.nextScene.ToSceneName();
-            runner.SetActiveScene(sceneName);
+            SceneTransitionManager.Instance.ChangeScene(GameLauncher.Instance.nextScene);
+            //runner.SetActiveScene(sceneName);
         }
         else
         {
