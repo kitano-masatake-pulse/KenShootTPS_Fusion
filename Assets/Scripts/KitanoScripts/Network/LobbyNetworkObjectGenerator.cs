@@ -15,7 +15,12 @@ public class LobbyNetworkObjectGenerator : MonoBehaviour
     private void OnEnable()
     {
 
-        GameLauncher.OnNetworkRunnerConnected += SpawnObjects;
+        ConnectionManager.OnSessionConnected += SpawnObjects;
+    }
+
+    private void OnDisable()
+    {
+        ConnectionManager.OnSessionConnected -= SpawnObjects;
     }
 
     void SpawnObjects(NetworkRunner runner )

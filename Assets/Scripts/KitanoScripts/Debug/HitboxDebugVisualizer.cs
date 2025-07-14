@@ -27,6 +27,7 @@ public class HitboxDebugVisualizer : MonoBehaviour
             return;
         }
         Instance = this;
+        transform.SetParent(null);
         DontDestroyOnLoad(gameObject);
 
         if (lineMat == null)

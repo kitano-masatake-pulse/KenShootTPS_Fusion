@@ -15,10 +15,10 @@ public class HPPanel : MonoBehaviour, IHUDPanel
         playerState.OnHPChanged -= UpdateHPBar;
         playerState.OnHPChanged += UpdateHPBar;
         playerState.OnHPChanged += OrderTestHP; // テスト用イベント登録
-        if (GameManager.Instance != null)
+        if (GameManager2.Instance != null)
         {
-            GameManager.Instance.OnScoreChanged += OrderTestScore; // GameManagerのイベント登録
-            GameManager.Instance.OnAnyPlayerDied += OrderTestDeath; // Player死亡イベント登録
+            GameManager2.Instance.OnScoreChanged += OrderTestScore; // GameManagerのイベント登録
+            GameManager2.Instance.OnAnyPlayerDied += OrderTestDeath; // Player死亡イベント登録
         }
         // 初期値設定
         UpdateHPBar(playerState.HpNormalized, PlayerRef.None);

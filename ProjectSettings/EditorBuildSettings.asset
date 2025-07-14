@@ -26,7 +26,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/TestScenes/HattoriBattleTestScene.unity
     guid: 334425b9b8dbfca40bbdcd2dc6b6684c
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/TestScenes/KitanoBattleTestScene.unity
     guid: afa1b91c649f6e846a1344ed09140ba1
   - enabled: 0
