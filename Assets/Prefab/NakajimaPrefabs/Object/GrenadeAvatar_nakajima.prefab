@@ -1301,6 +1301,7 @@ GameObject:
   - component: {fileID: 7349359384497818507}
   - component: {fileID: 3342411206420378372}
   - component: {fileID: 7146378648566735066}
+  - component: {fileID: 8294904204264716812}
   m_Layer: 0
   m_Name: GrenadeAvatar_nakajima
   m_TagString: Untagged
@@ -1540,6 +1541,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   grenadePrefab: {fileID: 3572506081172032769, guid: 43b013267915f1049946845490bd36de, type: 3}
   throwPoint: {fileID: 4142803977256852626}
+  throwAnimSpeed: 1
   trajectoryDrawer: {fileID: 7146378648566735066}
   animator: {fileID: 2231931972422335784}
 --- !u!120 &3342411206420378372
@@ -1663,6 +1665,20 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   impactMarkerPrefab: {fileID: 3686337052451485103, guid: d307c7b76332eff40bcd518f15206054, type: 3}
+--- !u!114 &8294904204264716812
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2852828816588928964}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a86a1bc16f002d4fadcee9028958e92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 2231931972422335784}
+  data: {fileID: 11400000, guid: bfaf5b74df429f14bb798aa38463e06d, type: 2}
 --- !u!1 &2958646034594578311
 GameObject:
   m_ObjectHideFlags: 0

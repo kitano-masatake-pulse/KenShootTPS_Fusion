@@ -31,28 +31,12 @@ public class GrenadeThrower : MonoBehaviour
     {
         AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(1);
 
-        // マウスの左ボタンが離された時の処理
-        if (Input.GetMouseButtonUp(0))
-        {
-            animator.SetFloat("ThrowAnimSpeed", throwAnimSpeed);
-        }
-
-        //if (stateInfo.IsName("Prepare to throw"))
+        //// マウスの左ボタンが離された時の処理
+        //if (Input.GetMouseButtonUp(0))
         //{
-        //    throwtime += Time.deltaTime;
-        //    Debug.Log($"Throwing grenade Start...+{stateInfo.normalizedTime}");
-        //    if (stateInfo.normalizedTime >= 1.0f)
-        //    {
-        //        // 投擲準備完了モーションが終わったら、投げるアニメーションの速度を設定
-        //        animator.SetBool("IsGrenadeReady", true);
-
-        //    }
-        //    else
-        //    {
-        //        // 投擲準備中のモーションが続いている間は、投げるアニメーションの速度をリセット
-        //        animator.SetBool("IsGrenadeReady", false);
-        //    }
+        //    animator.SetFloat("ThrowAnimSpeed", throwAnimSpeed);
         //}
+
 
         // 投擲準備完了モーションの間LineRendererを表示
         // ボタン離した後でも、アニメーションは少し続くので、フラグ判定挿入
