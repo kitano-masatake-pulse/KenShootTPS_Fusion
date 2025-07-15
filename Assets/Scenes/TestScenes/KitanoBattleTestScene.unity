@@ -139,6 +139,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1516604608215421652, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
+      propertyPath: nextScene
+      value: 512
+      objectReference: {fileID: 0}
+    - target: {fileID: 1516604608215421652, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
       propertyPath: dummyAvatarCount
       value: 1
       objectReference: {fileID: 0}
