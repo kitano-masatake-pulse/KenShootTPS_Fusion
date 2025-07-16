@@ -1,19 +1,27 @@
 using System;
 using UnityEngine.SceneManagement;
 
+
 public enum SceneType
 {
-    Title,
-    Lobby,
-    Battle,
-    Result,
-    Test_Loaded,
-    KitanoBattleTest,
-    NakajimaBattleTest,
-    HattoriBattleTest,
-    NakajimaLobby,
-    HattoriResult,
-    HattoriTitle
+    None = 0,
+    Lobby = 1 << 0,
+    Battle = 1 << 1,
+    Result = 1 << 2,
+    Test_Loaded = 1 << 3,
+    KitanoBattleTest = 1 << 4,
+    NakajimaBattleTest = 1 << 5,
+    HattoriBattleTest = 1 << 6,
+    KitanoLobby = 1 << 7,
+    NakajimaLobby = 1 << 8,
+    KitanoResult = 1 << 9,
+    HattoriResult = 1 << 10,
+    KitanoTitle = 1 << 11, 
+    HattoriTitle = 1 << 12,
+    Title = 1 << 13,
+
+    All = ~0                // すべて ON
+
 }
 
 public static class SceneTypeExtensions
@@ -33,8 +41,11 @@ public static class SceneTypeExtensions
             SceneType.KitanoBattleTest => "KitanoBattleTestScene",
             SceneType.NakajimaBattleTest => "NakajimaBattleTestScene",
             SceneType.HattoriBattleTest => "HattoriBattleTestScene",
+            SceneType.KitanoLobby => "KitanoLobbyTest",
             SceneType.NakajimaLobby => "NakajimaLobby",
+            SceneType.KitanoResult => "KitanoResultTest",
             SceneType.HattoriResult => "HattoriResultScene",
+            SceneType.KitanoTitle => "KitanoTitleTest",
             SceneType.HattoriTitle => "HattoriTitleScene",
             _ => throw new ArgumentOutOfRangeException(nameof(type), $"未定義のSceneTypeです: {type}")
         };
@@ -52,5 +63,29 @@ public static class SceneTypeExtensions
             }
         }
         return -1; // not found
+    }
+
+
+    // 逆変換「ファイル名 → enum」
+    public static SceneType ToSceneType(this Scene scene)
+    {
+        return scene.name switch
+        {
+            "TitleScene"=> SceneType.Title,
+            "LobbyScene" => SceneType.Lobby,
+            "BattleScene" => SceneType.Battle,
+            "ResultScene" => SceneType.Result,
+            "KitanoBattleTestScene" => SceneType.KitanoBattleTest,
+            "NakajimaBattleTestScene" => SceneType.NakajimaBattleTest,
+            "HattoriBattleTestScene" => SceneType.HattoriBattleTest,
+            "KitanoLobbyTest" => SceneType.KitanoLobby,
+            "NakajimaLobby"=> SceneType.NakajimaLobby,
+            "KitanoResultTest" => SceneType.KitanoResult,
+            "HattoriResultScene" => SceneType.HattoriResult,
+            "KitanoTitleTest"=> SceneType.KitanoTitle,
+            "HattoriTitleScene"=> SceneType.HattoriTitle,
+            _ => SceneType.None
+
+        };
     }
 }
