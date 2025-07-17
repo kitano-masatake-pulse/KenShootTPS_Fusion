@@ -740,11 +740,91 @@ public class PlayerAvatar : NetworkBehaviour
     //単発武器の射撃。マガジンが空ならリロードする
     void FireDown()
     {
+        if (!CanWeaponAction()) { return; } //発射可能かどうかを判定
 
-        if (CanWeaponAction()) //発射可能かどうかを判定
+
+
+        if (currentWeapon == WeaponType.Sword)
+        {
+            //近接武器の処理
+            isImmobilized = true; //行動不能
+            isDuringWeaponAction = true;
+            isFollowingCameraForward = false; // カメラの向きに追従しないように設定
+
+            //攻撃の当たり判定やアニメーションは変わらないので共通
+            weaponClassDictionary[currentWeapon].FireDown(); //現在の武器の発射処理を呼ぶ
+            SetActionAnimationPlayListForAllClients(currentWeapon.FireDownAction()); //アクションアニメーションのリストに発射ダウンを追加
+
+            StartCoroutine(PostAttackDelayCoroutine()); //攻撃後の硬直時間を管理するコルーチンを開始
+
+            if (TryGetClosestTargetInRange(headObject.transform.position, bodyObject.transform.forward, chaseRange, chaseAngle, out Transform targetTransform))
+            {
+                // 近くに敵がいる場合
+                currentTargetTransform = targetTransform; // 現在のターゲットを設定
+                StartHoming(currentTargetTransform); //ホーミング開始
+                Debug.Log($"Homing started towards {currentTargetTransform.name} from {headObject.transform.position}");
+
+            }
+            else
+            {
+                // 近くに敵がいない場合、ホーミングせずその場で攻撃
+
+                Debug.Log("No target found for homing. Attacking in place.");
+
+
+            }
+
+        }
+        else if (currentWeapon == WeaponType.Grenade)
+        {
+
+            weaponClassDictionary[currentWeapon].FireDown(); //現在の武器の発射処理を呼ぶ
+            SetActionAnimationPlayListForAllClients(currentWeapon.FireDownAction()); //アクションアニメーションのリストに発射ダウンを追加
+
+       
+            
+        }
+        else
+        {
+            //遠距離武器の処理
+            if (weaponClassDictionary[currentWeapon].IsMagazineEmpty())
+            {
+                Reload(); //マガジンが空ならリロードする
+            }
+            else
+            {
+
+                isDuringWeaponAction = true;
+                weaponClassDictionary[currentWeapon].FireDown(); //現在の武器の発射処理を呼ぶ
+                SetActionAnimationPlayListForAllClients(currentWeapon.FireDownAction()); //アクションアニメーションのリストに発射ダウンを追加
+
+                if (currentWeapon.RecoilAmount_Pitch() > 0f || currentWeapon.RecoilAmount_Yaw() > 0f) tpsCameraController.StartRecoil(currentWeapon);//リコイル開始
+
+                OnAmmoChanged?.Invoke(weaponClassDictionary[currentWeapon].currentMagazine, weaponClassDictionary[currentWeapon].currentReserve); //弾薬変更イベントを発火
+
+                StartCoroutine(FireRoutine(currentWeapon.FireWaitTime())); //発射ダウンのコルーチンを開始
+                                                                           //Debug.Log($"FireDown {currentWeapon.GetName()}"); //デバッグログ
+            }
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+            /////
+            ///
+
+            if (CanWeaponAction()) //発射可能かどうかを判定
         {
             if (currentWeapon != WeaponType.Sword)
-            {   
+            {
                 //遠距離武器の処理
                 if (weaponClassDictionary[currentWeapon].IsMagazineEmpty())
                 {
@@ -755,7 +835,7 @@ public class PlayerAvatar : NetworkBehaviour
 
                     isDuringWeaponAction = true;
                     weaponClassDictionary[currentWeapon].FireDown(); //現在の武器の発射処理を呼ぶ
-                    SetActionAnimationPlayList(currentWeapon.FireDownAction(), Runner.SimulationTime); //アクションアニメーションのリストに発射ダウンを追加
+                    SetActionAnimationPlayListForAllClients(currentWeapon.FireDownAction()); //アクションアニメーションのリストに発射ダウンを追加
 
                     if (currentWeapon.RecoilAmount_Pitch() > 0f || currentWeapon.RecoilAmount_Yaw() > 0f) tpsCameraController.StartRecoil(currentWeapon);//リコイル開始
 
@@ -768,33 +848,7 @@ public class PlayerAvatar : NetworkBehaviour
             }
             else
             {
-                //近接武器の処理
-                isImmobilized = true; //行動不能
-                isDuringWeaponAction = true;
-                isFollowingCameraForward = false; // カメラの向きに追従しないように設定
-
-                //攻撃の当たり判定やアニメーションは変わらないので共通
-                weaponClassDictionary[currentWeapon].FireDown(); //現在の武器の発射処理を呼ぶ
-                SetActionAnimationPlayList(currentWeapon.FireDownAction(), Runner.SimulationTime); //アクションアニメーションのリストに発射ダウンを追加
                 
-                StartCoroutine(PostAttackDelayCoroutine()); //攻撃後の硬直時間を管理するコルーチンを開始
-
-                if (TryGetClosestTargetInRange(headObject.transform.position, bodyObject.transform.forward, chaseRange, chaseAngle, out Transform targetTransform))
-                {
-                    // 近くに敵がいる場合
-                    currentTargetTransform = targetTransform; // 現在のターゲットを設定
-                    StartHoming(currentTargetTransform); //ホーミング開始
-                    Debug.Log($"Homing started towards {currentTargetTransform.name} from {headObject.transform.position}");
-
-                }
-                else 
-                {
-                    // 近くに敵がいない場合、ホーミングせずその場で攻撃
-
-                    Debug.Log("No target found for homing. Attacking in place.");
-
-
-                }
 
 
 
@@ -832,13 +886,42 @@ public class PlayerAvatar : NetworkBehaviour
 
     void FireUp()
     {
-        if (CanWeaponAction() && !currentWeapon.isOneShotWeapon()) //連射武器で、かつ発射可能な場合
-        {
-            SetActionAnimationPlayList(currentWeapon.FireUpAction(), Runner.SimulationTime); //アクションアニメーションのリストに発射ダウンを追加
-            tpsCameraController.EndFiring();
-            //ここにもコルーチンつける？→一旦つけない
-            //Debug.Log($"FireUp {currentWeapon.GetName()}"); //デバッグログ
-        }
+
+
+
+
+        if (CanWeaponAction()) { return; }//連射武器で、かつ発射可能な場合
+        
+
+            if (currentWeapon==WeaponType.Grenade)
+            { 
+            
+                //グレネードの処理
+                
+                weaponClassDictionary[currentWeapon].FireUp(); //現在の武器の発射処理を呼ぶ
+                SetActionAnimationPlayListForAllClients(currentWeapon.FireUpAction()); //アクションアニメーションのリストに発射アップを追加
+                //StartCoroutine(FireRoutine(currentWeapon.FireWaitTime())); //発射アップのコルーチンを開始
+                //tpsCameraController.EndFiring(); //TPSカメラの発射終了処理を呼ぶ
+                Debug.Log($"FireUp {currentWeapon.GetName()}"); //デバッグログ
+
+
+            }
+
+
+
+
+            if (!currentWeapon.isOneShotWeapon())
+            {
+
+                SetActionAnimationPlayListForAllClients(currentWeapon.FireUpAction()); //アクションアニメーションのリストに発射ダウンを追加
+                tpsCameraController.EndFiring();
+
+
+
+                //ここにもコルーチンつける？→一旦つけない
+                //Debug.Log($"FireUp {currentWeapon.GetName()}"); //デバッグログ
+            }
+        
     }
 
 
@@ -1065,9 +1148,9 @@ public class PlayerAvatar : NetworkBehaviour
             OnADSChanged?.Invoke(isADS); //ADS状態変更イベントを発火
 
         }
-
+        
     }
-
+   
 
     #endregion
 
