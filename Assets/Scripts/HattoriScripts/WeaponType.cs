@@ -235,7 +235,7 @@ public static class WeaponTypeExtensions
             WeaponType.Sword => ActionType.Fire_Sword,
             WeaponType.AssaultRifle => ActionType.FireStart_AssaultRifle,
             WeaponType.SemiAutoRifle => ActionType.Fire_SemiAutoRifle,
-            WeaponType.Grenade => ActionType.Fire_Grenade,
+            WeaponType.Grenade => ActionType.FirePrepare_Grenade,
             _ => ActionType.None
         };
 
@@ -247,7 +247,8 @@ public static class WeaponTypeExtensions
         return weaponType switch
         { 
             WeaponType.AssaultRifle => ActionType.FireEnd_AssaultRifle,
-     
+            WeaponType.Grenade => ActionType.FireThrow_Grenade,
+
             _ => ActionType.None
         };
 
