@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a6cd9b1b159b084081a03036b09ec97, type: 3}
   m_Name: Throw
   m_EditorClassIdentifier: 
-  attackClip: {fileID: 0}
-  totalDuration: 1
-  hitStartTime: 0.3
-  hitEndTime: 0.5
+  attackClip: {fileID: -2061910772549006292, guid: 53dc240443b75904982347d1d9e8e0ab, type: 3}
+  totalDuration: 5
+  hitStartTime: 0
+  hitEndTime: 0

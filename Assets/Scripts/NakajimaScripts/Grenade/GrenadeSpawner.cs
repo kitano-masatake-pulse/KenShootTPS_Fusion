@@ -1,10 +1,32 @@
-using UnityEditor;
+using System.Collections;
+using System.Collections.Generic;
+using Fusion;
 using UnityEngine;
 
-// グレネードを投げるためのスプリクト
-//使わない
-public class GrenadeThrower : MonoBehaviour
+public class GrenadeSpawner : WeaponBase
 {
+    protected override WeaponType weapon => WeaponType.Grenade; // 武器の種類を指定
+
+
+    [SerializeField] private LayerMask playerLayer;
+    public override LayerMask PlayerLayer => playerLayer;
+
+    [SerializeField] private LayerMask obstructionLayer;
+    public override LayerMask ObstructionLayer => obstructionLayer;
+
+
+    [SerializeField] private float directHitRadius = 1f;// 直撃判定の半径
+    [SerializeField] private float blastHitRadius = 5f; // 爆風の半径
+
+    [SerializeField] private float minBlastDamage = 20f; // 爆風の最小ダメージ
+
+
+    [SerializeField] private float damageDuration = 1f; // 爆発時間(当たり時間)
+    [SerializeField] private float explosionDelay = 3f; // 爆発までの遅延時間
+
+    [SerializeField] private Transform explosionCenter; // 爆発の中心位置
+                                                        // Start is called before the first frame update
+
     // グレネードのプレハブ
     public GameObject grenadePrefab;
     // 投げる位置
@@ -18,7 +40,7 @@ public class GrenadeThrower : MonoBehaviour
     private float throwForce = 10f;
     // 投げるアニメーションの速度
     [SerializeField]
-    private float throwAnimSpeed = 1.0f; 
+    private float throwAnimSpeed = 1.0f;
     // 投げる向きベクトル
     Vector3 throwDirection;
     // 投げる力の大きさ
@@ -72,5 +94,7 @@ public class GrenadeThrower : MonoBehaviour
         Rigidbody rb = grenade.GetComponent<Rigidbody>();
         rb.velocity = velocity;
     }
-    
+
+    // 投擲処理RPC(同期処理)
+
 }

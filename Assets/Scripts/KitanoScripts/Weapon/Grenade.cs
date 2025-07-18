@@ -56,12 +56,19 @@ public class Grenade : WeaponBase
         StartCoroutine(DamageRoutine());
     }
 
+    public override void FireUp()
+    {
+        
+    }
 
 
-
+    //ここから攻撃判定(爆弾に付ける機能)
 
     private IEnumerator DamageRoutine()
     {
+        //ここに爆発まで待つしょり
+
+
         float elapsed = 0f;
         List<HitboxRoot> alreadyDamagedPlayers = new List<HitboxRoot>(); // すでにダメージを与えたプレイヤーを記録するリスト(今のフレームでダメージが確定した人も含む)
         isAttackActive = true; // 攻撃判定を有効にする
@@ -280,6 +287,8 @@ public class Grenade : WeaponBase
         float t = (distance - directHitRadius) / (blastHitRadius - directHitRadius);
         return Mathf.RoundToInt(Mathf.Lerp(weaponType.Damage(), minBlastDamage, t));
     }
+
+    //ここまで攻撃判定(爆弾に付ける機能)
 
 
     //void OnDrawGizmos()

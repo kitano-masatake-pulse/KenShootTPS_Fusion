@@ -319,9 +319,9 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.03782469
-  m_TransitionOffset: 12.730537
-  m_ExitTime: 0.94027674
+  m_TransitionDuration: 0.02440685
+  m_TransitionOffset: 12.248985
+  m_ExitTime: 0.9276049
   m_HasExitTime: 1
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -451,14 +451,20 @@ AnimatorController:
     m_DefaultInt: 0
     m_DefaultBool: 0
     m_Controller: {fileID: 9100000}
-  - m_Name: ThrowAnimSpeed
+  - m_Name: IsGrenadeReady
+    m_Type: 4
+    m_DefaultFloat: 0
+    m_DefaultInt: 0
+    m_DefaultBool: 0
+    m_Controller: {fileID: 9100000}
+  - m_Name: PrepareToThrow
     m_Type: 1
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
     m_Controller: {fileID: 9100000}
-  - m_Name: IsGrenadeReady
-    m_Type: 4
+  - m_Name: Throw
+    m_Type: 1
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
@@ -517,7 +523,7 @@ AnimatorStateMachine:
     m_Position: {x: 400, y: 320, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 2611375048656582821}
-    m_Position: {x: 760, y: 320, z: 0}
+    m_Position: {x: 740, y: 320, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1248523336093638295}
     m_Position: {x: 1020, y: 320, z: 0}
@@ -634,7 +640,7 @@ AnimatorState:
   m_TimeParameterActive: 0
   m_Motion: {fileID: -2061910772549006292, guid: 53dc240443b75904982347d1d9e8e0ab, type: 3}
   m_Tag: 
-  m_SpeedParameter: ThrowAnimSpeed
+  m_SpeedParameter: Throw
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
@@ -727,7 +733,7 @@ AnimatorState:
   m_TimeParameterActive: 0
   m_Motion: {fileID: 4061839508520268033, guid: 53dc240443b75904982347d1d9e8e0ab, type: 3}
   m_Tag: 
-  m_SpeedParameter: ThrowAnimSpeed
+  m_SpeedParameter: PrepareToThrow
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
@@ -803,7 +809,7 @@ AnimatorState:
   m_TimeParameterActive: 0
   m_Motion: {fileID: -203655887218126122, guid: 53dc240443b75904982347d1d9e8e0ab, type: 3}
   m_Tag: 
-  m_SpeedParameter: ThrowAnimSpeed
+  m_SpeedParameter: PrepareToThrow
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 

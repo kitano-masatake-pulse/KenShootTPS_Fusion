@@ -834,6 +834,14 @@ public class PlayerAvatar : NetworkBehaviour
 
     void FireUp()
     {
+        if (currentWeapon == WeaponType.Grenade)
+        {
+            weaponClassDictionary[currentWeapon].FireUp(); //グレネードの発射処理を呼ぶ
+
+
+        }
+
+
         if (CanWeaponAction() && !currentWeapon.isOneShotWeapon()) //連射武器で、かつ発射可能な場合
         {
             SetActionAnimationPlayList(currentWeapon.FireUpAction(), Runner.SimulationTime); //アクションアニメーションのリストに発射ダウンを追加
@@ -891,7 +899,22 @@ public class PlayerAvatar : NetworkBehaviour
                 OnWeaponChanged?.Invoke(currentWeapon, weaponClassDictionary[currentWeapon].currentMagazine, weaponClassDictionary[currentWeapon].currentReserve); //武器変更イベントを発火
                 //OnAmmoChanged?.Invoke(weaponClassDictionary[currentWeapon].CurrentMagazine, weaponClassDictionary[currentWeapon].CurrentReserve); //弾薬変更イベントを発火
 
-
+                switch (currentWeapon.GetName())
+                {
+                    case "Sword":
+                        SetActionAnimationPlayListForAllClients(ActionType.ChangeWeaponTo_Sword);
+                        break;
+                    case "AssaultRifle":
+                        SetActionAnimationPlayListForAllClients(ActionType.ChangeWeaponTo_AssaultRifle);
+                        break;
+                    case "SemiAutoRifle":
+                        SetActionAnimationPlayListForAllClients(ActionType.ChangeWeaponTo_SemiAutoRifle);
+                        break;
+                    case "Grenade":
+                        SetActionAnimationPlayListForAllClients(ActionType.ChangeWeaponTo_Grenade);
+                        break;
+                        // ...
+                }
                 //SetActionAnimationPlayList(.ChangeWeaponTo_ , Runner.SimulationTime); //アクションアニメーションのリストに武器変更を追加
                 StartCoroutine(ChangeWeaponRoutine(currentWeapon.WeaponChangeTime())); //武器変更処理をコルーチンで実行
 
