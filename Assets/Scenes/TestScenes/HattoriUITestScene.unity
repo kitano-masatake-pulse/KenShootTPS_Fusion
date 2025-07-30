@@ -134,6 +134,7 @@ GameObject:
   - component: {fileID: 109129230}
   - component: {fileID: 109129229}
   - component: {fileID: 109129228}
+  - component: {fileID: 109129231}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -255,6 +256,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 109129226}
   m_CullTransparentMesh: 1
+--- !u!114 &109129231
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 109129226}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c61dfbbf92da347468490da2af2ba231, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hoverKey: se_cursorChange
+  clickKey: se_confirm
+  submitKey: se_confirm
+  cancelKey: se_cancel
 --- !u!1 &270543012
 GameObject:
   m_ObjectHideFlags: 0
@@ -359,6 +376,7 @@ GameObject:
   - component: {fileID: 410529349}
   - component: {fileID: 410529348}
   - component: {fileID: 410529347}
+  - component: {fileID: 410529350}
   m_Layer: 5
   m_Name: SEButton
   m_TagString: Untagged
@@ -480,6 +498,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 410529345}
   m_CullTransparentMesh: 1
+--- !u!114 &410529350
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 410529345}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c61dfbbf92da347468490da2af2ba231, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hoverKey: se_cursorChange
+  clickKey: se_confirm
+  submitKey: se_confirm
+  cancelKey: se_cancel
 --- !u!1 &464408544
 GameObject:
   m_ObjectHideFlags: 0
@@ -689,6 +723,7 @@ GameObject:
   - component: {fileID: 927081537}
   - component: {fileID: 927081536}
   - component: {fileID: 927081535}
+  - component: {fileID: 927081538}
   m_Layer: 5
   m_Name: BGMButton (1)
   m_TagString: Untagged
@@ -810,6 +845,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 927081533}
   m_CullTransparentMesh: 1
+--- !u!114 &927081538
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 927081533}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c61dfbbf92da347468490da2af2ba231, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hoverKey: se_cursorChange
+  clickKey: se_confirm
+  submitKey: se_confirm
+  cancelKey: se_cancel
 --- !u!1 &1016147097
 GameObject:
   m_ObjectHideFlags: 0
