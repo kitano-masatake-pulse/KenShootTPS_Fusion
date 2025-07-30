@@ -13,7 +13,8 @@ public enum SceneType
     HattoriBattleTest,
     NakajimaLobby,
     HattoriResult,
-    HattoriTitle
+    HattoriTitle,
+    HattoriUITest
 }
 
 public static class SceneTypeExtensions
@@ -36,7 +37,8 @@ public static class SceneTypeExtensions
             SceneType.NakajimaLobby => "NakajimaLobby",
             SceneType.HattoriResult => "HattoriResultScene",
             SceneType.HattoriTitle => "HattoriTitleScene",
-            _ => throw new ArgumentOutOfRangeException(nameof(type), $"–¢’è‹`‚ÌSceneType‚Å‚·: {type}")
+            SceneType HattoriUITest => "HattoriUITestScene",
+            //_ => throw new ArgumentOutOfRangeException(nameof(type), $"–¢’è‹`‚ÌSceneType‚Å‚·: {type}")
         };
     }
 
@@ -52,5 +54,25 @@ public static class SceneTypeExtensions
             }
         }
         return -1; // not found
+    }
+
+    public static SceneType FromSceneName(this string sceneName)
+    {
+        return sceneName switch
+        {
+            "TitleScene" => SceneType.Title,
+            "LobbyScene" => SceneType.Lobby,
+            "BattleScene" => SceneType.Battle,
+            "ResultScene" => SceneType.Result,
+            "SceneLoadTest_Loaded" => SceneType.Test_Loaded,
+            "KitanoBattleTestScene" => SceneType.KitanoBattleTest,
+            "NakajimaBattleTestScene" => SceneType.NakajimaBattleTest,
+            "HattoriBattleTestScene" => SceneType.HattoriBattleTest,
+            "NakajimaLobby" => SceneType.NakajimaLobby,
+            "HattoriResultScene" => SceneType.HattoriResult,
+            "HattoriTitleScene" => SceneType.HattoriTitle,
+            "HattoriUITestScene" => SceneType.HattoriUITest,
+            _ => throw new ArgumentOutOfRangeException($"Unknown scene: {sceneName}")
+        };
     }
 }
