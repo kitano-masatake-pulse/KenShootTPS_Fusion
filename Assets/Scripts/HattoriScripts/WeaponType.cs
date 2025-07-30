@@ -104,7 +104,7 @@ public static class WeaponTypeExtensions
 
     public static float WeaponChangeTime(this WeaponType weaponType)
     {
-        return 1f; // ‘S‚Ä‚Ì•Ší‚Å“¯‚¶ŠÔ‚ğİ’è
+        return 0f; // ‘S‚Ä‚Ì•Ší‚Å“¯‚¶ŠÔ‚ğİ’è
     }
 
 

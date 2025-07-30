@@ -32,6 +32,8 @@ public class AnimationHandler : NetworkBehaviour
     private AimIK aimIK;
     private LimbIK limbIK;
     private AimController aimController;
+    private Coroutine changeWeaponCoroutine;
+    
 
     private void Start()
     {
@@ -51,7 +53,7 @@ public class AnimationHandler : NetworkBehaviour
         }
         SetAnimationFromPlayList();
 
-        //以下はテスト
+        //以下はテスト。グレネードを投げる
         //if (Input.GetMouseButton(0)) // 左クリックでジャンプ
         //{
         //    animator.SetBool("IsGrenadePreparation", true);
@@ -92,7 +94,6 @@ public class AnimationHandler : NetworkBehaviour
                 case ActionType.Jump:
                     Debug.Log($"IsJumping True");
                     animator.SetBool("IsJumping", true);
-                    
                     break;
 
                 case ActionType.Land:
@@ -112,38 +113,26 @@ public class AnimationHandler : NetworkBehaviour
 
                 case ActionType.ChangeWeaponTo_Sword:
                     Debug.Log($"ChangeWeaponTo_Sword");
-                    animator.SetTrigger("ChangeWeapons");
-                    FinalIKDisable();
-                    StartCoroutine(CoroutineToEnableFinalIK());
-                    HideAllWeapons();
-                    sword.SetActive(true);
+                    ChangeWeapon();
+                    animator.SetBool("EquipRifle", true);//後で変える
                     break;
 
                 case ActionType.ChangeWeaponTo_AssaultRifle:
                     Debug.Log($"ChangeWeaponTo_AssaultRifle");
-                    animator.SetTrigger("ChangeWeapons");
-                    FinalIKDisable();
-                    StartCoroutine(CoroutineToEnableFinalIK());
-                    HideAllWeapons();
-                    assaultRifle.SetActive(true);
+                    ChangeWeapon();
+                    animator.SetBool("EquipRifle", true);
                     break;
 
                 case ActionType.ChangeWeaponTo_SemiAutoRifle:
                     Debug.Log($"ChangeWeaponTo_SemiAutoRifle");
-                    animator.SetTrigger("ChangeWeapons");
-                    FinalIKDisable();
-                    StartCoroutine(CoroutineToEnableFinalIK());
-                    HideAllWeapons();
-                    semiAutoRifle.SetActive(true);
+                    ChangeWeapon();
+                    animator.SetBool("EquipRifle", true);//後で変える
                     break;
 
                 case ActionType.ChangeWeaponTo_Grenade:
                     Debug.Log($"ChangeWeaponTo_Grenade");
-                    animator.SetTrigger("ChangeWeapons");
-                    FinalIKDisable();
-                    StartCoroutine(CoroutineToEnableFinalIK());
-                    HideAllWeapons();
-                    grenade.SetActive(true);
+                    ChangeWeapon();
+                    animator.SetBool("EquipGrenade", true);
                     break;
             }
             Debug.Log($"actionType: {action.actionType}, actionCalledTimeOnSimulationTime: {action.actionCalledTimeOnSimulationTime}");
@@ -152,6 +141,32 @@ public class AnimationHandler : NetworkBehaviour
     }
 
 
+
+
+    private void ChangeWeapon()
+    {
+        if (changeWeaponCoroutine != null)
+        {
+            StopCoroutine(changeWeaponCoroutine);
+            ResetWeaponEquipBools();
+            changeWeaponCoroutine = null;
+        }
+        changeWeaponCoroutine = StartCoroutine(ChangeWeaponCoroutine());
+    }
+
+    IEnumerator ChangeWeaponCoroutine()
+    {
+        animator.SetTrigger("ChangeWeapons");
+        FinalIKDisable();
+        yield return new WaitForSeconds(0.5f);
+        HideAllWeapons();
+        ShowNextWeapons();
+        yield return new WaitForSeconds(0.5f);
+        ResetWeaponEquipBools();
+        FinalIKenable();
+        changeWeaponCoroutine = null;
+    }
+
     private void HideAllWeapons()
     {
         sword.SetActive(false);
@@ -159,11 +174,32 @@ public class AnimationHandler : NetworkBehaviour
         semiAutoRifle.SetActive(false);
         grenade.SetActive(false);
     }
-
-    IEnumerator CoroutineToEnableFinalIK()
+    private void ShowNextWeapons()
     {
-        yield return new WaitForSeconds(1f); // 1秒待つ
-        FinalIKenable();
+        switch (playerAvatar.CurrentWeapon)
+        {
+            case WeaponType.Sword:
+                sword.SetActive(true);
+                break;
+            case WeaponType.AssaultRifle:
+                assaultRifle.SetActive(true);
+                break;
+            case WeaponType.SemiAutoRifle:
+                semiAutoRifle.SetActive(true);
+                break;
+            case WeaponType.Grenade:
+                grenade.SetActive(true);
+                break;
+
+        }
+    }
+
+    void ResetWeaponEquipBools()
+    {
+        animator.SetBool("EquipRifle", false);
+        animator.SetBool("EquipGrenade", false);
+        animator.SetBool("EquipSword", false);
+        animator.SetBool("EquipSemiAutoRifle", false);
     }
 
 
