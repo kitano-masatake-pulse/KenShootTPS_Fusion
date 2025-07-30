@@ -268,9 +268,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c61dfbbf92da347468490da2af2ba231, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hoverKey: se_cursorChange
-  clickKey: se_confirm
-  submitKey: se_confirm
+  hoverKey: se_sentaku
+  clickKey: se_confirm_new
+  submitKey: se_confirm_new
   cancelKey: se_cancel
 --- !u!1 &270543012
 GameObject:
@@ -510,9 +510,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c61dfbbf92da347468490da2af2ba231, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hoverKey: se_cursorChange
-  clickKey: se_confirm
-  submitKey: se_confirm
+  hoverKey: se_sentaku
+  clickKey: se_confirm_new
+  submitKey: se_confirm_new
   cancelKey: se_cancel
 --- !u!1 &464408544
 GameObject:
@@ -857,9 +857,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c61dfbbf92da347468490da2af2ba231, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hoverKey: se_cursorChange
-  clickKey: se_confirm
-  submitKey: se_confirm
+  hoverKey: se_sentaku
+  clickKey: se_confirm_new
+  submitKey: se_confirm_new
   cancelKey: se_cancel
 --- !u!1 &1016147097
 GameObject:
@@ -1277,9 +1277,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c61dfbbf92da347468490da2af2ba231, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hoverKey: se_cursorChange
-  clickKey: se_confirm
-  submitKey: se_confirm
+  hoverKey: se_sentaku
+  clickKey: se_confirm_new
+  submitKey: se_confirm_new
   cancelKey: se_cancel
 --- !u!1 &1378496483
 GameObject:

@@ -6,14 +6,14 @@ using UnityEngine.EventSystems;
 public class UIAudioEmitter : MonoBehaviour,IPointerEnterHandler,IPointerDownHandler,ISubmitHandler,ICancelHandler
 {
     [Header("UI SFX Keys")]
-    public string hoverKey = "se_cursorChange";
-    public string clickKey = "se_confirm";
-    public string submitKey = "se_confirm";
+    public string hoverKey = "se_sentaku";
+    public string clickKey = "se_confirm_new";
+    public string submitKey = "se_confirm_new";
     public string cancelKey = "se_cancel";
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        AudioManager.Instance.PlaySound(hoverKey,SoundCategory.System,0.1f);
+        AudioManager.Instance.PlaySound(hoverKey,SoundCategory.System,0.01f);
     }
     public void OnPointerDown(PointerEventData eventData)
     {
