@@ -30,7 +30,7 @@ public class SceneTransitionManager : MonoBehaviour,INetworkRunnerCallbacks
     private bool isTransitioning = false; // シーン遷移中かどうかのフラグ
     private bool hasTransitionExecuted = false; // シーン遷移が実行されたかどうかのフラグ
 
-    public SceneType CurrentSceneType => SceneManager.GetActiveScene().name.FromSceneName();
+    public SceneType CurrentSceneType => SceneManager.GetActiveScene().ToSceneType();
 
     public static event Action<SceneType> OnSceneLoad;
     public static event Action<SceneType> OnSceneUnload;
