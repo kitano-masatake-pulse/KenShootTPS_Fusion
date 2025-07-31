@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Fusion;
 using RootMotion.FinalIK;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -23,6 +24,7 @@ public class AnimationHandler : NetworkBehaviour
     private float vertical;
 
     private float LastTick = 0;
+    private float changeTime = 1f; // 武器変更のアニメーション時間
 
     [SerializeField] private GameObject sword;
     [SerializeField] private GameObject assaultRifle;
@@ -33,7 +35,11 @@ public class AnimationHandler : NetworkBehaviour
     private LimbIK limbIK;
     private AimController aimController;
     private Coroutine changeWeaponCoroutine;
-    
+    private bool isInTargetState;
+    private bool wasInTargetState = false;
+    private string targetStateName = "Put";
+    private int idleTagHash = Animator.StringToHash("Idle");
+
 
     private void Start()
     {
@@ -52,6 +58,51 @@ public class AnimationHandler : NetworkBehaviour
             LastTick = Runner.Simulation.Tick;
         }
         SetAnimationFromPlayList();
+
+        isInTargetState = animator.GetCurrentAnimatorStateInfo(1).IsName(targetStateName);
+
+        if (animator.GetCurrentAnimatorStateInfo(1).IsName("PutAway"))
+        {
+            FinalIKDisable();
+        }
+        if (animator.GetCurrentAnimatorStateInfo(1).IsName("Put")){
+            switch (playerAvatar.CurrentWeapon)
+            {
+                case WeaponType.Sword:
+                    animator.SetBool("EquipRifle", true);
+                    break;
+                case WeaponType.AssaultRifle:
+                    animator.SetBool("EquipRifle", true);
+                    break;
+                case WeaponType.SemiAutoRifle:
+                    animator.SetBool("EquipRifle", true);
+                    break;
+                case WeaponType.Grenade:
+                    animator.SetBool("EquipGrenade", true);
+                    break;
+
+            }
+        }
+        if (animator.GetCurrentAnimatorStateInfo(1).IsName("PutBack"))
+        {
+
+        }
+        if (wasInTargetState && !isInTargetState)//Putが終了したときに呼ばれるフラグ
+        {
+
+            HideAllWeapons();
+            ShowNextWeapons();
+
+        }
+
+        if (animator.GetCurrentAnimatorStateInfo(1).tagHash == idleTagHash)
+        {
+            FinalIKenable();
+        }
+
+        wasInTargetState = isInTargetState;
+
+
 
         //以下はテスト。グレネードを投げる
         //if (Input.GetMouseButton(0)) // 左クリックでジャンプ
@@ -114,25 +165,25 @@ public class AnimationHandler : NetworkBehaviour
                 case ActionType.ChangeWeaponTo_Sword:
                     Debug.Log($"ChangeWeaponTo_Sword");
                     ChangeWeapon();
-                    animator.SetBool("EquipRifle", true);//後で変える
+                    //animator.SetBool("EquipRifle", true);//後で変える
                     break;
 
                 case ActionType.ChangeWeaponTo_AssaultRifle:
                     Debug.Log($"ChangeWeaponTo_AssaultRifle");
                     ChangeWeapon();
-                    animator.SetBool("EquipRifle", true);
+                    //animator.SetBool("EquipRifle", true);
                     break;
 
                 case ActionType.ChangeWeaponTo_SemiAutoRifle:
                     Debug.Log($"ChangeWeaponTo_SemiAutoRifle");
                     ChangeWeapon();
-                    animator.SetBool("EquipRifle", true);//後で変える
+                    //animator.SetBool("EquipRifle", true);//後で変える
                     break;
 
                 case ActionType.ChangeWeaponTo_Grenade:
                     Debug.Log($"ChangeWeaponTo_Grenade");
                     ChangeWeapon();
-                    animator.SetBool("EquipGrenade", true);
+                    //animator.SetBool("EquipGrenade", true);
                     break;
             }
             Debug.Log($"actionType: {action.actionType}, actionCalledTimeOnSimulationTime: {action.actionCalledTimeOnSimulationTime}");
@@ -145,27 +196,32 @@ public class AnimationHandler : NetworkBehaviour
 
     private void ChangeWeapon()
     {
-        if (changeWeaponCoroutine != null)
-        {
-            StopCoroutine(changeWeaponCoroutine);
-            ResetWeaponEquipBools();
-            changeWeaponCoroutine = null;
-        }
-        changeWeaponCoroutine = StartCoroutine(ChangeWeaponCoroutine());
+        ResetWeaponEquipBools();
+        //if (changeWeaponCoroutine != null)
+        //{
+        //    StopCoroutine(changeWeaponCoroutine);
+        //    ResetWeaponEquipBools();
+        //    changeWeaponCoroutine = null;
+        //}
+        animator.SetTrigger("ChangeWeapons");
+        animator.SetBool("IsADS", false);
+        //changeWeaponCoroutine = StartCoroutine(ChangeWeaponCoroutine());
     }
 
-    IEnumerator ChangeWeaponCoroutine()
-    {
-        animator.SetTrigger("ChangeWeapons");
-        FinalIKDisable();
-        yield return new WaitForSeconds(0.5f);
-        HideAllWeapons();
-        ShowNextWeapons();
-        yield return new WaitForSeconds(0.5f);
-        ResetWeaponEquipBools();
-        FinalIKenable();
-        changeWeaponCoroutine = null;
-    }
+    //IEnumerator ChangeWeaponCoroutine()
+    //{
+    //    animator.SetTrigger("ChangeWeapons");
+    //    animator.SetBool("IsADS", false);
+    //    //FinalIKDisable();
+    //    yield return new WaitForSeconds(changeTime/2);
+    //    //HideAllWeapons();
+    //    //ShowNextWeapons();
+    //    yield return new WaitForSeconds(0.7f);
+    //    ResetWeaponEquipBools();
+    //    FinalIKenable();
+    //    changeWeaponCoroutine = null;
+    //    //マジックナンバーにしない
+    //}
 
     private void HideAllWeapons()
     {
