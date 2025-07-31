@@ -300,7 +300,7 @@ public class AudioManager : MonoBehaviour
     /// <summary>
     /// BGM用ストリーミング再生
     /// </summary>
-    public void PlayBgm(string clipKey,SoundCategory soundCategory,SoundType soundType = SoundType.Loop)
+    public void PlayBgm(string clipKey,SoundCategory soundCategory = SoundCategory.BGM,SoundType soundType = SoundType.Loop)
     {
         var clip = GetClip(clipKey);
         if (clip == null) return;
