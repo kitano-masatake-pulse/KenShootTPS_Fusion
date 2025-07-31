@@ -17,6 +17,11 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
 
     Guid localUserGuid ;
     [SerializeField] string guidValue;
+
+    // Inspector で複数シーンを追加・削除できる
+    [SerializeField] private List<SceneType> debugInitScenes = new() { SceneType.None };
+
+
     private bool _isFirstTime=true;
     NetworkRunner networkRunner;
     private StartGameArgs startGameArgs;
@@ -52,13 +57,20 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
 
         OnNetworkRunnerGenerated -= AddCallbackMe;
         OnNetworkRunnerGenerated += AddCallbackMe;
+
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     void OnDisable()
     {
         OnNetworkRunnerGenerated -= AddCallbackMe;
-        if(networkRunner != null)
-            networkRunner.RemoveCallbacks(this);
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+
+
+
+        if (networkRunner != null) { networkRunner.RemoveCallbacks(this); }
+            
     }
 
     void AddCallbackMe(NetworkRunner runner)
@@ -77,6 +89,29 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
     private async void Start()
     {
         Debug.Log("GameLauncher: Start Called");
+        // 今アクティブなシーンを擬似的に渡して初期化
+        OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single);
+    }
+
+    async void  OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+
+        
+
+        var gs = scene.ToSceneType();
+        if (debugInitScenes.Contains(gs))
+        {
+            Debug.Log($"Init for {scene.name}");
+           
+        }
+        else 
+        {
+            Debug.LogWarning($"Scene {scene.name} is not in the debugInitScenes list. Skipping initialization.");
+            return;
+        }
+
+
+
         //ランナーが場になければ
         // NetworkRunnerを生成する
         networkRunner = FindObjectOfType<NetworkRunner>();
@@ -102,6 +137,8 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
 
 
         }
+
+
     }
 
     async void StartSession()

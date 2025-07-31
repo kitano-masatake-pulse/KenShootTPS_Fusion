@@ -41,7 +41,13 @@ public class NetworkInputManager : MonoBehaviour,INetworkRunnerCallbacks
 
 
         ConnectionManager.OnNetworkRunnerGenerated += AddCallbackMe;
-        
+
+
+
+        runner = FindObjectOfType<NetworkRunner>();
+        if (runner != null)
+            runner.AddCallbacks(this);
+
     }
 
 

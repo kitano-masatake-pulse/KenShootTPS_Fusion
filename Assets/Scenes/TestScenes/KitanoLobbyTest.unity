@@ -134,6 +134,30 @@ PrefabInstance:
       propertyPath: m_Name
       value: LobbyScenePrefab
       objectReference: {fileID: 0}
+    - target: {fileID: 4152378728208197908, guid: 2a4b62eb3579ad94fac6651beacd874e, type: 3}
+      propertyPath: debugInitScenes
+      value: 2048
+      objectReference: {fileID: 0}
+    - target: {fileID: 4152378728208197908, guid: 2a4b62eb3579ad94fac6651beacd874e, type: 3}
+      propertyPath: debugInitScenes.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4152378728208197908, guid: 2a4b62eb3579ad94fac6651beacd874e, type: 3}
+      propertyPath: debugInitScenes.Array.data[0]
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4152378728208197908, guid: 2a4b62eb3579ad94fac6651beacd874e, type: 3}
+      propertyPath: debugInitScenes.Array.data[1]
+      value: 128
+      objectReference: {fileID: 0}
+    - target: {fileID: 5111644406287013726, guid: 2a4b62eb3579ad94fac6651beacd874e, type: 3}
+      propertyPath: nextScene
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 5111644406287013726, guid: 2a4b62eb3579ad94fac6651beacd874e, type: 3}
+      propertyPath: returnScene
+      value: 2048
+      objectReference: {fileID: 0}
     - target: {fileID: 5111644406287013726, guid: 2a4b62eb3579ad94fac6651beacd874e, type: 3}
       propertyPath: playerAvatarPrefab.RawGuidValue.Array.data[0]
       value: 6054130816121002738

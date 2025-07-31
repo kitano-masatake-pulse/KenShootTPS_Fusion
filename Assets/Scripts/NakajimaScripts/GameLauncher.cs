@@ -201,8 +201,12 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         {
             //入室したクライアントのアバターを生成
             //if(_isFirstTime){ClientAvatarSpawn(runner, player);}
-           
-            ClientAvatarSpawn(runner, player);
+
+            if (runner.GetPlayerObject(player) == null)
+            {
+                CreatePlayerAvatar(runner, player);
+            }
+            
 
                 if (player == runner.LocalPlayer)
             {
@@ -314,8 +318,9 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
     public void OnSceneLoadDone(NetworkRunner runner) 
     {
-        if(_isFirstTime) return; // 2回目以降のみ処理を実行
         Debug.Log($"GameLauncher:OnSceneLoadDone called. {Time.time} {runner.Tick},{runner.SimulationTime} ");
+        //if (_isFirstTime) return; // 2回目以降のみ処理を実行
+        Debug.Log($"GameLauncher:OnSceneLoadDone called and not return. {Time.time} {runner.Tick},{runner.SimulationTime} ");
         if (runner.SessionInfo != null && runner.SessionInfo.Properties != null)
         {
             if (runner.SessionInfo.Properties.TryGetValue("GameRule", out var gameRuleProp))
@@ -341,7 +346,11 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
         foreach (var player in runner.ActivePlayers)
         {
-            CreatePlayerAvatar(runner,player);
+            if (runner.GetPlayerObject(player) == null)
+            {
+                CreatePlayerAvatar(runner, player);
+            }
+            
         }
 
         Debug.Log("ホストが参加 → ボタン表示指示");
