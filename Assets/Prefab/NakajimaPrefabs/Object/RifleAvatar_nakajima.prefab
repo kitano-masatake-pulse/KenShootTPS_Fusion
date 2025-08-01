@@ -681,7 +681,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1391339631052598784
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1332,9 +1332,9 @@ GameObject:
   - component: {fileID: 9087073000084578297}
   - component: {fileID: 7349359384497818507}
   - component: {fileID: 3342411206420378372}
-  - component: {fileID: 797647319568629457}
+  - component: {fileID: 7146378648566735066}
   m_Layer: 0
-  m_Name: PlayerAvatar_nakajima 1
+  m_Name: RifleAvatar_nakajima
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1380,7 +1380,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ObjectInterest: 1
   DefaultInterestGroups: []
-  DestroyWhenStateAuthorityLeaves: 0
+  DestroyWhenStateAuthorityLeaves: 1
   AllowStateAuthorityOverride: 1
   AoiPositionSource: {fileID: 0}
   Flags: 2305
@@ -1454,6 +1454,8 @@ MonoBehaviour:
   _cameraForwardInHost: {x: 0, y: 0, z: 0}
   _normalizedInputDirectionInHost: {x: 0, y: 0, z: 0}
   isDummy: 0
+  wasGrounded: 0
+  isGroundedNow: 0
   chaseAngle: 90
   chaseRange: 5
   chaseSpeed: 6
@@ -1468,8 +1470,6 @@ MonoBehaviour:
   obstructionMask:
     serializedVersion: 2
     m_Bits: 0
-  wasGraunded: 0
-  isGraundedNow: 0
 --- !u!114 &6887860513559479073
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1485,12 +1485,10 @@ MonoBehaviour:
   WordOffset: 0
   WordCount: 0
   _interpolationDataSource: 0
-  playerAvatar: {fileID: 2456749128542381984}
   _CurrentHP: 100
   _MaxHP: 100
   _IsInvincible: 0
   _CurrentWeapon_Network: 0
-  _Team: 0
 --- !u!114 &-4328647438270834359
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1573,10 +1571,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11148815b5b938642b0391c61343dcde, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  grenadePrefab: {fileID: 3572506081172032769, guid: 4956982f557e98941ae9bf215dddea3d, type: 3}
+  grenadePrefab: {fileID: 3572506081172032769, guid: 43b013267915f1049946845490bd36de, type: 3}
   throwPoint: {fileID: 4142803977256852626}
-  throwForce: 10
-  trajectoryDrawer: {fileID: 797647319568629457}
+  throwAnimSpeed: 1
+  trajectoryDrawer: {fileID: 7146378648566735066}
+  animator: {fileID: 0}
 --- !u!120 &3342411206420378372
 LineRenderer:
   serializedVersion: 2
@@ -1681,7 +1680,7 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
---- !u!114 &797647319568629457
+--- !u!114 &7146378648566735066
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1694,12 +1693,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lineRenderer: {fileID: 3342411206420378372}
-  resolution: 30
-  simulationTime: 2
-  timeStep: 0.1
   collisionMask:
     serializedVersion: 2
     m_Bits: 1
+  impactMarkerPrefab: {fileID: 3686337052451485103, guid: d307c7b76332eff40bcd518f15206054, type: 3}
 --- !u!1 &2958646034594578311
 GameObject:
   m_ObjectHideFlags: 0
@@ -3538,13 +3535,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7277342217976264531}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.2084841, y: 0.0085347835, z: 0.0018194177, w: 0.9779868}
+  m_LocalRotation: {x: -0.21643952, y: 0, z: 0, w: 0.97629607}
   m_LocalPosition: {x: 0.44, y: 0.04100001, z: 0.519}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1866896830107978106}
-  m_LocalEulerAnglesHint: {x: -24.068, y: 1, z: 0}
+  m_LocalEulerAnglesHint: {x: -25, y: 0, z: 0}
 --- !u!1 &7431975975316102614
 GameObject:
   m_ObjectHideFlags: 0
