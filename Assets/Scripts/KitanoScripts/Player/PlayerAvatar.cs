@@ -993,6 +993,9 @@ public class PlayerAvatar : NetworkBehaviour
         yield return new WaitForSeconds(attackImmolizedTime);
 
         isImmobilized = false; // 行動不能を解除
+
+        isDuringWeaponAction = false; // 武器アクション中フラグを解除
+        //currentWeaponActionState = WeaponActionState.Idle; // 現在のアクションをIdleに設定
         //キャラの向きをカメラの向きに徐々に戻す
         StartCoroutine(RotateToCameraOverTime(rotationDuration));
 
@@ -1128,10 +1131,13 @@ public class PlayerAvatar : NetworkBehaviour
         //近接武器の処理
         isImmobilized = true; //行動不能
         isDuringWeaponAction = true;
+        currentWeaponActionState = WeaponActionState.SwordAttacking; //武器アクション状態を近接攻撃に設定
+        stateTimer_ReturnToIdle= attackImmolizedTime; //近接攻撃の待機時間を設定
+
         isFollowingCameraForward = false; // カメラの向きに追従しないように設定
 
         //攻撃の当たり判定やアニメーションは変わらないので共通
-        weaponClassDictionary[currentWeapon].FireDown(); //現在の武器の発射処理を呼ぶ
+        //weaponClassDictionary[currentWeapon].FireDown(); //現在の武器の発射処理を呼ぶ
         SetActionAnimationPlayListForAllClients(currentWeapon.FireDownAction()); //アクションアニメーションのリストに発射ダウンを追加
 
         StartCoroutine(PostAttackDelayCoroutine()); //攻撃後の硬直時間を管理するコルーチンを開始
@@ -1283,11 +1289,10 @@ public class PlayerAvatar : NetworkBehaviour
 
     public void Fire()
     {
-        if (!currentWeapon.isOneShotWeapon() && CanWeaponAction() && !weaponClassDictionary[currentWeapon].IsMagazineEmpty()) //連射武器で、かつ発射可能な場合a
-        {
-
+        
 
             isDuringWeaponAction = true;
+            currentWeaponActionState = WeaponActionState.Firing; //武器アクション状態を射撃に設定
 
             weaponClassDictionary[currentWeapon].Fire(); //現在の武器の発射処理を呼ぶ
 
@@ -1303,10 +1308,11 @@ public class PlayerAvatar : NetworkBehaviour
 
             stateTimer_ReturnToIdle = currentWeapon.FireWaitTime(); //発射後の待機時間を設定
 
-        }
-
+       
 
 }
+
+
 
     void FireUp()
     {
@@ -1362,15 +1368,21 @@ public class PlayerAvatar : NetworkBehaviour
                 CancelADS(); //現在の武器がADS可能ならADSをキャンセル
             }
 
-            StartCoroutine(ReloadRoutine(currentWeapon, currentWeapon.ReloadTime())); //リロード処理をコルーチンで実行
-            Debug.Log($"Reloading {currentWeapon.GetName()}"); //デバッグログ
+            //StartCoroutine(ReloadRoutine(currentWeapon, currentWeapon.ReloadTime())); //リロード処理をコルーチンで実行
+
+            stateTimer_ReturnToIdle= currentWeapon.ReloadTime(); //リロード後の待機時間を設定
+        Debug.Log($"Reloading {currentWeapon.GetName()}"); //デバッグログ
         
+    }
+
+    public void InvokeAmmoChanged()
+    {
+        OnAmmoChanged?.Invoke(weaponClassDictionary[currentWeapon].currentMagazine, weaponClassDictionary[currentWeapon].currentReserve); //弾薬変更イベントを発火
     }
 
     void ChangeWeapon(float scrollValue)
     {
-        if (CanWeaponAction())
-        {
+        
             int weaponCount = weaponClassDictionary.Count; //武器の総数を取得 
             WeaponType newWeaponType=WeaponType.Sword; //新しい武器タイプを格納する変数
             //武器の変更可能かどうかを判定
@@ -1412,22 +1424,16 @@ public class PlayerAvatar : NetworkBehaviour
                 //OnAmmoChanged?.Invoke(weaponClassDictionary[currentWeapon].CurrentMagazine, weaponClassDictionary[currentWeapon].CurrentReserve); //弾薬変更イベントを発火
 
 
-                //SetActionAnimationPlayList(.ChangeWeaponTo_ , Runner.SimulationTime); //アクションアニメーションのリストに武器変更を追加
-                StartCoroutine(ChangeWeaponRoutine(currentWeapon.WeaponChangeTime())); //武器変更処理をコルーチンで実行
-
+                SetActionAnimationPlayListForAllClients(currentWeapon.ChangeWeaponAction()); //アクションアニメーションのリストに武器変更を追加
+                //StartCoroutine(ChangeWeaponRoutine(currentWeapon.WeaponChangeTime())); //武器変更処理をコルーチンで実行
+                stateTimer_ReturnToIdle = currentWeapon.WeaponChangeTime(); //武器変更後の待機時間を設定
             }
             else
             {
                 Debug.LogWarning($"Weapon {newWeaponType} not found in weapon dictionary.");
             }
 
-        }
-        else
-        {
-            //Debug.Log("Cannot change weapon now."); //武器変更できない場合のデバッグログ
-        }
-
-        
+    
     }
 
 
@@ -1473,11 +1479,11 @@ public class PlayerAvatar : NetworkBehaviour
         yield return new WaitForSeconds(waitTime);
         //localState.SetAmmo(weaponType, localState.GetMaxAmmo(weaponType));
 
-        weaponClassDictionary[reloadedWeaponType].Reload(); //リロード処理を呼ぶ
+        weaponClassDictionary[reloadedWeaponType].FinishReload(); //リロード処理を呼ぶ
 
         OnAmmoChanged?.Invoke(weaponClassDictionary[reloadedWeaponType].currentMagazine, weaponClassDictionary[reloadedWeaponType].currentReserve); //弾薬変更イベントを発火
 
-        isDuringWeaponAction = false;
+        //isDuringWeaponAction = false;
         Debug.Log("リロード完了！");
     }
 

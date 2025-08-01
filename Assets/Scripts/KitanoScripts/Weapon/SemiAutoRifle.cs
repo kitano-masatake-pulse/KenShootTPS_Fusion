@@ -21,6 +21,9 @@ public class SemiAutoRifle : WeaponBase
     CharacterController avatarCharacterController; // キャラクターコントローラーを取得するための変数
 
     bool isADS = false;
+    float reloadTimer = 0f; // リロードタイマー
+    float reloadWaitTime = 0.5f; // リロードにかかる時間(秒)
+    bool isWaitingForReload = false; // リロード待機中かどうかのフラグ
 
     #region 弾の拡散(スプレッド)
     //弾の拡散に関するパラメータ
@@ -56,6 +59,8 @@ public class SemiAutoRifle : WeaponBase
 
     [SerializeField] float ADSspreadReduction = 0.8f; //ADS中かどうかのフラグ
     int spreadPatternIndex = 0; //スプレッドのパターンのインデックス
+    
+
 
     #endregion
 
@@ -84,10 +89,27 @@ public class SemiAutoRifle : WeaponBase
             playerAvatar.SwitchADS();
         }
 
+        if (isWaitingForReload)
+        {
+            reloadTimer += Time.deltaTime; //リロードタイマーを更新
+            if (reloadTimer >= reloadWaitTime) //リロード時間が経過したら
+            {
+                isWaitingForReload = false; //リロード待機フラグを解除
+                reloadTimer = 0f; //リロードタイマーをリセット
+
+                FinishReload(); //リロード完了処理を呼び出す
+                Debug.Log($"Reloaded {weaponType.GetName()}! Current Magazine: {currentMagazine}, Current Reserve: {currentReserve}");
+            }
+
+
+
+        }
+
         //リロード条件を満たしてたらリロード
         if (CanReload(localInputData, inputBuffer, currentAction))
         {
-            Reload(); //リロード処理を呼び出す
+            isWaitingForReload = true; //リロード待機フラグを立てる
+            //Reload(); //リロード処理を呼び出す
             playerAvatar.Reload();
             Debug.Log($"Reloading {weaponType.GetName()}! Current Magazine: {currentMagazine}, Current Reserve: {currentReserve}");
             return; //リロードしたら以降の処理は行わない
@@ -105,7 +127,7 @@ public class SemiAutoRifle : WeaponBase
             }
             else 
             {
-                Fire(); 
+                //Fire(); 
                 playerAvatar.Fire(); //PlayerAvatarの射撃処理を呼び出す
                 Debug.Log($"Firing {weaponType.GetName()} stay! Current Magazine: {currentMagazine}, Current Reserve: {currentReserve}");
                 return;

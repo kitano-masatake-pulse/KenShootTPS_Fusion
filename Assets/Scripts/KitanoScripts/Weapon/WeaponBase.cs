@@ -21,6 +21,12 @@ public abstract class WeaponBase : NetworkBehaviour
 
 
 
+    public override void Spawned()
+    {
+        playerAvatar = GetComponentInParent<PlayerAvatar>(); //親のPlayerAvatarを取得
+    }
+
+
     public void InitializeAmmo()
     {
         currentMagazine = weaponType.MagazineCapacity();
@@ -79,8 +85,10 @@ public abstract class WeaponBase : NetworkBehaviour
         Debug.Log($"{weaponType.GetName()} fired down! Current Magazine: {currentMagazine}, Current Reserve: {currentReserve}");
     }
 
-    public virtual void Reload()
+    public virtual void FinishReload()
     {
+
+        
         int currentMagazine = this.currentMagazine;
         int currentReserve = this.currentReserve;
         int magazineCapacity = weaponType.MagazineCapacity();
@@ -88,7 +96,10 @@ public abstract class WeaponBase : NetworkBehaviour
 
         this.currentMagazine += reloadededAmmo; //マガジンにリロードされた弾薬を追加
         this.currentReserve -= reloadededAmmo; //リザーブからリロードされた弾薬を減らす
+
+        playerAvatar.InvokeAmmoChanged();
     }
+
 
 
     public virtual void Fire()

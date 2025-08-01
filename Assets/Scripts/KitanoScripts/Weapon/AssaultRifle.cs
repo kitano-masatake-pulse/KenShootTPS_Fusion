@@ -23,6 +23,9 @@ public class AssaultRifle : WeaponBase
 
     float rayDrawingDuration=1/60f; // Rayの描画時間(1/60秒)
 
+    float reloadTimer = 0f; // リロードタイマー
+    float reloadWaitTime = 0.5f; // リロードにかかる時間(秒)
+    bool isWaitingForReload = false; // リロード待機中かどうかのフラグ
 
     #region 弾の拡散(スプレッド)
     //弾の拡散に関するパラメータ
@@ -92,7 +95,7 @@ public class AssaultRifle : WeaponBase
         randomPattern_RunningSpreadAngle = GenerateRandomPattern(seed_RunningSpreadAngle, magazineCapacity, 0f, 2 * Mathf.PI); //ランニングスプレッドの角度のパターンを生成
 
         avatarCharacterController=GetComponentInParent<CharacterController>(); //親のキャラクターコントローラーを取得
-        playerAvatar = GetComponentInParent<PlayerAvatar>(); //親のPlayerAvatarを取得
+        
 
     }
 
@@ -115,9 +118,30 @@ public class AssaultRifle : WeaponBase
             playerAvatar.SwitchADS();
         }
 
+        if (isWaitingForReload)
+        { 
+            reloadTimer += Time.deltaTime; //リロードタイマーを更新
+            if (reloadTimer >= reloadWaitTime) //リロード時間が経過したら
+            {
+                isWaitingForReload = false; //リロード待機フラグを解除
+                reloadTimer = 0f; //リロードタイマーをリセット
+
+                FinishReload(); //リロード完了処理を呼び出す
+                Debug.Log($"Reloaded {weaponType.GetName()}! Current Magazine: {currentMagazine}, Current Reserve: {currentReserve}");
+            }
+            
+
+
+        }
+        
+
+
+        
+
         //リロード条件を満たしてたらリロード
         if (CanReload(localInputData, inputBuffer, currentAction))
         {
+            isWaitingForReload = true; //リロード待機フラグを立てる
             //Reload(); //リロード処理を呼び出す
             playerAvatar.Reload();
             Debug.Log($"Reloading {weaponType.GetName()}! Current Magazine: {currentMagazine}, Current Reserve: {currentReserve}");
@@ -128,7 +152,7 @@ public class AssaultRifle : WeaponBase
         
         else if (CanFire(localInputData, inputBuffer, currentAction)) //連射中なら
         {
-            Fire(); //連射処理を呼び出す
+            //Fire(); //連射処理を呼び出す
             playerAvatar.FireAction(); //PlayerAvatarの射撃処理を呼び出す
             Debug.Log($"Firing {weaponType.GetName()} stay! Current Magazine: {currentMagazine}, Current Reserve: {currentReserve}");
             return;

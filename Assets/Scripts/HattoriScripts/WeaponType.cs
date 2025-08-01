@@ -118,7 +118,7 @@ public static class WeaponTypeExtensions
 
     public static float WeaponChangeTime(this WeaponType weaponType)
     {
-        return 0f; // ‘S‚Ä‚Ì•Ší‚Å“¯‚¶ŠÔ‚ğİ’è
+        return 1f; // ‘S‚Ä‚Ì•Ší‚Å“¯‚¶ŠÔ‚ğİ’è
     }
 
     public static bool CanADS(this WeaponType weaponType)
