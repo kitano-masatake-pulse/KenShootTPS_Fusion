@@ -75,8 +75,68 @@ public class SemiAutoRifle : WeaponBase
 
     }
 
+    public override void CalledOnUpdate(PlayerInputData localInputData, InputBufferStruct inputBuffer, WeaponActionState currentAction)
+    {
 
-    public override void FireDown()
+        //ADS
+        if (CanADS(localInputData, inputBuffer, currentAction))
+        {
+            playerAvatar.SwitchADS();
+        }
+
+        //リロード条件を満たしてたらリロード
+        if (CanReload(localInputData, inputBuffer, currentAction))
+        {
+            Reload(); //リロード処理を呼び出す
+            playerAvatar.Reload();
+            Debug.Log($"Reloading {weaponType.GetName()}! Current Magazine: {currentMagazine}, Current Reserve: {currentReserve}");
+            return; //リロードしたら以降の処理は行わない
+        }
+
+        //射撃条件を満たしていたら射撃
+
+        else if (CanFire(localInputData, inputBuffer, currentAction)) //連射中なら
+        {
+            if (IsMagazineEmpty())
+            {
+              //マガジンが空なら射撃できないので何もしない
+                Debug.Log($"Cannot fire {weaponType.GetName()}! Magazine is empty. Current Magazine: {currentMagazine}, Current Reserve: {currentReserve}");
+                return;
+            }
+            else 
+            {
+                Fire(); 
+                playerAvatar.Fire(); //PlayerAvatarの射撃処理を呼び出す
+                Debug.Log($"Firing {weaponType.GetName()} stay! Current Magazine: {currentMagazine}, Current Reserve: {currentReserve}");
+                return;
+
+            }
+                
+        }
+
+    }
+
+    public bool CanADS(PlayerInputData localInputData, InputBufferStruct inputBuffer, WeaponActionState currentAction)
+    {
+        bool stateCondition =
+            currentAction == WeaponActionState.Idle ||
+            currentAction == WeaponActionState.Firing;
+
+
+        return localInputData.ADSPressedDown && currentAction == WeaponActionState.Idle; 
+        //ADSボタンが押されていて、現在のアクションがアイドル状態であることを確認
+
+    }
+
+    public override bool CanFire(PlayerInputData localInputData, InputBufferStruct inputBuffer, WeaponActionState currentAction)
+    {
+        //発射可能かどうかを判定
+        return localInputData.FirePressedDown && currentAction == WeaponActionState.Idle ; 
+        //連射中かつ弾がある場合に発射可能
+    }
+
+
+    public override void Fire()
     {
         base.FireDown();
 

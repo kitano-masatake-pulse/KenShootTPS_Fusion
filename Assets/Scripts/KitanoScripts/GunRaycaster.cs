@@ -32,7 +32,7 @@ public class GunRaycaster : NetworkBehaviour
         { 
             if (Input.GetMouseButtonDown(0))
             {
-                Debug.Log("Gun Fire!");
+                Debug.Log("Gun Firing!");
                 GunFire(playerCamera.transform.position, playerCamera.transform.forward);
 
 
