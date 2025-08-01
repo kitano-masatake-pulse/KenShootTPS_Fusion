@@ -28,6 +28,9 @@ public enum ActionType
     FirePrepare_Grenade,
     FireThrow_Grenade,
 
+    FirePrepare_Grenade,
+    FireThrow_Grenade,
+
     Reload_Sword,
     Reload_AssaultRifle,
     Reload_SemiAutoRifle,

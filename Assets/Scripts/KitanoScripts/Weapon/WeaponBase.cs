@@ -18,6 +18,7 @@ public abstract class WeaponBase : NetworkBehaviour
 
 
 
+
     public void InitializeAmmo()
     {
         currentMagazine = weaponType.MagazineCapacity();

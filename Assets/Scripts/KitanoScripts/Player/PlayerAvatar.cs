@@ -8,6 +8,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using static TMPro.Examples.ObjectSpin;
+using static UnityEngine.UI.Image;
 
 public class PlayerAvatar : NetworkBehaviour
 {
@@ -51,6 +52,9 @@ public class PlayerAvatar : NetworkBehaviour
     //行動可能かどうかのフラグ
     private bool isDuringWeaponAction = false; //武器アクション(射撃、リロード、武器切り替え)中かどうか
     private bool isImmobilized = false; //行動不能中かどうか(移動・ジャンプもできない)
+
+    public bool wasGrounded;
+    public bool isGroundedNow;
 
 
 
@@ -266,8 +270,6 @@ public class PlayerAvatar : NetworkBehaviour
 
 
     #region Update系
-    public bool wasGraunded;
-    public bool isGraundedNow;
     void Update()
     {
         
@@ -276,7 +278,6 @@ public class PlayerAvatar : NetworkBehaviour
             InputCheck();
         }
 
-       
 
         if (isDummy) //ダミーキャラなら、ダミー落下処理を行う
         {
@@ -291,7 +292,8 @@ public class PlayerAvatar : NetworkBehaviour
         SynchronizeTransform();
     }
 
-
+    int groundBufferFrames = 3;
+    int ungroundedFrameCount = 0;
 
     // 入力をチェック、接地判定などアクションの実行可否は判定しない
     //順序管理のため、PlayerCallOrderから呼ばれる
@@ -310,6 +312,9 @@ public class PlayerAvatar : NetworkBehaviour
             {
                 Jump();
             }
+
+            // 接地判定
+            CheckLand();
 
 
             if (localInputData.FirePressedDown) //発射ボタンが押されたら、武器の発射処理を呼ぶ
@@ -345,6 +350,7 @@ public class PlayerAvatar : NetworkBehaviour
 
         if (localInputData.ADSPressedDown) //ADSボタンが押されたら、ADSの処理を呼ぶ
         {
+
             SwitchADS();
             Debug.Log($"ADSPressedDown"); //デバッグログ
         }
@@ -354,17 +360,18 @@ public class PlayerAvatar : NetworkBehaviour
             normalizedInputDirection = localInputData.wasdInput.normalized;
 
 
-            isGraundedNow = characterController.isGrounded; // 現在の接地判定を取得
-            if (!wasGraunded && isGraundedNow)
+            isGroundedNow = characterController.isGrounded; // 現在の接地判定を取得
+            if (!wasGrounded && isGroundedNow)
             {
                 // 接地した瞬間に呼ばれる処理
                 Land();
             }
-            wasGraunded = isGraundedNow; // 前回の接地状態を更新
+            wasGrounded = isGroundedNow; // 前回の接地状態を更新
 
 
 
             ChangeTransformLocally(normalizedInputDirection, tpsCameraTransform.forward);//ジャンプによる初速度も考慮して移動する
+
         }
 
 
@@ -711,12 +718,14 @@ public class PlayerAvatar : NetworkBehaviour
 
     #endregion
 
-
+　　private float extraRayLength = 1.0f;
+    private float groundCheckDistance = 0.2f; // 接地判定の距離
     #region Jump関連
     void Jump()
     {
-        bool isGrounded = characterController.isGrounded; // 接地判定を取得
-        if (isGrounded) 
+        isGroundedNow = CheckGround(); // 接地判定を行う
+
+        if (isGroundedNow) 
         {
 
             SetActionAnimationPlayListForAllClients(ActionType.Jump); //アクションアニメーションのリストに追加
@@ -724,9 +733,28 @@ public class PlayerAvatar : NetworkBehaviour
         }
     }
 
+    bool CheckGround()
+    {
+        Vector3 origin = transform.position; // キャラクターの中心位置を基準にする
+        float rayLength = 1.5f; // レイの長さを設定
+        return Physics.Raycast(origin, Vector3.down, rayLength);
+    }
+
+    void CheckLand()
+    {
+        isGroundedNow = CheckGround(); // 接地判定を行う
+
+        if (!wasGrounded && isGroundedNow)
+        {
+            Land();
+        }
+
+        wasGrounded = isGroundedNow; // 前回の接地状態を更新
+    }
+
     void Land()
     {
-        if (!wasGraunded && isGraundedNow)
+        if (!wasGrounded && isGroundedNow)
         {
             SetActionAnimationPlayListForAllClients(ActionType.Land);
         }
@@ -984,7 +1012,22 @@ public class PlayerAvatar : NetworkBehaviour
                 OnWeaponChanged?.Invoke(currentWeapon, weaponClassDictionary[currentWeapon].currentMagazine, weaponClassDictionary[currentWeapon].currentReserve); //武器変更イベントを発火
                 //OnAmmoChanged?.Invoke(weaponClassDictionary[currentWeapon].CurrentMagazine, weaponClassDictionary[currentWeapon].CurrentReserve); //弾薬変更イベントを発火
 
-
+                switch (currentWeapon.GetName())
+                {
+                    case "Sword":
+                        SetActionAnimationPlayListForAllClients(ActionType.ChangeWeaponTo_Sword);
+                        break;
+                    case "AssaultRifle":
+                        SetActionAnimationPlayListForAllClients(ActionType.ChangeWeaponTo_AssaultRifle);
+                        break;
+                    case "SemiAutoRifle":
+                        SetActionAnimationPlayListForAllClients(ActionType.ChangeWeaponTo_SemiAutoRifle);
+                        break;
+                    case "Grenade":
+                        SetActionAnimationPlayListForAllClients(ActionType.ChangeWeaponTo_Grenade);
+                        break;
+                        // ...
+                }
                 //SetActionAnimationPlayList(.ChangeWeaponTo_ , Runner.SimulationTime); //アクションアニメーションのリストに武器変更を追加
                 StartCoroutine(ChangeWeaponRoutine(currentWeapon.WeaponChangeTime())); //武器変更処理をコルーチンで実行
 

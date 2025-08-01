@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: c26ea178e2e19dd4b9f2d28c4b87726a
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - lineRenderer: {instanceID: 0}
+  - impactMarkerPrefab: {fileID: 3686337052451485103, guid: d307c7b76332eff40bcd518f15206054, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
