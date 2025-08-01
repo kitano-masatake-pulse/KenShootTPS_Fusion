@@ -11,7 +11,7 @@ public class WeaponPanel : MonoBehaviour, IHUDPanel
     [SerializeField] private Sprite[] weaponSprites = new Sprite[4];
     [Header("Image‚Ì‘å‚«‚³İ’è")]
     [SerializeField] private float RifleScale = 0.53f; // AssaultRifle, SemiAutoRifle ‚Ì‘å‚«‚³
-    [SerializeField] private float GrenadeLauncherScale = 0.53f; // GrenadeLauncher ‚Ì‘å‚«‚³
+    [SerializeField] private float GrenadeLauncherScale = 0.68f; // Grenade ‚Ì‘å‚«‚³
     private PlayerAvatar weaponState;
 
     public void Initialize(PlayerNetworkState _, PlayerAvatar wState)

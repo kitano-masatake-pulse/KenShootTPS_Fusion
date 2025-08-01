@@ -27,6 +27,7 @@ public class HitboxDebugVisualizer : MonoBehaviour
             return;
         }
         Instance = this;
+        transform.SetParent(null);
         DontDestroyOnLoad(gameObject);
 
         if (lineMat == null)
@@ -47,6 +48,14 @@ public class HitboxDebugVisualizer : MonoBehaviour
         if (!registeredRoots.Contains(root))
         {
             registeredRoots.Add(root);
+        }
+    }
+
+    public void Unregister(HitboxRoot root)
+    {
+        if (registeredRoots.Contains(root))
+        {
+            registeredRoots.Remove(root);
         }
     }
 

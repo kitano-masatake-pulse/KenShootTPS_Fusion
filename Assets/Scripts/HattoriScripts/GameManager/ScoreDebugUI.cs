@@ -6,33 +6,41 @@ using UnityEngine;
 public class ScoreDebugUI : MonoBehaviour
 {
     private GameManager scoreManager;
+    private bool isInitialized = false;
 
-    void Start()
+    private void OnEnable()
     {
-        // シーンに配置されている ScoreManager を探して格納
-        scoreManager = FindObjectOfType<GameManager>();
-        if (scoreManager == null)
-        {
-            Debug.LogError("[ScoreDebugUI] シーン内に ScoreManager が見つかりません。");
-        }
+        GameManager2.OnManagerInitialized += StartDebugUI; // シーンロード完了時に初期化
+    }
+    private void OnDisable()
+    {
+        GameManager2.OnManagerInitialized -= StartDebugUI; // イベント登録解除
     }
 
+    private void StartDebugUI()
+    {
+        isInitialized = true;
 
+    }
     void OnGUI()
     {
-        if (scoreManager == null) return;
+
+        if (isInitialized == false)
+        {
+            return; // 初期化されていない場合は何もしない
+        }
 
         // 枠線付きの縦レイアウト開始
         GUILayout.BeginVertical("box", GUILayout.Width(300));
         GUILayout.Label("=== Player Scores ===");
 
         // ScoreManager から全スコア辞書を取得
-        var SortedScores = GameManager.Instance.GetSortedScores();
+        var SortedScores = GameManager2.Instance.GetSortedUserData();
 
-        foreach (var kvp in SortedScores)
+        foreach (var userData in SortedScores)
         {
-            var playerRef = kvp.Key;
-            var score = kvp.Value;
+            var playerRef = userData.playerRef;
+            var score = userData.userScore;
 
             // 行開始
             GUILayout.BeginHorizontal();

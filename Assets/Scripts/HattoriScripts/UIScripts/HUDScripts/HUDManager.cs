@@ -7,32 +7,33 @@ public class HUDManager : MonoBehaviour
     [SerializeField] private ScorePanel score;
     [SerializeField] private WeaponPanel weapon;
     [SerializeField] private TimerPanel timer;
-    [SerializeField] private RespawnPanel respawn;
-    [SerializeField] private CountDownPanel countdown;
+    [SerializeField] private ADSCrossHair adsCrossHair; // ADS用のクロスヘアパネル
 
 
     private void OnEnable()
     {   
         PlayerNetworkState.OnLocalPlayerSpawned += PlayerHUDInitialize;
         PlayerAvatar.OnWeaponSpawned += WeaponHUDInitialize;
-        GameManager.OnGameManagerSpawned += GameHUDInitialize;
+        GameManager2.OnManagerInitialized += GameHUDInitialize;
     }
     private void OnDisable()
     {
         PlayerNetworkState.OnLocalPlayerSpawned -= PlayerHUDInitialize;
         PlayerAvatar.OnWeaponSpawned -= WeaponHUDInitialize;
-        GameManager.OnGameManagerSpawned -= GameHUDInitialize;
+        GameManager2.OnManagerInitialized -= GameHUDInitialize;
         CleanupAll();
     }
 
     private void PlayerHUDInitialize(PlayerNetworkState pState)
     {
         hp.Initialize(pState, null);
+
     }
 
     private void WeaponHUDInitialize(PlayerAvatar wState)
     {
         weapon.Initialize(null, wState);
+        adsCrossHair.Initialize(null, wState); // ADSクロスヘアの初期化
     }
 
     private void GameHUDInitialize()
@@ -40,9 +41,8 @@ public class HUDManager : MonoBehaviour
         // GameManagerが初期化された後に呼び出される
         Debug.Log("GameHUDInitialize called");
         score.Initialize(null, null);
-        respawn.Initialize(null, null);
         timer.Initialize(null, null);
-        countdown.Initialize(null, null);
+        
     }
 
     private void CleanupAll()
@@ -50,8 +50,10 @@ public class HUDManager : MonoBehaviour
         hp.Cleanup();
         score.Cleanup();
         weapon.Cleanup();
-        respawn.Cleanup();
         timer.Cleanup();
-        countdown.Cleanup();
+        adsCrossHair.Cleanup(); // ADSクロスヘアのクリーンアップ
+
+
+
     }
 }

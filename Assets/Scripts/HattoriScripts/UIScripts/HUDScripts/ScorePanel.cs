@@ -1,6 +1,5 @@
 using TMPro;
 using UnityEngine;
-using Fusion;
 
 // スコア用パネル  
 public class ScorePanel : MonoBehaviour, IHUDPanel
@@ -11,8 +10,8 @@ public class ScorePanel : MonoBehaviour, IHUDPanel
     {
 
 
-        GameManager.Instance.OnScoreChanged -= UpdateScoreText;
-        GameManager.Instance.OnScoreChanged += UpdateScoreText;
+        GameManager2.Instance.OnScoreChanged -= UpdateScoreText;
+        GameManager2.Instance.OnScoreChanged += UpdateScoreText;
         //初期値設定  
         UpdateScoreText();
 
@@ -21,7 +20,7 @@ public class ScorePanel : MonoBehaviour, IHUDPanel
 
     public void Cleanup()
     {
-        GameManager.Instance.OnScoreChanged -= UpdateScoreText;
+        GameManager2.Instance.OnScoreChanged -= UpdateScoreText;
     }
 
   
@@ -29,7 +28,7 @@ public class ScorePanel : MonoBehaviour, IHUDPanel
     private void UpdateScoreText()
     {
 
-        if (GameManager.Instance.TryGetMyScore(out var score))
+        if (GameManager2.Instance.TryGetMyScore(out var score))
         {
             killCount.text = score.Kills.ToString();
             deathCount.text = score.Deaths.ToString();

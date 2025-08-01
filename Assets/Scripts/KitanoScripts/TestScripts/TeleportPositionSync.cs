@@ -5,7 +5,6 @@ using UnityEngine;
 public class TeleportPositionSync : NetworkBehaviour
 {
     [SerializeField, Tooltip("ˆÚ“®‘¬“x")]
-    private float moveSpeed = 5f;
 
     private NetworkTransform netTransform;
 

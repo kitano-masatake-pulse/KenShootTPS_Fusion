@@ -456,10 +456,10 @@ MonoBehaviour:
   nameLabel: {fileID: 2846740386073364762}
   hpBar: {fileID: 6671095768626876556}
   weaponSprites:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 21300038, guid: 6674e8c43c63e4f4184cbd009379498d, type: 3}
+  - {fileID: 21300044, guid: 5acb27b603af6d44ea6113c4b7b15385, type: 3}
+  - {fileID: 21300008, guid: 6674e8c43c63e4f4184cbd009379498d, type: 3}
+  - {fileID: 21300020, guid: 5163ae49a0de665458bba61cd20c99b1, type: 3}
   weaponImage: {fileID: 3251213282731227402}
 --- !u!1 &5781196432961042352
 GameObject:

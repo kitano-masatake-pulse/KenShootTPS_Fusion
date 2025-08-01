@@ -107,6 +107,18 @@ public static class WeaponTypeExtensions
         return 0f; // 全ての武器で同じ時間を設定
     }
 
+    public static bool CanADS(this WeaponType weaponType)
+    {
+        return weaponType switch
+        {
+            WeaponType.Sword => false, // 剣はADS不可
+            WeaponType.AssaultRifle => true,
+            WeaponType.SemiAutoRifle => true,
+            WeaponType.Grenade => false, // グレネードはADS不可
+            _ => false
+        };
+    }
+
 
     #region Recoil Methods
 
@@ -118,7 +130,7 @@ public static class WeaponTypeExtensions
             WeaponType.Sword => 0f, // 剣はリコイルなし
             WeaponType.AssaultRifle => 5f,
             WeaponType.SemiAutoRifle => 30f,
-            WeaponType.Grenade => 0.2f,
+            WeaponType.Grenade => 0f,
             _ => 0f
         };
     }
@@ -129,8 +141,8 @@ public static class WeaponTypeExtensions
         {
             WeaponType.Sword => 0f, // 剣はリコイルなし
             WeaponType.AssaultRifle => 0.5f,
-            WeaponType.SemiAutoRifle => 0.3f,
-            WeaponType.Grenade => 0.2f,
+            WeaponType.SemiAutoRifle => 0f,
+            WeaponType.Grenade => 0f,
             _ => 0f
         };
     }
@@ -144,8 +156,8 @@ public static class WeaponTypeExtensions
         return weaponType switch
         {
             WeaponType.Sword => 0f, // 剣はリコイルなし
-            WeaponType.AssaultRifle => 40f,
-            WeaponType.SemiAutoRifle => 180f,
+            WeaponType.AssaultRifle => 100f,
+            WeaponType.SemiAutoRifle => 300f,
             WeaponType.Grenade => 0.2f,
             _ => 0f
         };
@@ -157,7 +169,7 @@ public static class WeaponTypeExtensions
         {
             WeaponType.Sword => 0f, // 剣はリコイルなし
             WeaponType.AssaultRifle => 0.5f,
-            WeaponType.SemiAutoRifle => 0.3f,
+            WeaponType.SemiAutoRifle => 0f,
             WeaponType.Grenade => 0.2f,
             _ => 0f
         };
@@ -174,7 +186,7 @@ public static class WeaponTypeExtensions
         {
             WeaponType.Sword => 0f, // 剣はリコイルなし
             WeaponType.AssaultRifle => 30f,
-            WeaponType.SemiAutoRifle => 45f,
+            WeaponType.SemiAutoRifle => 30f,
             WeaponType.Grenade => 0.2f,
             _ => 0f
         };
@@ -186,7 +198,7 @@ public static class WeaponTypeExtensions
         {
             WeaponType.Sword => 0f, // 剣はリコイルなし
             WeaponType.AssaultRifle => 20,
-            WeaponType.SemiAutoRifle => 0.3f,
+            WeaponType.SemiAutoRifle => 0f,
             WeaponType.Grenade => 0.2f,
             _ => 0f
         };
@@ -202,7 +214,7 @@ public static class WeaponTypeExtensions
             WeaponType.Sword => 0f, // 剣はリコイルなし
             WeaponType.AssaultRifle => 30f,
             WeaponType.SemiAutoRifle => 30f,
-            WeaponType.Grenade => 0.2f,
+            WeaponType.Grenade => 30f,
             _ => 0f
         };
     }
@@ -223,7 +235,7 @@ public static class WeaponTypeExtensions
             WeaponType.Sword => ActionType.Fire_Sword,
             WeaponType.AssaultRifle => ActionType.FireStart_AssaultRifle,
             WeaponType.SemiAutoRifle => ActionType.Fire_SemiAutoRifle,
-            WeaponType.Grenade => ActionType.Fire_Grenade,
+            WeaponType.Grenade => ActionType.FirePrepare_Grenade,
             _ => ActionType.None
         };
 
@@ -235,7 +247,8 @@ public static class WeaponTypeExtensions
         return weaponType switch
         { 
             WeaponType.AssaultRifle => ActionType.FireEnd_AssaultRifle,
-     
+            WeaponType.Grenade => ActionType.FireThrow_Grenade,
+
             _ => ActionType.None
         };
 

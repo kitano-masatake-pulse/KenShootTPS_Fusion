@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static Fusion.NetworkCharacterController;
 using static UnityEngine.UI.Image;
 
 public class Sword : WeaponBase
@@ -21,7 +20,7 @@ public class Sword : WeaponBase
     [SerializeField] Transform swordRoot;//球状の判定の中心位置
     float swordLength = 1f; // 球状の判定の半径
     float timeUntilAttack= 1f; // モーション開始から攻撃判定までの時間
-    int attackFrameCount = 1; // 攻撃判定のフレーム数
+ 
 
 
     //Raycastの方向を計算するための変数
@@ -31,19 +30,17 @@ public class Sword : WeaponBase
     private float rayDrawingDuration = 0.5f; // Rayの描画時間
 
 
-    PlayerAvatar myPlayerAvatar;
-
 
     
 
-    [SerializeField] private float attackActiveTime = 1f; // 当たり判定が出る時間
+    //[SerializeField] private float attackActiveTime = 1f; // 当たり判定が出る時間
 
     
     
 
 
     
-    private bool isAttackActive = false; // 攻撃判定が出ているかどうか
+
 
     private void Start()
     {
@@ -72,11 +69,11 @@ public class Sword : WeaponBase
     {
         Debug.Log("Start Attack Collision Detection Coroutine!");
         yield return new WaitForSeconds(timeUntilAttack); // モーション開始から攻撃判定までの時間を待つ
-        isAttackActive = true; // 攻撃判定を有効にする
+ 
         GenerateCollisionDetection(); // 攻撃判定を生成
         Debug.Log("Attack Collision Detection Generated!");
         yield return new WaitForSeconds(rayDrawingDuration); // モーション開始から攻撃判定までの時間を待つ
-        isAttackActive = false; // 攻撃判定を無効にする
+
 
 
     }

@@ -112,6 +112,7 @@ public class PlayerAvatar : NetworkBehaviour
     public static event Action<PlayerAvatar> OnWeaponSpawned;
     public event Action<int, int> OnAmmoChanged;
     public event Action<WeaponType,int,int> OnWeaponChanged;
+    public event Action<bool> OnADSChanged; // ADS状態変更イベント
 
 
     //ホーミング関連
@@ -253,6 +254,18 @@ public class PlayerAvatar : NetworkBehaviour
     }
 
 
+    public override void Despawned(NetworkRunner runner, bool hasState)
+    {
+        //Debug用のHitbox可視化
+        HitboxRoot root = GetComponent<HitboxRoot>();
+        if (HitboxDebugVisualizer.Instance != null)
+        {
+            HitboxDebugVisualizer.Instance.Unregister(root);
+        }
+
+    }
+
+
     #endregion
 
 
@@ -337,7 +350,9 @@ public class PlayerAvatar : NetworkBehaviour
 
         if (localInputData.ADSPressedDown) //ADSボタンが押されたら、ADSの処理を呼ぶ
         {
-            ADS();
+
+            SwitchADS();
+            Debug.Log($"ADSPressedDown"); //デバッグログ
         }
 
 
@@ -345,10 +360,21 @@ public class PlayerAvatar : NetworkBehaviour
             normalizedInputDirection = localInputData.wasdInput.normalized;
 
 
+            isGroundedNow = characterController.isGrounded; // 現在の接地判定を取得
+            if (!wasGrounded && isGroundedNow)
+            {
+                // 接地した瞬間に呼ばれる処理
+                Land();
+            }
+            wasGrounded = isGroundedNow; // 前回の接地状態を更新
+
+
 
             ChangeTransformLocally(normalizedInputDirection, tpsCameraTransform.forward);//ジャンプによる初速度も考慮して移動する
 
         }
+
+
     }
 
 
@@ -376,7 +402,7 @@ public class PlayerAvatar : NetworkBehaviour
                 bodyObject.transform.forward = bodyForward;
             }
 
-            Debug.Log($"lookForwardDir. {lookForwardDir}"); //デバッグログ
+            //Debug.Log($"lookForwardDir. {lookForwardDir}"); //デバッグログ
 
             ;
             // headObject.transform.forward = lookForwardDir.normalized; // カメラの方向を頭の向きに設定(アバターの頭の軸によって変えること)
@@ -453,7 +479,7 @@ public class PlayerAvatar : NetworkBehaviour
         Collider[] hits = Physics.OverlapSphere(origin, range, playerLayer); // プレイヤーのレイヤーマスクを使用して近くの敵を検出
         float closestDistance = Mathf.Infinity;
         targetTransform = null;
-        float minDistance = Mathf.Infinity;
+        //float minDistance = Mathf.Infinity;
 
 
 
@@ -742,11 +768,91 @@ public class PlayerAvatar : NetworkBehaviour
     //単発武器の射撃。マガジンが空ならリロードする
     void FireDown()
     {
+        if (!CanWeaponAction()) { return; } //発射可能かどうかを判定
 
-        if (CanWeaponAction()) //発射可能かどうかを判定
+
+
+        if (currentWeapon == WeaponType.Sword)
+        {
+            //近接武器の処理
+            isImmobilized = true; //行動不能
+            isDuringWeaponAction = true;
+            isFollowingCameraForward = false; // カメラの向きに追従しないように設定
+
+            //攻撃の当たり判定やアニメーションは変わらないので共通
+            weaponClassDictionary[currentWeapon].FireDown(); //現在の武器の発射処理を呼ぶ
+            SetActionAnimationPlayListForAllClients(currentWeapon.FireDownAction()); //アクションアニメーションのリストに発射ダウンを追加
+
+            StartCoroutine(PostAttackDelayCoroutine()); //攻撃後の硬直時間を管理するコルーチンを開始
+
+            if (TryGetClosestTargetInRange(headObject.transform.position, bodyObject.transform.forward, chaseRange, chaseAngle, out Transform targetTransform))
+            {
+                // 近くに敵がいる場合
+                currentTargetTransform = targetTransform; // 現在のターゲットを設定
+                StartHoming(currentTargetTransform); //ホーミング開始
+                Debug.Log($"Homing started towards {currentTargetTransform.name} from {headObject.transform.position}");
+
+            }
+            else
+            {
+                // 近くに敵がいない場合、ホーミングせずその場で攻撃
+
+                Debug.Log("No target found for homing. Attacking in place.");
+
+
+            }
+
+        }
+        else if (currentWeapon == WeaponType.Grenade)
+        {
+
+            weaponClassDictionary[currentWeapon].FireDown(); //現在の武器の発射処理を呼ぶ
+            SetActionAnimationPlayListForAllClients(currentWeapon.FireDownAction()); //アクションアニメーションのリストに発射ダウンを追加
+
+       
+            
+        }
+        else
+        {
+            //遠距離武器の処理
+            if (weaponClassDictionary[currentWeapon].IsMagazineEmpty())
+            {
+                Reload(); //マガジンが空ならリロードする
+            }
+            else
+            {
+
+                isDuringWeaponAction = true;
+                weaponClassDictionary[currentWeapon].FireDown(); //現在の武器の発射処理を呼ぶ
+                SetActionAnimationPlayListForAllClients(currentWeapon.FireDownAction()); //アクションアニメーションのリストに発射ダウンを追加
+
+                if (currentWeapon.RecoilAmount_Pitch() > 0f || currentWeapon.RecoilAmount_Yaw() > 0f) tpsCameraController.StartRecoil(currentWeapon);//リコイル開始
+
+                OnAmmoChanged?.Invoke(weaponClassDictionary[currentWeapon].currentMagazine, weaponClassDictionary[currentWeapon].currentReserve); //弾薬変更イベントを発火
+
+                StartCoroutine(FireRoutine(currentWeapon.FireWaitTime())); //発射ダウンのコルーチンを開始
+                                                                           //Debug.Log($"FireDown {currentWeapon.GetName()}"); //デバッグログ
+            }
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+            /////
+            ///
+
+            if (CanWeaponAction()) //発射可能かどうかを判定
         {
             if (currentWeapon != WeaponType.Sword)
-            {   
+            {
                 //遠距離武器の処理
                 if (weaponClassDictionary[currentWeapon].IsMagazineEmpty())
                 {
@@ -757,9 +863,9 @@ public class PlayerAvatar : NetworkBehaviour
 
                     isDuringWeaponAction = true;
                     weaponClassDictionary[currentWeapon].FireDown(); //現在の武器の発射処理を呼ぶ
-                    SetActionAnimationPlayList(currentWeapon.FireDownAction(), Runner.SimulationTime); //アクションアニメーションのリストに発射ダウンを追加
+                    SetActionAnimationPlayListForAllClients(currentWeapon.FireDownAction()); //アクションアニメーションのリストに発射ダウンを追加
 
-                    tpsCameraController.StartRecoil(currentWeapon);//リコイル開始
+                    if (currentWeapon.RecoilAmount_Pitch() > 0f || currentWeapon.RecoilAmount_Yaw() > 0f) tpsCameraController.StartRecoil(currentWeapon);//リコイル開始
 
                     OnAmmoChanged?.Invoke(weaponClassDictionary[currentWeapon].currentMagazine, weaponClassDictionary[currentWeapon].currentReserve); //弾薬変更イベントを発火
 
@@ -770,33 +876,7 @@ public class PlayerAvatar : NetworkBehaviour
             }
             else
             {
-                //近接武器の処理
-                isImmobilized = true; //行動不能
-                isDuringWeaponAction = true;
-                isFollowingCameraForward = false; // カメラの向きに追従しないように設定
-
-                //攻撃の当たり判定やアニメーションは変わらないので共通
-                weaponClassDictionary[currentWeapon].FireDown(); //現在の武器の発射処理を呼ぶ
-                SetActionAnimationPlayList(currentWeapon.FireDownAction(), Runner.SimulationTime); //アクションアニメーションのリストに発射ダウンを追加
                 
-                StartCoroutine(PostAttackDelayCoroutine()); //攻撃後の硬直時間を管理するコルーチンを開始
-
-                if (TryGetClosestTargetInRange(headObject.transform.position, bodyObject.transform.forward, chaseRange, chaseAngle, out Transform targetTransform))
-                {
-                    // 近くに敵がいる場合
-                    currentTargetTransform = targetTransform; // 現在のターゲットを設定
-                    StartHoming(currentTargetTransform); //ホーミング開始
-                    Debug.Log($"Homing started towards {currentTargetTransform.name} from {headObject.transform.position}");
-
-                }
-                else 
-                {
-                    // 近くに敵がいない場合、ホーミングせずその場で攻撃
-
-                    Debug.Log("No target found for homing. Attacking in place.");
-
-
-                }
 
 
 
@@ -834,21 +914,42 @@ public class PlayerAvatar : NetworkBehaviour
 
     void FireUp()
     {
-        if (currentWeapon == WeaponType.Grenade)
-        {
-            weaponClassDictionary[currentWeapon].FireUp(); //グレネードの発射処理を呼ぶ
 
 
-        }
 
 
-        if (CanWeaponAction() && !currentWeapon.isOneShotWeapon()) //連射武器で、かつ発射可能な場合
-        {
-            SetActionAnimationPlayList(currentWeapon.FireUpAction(), Runner.SimulationTime); //アクションアニメーションのリストに発射ダウンを追加
-            tpsCameraController.EndFiring();
-            //ここにもコルーチンつける？→一旦つけない
-            //Debug.Log($"FireUp {currentWeapon.GetName()}"); //デバッグログ
-        }
+        if (CanWeaponAction()) { return; }//連射武器で、かつ発射可能な場合
+        
+
+            if (currentWeapon==WeaponType.Grenade)
+            { 
+            
+                //グレネードの処理
+                
+                weaponClassDictionary[currentWeapon].FireUp(); //現在の武器の発射処理を呼ぶ
+                SetActionAnimationPlayListForAllClients(currentWeapon.FireUpAction()); //アクションアニメーションのリストに発射アップを追加
+                //StartCoroutine(FireRoutine(currentWeapon.FireWaitTime())); //発射アップのコルーチンを開始
+                //tpsCameraController.EndFiring(); //TPSカメラの発射終了処理を呼ぶ
+                Debug.Log($"FireUp {currentWeapon.GetName()}"); //デバッグログ
+
+
+            }
+
+
+
+
+            if (!currentWeapon.isOneShotWeapon())
+            {
+
+                SetActionAnimationPlayListForAllClients(currentWeapon.FireUpAction()); //アクションアニメーションのリストに発射ダウンを追加
+                tpsCameraController.EndFiring();
+
+
+
+                //ここにもコルーチンつける？→一旦つけない
+                //Debug.Log($"FireUp {currentWeapon.GetName()}"); //デバッグログ
+            }
+        
     }
 
 
@@ -859,6 +960,12 @@ public class PlayerAvatar : NetworkBehaviour
         if (CanWeaponAction() && !weaponClassDictionary[currentWeapon].IsMagazineFull())
         {
             isDuringWeaponAction = true; //リロード中フラグを立てる
+
+            if (currentWeapon.CanADS())
+            {
+                CancelADS(); //現在の武器がADS可能ならADSをキャンセル
+            }
+
             StartCoroutine(ReloadRoutine(currentWeapon, currentWeapon.ReloadTime())); //リロード処理をコルーチンで実行
             Debug.Log($"Reload {currentWeapon.GetName()}"); //デバッグログ
         }
@@ -892,6 +999,12 @@ public class PlayerAvatar : NetworkBehaviour
             if (weaponClassDictionary.ContainsKey(newWeaponType))
             {
                 isDuringWeaponAction = true; //武器変更中フラグを立てる
+
+                if (currentWeapon.CanADS())
+                { 
+                    CancelADS(); //現在の武器がADS可能ならADSをキャンセル
+                }
+
                 currentWeapon = newWeaponType;
 
                 Debug.Log($"ChangeWeapon {currentWeapon.GetName()}"); //デバッグログ
@@ -1000,9 +1113,12 @@ public class PlayerAvatar : NetworkBehaviour
     {
         if (isADS)
         {
-            SetActionAnimationPlayListForAllClients(ActionType.ADS_Off);
+            
             isADS = false; //ADSを解除
             Debug.Log("ADS Off"); //デバッグログ
+
+            
+
         }
         else
         {
@@ -1012,7 +1128,72 @@ public class PlayerAvatar : NetworkBehaviour
         }
     }
 
-    
+
+    void SwitchADS()
+    {
+
+        if (currentWeapon.CanADS() )
+        {
+
+            if (isADS)
+            {
+
+                Debug.Log("ADS Off"); //デバッグログ
+                isADS = false; //ADSを解除
+                SetActionAnimationPlayListForAllClients(ActionType.ADS_Off); //アクションアニメーションのリストにADSオフを追加
+                tpsCameraController.SetADS(isADS);
+                if (currentWeapon.CanADS()) { WeaponClassDictionary[currentWeapon].SetADS(isADS); }
+
+                OnADSChanged?.Invoke(isADS); //ADS状態変更イベントを発火
+
+
+            }
+            else
+            {
+
+                Debug.Log("ADS On"); //デバッグログ
+                isADS = true; //ADSを有効化
+                SetActionAnimationPlayListForAllClients(ActionType.ADS_On);
+                tpsCameraController.SetADS(isADS);
+                if (currentWeapon.CanADS()) { WeaponClassDictionary[currentWeapon].SetADS(isADS); }
+
+                OnADSChanged?.Invoke(isADS); //ADS状態変更イベントを発火
+            }
+        }
+        else 
+        {             //現在の武器がADSできない場合は何もしない
+            Debug.Log($"Weapon {currentWeapon.GetName()} cannot ADS.");
+        }
+    }
+
+    void ADSOff()
+    {
+        if (currentWeapon.CanADS())
+        {
+            isADS = false; //ADSを解除
+            SetActionAnimationPlayListForAllClients(ActionType.ADS_Off); //アクションアニメーションのリストにADSオフを追加
+
+        }
+
+
+
+    }
+
+    void CancelADS()
+    {
+        if (currentWeapon.CanADS())
+        {
+            isADS = false; //ADSを解除
+
+            SetActionAnimationPlayListForAllClients(ActionType.ADS_Off); //アクションアニメーションのリストにADSオフを追加
+            tpsCameraController.CancelADS(); //カメラのADSをキャンセル
+            if (currentWeapon.CanADS()) { WeaponClassDictionary[currentWeapon].SetADS(false); }
+            OnADSChanged?.Invoke(isADS); //ADS状態変更イベントを発火
+
+        }
+        
+    }
+   
 
     #endregion
 
@@ -1023,6 +1204,16 @@ public class PlayerAvatar : NetworkBehaviour
     //自分はローカルで、他クライアントはRPCでプレイリストを更新する(時間付き)
     public void SetActionAnimationPlayListForAllClients(ActionType actionType)
     {
+
+
+        if(isDummy)
+        {
+            //ダミーならアニメーションはしない
+            Debug.Log("Don't Set Animation because it's dummy" );
+            return; 
+        
+        }
+
         float calledTime = Runner.SimulationTime; //アクションが呼ばれた時間を取得
 
         SetActionAnimationPlayList(actionType, calledTime); //アクションアニメーションのリストにジャンプを追加
@@ -1037,7 +1228,7 @@ public class PlayerAvatar : NetworkBehaviour
     public void RPC_RequestActionAnimation(ActionType actionType, float calledTime, RpcInfo info = default)
     {
         // RPC送信（即送信）
-        Debug.Log($" {info.Source} Requests Jump. {info.Tick} SimuTime: {calledTime}");
+       // Debug.Log($" {info.Source} Requests Jump. {info.Tick} SimuTime: {calledTime}");
         RPC_ApplyActionAnimation(info.Source,actionType, calledTime); //アクションアニメーションのリストに追加するだけ(接地判定も座標変化もしない)
 
 
@@ -1046,18 +1237,18 @@ public class PlayerAvatar : NetworkBehaviour
     [Rpc(RpcSources.StateAuthority, RpcTargets.All, HostMode = RpcHostMode.SourceIsHostPlayer, TickAligned = false)]
     public void RPC_ApplyActionAnimation(PlayerRef sourcePlayer, ActionType actionType, float calledTime, RpcInfo info = default)
     {
-        Debug.Log($"LocalPlayer {Runner.LocalPlayer}");
-        Debug.Log($"SourcePlayer {sourcePlayer}");
+        //Debug.Log($"LocalPlayer {Runner.LocalPlayer}");
+        //Debug.Log($"SourcePlayer {sourcePlayer}");
         if (Runner.LocalPlayer != sourcePlayer)
         {
-            Debug.Log($" Apply Jump of  {sourcePlayer}. Tick:{info.Tick} SimuTime: {Runner.SimulationTime}");
+           // Debug.Log($" Apply Jump of  {sourcePlayer}. Tick:{info.Tick} SimuTime: {Runner.SimulationTime}");
 
             SetActionAnimationPlayList(actionType, calledTime);  // アクションアニメーションのリストにジャンプを追加
 
         }
         else
         {
-            Debug.Log($"Don't Apply Jump because I'm source  {sourcePlayer}.  {info.Tick} SimuTime: {Runner.SimulationTime}");
+           // Debug.Log($"Don't Apply Jump because I'm source  {sourcePlayer}.  {info.Tick} SimuTime: {Runner.SimulationTime}");
         }
 
     }
@@ -1071,7 +1262,7 @@ public class PlayerAvatar : NetworkBehaviour
             actionCalledTimeOnSimulationTime = calledtime
         });
 
-        Debug.Log($"Play List Added: {actiontype} at {calledtime}");
+        //Debug.Log($"Play List Added: {actiontype} at {calledtime}");
 
     }
 
@@ -1081,13 +1272,5 @@ public class PlayerAvatar : NetworkBehaviour
     }
 
     #endregion
-
-
-  
-    
-
-
-    
-
 
 }

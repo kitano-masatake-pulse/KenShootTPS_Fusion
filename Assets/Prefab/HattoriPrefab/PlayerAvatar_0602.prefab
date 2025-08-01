@@ -334,9 +334,9 @@ GameObject:
   - component: {fileID: 6756220439982203567}
   - component: {fileID: 868202301397860627}
   - component: {fileID: 7900123258146962750}
-  - component: {fileID: 5480361188940726396}
   - component: {fileID: 7602068678416725619}
   - component: {fileID: 7338604316489722838}
+  - component: {fileID: -6156385825761873818}
   m_Layer: 10
   m_Name: PlayerAvatar_0602
   m_TagString: Untagged
@@ -387,9 +387,9 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: 868202301397860627}
   - {fileID: 7900123258146962750}
-  - {fileID: 5480361188940726396}
   - {fileID: 7602068678416725619}
   - {fileID: 7338604316489722838}
+  - {fileID: -6156385825761873818}
   - {fileID: 6189938194676965108}
   - {fileID: 7584753200684056419}
   - {fileID: 4666853473040237496}
@@ -463,6 +463,8 @@ MonoBehaviour:
   obstructionMask:
     serializedVersion: 2
     m_Bits: 0
+  wasGraunded: 0
+  isGraundedNow: 0
 --- !u!114 &7900123258146962750
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -478,25 +480,12 @@ MonoBehaviour:
   WordOffset: 0
   WordCount: 0
   _interpolationDataSource: 0
+  playerAvatar: {fileID: 868202301397860627}
   _CurrentHP: 100
   _MaxHP: 100
   _IsInvincible: 0
   _CurrentWeapon_Network: 0
---- !u!114 &5480361188940726396
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4330235374038941541}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ce7f274245424684489c845176478ab2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  WordOffset: 0
-  WordCount: 0
-  _interpolationDataSource: 0
+  _Team: 0
 --- !u!114 &7602068678416725619
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -535,6 +524,22 @@ MonoBehaviour:
   _interpolationDataSource: 0
   playerAvatar: {fileID: 868202301397860627}
   WorldUICanvas: {fileID: 7697773873912605799}
+--- !u!114 &-6156385825761873818
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4330235374038941541}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edff1c9ae239aa64f8f39de37a8ce7e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  WordOffset: 0
+  WordCount: 0
+  _interpolationDataSource: 0
+  playerNetworkState: {fileID: 7900123258146962750}
 --- !u!1001 &2540050622266961175
 PrefabInstance:
   m_ObjectHideFlags: 0

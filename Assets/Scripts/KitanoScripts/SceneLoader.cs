@@ -22,6 +22,7 @@ public class SceneLoader : MonoBehaviour
         }
 
         Instance = this;
+        this.transform.SetParent(null); // 親オブジェクトを解除
         DontDestroyOnLoad(gameObject);
 
         if (loadingOverlay != null)

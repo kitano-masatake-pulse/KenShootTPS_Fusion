@@ -139,8 +139,32 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1516604608215421652, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
+      propertyPath: nextScene
+      value: 512
+      objectReference: {fileID: 0}
+    - target: {fileID: 1516604608215421652, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
       propertyPath: dummyAvatarCount
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1516604608215421652, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
+      propertyPath: gameManagerPrefab.RawGuidValue.Array.data[0]
+      value: 4930145172303938604
+      objectReference: {fileID: 0}
+    - target: {fileID: 1516604608215421652, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
+      propertyPath: gameManagerPrefab.RawGuidValue.Array.data[1]
+      value: -1719017642509638181
+      objectReference: {fileID: 0}
+    - target: {fileID: 1516604608215421652, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
+      propertyPath: playerAvatarPrefab.RawGuidValue.Array.data[0]
+      value: -2015246056426655316
+      objectReference: {fileID: 0}
+    - target: {fileID: 1516604608215421652, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
+      propertyPath: playerAvatarPrefab.RawGuidValue.Array.data[1]
+      value: 6176688304608124905
+      objectReference: {fileID: 0}
+    - target: {fileID: 3166721216759619376, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
+      propertyPath: hpObserver
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 3579518695128923911, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
       propertyPath: m_LocalPosition.x
@@ -182,6 +206,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3606941363310932452, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
+      propertyPath: Flags
+      value: 2561
+      objectReference: {fileID: 0}
+    - target: {fileID: 3606941363310932452, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
+      propertyPath: AllowStateAuthorityOverride
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3606941363310932452, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
+      propertyPath: NetworkGuid.RawGuidValue.Array.data[0]
+      value: -3152129106184421345
+      objectReference: {fileID: 0}
+    - target: {fileID: 3606941363310932452, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
+      propertyPath: NetworkGuid.RawGuidValue.Array.data[1]
+      value: -7699159141183789406
+      objectReference: {fileID: 0}
     - target: {fileID: 4362491002599790407, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
       propertyPath: m_LocalPosition.x
       value: -622.1333
@@ -211,7 +251,9 @@ PrefabInstance:
       value: 6325844787834462613
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 82461597939277062, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
+    - {fileID: 6926185100900646715, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}

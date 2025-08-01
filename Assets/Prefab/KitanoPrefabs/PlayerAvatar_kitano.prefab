@@ -255,6 +255,8 @@ MonoBehaviour:
   obstructionMask:
     serializedVersion: 2
     m_Bits: 128
+  wasGraunded: 0
+  isGraundedNow: 0
 --- !u!114 &6887860513559479073
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -270,9 +272,12 @@ MonoBehaviour:
   WordOffset: 0
   WordCount: 0
   _interpolationDataSource: 0
+  playerAvatar: {fileID: 2456749128542381984}
   _CurrentHP: 100
   _MaxHP: 100
+  _IsInvincible: 0
   _CurrentWeapon_Network: 0
+  _Team: 0
 --- !u!114 &7045168527131226642
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -452,6 +457,15 @@ MonoBehaviour:
   obstructionLayer:
     serializedVersion: 2
     m_Bits: 128
+  liftingSpreadGauge: 0
+  randomSpreadGauge: 0
+  liftingSpreadLimit: 1
+  randomSpreadLimit: 1
+  runninngSpreadLimit: 1
+  liftingSpreadMultiplier: {x: 5, y: 0}
+  randomSpreadMultiplier: {x: 3, y: 6}
+  runninngSpreadMultiplier: {x: 3, y: 6}
+  debug_moveSpeed: 0
 --- !u!1 &4172183429204410978
 GameObject:
   m_ObjectHideFlags: 0

@@ -30,7 +30,7 @@ public class AssaultRifle : WeaponBase
     [SerializeField] float randomSpreadGauge = 0f; // Spreadの計算に使う連射時間を蓄積する変数、最大は1
 
     float liftingSpreadRate = 0.1f; // Spreadの拡散速度(spreadGaugeが1発撃つといくら増えるか)
-    float randomSpreadate = 0.1f; // Spreadの拡散速度(spreadGaugeが1発撃つといくら増えるか)
+    float randomSpreadRate = 0.1f; // Spreadの拡散速度(spreadGaugeが1発撃つといくら増えるか)
     float liftingConvergenceRate = 0.3f; // Spreadの収束速度(preadGaugeが秒間いくら減るか)
     float randomConvergenceRate = 0.3f; // Spreadの収束速度(preadGaugeが秒間いくら減るか)
 
@@ -59,14 +59,16 @@ public class AssaultRifle : WeaponBase
     #endregion
 
 
-
-    bool isADSNow = false; //ADS中かどうかのフラグ
-    bool isConvergenceNow = false; //収束中かどうかのフラグ
+    //bool isConvergenceNow = false; //収束中かどうかのフラグ
     int  spreadPatternIndex = 0; //スプレッドのパターンのインデックス
 
 
 
     [SerializeField]float debug_moveSpeed = 0f; //デバッグ用の移動速度(実際の移動速度を代入する)
+
+
+    [SerializeField] float ADSspreadReduction = 0.8f; //ADS中かどうかのフラグ
+    bool isADS = false;
 
 
     
@@ -106,10 +108,19 @@ public class AssaultRifle : WeaponBase
         base.FireDown();
         spreadPatternIndex = 0; //スプレッドパターンのインデックスをリセット
 
-        Vector3 spreadDirection = SpreadRaycastDirection(muzzleTransform.forward, liftingSpreadGauge, randomSpreadGauge, debug_moveSpeed, spreadPatternIndex); //射線の拡散を計算
+        Vector3 spreadDirection = 
+            SpreadRaycastDirection
+            (muzzleTransform.forward, 
+            liftingSpreadGauge, 
+            randomSpreadGauge, 
+            avatarCharacterController.velocity.magnitude,
+            spreadPatternIndex,
+            isADS); //射線の拡散を計算
+
+
         GunRaycast(muzzleTransform.position, spreadDirection);
      
-        UpdateSpreadGauge(liftingSpreadRate, randomSpreadate); //弾の拡散を更新
+        UpdateSpreadGauge(liftingSpreadRate, randomSpreadRate); //弾の拡散を更新
 
     }
 
@@ -129,12 +140,13 @@ public class AssaultRifle : WeaponBase
                 liftingSpreadGauge, 
                 randomSpreadGauge, 
                 avatarCharacterController.velocity.magnitude, 
-                spreadPatternIndex); //射線の拡散を計算
+                spreadPatternIndex,
+                isADS); //射線の拡散を計算
         
         
         
         GunRaycast(muzzleTransform.position,spreadDirection);
-        UpdateSpreadGauge(liftingSpreadRate, randomSpreadate); //弾の拡散を更新
+        UpdateSpreadGauge(liftingSpreadRate, randomSpreadRate); //弾の拡散を更新
         // ここにアサルトライフル特有の発射処理を追加することができます
     }
 
@@ -212,11 +224,12 @@ public class AssaultRifle : WeaponBase
 
     //射線の拡散を計算するメソッド
     //それぞれのスプレッドを[pitch,yaw]の２次元ベクトルとして計算し、足し合わせた結果を使って元の射線方向を回転させる
-    private Vector3 SpreadRaycastDirection(Vector3 direction ,float　liftingSpreadParam ,float randomSpreadParam,float moveSpeed,int spreadIndex)
+    private Vector3 SpreadRaycastDirection(Vector3 direction ,float　liftingSpreadParam ,float randomSpreadParam,float moveSpeed,int spreadIndex, bool ADSflag)
     {
         Vector3 spreadDirection = Vector3.zero;
 
-      
+        
+
 
         //リフティングスプレッド(連射時間によって上方向へぶれる)
         Vector2 liftingSpredDir = Vector2.zero; //リフティングスプレッドのベクトル
@@ -244,10 +257,11 @@ public class AssaultRifle : WeaponBase
         runningSpreadDir.x = radius_run * Mathf.Cos(angle_run) * moveSpeedClamp * runninngSpreadMultiplier.x;
         runningSpreadDir.y = radius_run * Mathf.Sin(angle_run) * moveSpeedClamp * runninngSpreadMultiplier.y;
 
+        float ADSmultiplier = ADSflag ? ADSspreadReduction : 1f; //ADS時はスプレッドを半分にする
 
 
         //合計して射線の拡散を計算
-        Vector2 totalSpreadDir = liftingSpredDir + randomSpreadDir + runningSpreadDir; //総合的なスプレッドのベクトル
+        Vector2 totalSpreadDir = (liftingSpredDir + randomSpreadDir + runningSpreadDir) *ADSmultiplier; //総合的なスプレッドのベクトル
         Debug.Log($"Total Spread Direction: {totalSpreadDir}"); //デバッグ用ログ出力
 
         Quaternion spreadRot= Quaternion.Euler(-totalSpreadDir.x, totalSpreadDir.y, 0f); //スプレッドの回転を計算(軸の問題でpitchは正負反転)
@@ -288,5 +302,13 @@ public class AssaultRifle : WeaponBase
         return patternList;
 
 
+    }
+
+
+
+    public override void SetADS(bool ADSflag)
+    {
+        isADS = ADSflag; //ADS状態を更新
+        Debug.Log($"AssaultRifle ADS state changed: {isADS}");
     }
 }

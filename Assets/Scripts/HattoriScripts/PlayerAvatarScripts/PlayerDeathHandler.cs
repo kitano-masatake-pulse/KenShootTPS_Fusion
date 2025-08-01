@@ -10,22 +10,22 @@ public class PlayerDeathHandler : NetworkBehaviour
 
     void OnEnable()
     {
-        if(GameManager.Instance != null)
+        if(GameManager2.Instance != null)
         {
-            GameManager.Instance.OnAnyPlayerDied += HandleDeath;
+            GameManager2.Instance.OnAnyPlayerDied += HandleDeath;
         }
         
     }
 
     void OnDisable()
     {
-        if (GameManager.Instance != null)
+        if (GameManager2.Instance != null)
         {
-            GameManager.Instance.OnAnyPlayerDied -= HandleDeath;
+            GameManager2.Instance.OnAnyPlayerDied -= HandleDeath;
         }
     }
 
-    private void HandleDeath(PlayerRef victim, PlayerRef killer, float hostTimeStamp)
+    private void HandleDeath( float hostTimeStamp, PlayerRef victim, PlayerRef killer)
     {
         //Ç±ÇÃÉvÉåÉCÉÑÅ[Ç≈Ç»Ç¢èÍçáÇÕâΩÇ‡ÇµÇ»Ç¢
         if (victim != Object.InputAuthority)

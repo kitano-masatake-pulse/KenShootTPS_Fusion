@@ -1,8 +1,10 @@
+using Fusion;
+using Fusion.Sockets;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Fusion;
-using Fusion.Sockets;
+using UnityEngine.SceneManagement;
+using static Unity.Collections.Unicode;
 
 
 public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
@@ -11,6 +13,14 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
     private NetworkPrefabRef playerAvatarPrefab;
     [SerializeField]
     private NetworkPrefabRef dummyAvatarPrefab;
+    [SerializeField]
+    private NetworkPrefabRef gameManagerPrefab;
+    [SerializeField]
+    private NetworkPrefabRef hpObserverPrefab; // HP監視用のプレハブ
+    [SerializeField]
+    private NetworkPrefabRef battleEndPrefab;
+
+
     private NetworkRunner runner;
     private HashSet<PlayerRef> spawnedPlayers = new();
 
@@ -20,37 +30,85 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
     [SerializeField]
     private GameObject TPSCamera;
 
+    [Header("移動先のシーン")]
+    [SerializeField]
+    private SceneType nextScene;
+
 
     void Start()
     {
+        //Debug.Log($"BattleSceneSpawner: Start called");
         runner = FindObjectOfType<NetworkRunner>();
         runner.AddCallbacks(this); // コールバック登録
 
     }
+    private void OnDisable()
+    {
+        runner.RemoveCallbacks(this); // コールバック登録解除
+    }
+
     public void OnSceneLoadDone(NetworkRunner runner)
     {
 
+        Debug.Log($"BattleSceneSpawner:OnSceneLoadDone");
         if (runner.IsServer)
         {
+            NetworkObject battleEndProcessor =  runner.Spawn(battleEndPrefab); 
+            battleEndProcessor.GetComponent<BattleEndProcessor>().nextScene = nextScene;
+            runner.Spawn(hpObserverPrefab);
+            runner.Spawn(gameManagerPrefab);
+            
+
             //ホストが全員分のアバターを生成
             foreach (var player in runner.ActivePlayers)
             {
-                if (spawnedPlayers.Contains(player)) continue;
-
-                var randomValue = UnityEngine.Random.insideUnitCircle * 5f;
-                var spawnPosition = new Vector3(randomValue.x, 5f, randomValue.y);
-                var avatar = runner.Spawn(playerAvatarPrefab, spawnPosition, Quaternion.identity, player);
-                spawnedPlayers.Add(player);
-                // プレイヤー（PlayerRef）とアバター（NetworkObject）を関連付ける
-                runner.SetPlayerObject(player, avatar);
-                Debug.Log($"[Spawn] プレイヤー {player} をスポーンしました");
+                if (spawnedPlayers.Contains(player)) { continue; }
+                
+                CreateAvatar(runner, player);
+                
             }
 
-            CreateDummyAvatars(runner, dummyAvatarCount);
+            //CreateDummyAvatars(runner, dummyAvatarCount);
+
+
+            if (GameManager2.Instance != null)
+            {
+                // GameManager2の初期化
+                GameManager2.Instance.InitializeGameManager();
+            }
+            else if (GameManager2.Instance != null)
+            {
+                // GameManagerの初期化
+                GameManager2.Instance.InitializeGameManager();
+            }
+            else
+            {
+                Debug.LogError("GameManager instance is not available.");
+            }
+
+
+            
         }
 
+        //ランナーが存在するか確認
+        Debug.Log($"Battle Scene：Runner exists: {runner != null}");
+        
 
+    }
 
+    void CreateAvatar(NetworkRunner runner, PlayerRef player)
+    {
+        Debug.Log($"[Spawn] プレイヤー {player} のアバターを生成します。");
+        // ランダムな生成位置（半径5の円の内部）を取得する
+        var randomValue = UnityEngine.Random.insideUnitCircle * 5f;
+        var spawnPosition = new Vector3(randomValue.x, 5f, randomValue.y);
+        // アバターを生成
+        var avatar = runner.Spawn(playerAvatarPrefab, spawnPosition, Quaternion.identity, player);
+        spawnedPlayers.Add(player);
+        // PlayerRefを使用して、アバターはプレイヤーに関連付ける
+        runner.SetPlayerObject(player, avatar);
+       
+        Debug.Log($"[Spawn] プレイヤー {player} をスポーンしました");
     }
 
     public void CreateDummyAvatars(NetworkRunner runner, int DummyCount)
@@ -73,7 +131,16 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
 
 
 
-    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player){ }
+    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
+    {
+        Debug.Log($"BattleSceneSpawner:OnPlayerJoined called. Player: {player}");
+        if (runner.IsServer)
+        {
+
+            CreateAvatar(runner, player);
+        }
+
+    }
 
     // 他のINetworkRunnerCallbacksは空実装でOK
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) 
@@ -82,8 +149,22 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
         if (runner.IsServer && runner.TryGetPlayerObject(player, out var avatar))
         {
             runner.Despawn(avatar);
+            spawnedPlayers.Remove(player);
+
+            if (GameManager2.Instance != null)
+            {
+                GameManager2.Instance.UpdateConnectionState(player, ConnectionState.Disconnected);
+
+
+
+            }
         }
+
+
     }
+
+
+
     public void OnInput(NetworkRunner runner, NetworkInput input) { }
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
