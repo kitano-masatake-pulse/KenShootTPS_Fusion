@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Throw
   m_EditorClassIdentifier: 
   attackClip: {fileID: -2061910772549006292, guid: 53dc240443b75904982347d1d9e8e0ab, type: 3}
-  totalDuration: 5
+  totalDuration: 2
   hitStartTime: 0
   hitEndTime: 0

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Fusion;
 using RootMotion.FinalIK;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -34,7 +35,6 @@ public class AnimationHandler : NetworkBehaviour
     private AimIK aimIK;
     private LimbIK limbIK;
     private AimController aimController;
-    private Coroutine changeWeaponCoroutine;
     private bool isInTargetState;
     private bool wasInTargetState = false;
     private string targetStateName = "Put";
@@ -69,7 +69,7 @@ public class AnimationHandler : NetworkBehaviour
             switch (playerAvatar.CurrentWeapon)
             {
                 case WeaponType.Sword:
-                    animator.SetBool("EquipRifle", true);
+                    animator.SetBool("EquipSword", true);
                     break;
                 case WeaponType.AssaultRifle:
                     animator.SetBool("EquipRifle", true);
@@ -105,14 +105,23 @@ public class AnimationHandler : NetworkBehaviour
 
 
         //以下はテスト。グレネードを投げる
-        //if (Input.GetMouseButton(0)) // 左クリックでジャンプ
-        //{
-        //    animator.SetBool("IsGrenadePreparation", true);
-        //}
+        if (Input.GetMouseButton(0)) // 左クリックでジャンプ
+        {
+            //animator.SetBool("IsGrenadePreparation", true);
+            animator.SetTrigger("IsRifleFire");    
+        }
         //if (Input.GetMouseButtonUp(0))
         //{
-        //    animator.SetBool("IsGrenadePreparation", false);
+        //    //animator.SetBool("IsGrenadePreparation", false);
+        //    animator.SetBool("IsSwordAttack", false);
         //}
+        //if (Input.GetKeyDown(KeyCode.R)){
+        //    animator.SetTrigger("IsReload");
+        //}
+        if (animator.GetCurrentAnimatorStateInfo(1).IsName("RifleReload"))
+        {
+            FinalIKDisable();
+        }
     }
 
 
@@ -162,6 +171,16 @@ public class AnimationHandler : NetworkBehaviour
                     animator.SetBool("IsADS", false);
                     break;
 
+                
+
+                case ActionType.Reload_AssaultRifle:
+                    animator.SetTrigger("IsReload");
+                    break;
+
+                case ActionType.Reload_SemiAutoRifle:
+                    animator.SetTrigger("IsReload");
+                    break;
+
                 case ActionType.ChangeWeaponTo_Sword:
                     Debug.Log($"ChangeWeaponTo_Sword");
                     ChangeWeapon();
@@ -197,31 +216,9 @@ public class AnimationHandler : NetworkBehaviour
     private void ChangeWeapon()
     {
         ResetWeaponEquipBools();
-        //if (changeWeaponCoroutine != null)
-        //{
-        //    StopCoroutine(changeWeaponCoroutine);
-        //    ResetWeaponEquipBools();
-        //    changeWeaponCoroutine = null;
-        //}
         animator.SetTrigger("ChangeWeapons");
         animator.SetBool("IsADS", false);
-        //changeWeaponCoroutine = StartCoroutine(ChangeWeaponCoroutine());
     }
-
-    //IEnumerator ChangeWeaponCoroutine()
-    //{
-    //    animator.SetTrigger("ChangeWeapons");
-    //    animator.SetBool("IsADS", false);
-    //    //FinalIKDisable();
-    //    yield return new WaitForSeconds(changeTime/2);
-    //    //HideAllWeapons();
-    //    //ShowNextWeapons();
-    //    yield return new WaitForSeconds(0.7f);
-    //    ResetWeaponEquipBools();
-    //    FinalIKenable();
-    //    changeWeaponCoroutine = null;
-    //    //マジックナンバーにしない
-    //}
 
     private void HideAllWeapons()
     {
