@@ -110,11 +110,6 @@ public class AnimationHandler : NetworkBehaviour
         {
             FinalIKDisable();
         }
-
-        if(Input.GetKeyDown(KeyCode.R))
-        {
-            animator.SetTrigger("IsReload");
-        }
     }
 
 
