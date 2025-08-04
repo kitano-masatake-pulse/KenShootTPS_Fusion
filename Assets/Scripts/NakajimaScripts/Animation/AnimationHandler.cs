@@ -171,12 +171,10 @@ public class AnimationHandler : NetworkBehaviour
 
                 case ActionType.FireStart_AssaultRifle:
                     Debug.Log($"IsRifleFire True");
-                    animator.SetBool("IsRifleFire", true);
+                    animator.SetTrigger("IsRifleFire");
                     break;
 
                 case ActionType.FireEnd_AssaultRifle:
-                    Debug.Log($"IsRifleFire False");
-                    animator.SetBool("IsRifleFire", false);
                     break;
 
                 case ActionType.Fire_SemiAutoRifle:
