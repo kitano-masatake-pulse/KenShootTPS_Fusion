@@ -6,6 +6,9 @@ public abstract class WeaponBase : NetworkBehaviour
     //protected WeaponLocalState localState;
     protected abstract WeaponType weapon { get; }
 
+    public PlayerAvatar playerAvatar;
+
+
     public WeaponType weaponType => weapon;
 
     public TPSCameraController playerCamera; // 自分のTPSカメラ
@@ -17,6 +20,10 @@ public abstract class WeaponBase : NetworkBehaviour
     public int currentReserve;
 
 
+    public override void Spawned()
+    {
+        playerAvatar = GetComponentInParent<PlayerAvatar>(); //親のPlayerAvatarを取得
+    }
 
 
     public void InitializeAmmo()
@@ -24,6 +31,45 @@ public abstract class WeaponBase : NetworkBehaviour
         currentMagazine = weaponType.MagazineCapacity();
         currentReserve = weaponType.ReserveCapacity();
         Debug.Log($"Weapon {weaponType.GetName()} initialized with Magazine: {currentMagazine}, Reserve: {currentReserve}");
+    }
+
+
+    public virtual void CalledOnUpdate(PlayerInputData localInputData, InputBufferStruct inputBuffer , WeaponActionState currentAction)
+    {
+        //Debug.Log("CalledOnUpdate() called"); //デバッグ用ログ出力
+        //UpdateSpreadGauge(-liftingConvergenceRate * Time.deltaTime, -randomConvergenceRate * Time.deltaTime); //弾の拡散を収束させる
+    }
+
+    public virtual bool CanReload(PlayerInputData localInputData, InputBufferStruct inputBuffer, WeaponActionState currentAction)
+    {
+        bool inputCondition =  weapon.IsReloadable() && inputBuffer.reload;
+
+        bool stateCondition =
+            currentAction == WeaponActionState.Idle; // 現在のアクションがアイドル状態であることを確認
+
+        bool bulletCondition = currentMagazine < weaponType.MagazineCapacity() && currentReserve > 0;   
+
+
+        //Debug.Log($"CanReload() called. Current Magazine: {currentMagazine}, Current Reserve: {currentReserve}");
+        return inputCondition && stateCondition && bulletCondition;
+    }
+
+    public virtual bool CanFire(PlayerInputData localInputData, InputBufferStruct inputBuffer, WeaponActionState currentAction)
+    {
+        return false; //デフォルトでは発射できない
+
+    }
+
+    public virtual bool CanChangeWeapon(PlayerInputData localInputData, InputBufferStruct inputBuffer, WeaponActionState currentAction)
+    {
+        bool inputCondition = localInputData.weaponChangeScroll != 0f; // スクロールホイールの入力があるかどうかを確認
+
+        bool stateCondition = 
+            currentAction != WeaponActionState.Reloading||
+            currentAction != WeaponActionState.Dead; 
+
+        //Debug.Log($"CanChangeWeapon() called. Current Action: {currentAction}");
+        return currentAction == WeaponActionState.Idle; // 現在のアクションがアイドル状態であることを確認
     }
 
     public virtual void FireDown()
@@ -38,8 +84,10 @@ public abstract class WeaponBase : NetworkBehaviour
         Debug.Log($"{weaponType.GetName()} fired down! Current Magazine: {currentMagazine}, Current Reserve: {currentReserve}");
     }
 
-    public virtual void Reload()
+    public virtual void FinishReload()
     {
+
+        
         int currentMagazine = this.currentMagazine;
         int currentReserve = this.currentReserve;
         int magazineCapacity = weaponType.MagazineCapacity();
@@ -47,7 +95,10 @@ public abstract class WeaponBase : NetworkBehaviour
 
         this.currentMagazine += reloadededAmmo; //マガジンにリロードされた弾薬を追加
         this.currentReserve -= reloadededAmmo; //リザーブからリロードされた弾薬を減らす
+
+        playerAvatar.InvokeAmmoChanged();
     }
+
 
 
     public virtual void Fire()
@@ -55,10 +106,7 @@ public abstract class WeaponBase : NetworkBehaviour
         //FireRay();
         //localState.ConsumeAmmo(weaponType);
 
-        if (weaponType != WeaponType.Sword)
-        {
-            currentMagazine--;
-        }
+    
         Debug.Log($"{weaponType.GetName()} fired! Current Magazine: {currentMagazine}, Current Reserve: {currentReserve}");
     }
 
@@ -112,5 +160,15 @@ public abstract class WeaponBase : NetworkBehaviour
     {
        
     }
+
+
+    public virtual void ResetOnChangeWeapon()
+    {
+
+
+    }
+
+
+
 
 }

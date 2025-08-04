@@ -76,15 +76,29 @@ public static class WeaponTypeExtensions
         };
     }
 
+
     public static float FireWaitTime(this WeaponType weaponType)
     {
         return weaponType switch
         {
             WeaponType.Sword => 1f,
-            WeaponType.AssaultRifle => 0.1f,
+            WeaponType.AssaultRifle => 0.3f,
             WeaponType.SemiAutoRifle => 1f,
             WeaponType.Grenade => 1f,
             _ => 0f
+        };
+    }
+
+
+    public static bool IsReloadable(this WeaponType weaponType)
+    {
+        return weaponType switch
+        {
+            WeaponType.Sword => false, // 剣はリロード不可
+            WeaponType.AssaultRifle => true,
+            WeaponType.SemiAutoRifle => true,
+            WeaponType.Grenade => false,
+            _ => false
         };
     }
 
@@ -104,7 +118,7 @@ public static class WeaponTypeExtensions
 
     public static float WeaponChangeTime(this WeaponType weaponType)
     {
-        return 0f; // 全ての武器で同じ時間を設定
+        return 1f; // 全ての武器で同じ時間を設定
     }
 
     public static bool CanADS(this WeaponType weaponType)
