@@ -82,6 +82,7 @@ public class LocalRespawnHandler: MonoBehaviour
     {
         //行動制限を解除
         playerAvatar.IsDuringWeaponAction = false;
+        playerAvatar.CurrentWeaponActionState = WeaponActionState.Idle;
         playerAvatar.IsImmobilized = false;
 
         //ホストにリスポーン後の処理を要求
