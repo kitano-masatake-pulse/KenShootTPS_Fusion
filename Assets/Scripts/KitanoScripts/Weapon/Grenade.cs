@@ -56,9 +56,13 @@ public class Grenade : WeaponBase
         StartCoroutine(DamageCoroutine());
     }
 
+    public override void FireUp()
+    {
+        
+    }
 
 
-
+    //ここから攻撃判定(爆弾に付ける機能)
 
     private IEnumerator DamageCoroutine()
     {
@@ -102,7 +106,7 @@ public class Grenade : WeaponBase
             hits,
             playerLayer,
             //HitOptions.IgnoreInputAuthority
-            HitOptions.IgnoreInputAuthority // HitOptions.Noneを使用して、すべてのヒットを取得する
+            HitOptions.None // HitOptions.Noneを使用して、すべてのヒットを取得する
             );
 
         
@@ -282,6 +286,8 @@ public class Grenade : WeaponBase
         float t = (distance - directHitRadius) / (blastHitRadius - directHitRadius);
         return Mathf.RoundToInt(Mathf.Lerp(weaponType.Damage(), minBlastDamage, t));
     }
+
+    //ここまで攻撃判定(爆弾に付ける機能)
 
 
     //void OnDrawGizmos()

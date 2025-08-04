@@ -19,9 +19,9 @@ public static class WeaponTypeExtensions
         return weaponType switch
         {
             WeaponType.Sword => "Sword",
-            WeaponType.AssaultRifle => "Assault Rifle",
-            WeaponType.SemiAutoRifle => "Semi-Auto Rifle",
-            WeaponType.Grenade => "Grenade Launcher",
+            WeaponType.AssaultRifle => "AssaultRifle",
+            WeaponType.SemiAutoRifle => "SemiAutoRifle",
+            WeaponType.Grenade => "Grenade",
             _ => "Unknown"
         };
     }

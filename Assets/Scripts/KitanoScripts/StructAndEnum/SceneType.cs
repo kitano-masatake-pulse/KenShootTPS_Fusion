@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 
 public enum SceneType
 {
+
     None = 0,
     Lobby = 1 << 0,
     Battle = 1 << 1,
@@ -19,15 +20,16 @@ public enum SceneType
     KitanoTitle = 1 << 11, 
     HattoriTitle = 1 << 12,
     Title = 1 << 13,
+    HattoriUITest = 1 << 14,
 
-    All = ~0                // ‚·‚×‚Ä ON
+    All = ~0                // ã™ã¹ã¦ ON
 
 }
 
 public static class SceneTypeExtensions
 {
     /// <summary>
-    /// SceneType ¨ ÀÛ‚ÌƒV[ƒ“–¼iBuild Settings‚É“o˜^‚³‚ê‚½–¼‘Oj‚Ö‚Ì•ÏŠ·
+    /// SceneType â†’ å®Ÿéš›ã®ã‚·ãƒ¼ãƒ³åï¼ˆBuild Settingsã«ç™»éŒ²ã•ã‚ŒãŸåå‰ï¼‰ã¸ã®å¤‰æ›
     /// </summary>
     public static string ToSceneName(this SceneType type)
     {
@@ -47,7 +49,8 @@ public static class SceneTypeExtensions
             SceneType.HattoriResult => "HattoriResultScene",
             SceneType.KitanoTitle => "KitanoTitleTest",
             SceneType.HattoriTitle => "HattoriTitleScene",
-            _ => throw new ArgumentOutOfRangeException(nameof(type), $"–¢’è‹`‚ÌSceneType‚Å‚·: {type}")
+            SceneType HattoriUITest => "HattoriUITestScene",
+            //_ => throw new ArgumentOutOfRangeException(nameof(type), $"æœªå®šç¾©ã®SceneTypeã§ã™: {type}")
         };
     }
 
@@ -66,7 +69,8 @@ public static class SceneTypeExtensions
     }
 
 
-    // ‹t•ÏŠ·uƒtƒ@ƒCƒ‹–¼ ¨ enumv
+
+    // é€†å¤‰æ›ã€Œãƒ•ã‚¡ã‚¤ãƒ«å â†’ enumã€
     public static SceneType ToSceneType(this Scene scene)
     {
         return scene.name switch
@@ -84,6 +88,7 @@ public static class SceneTypeExtensions
             "HattoriResultScene" => SceneType.HattoriResult,
             "KitanoTitleTest"=> SceneType.KitanoTitle,
             "HattoriTitleScene"=> SceneType.HattoriTitle,
+            "HattoriUITestScene" => SceneType.HattoriUITest,
             _ => SceneType.None
 
         };

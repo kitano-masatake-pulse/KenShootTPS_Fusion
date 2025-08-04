@@ -30,6 +30,11 @@ public class SceneTransitionManager : MonoBehaviour,INetworkRunnerCallbacks
     private bool isTransitioning = false; // シーン遷移中かどうかのフラグ
     private bool hasTransitionExecuted = false; // シーン遷移が実行されたかどうかのフラグ
 
+    public SceneType CurrentSceneType => SceneManager.GetActiveScene().ToSceneType();
+
+    public static event Action<SceneType> OnSceneLoad;
+    public static event Action<SceneType> OnSceneUnload;
+
     //======================
     //初期化処理
     //======================
@@ -74,8 +79,10 @@ public class SceneTransitionManager : MonoBehaviour,INetworkRunnerCallbacks
     //シーン開始時の処理
     private void StartScene(Scene scene, LoadSceneMode mode)
     {
+
         //シーンロード後にフェードインを開始
         if (sceneCoroutine != null) StopCoroutine(sceneCoroutine);
+        OnSceneLoad?.Invoke(CurrentSceneType); // シーンロードイベントを発火
         sceneCoroutine = StartCoroutine(sceneTrasitionFade.FadeRoutine(1f, 0f, fadeInDuration));
     }
 
@@ -204,6 +211,8 @@ public class SceneTransitionManager : MonoBehaviour,INetworkRunnerCallbacks
     //内部処理を行う非同期処理
     private IEnumerator GCCoroutine()
     {     
+        OnSceneUnload?.Invoke(CurrentSceneType);
+        yield return null; // フレーム待ち
         yield return Resources.UnloadUnusedAssets();
         GC.Collect();
         GC.WaitForPendingFinalizers();
