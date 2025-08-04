@@ -75,7 +75,7 @@ public class AnimationHandler : NetworkBehaviour
                     animator.SetBool("EquipRifle", true);
                     break;
                 case WeaponType.SemiAutoRifle:
-                    animator.SetBool("EquipRifle", true);
+                    animator.SetBool("EquipSemiAutoRifle", true);
                     break;
                 case WeaponType.Grenade:
                     animator.SetBool("EquipGrenade", true);
@@ -102,23 +102,11 @@ public class AnimationHandler : NetworkBehaviour
 
         wasInTargetState = isInTargetState;
 
-
-
-        //以下はテスト。グレネードを投げる
-        if (Input.GetMouseButton(0)) // 左クリックでジャンプ
+        if (animator.GetCurrentAnimatorStateInfo(1).IsName("ReloadRifle"))
         {
-            //animator.SetBool("IsGrenadePreparation", true);
-            animator.SetTrigger("IsRifleFire");    
+            FinalIKDisable();
         }
-        //if (Input.GetMouseButtonUp(0))
-        //{
-        //    //animator.SetBool("IsGrenadePreparation", false);
-        //    animator.SetBool("IsSwordAttack", false);
-        //}
-        //if (Input.GetKeyDown(KeyCode.R)){
-        //    animator.SetTrigger("IsReload");
-        //}
-        if (animator.GetCurrentAnimatorStateInfo(1).IsName("RifleReload"))
+        if (animator.GetCurrentAnimatorStateInfo(1).IsName("Dead"))
         {
             FinalIKDisable();
         }
@@ -161,6 +149,11 @@ public class AnimationHandler : NetworkBehaviour
                     animator.SetBool("IsJumping", false);
                     break;
 
+                case ActionType.Dead:
+                    Debug.Log($"IsDead True");
+                    animator.SetBool("IsDead", true);
+                    break;  
+
                 case ActionType.ADS_On:
                     Debug.Log($"IsADS True");
                     animator.SetBool("IsADS", true);
@@ -171,14 +164,52 @@ public class AnimationHandler : NetworkBehaviour
                     animator.SetBool("IsADS", false);
                     break;
 
-                
+                case ActionType.Fire_Sword:
+                    Debug.Log($"IsSwordAttack True");
+                    animator.SetTrigger("IsSwordAttack");
+                    break;
+
+                case ActionType.FireStart_AssaultRifle:
+                    Debug.Log($"IsRifleFire True");
+                    animator.SetBool("IsRifleFire", true);
+                    break;
+
+                case ActionType.FireEnd_AssaultRifle:
+                    Debug.Log($"IsRifleFire False");
+                    animator.SetBool("IsRifleFire", false);
+                    break;
+
+                case ActionType.Fire_SemiAutoRifle:
+                    Debug.Log($"IsSemiAutoRifleFire True");
+                    animator.SetBool("IsSemiAutoRifleFire", true);
+                    break;
+
+                case ActionType.FirePrepare_Grenade:
+                    Debug.Log($"IsGrenadePreparation True");
+                    animator.SetBool("IsGrenadePreparation", true);
+                    break;
+
+                case ActionType.FireThrow_Grenade:
+                    Debug.Log($"IsGrenadePreparation False");
+                    animator.SetBool("IsGrenadePreparation", false);
+                    break;
+
+                case ActionType.Reload_Sword:
+                    //使っていない
+                    break;
 
                 case ActionType.Reload_AssaultRifle:
+                    Debug.Log($"IsReloading True");
                     animator.SetTrigger("IsReload");
                     break;
 
                 case ActionType.Reload_SemiAutoRifle:
+                    Debug.Log($"IsReloading True");
                     animator.SetTrigger("IsReload");
+                    break;
+
+                case ActionType.Reload_Grenade:
+                    //使っていない
                     break;
 
                 case ActionType.ChangeWeaponTo_Sword:
@@ -217,7 +248,6 @@ public class AnimationHandler : NetworkBehaviour
     {
         ResetWeaponEquipBools();
         animator.SetTrigger("ChangeWeapons");
-        animator.SetBool("IsADS", false);
     }
 
     private void HideAllWeapons()
