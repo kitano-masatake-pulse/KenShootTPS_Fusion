@@ -177,7 +177,7 @@ public class AssaultRifle : WeaponBase
             currentAction == WeaponActionState.Firing; 
     
 
-        return localInputData.ADSPressedDown && currentAction == WeaponActionState.Idle; //ADSボタンが押されていて、現在のアクションがアイドル状態であることを確認
+        return localInputData.ADSPressedDown && stateCondition; //ADSボタンが押されていて、現在のアクションがアイドル状態であることを確認
 
     }
 

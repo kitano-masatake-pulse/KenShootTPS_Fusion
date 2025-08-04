@@ -28,7 +28,7 @@ public class GrenadeThrower : MonoBehaviour
     private bool hasEnterThrowOnce;
     void Update()
     {
-        AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(1);
+       
 
         // 投擲準備完了モーションの間LineRendererを表示
         // ボタン離した後でも、アニメーションは少し続くので、フラグ判定挿入

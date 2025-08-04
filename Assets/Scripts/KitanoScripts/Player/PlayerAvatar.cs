@@ -492,13 +492,6 @@ public class PlayerAvatar : NetworkBehaviour
 
             //ExecuteWeaponActions(localInputData);
 
-            if (localInputData.ADSPressedDown) //ADSボタンが押されたら、ADSの処理を呼ぶ
-            {
-                SwitchADS();
-                Debug.Log($"ADSPressedDown"); //デバッグログ
-            }
-
-
 
             normalizedInputDirection = localInputData.wasdInput.normalized;
 
@@ -1556,8 +1549,7 @@ public class PlayerAvatar : NetworkBehaviour
     public void SwitchADS()
     {
 
-        if (currentWeapon.CanADS() )
-        {
+        
 
             if (isADS)
             {
@@ -1583,11 +1575,8 @@ public class PlayerAvatar : NetworkBehaviour
 
                 OnADSChanged?.Invoke(isADS); //ADS状態変更イベントを発火
             }
-        }
-        else 
-        {             //現在の武器がADSできない場合は何もしない
-            Debug.Log($"Weapon {currentWeapon.GetName()} cannot ADS.");
-        }
+        
+     
     }
 
   

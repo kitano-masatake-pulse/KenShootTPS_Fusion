@@ -145,7 +145,7 @@ public class SemiAutoRifle : WeaponBase
             currentAction == WeaponActionState.Firing;
 
 
-        return localInputData.ADSPressedDown && currentAction == WeaponActionState.Idle; 
+        return localInputData.ADSPressedDown && stateCondition; 
         //ADSボタンが押されていて、現在のアクションがアイドル状態であることを確認
 
     }
