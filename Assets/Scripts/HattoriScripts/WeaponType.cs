@@ -273,10 +273,10 @@ public static class WeaponTypeExtensions
     {
         return weaponType switch
         {
-            WeaponType.Sword => ActionType.Reload_Sword,
+            
             WeaponType.AssaultRifle => ActionType.Reload_AssaultRifle,
             WeaponType.SemiAutoRifle => ActionType.Reload_SemiAutoRifle,
-            WeaponType.Grenade => ActionType.Reload_Grenade,
+         
             _ => ActionType.None
         };
     }

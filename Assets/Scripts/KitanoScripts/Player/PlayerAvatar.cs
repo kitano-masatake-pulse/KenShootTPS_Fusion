@@ -278,6 +278,15 @@ public class PlayerAvatar : NetworkBehaviour
 
                     }
                 }
+                else if (weapon.weaponType == WeaponType.SemiAutoRifle)
+                {
+                    SemiAutoRifle rifle = weapon as SemiAutoRifle; //SemiAutoRifle型にキャスト
+                    if (rifle != null)
+                    {
+                        rifle.muzzleTransform = tpsCameraTransform; //マズルのTransformをカメラのTransformに設定
+                    }
+                }
+
             }
             else
             {
@@ -1412,7 +1421,9 @@ public class PlayerAvatar : NetworkBehaviour
 
             stateTimer_ReturnToIdle= currentWeapon.ReloadTime(); //リロード後の待機時間を設定
         Debug.Log($"Reloading {currentWeapon.GetName()}"); //デバッグログ
-        
+            SetActionAnimationPlayListForAllClients(currentWeapon.ReloadAction()); //アクションアニメーションのリストにリロードを追加
+           
+
     }
 
     public void InvokeAmmoChanged()
