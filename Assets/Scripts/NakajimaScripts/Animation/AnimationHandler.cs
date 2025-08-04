@@ -102,23 +102,11 @@ public class AnimationHandler : NetworkBehaviour
 
         wasInTargetState = isInTargetState;
 
-
-
-        //以下はテスト。グレネードを投げる
-        if (Input.GetMouseButton(0)) // 左クリックでジャンプ
-        {
-            //animator.SetBool("IsGrenadePreparation", true);
-            animator.SetTrigger("IsRifleFire");    
-        }
-        //if (Input.GetMouseButtonUp(0))
-        //{
-        //    //animator.SetBool("IsGrenadePreparation", false);
-        //    animator.SetBool("IsSwordAttack", false);
-        //}
-        //if (Input.GetKeyDown(KeyCode.R)){
-        //    animator.SetTrigger("IsReload");
-        //}
         if (animator.GetCurrentAnimatorStateInfo(1).IsName("RifleReload"))
+        {
+            FinalIKDisable();
+        }
+        if (animator.GetCurrentAnimatorStateInfo(1).IsName("Dead"))
         {
             FinalIKDisable();
         }
@@ -161,6 +149,11 @@ public class AnimationHandler : NetworkBehaviour
                     animator.SetBool("IsJumping", false);
                     break;
 
+                case ActionType.Dead:
+                    Debug.Log($"IsDead True");
+                    animator.SetBool("IsDead", true);
+                    break;  
+
                 case ActionType.ADS_On:
                     Debug.Log($"IsADS True");
                     animator.SetBool("IsADS", true);
@@ -171,14 +164,50 @@ public class AnimationHandler : NetworkBehaviour
                     animator.SetBool("IsADS", false);
                     break;
 
-                
+                case ActionType.Fire_Sword:
+                    Debug.Log($"IsSwordAttack True");
+                    animator.SetBool("IsSwordAttack", true);
+                    break;
+
+                case ActionType.FireStart_AssaultRifle:
+                    Debug.Log($"IsRifleFire True");
+                    animator.SetBool("IsRifleFire", true);
+                    break;
+
+                case ActionType.FireEnd_AssaultRifle:
+                    //使っていない
+                    break;
+
+                case ActionType.Fire_SemiAutoRifle:
+                    //アサルトとセミオートは、アニメーター上のステイト遷移に違いがないので、使っていない
+                    break;
+
+                case ActionType.FirePrepare_Grenade:
+                    Debug.Log($"IsGrenadePreparation True");
+                    animator.SetBool("IsGrenadePreparation", true);
+                    break;
+
+                case ActionType.FireThrow_Grenade:
+                    Debug.Log($"IsGrenadePreparation False");
+                    animator.SetBool("IsGrenadePreparation", false);
+                    break;
+
+                case ActionType.Reload_Sword:
+                    //使っていない
+                    break;
 
                 case ActionType.Reload_AssaultRifle:
+                    Debug.Log($"IsReloading True");
                     animator.SetTrigger("IsReload");
                     break;
 
                 case ActionType.Reload_SemiAutoRifle:
+                    Debug.Log($"IsReloading True");
                     animator.SetTrigger("IsReload");
+                    break;
+
+                case ActionType.Reload_Grenade:
+                    //使っていない
                     break;
 
                 case ActionType.ChangeWeaponTo_Sword:
@@ -217,7 +246,6 @@ public class AnimationHandler : NetworkBehaviour
     {
         ResetWeaponEquipBools();
         animator.SetTrigger("ChangeWeapons");
-        animator.SetBool("IsADS", false);
     }
 
     private void HideAllWeapons()
