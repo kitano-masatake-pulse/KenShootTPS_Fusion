@@ -22,7 +22,7 @@ public class PlayerAvatar : NetworkBehaviour
     TPSCameraController tpsCameraController; //TPSカメラコントローラーの参照
 
     // プレイヤーの身体能力を設定するための変数群
-    [SerializeField] float moveSpeed = 3f;
+    [SerializeField] float moveSpeed = 5f;
     [SerializeField] float gravity = -9.81f;
     [SerializeField] float jumpHeight = 2f;
 
@@ -188,9 +188,16 @@ public class PlayerAvatar : NetworkBehaviour
             HitboxDebugVisualizer.Instance.Register(root);
         }
 
-
-        TeleportToInitialSpawnPoint(); // 初期スポーンポイントにテレポートする
-
+        // 初期スポーンポイントにテレポートする
+        if (RespawnManager.Instance != null)
+        {
+            RespawnManager.Instance.RPC_RequestTeleportSpawnPoint(Object.InputAuthority);
+        }
+        else
+        {
+            TeleportToInitialSpawnPoint(new Vector3(0,2,0));
+        }
+        
     }
 
 
@@ -234,16 +241,9 @@ public class PlayerAvatar : NetworkBehaviour
     
 
 
-    public void TeleportToInitialSpawnPoint()
-    {         // 初期スポーンポイントにテレポートする
-        Vector3 initialSpawnPoint = new Vector3(UnityEngine.Random.Range(0,5f), 1f, UnityEngine.Random.Range(0, 5f)); // 初期スポーンポイントの座標を設定
-        transform.position = initialSpawnPoint; // プレイヤーの位置を初期スポーンポイントに設定
-        characterController.enabled = false; // CharacterControllerを一時的に無効化
-        characterController.enabled = true; // 再度有効化して、衝突判定をリセット
-    }
-
     public void TeleportToInitialSpawnPoint(Vector3 initialSpawnPoint)
     {         // 初期スポーンポイントにテレポートする
+        Debug.Log($"Teleporting {Object.InputAuthority} to initial spawn point: {initialSpawnPoint}");
         transform.position = initialSpawnPoint; // プレイヤーの位置を初期スポーンポイントに設定
         characterController.enabled = false; // CharacterControllerを一時的に無効化
         characterController.enabled = true; // 再度有効化して、衝突判定をリセット

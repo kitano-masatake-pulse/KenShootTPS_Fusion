@@ -440,7 +440,7 @@ MonoBehaviour:
   headObject: {fileID: 11135374732606137}
   bodyObject: {fileID: 4330235374038941541}
   myPlayerHitboxRoot: {fileID: 0}
-  moveSpeed: 3
+  moveSpeed: 5
   gravity: -9.8
   jumpHeight: 2
   cameraTarget: {fileID: 0}
