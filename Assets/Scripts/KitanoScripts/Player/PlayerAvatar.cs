@@ -334,10 +334,7 @@ public class PlayerAvatar : NetworkBehaviour
             CheckInput();
         }
 
-<<<<<<< HEAD
 
-=======
->>>>>>> b393b87abef85667618ae55bd93308bebc7a9ca3
 
         if (isDummy) //ダミーキャラなら、ダミー落下処理を行う
         {
@@ -378,13 +375,13 @@ public class PlayerAvatar : NetworkBehaviour
                 Jump();
                 inputBuffer.jump = false; //ジャンプのバッファをクリア
             }
-            isGraundedNow = characterController.isGrounded; // 現在の接地判定を取得
-            if (!wasGraunded && isGraundedNow)
+            isGroundedNow = characterController.isGrounded; // 現在の接地判定を取得
+            if (!wasGrounded && isGroundedNow)
             {
                 // 接地した瞬間に呼ばれる処理
                 Land();
             }
-            wasGraunded = isGraundedNow; // 前回の接地状態を更新
+            wasGrounded = isGroundedNow; // 前回の接地状態を更新
 
 
             //武器アクションの状態管理
@@ -733,28 +730,6 @@ public class PlayerAvatar : NetworkBehaviour
                     //Debug.Log($"FirePressedUp {currentWeapon.GetName()}"); //デバッグログ
                 }
             }
-<<<<<<< HEAD
-=======
-
-            if (localInputData.ReloadPressedDown) //リロードボタンが押されたら、武器のリロード処理を呼ぶ
-            {
-                Reload();
-            }
-
-
-
-            if (localInputData.weaponChangeScroll != 0f) //武器変更のスクロールがあれば、武器の変更処理を呼ぶ
-            {
-                ChangeWeapon(localInputData.weaponChangeScroll);
-            }
-
-
-        if (localInputData.ADSPressedDown) //ADSボタンが押されたら、ADSの処理を呼ぶ
-        {
-
-            SwitchADS();
-            Debug.Log($"ADSPressedDown"); //デバッグログ
->>>>>>> b393b87abef85667618ae55bd93308bebc7a9ca3
         }
     }
 
@@ -781,9 +756,6 @@ public class PlayerAvatar : NetworkBehaviour
 
 
 
-
-<<<<<<< HEAD
-=======
             isGroundedNow = characterController.isGrounded; // 現在の接地判定を取得
             if (!wasGrounded && isGroundedNow)
             {
@@ -796,8 +768,6 @@ public class PlayerAvatar : NetworkBehaviour
 
             ChangeTransformLocally(normalizedInputDirection, tpsCameraTransform.forward);//ジャンプによる初速度も考慮して移動する
 
-        }
->>>>>>> b393b87abef85667618ae55bd93308bebc7a9ca3
 
 
     }

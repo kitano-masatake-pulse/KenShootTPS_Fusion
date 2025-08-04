@@ -20,15 +20,11 @@ public abstract class WeaponBase : NetworkBehaviour
     public int currentReserve;
 
 
-
-<<<<<<< HEAD
     public override void Spawned()
     {
         playerAvatar = GetComponentInParent<PlayerAvatar>(); //e‚ÌPlayerAvatar‚ðŽæ“¾
     }
 
-=======
->>>>>>> b393b87abef85667618ae55bd93308bebc7a9ca3
 
     public void InitializeAmmo()
     {
