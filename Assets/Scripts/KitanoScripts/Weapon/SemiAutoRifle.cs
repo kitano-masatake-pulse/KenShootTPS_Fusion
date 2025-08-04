@@ -8,7 +8,7 @@ public class SemiAutoRifle : WeaponBase
 
      protected override WeaponType weapon=> WeaponType.SemiAutoRifle; // 武器の種類を指定
 
-    [SerializeField] private Transform muzzleTransform; // 銃口(=Raycastの光源)の位置を指定するTransform
+   public  Transform muzzleTransform; // 銃口(=Raycastの光源)の位置を指定するTransform
 
     [SerializeField] private LayerMask playerLayer;
     public override LayerMask PlayerLayer => playerLayer;
@@ -192,21 +192,23 @@ public class SemiAutoRifle : WeaponBase
 
         if (RaycastLinePoolManager.Instance != null)
         {
-            Vector3 rayEnd = Vector3.zero;
+            Vector3 rayEnd = Vector3.one;
             
             //rayEnd = origin + direction * fireDistance; // ヒットポイントがない場合は剣の長さまでのRayを描画
 
-            if (hit.Point != null)
+            if (hit.Point != null && hit.Point != Vector3.zero)
             {
                 rayEnd = hit.Point; // ヒットしたポイントがある場合はそこまでのRayを描画
             }
             else
             {
                 rayEnd = origin + direction * fireDistance;  // ヒットポイントがない場合は剣の長さまでのRayを描画
-
+                Debug.Log("Raycast Line drawn from " + origin + " to " + rayEnd);
             }
 
             RaycastLinePoolManager.Instance.ShowRay(origin, rayEnd, Color.red, rayDrawingDuration);
+
+            Debug.Log("Raycast Line drawn from " + origin + " to " + rayEnd);
         }
 
 
