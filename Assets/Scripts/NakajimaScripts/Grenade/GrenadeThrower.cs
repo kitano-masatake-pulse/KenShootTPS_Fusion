@@ -32,7 +32,7 @@ public class GrenadeThrower : MonoBehaviour
 
         // 投擲準備完了モーションの間LineRendererを表示
         // ボタン離した後でも、アニメーションは少し続くので、フラグ判定挿入
-        if (animator.GetCurrentAnimatorStateInfo(1).IsName("Prepare to throw loop"))
+        if (animator.GetCurrentAnimatorStateInfo(1).IsName("PrepareToThrowLoop"))
         {
             Debug.Log("Throwing grenade Loop...");
             //　投げる向きを取得する
