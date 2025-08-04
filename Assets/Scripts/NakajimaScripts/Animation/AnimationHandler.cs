@@ -75,7 +75,7 @@ public class AnimationHandler : NetworkBehaviour
                     animator.SetBool("EquipRifle", true);
                     break;
                 case WeaponType.SemiAutoRifle:
-                    animator.SetBool("EquipRifle", true);
+                    animator.SetBool("EquipSemiAutoRifle", true);
                     break;
                 case WeaponType.Grenade:
                     animator.SetBool("EquipGrenade", true);
@@ -102,13 +102,18 @@ public class AnimationHandler : NetworkBehaviour
 
         wasInTargetState = isInTargetState;
 
-        if (animator.GetCurrentAnimatorStateInfo(1).IsName("RifleReload"))
+        if (animator.GetCurrentAnimatorStateInfo(1).IsName("ReloadRifle"))
         {
             FinalIKDisable();
         }
         if (animator.GetCurrentAnimatorStateInfo(1).IsName("Dead"))
         {
             FinalIKDisable();
+        }
+
+        if(Input.GetKeyDown(KeyCode.R))
+        {
+            animator.SetTrigger("IsReload");
         }
     }
 
@@ -166,7 +171,7 @@ public class AnimationHandler : NetworkBehaviour
 
                 case ActionType.Fire_Sword:
                     Debug.Log($"IsSwordAttack True");
-                    animator.SetBool("IsSwordAttack", true);
+                    animator.SetTrigger("IsSwordAttack");
                     break;
 
                 case ActionType.FireStart_AssaultRifle:
@@ -175,11 +180,13 @@ public class AnimationHandler : NetworkBehaviour
                     break;
 
                 case ActionType.FireEnd_AssaultRifle:
-                    //使っていない
+                    Debug.Log($"IsRifleFire False");
+                    animator.SetBool("IsRifleFire", false);
                     break;
 
                 case ActionType.Fire_SemiAutoRifle:
-                    //アサルトとセミオートは、アニメーター上のステイト遷移に違いがないので、使っていない
+                    Debug.Log($"IsSemiAutoRifleFire True");
+                    animator.SetBool("IsSemiAutoRifleFire", true);
                     break;
 
                 case ActionType.FirePrepare_Grenade:
