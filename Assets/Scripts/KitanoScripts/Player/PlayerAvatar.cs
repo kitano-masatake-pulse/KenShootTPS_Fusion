@@ -58,14 +58,20 @@ public class PlayerAvatar : NetworkBehaviour
     TPSCameraController tpsCameraController; //TPSカメラコントローラーの参照
 
     // プレイヤーの身体能力を設定するための変数群
+    [Header("Player Settings")]
     [SerializeField] float moveSpeed = 6f;
     [SerializeField] float gravity = -9.81f;
     [SerializeField] float jumpHeight = 2f;
+    [Header("Raycast Settings")]
+    [SerializeField] private Vector3 rayPosition = new Vector3(0f, 0f, 0f);
+    [SerializeField] private float raycastDistance = 0.78f; //レイキャストの距離
+
 
     private Vector3 velocity; //主に重力に使用
 
 
     private Transform tpsCameraTransform;
+    [Header("Camera Settings")]
     [SerializeField] private Transform cameraTarget;
     public Transform CameraTarget => cameraTarget;
 
@@ -80,7 +86,7 @@ public class PlayerAvatar : NetworkBehaviour
     [Networked] public Vector3 avatarPositionInHost { get; set; } = Vector3.zero; //ホスト環境でのアバター位置(入力権限のあるプレイヤーの位置を参照するために使用)
     [Networked] public Vector3 cameraForwardInHost { get; set; } = Vector3.zero; //カメラの向き(入力権限のあるプレイヤーの回転を参照するために使用)
     [Networked] public Vector3 normalizedInputDirectionInHost { get; set; } = Vector3.zero; //入力権限のあるプレイヤーの入力方向を参照するために使用
-
+    [Header("Dummy Settings")]
     [SerializeField] bool isDummy = false;
 
     #region フラグ管理
@@ -170,6 +176,7 @@ public class PlayerAvatar : NetworkBehaviour
 
 
     //ホーミング関連
+    [Header("Homing Settings")]
     [SerializeField] private float chaseAngle = 90f; // FOVの角度（度単位）
     [SerializeField] private float chaseRange = 5f; // 射程距離
     [SerializeField] private float chaseSpeed = 6f; // 移動速度
@@ -375,13 +382,27 @@ public class PlayerAvatar : NetworkBehaviour
 
 
             bool isGrounded = characterController.isGrounded; // 接地判定を取得
+            //レイキャストで接地判定を行う新しい処理を書く
+            if(!characterController.isGrounded)
+            {
+                if(Physics.Linecast(rayPosition, (rayPosition - transform.up * raycastDistance)))
+                {
+                    isGrounded = true; //レイキャストで地面に当たったら接地と判定
+                }
+                else
+                {
+                    isGrounded = false; //レイキャストで地面に当たらなかったら非接地と判定
+                }
+                Debug.DrawLine(rayPosition, (rayPosition - transform.up * raycastDistance), Color.red);
+            }
+
 
             if (inputBuffer.jump && isGrounded)//ここに接地判定を追加
             {
                 Jump();
                 inputBuffer.jump = false; //ジャンプのバッファをクリア
             }
-            isGroundedNow = characterController.isGrounded; // 現在の接地判定を取得
+            isGroundedNow = isGrounded; // 現在の接地判定を取得
             if (!wasGrounded && isGroundedNow)
             {
                 // 接地した瞬間に呼ばれる処理
@@ -414,7 +435,6 @@ public class PlayerAvatar : NetworkBehaviour
             //武器毎のUpdate処理
             if (weaponClassDictionary.TryGetValue(currentWeapon, out WeaponBase currentWeaponScript))
             {
-
 
                 currentWeaponScript.CalledOnUpdate(localInputData, inputBuffer, currentWeaponActionState); //武器のUpdate処理を呼び出す
 
@@ -716,8 +736,6 @@ public class PlayerAvatar : NetworkBehaviour
             }
 
 
-
-
             if (localInputData.FirePressedStay) //発射ボタンが押され続けている間、武器の発射処理を呼ぶ
             {
                 Fire();
@@ -752,25 +770,7 @@ public class PlayerAvatar : NetworkBehaviour
             currentAction != WeaponActionState.GrenadeThrowing &
             currentAction != WeaponActionState.Dead;
 
-
         return inputCondition && stateCondition;
-
-
-
-
-            isGroundedNow = characterController.isGrounded; // 現在の接地判定を取得
-            if (!wasGrounded && isGroundedNow)
-            {
-                // 接地した瞬間に呼ばれる処理
-                Land();
-            }
-            wasGrounded = isGroundedNow; // 前回の接地状態を更新
-
-
-
-            ChangeTransformLocally(normalizedInputDirection, tpsCameraTransform.forward);//ジャンプによる初速度も考慮して移動する
-
-
 
     }
 
