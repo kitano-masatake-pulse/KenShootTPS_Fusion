@@ -312,5 +312,10 @@ public class SemiAutoRifle : WeaponBase
         Debug.Log($"SemiAutoRifle ADS state changed: {isADS}");
     }
 
+    public override void ResetOnChangeWeapon()
+    {
+         reloadTimer = 0f;
+    }
+
 
 }

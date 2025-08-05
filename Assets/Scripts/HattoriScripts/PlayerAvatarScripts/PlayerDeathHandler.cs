@@ -36,8 +36,9 @@ public class PlayerDeathHandler : NetworkBehaviour
         //プレイヤーアバターに死亡アニメーションを設定
         playerAvatar.SetActionAnimationPlayList(ActionType.Dead, hostTimeStamp);
         //行動不能化
-        playerAvatar.IsDuringWeaponAction = true;
+       
         playerAvatar.CurrentWeaponActionState= WeaponActionState.Dead;
+        playerAvatar.SetReturnTimeToIdle(0f);
         playerAvatar.IsImmobilized = true;
         //顔のカメラ追従を切る
         playerAvatar.IsFollowingCameraForward = false;
