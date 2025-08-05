@@ -1199,8 +1199,7 @@ MonoBehaviour:
   moveSpeed: 6
   gravity: -9.8
   jumpHeight: 2
-  rayPosition: {x: 0, y: 0, z: 0}
-  raycastDistance: 1.8
+  raycastDistance: 1.5
   cameraTarget: {fileID: 0}
   normalizedInputDirection: {x: 0, y: 0, z: 0}
   _avatarPositionInHost: {x: 0, y: 0, z: 0}

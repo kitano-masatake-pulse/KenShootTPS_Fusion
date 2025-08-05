@@ -63,8 +63,7 @@ public class PlayerAvatar : NetworkBehaviour
     [SerializeField] float gravity = -9.81f;
     [SerializeField] float jumpHeight = 2f;
     [Header("Raycast Settings")]
-    [SerializeField] private Vector3 rayPosition = new Vector3(0f, 0f, 0f);
-    [SerializeField] private float raycastDistance = 0.78f; //レイキャストの距離
+    [SerializeField] private float raycastDistance = 1.5f; //レイキャストの距離
 
 
     private Vector3 velocity; //主に重力に使用
@@ -381,37 +380,20 @@ public class PlayerAvatar : NetworkBehaviour
 
 
 
-            bool isGrounded = characterController.isGrounded; // 接地判定を取得
             //レイキャストで接地判定を行う新しい処理を書く
-            if(!characterController.isGrounded)
-            {
-                if(Physics.Linecast(rayPosition, (rayPosition - transform.up * raycastDistance)))
-                {
-                    isGrounded = true; //レイキャストで地面に当たったら接地と判定
-                }
-                else
-                {
-                    isGrounded = false; //レイキャストで地面に当たらなかったら非接地と判定
-                }
-                Debug.DrawLine(rayPosition, (rayPosition - transform.up * raycastDistance), Color.red);
-            }
+            isGroundedNow = CheckGround() || characterController.isGrounded;
 
 
-            if (inputBuffer.jump && isGrounded)//ここに接地判定を追加
+            if (inputBuffer.jump && isGroundedNow)//ここに接地判定を追加
             {
                 Jump();
                 inputBuffer.jump = false; //ジャンプのバッファをクリア
             }
-            isGroundedNow = isGrounded; // 現在の接地判定を取得
-            if (!wasGrounded && isGroundedNow)
-            {
-                // 接地した瞬間に呼ばれる処理
-                Land();
-            }
-            wasGrounded = isGroundedNow; // 前回の接地状態を更新
+            //CheckLand();
 
 
             //武器アクションの状態管理
+            stateTimer_ReturnToIdle = Math.Max(stateTimer_ReturnToIdle - Time.deltaTime, 0); //状態タイマーを更新し、最大値を設定
             stateTimer_ReturnToIdle = Math.Max(stateTimer_ReturnToIdle - Time.deltaTime, 0); //状態タイマーを更新し、最大値を設定
             if (stateTimer_ReturnToIdle <= 0f) //状態タイマーが0以下になったら、Idle状態に戻す
             {
@@ -435,6 +417,7 @@ public class PlayerAvatar : NetworkBehaviour
             //武器毎のUpdate処理
             if (weaponClassDictionary.TryGetValue(currentWeapon, out WeaponBase currentWeaponScript))
             {
+
 
                 currentWeaponScript.CalledOnUpdate(localInputData, inputBuffer, currentWeaponActionState); //武器のUpdate処理を呼び出す
 
@@ -632,7 +615,7 @@ public class PlayerAvatar : NetworkBehaviour
     void ExecuteBufferedActions()
     {
         //バッファされたアクションを実行する
-        if (inputBuffer.jump && characterController.isGrounded)
+        if (inputBuffer.jump && isGroundedNow)
         {
             Jump();
             inputBuffer.jump = false; //バッファをクリア
@@ -1122,43 +1105,28 @@ public class PlayerAvatar : NetworkBehaviour
     #region Jump関連
     void Jump()
     {
-
-
-        isGroundedNow = CheckGround(); // 接地判定を行う
-
-        if (isGroundedNow) 
-        {
-
             SetActionAnimationPlayListForAllClients(ActionType.Jump); //アクションアニメーションのリストに追加
-            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity); //ローカルでジャンプの初速度(velocity.y)を与える
-        }
+            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity); //ローカルでジャンプの初速度(velocity.y)を与える   
     }
 
     bool CheckGround()
     {
         Vector3 origin = transform.position; // キャラクターの中心位置を基準にする
-        float rayLength = 1.5f; // レイの長さを設定
-        return Physics.Raycast(origin, Vector3.down, rayLength);
+        return Physics.Raycast(origin, Vector3.down, raycastDistance);
     }
 
     void CheckLand()
     {
-        isGroundedNow = CheckGround(); // 接地判定を行う
-
         if (!wasGrounded && isGroundedNow)
         {
             Land();
         }
-
-        wasGrounded = isGroundedNow; // 前回の接地状態を更新
+        wasGrounded = isGroundedNow; 
     }
 
     void Land()
     {
-        if (!wasGrounded && isGroundedNow)
-        {
-            SetActionAnimationPlayListForAllClients(ActionType.Land);
-        }
+            SetActionAnimationPlayListForAllClients(ActionType.Land);   
     }
 
     #endregion
