@@ -52,14 +52,19 @@ public class PlayerAvatar : NetworkBehaviour
     TPSCameraController tpsCameraController; //TPSカメラコントローラーの参照
 
     // プレイヤーの身体能力を設定するための変数群
+    [Header("Player Settings")]
     [SerializeField] float moveSpeed = 6f;
     [SerializeField] float gravity = -9.81f;
     [SerializeField] float jumpHeight = 2f;
+    [Header("Raycast Settings")]
+    [SerializeField] private float raycastDistance = 1.5f; //レイキャストの距離
+
 
     private Vector3 velocity; //主に重力に使用
 
 
     private Transform tpsCameraTransform;
+    [Header("Camera Settings")]
     [SerializeField] private Transform cameraTarget;
     public Transform CameraTarget => cameraTarget;
 
@@ -74,7 +79,7 @@ public class PlayerAvatar : NetworkBehaviour
     [Networked] public Vector3 avatarPositionInHost { get; set; } = Vector3.zero; //ホスト環境でのアバター位置(入力権限のあるプレイヤーの位置を参照するために使用)
     [Networked] public Vector3 cameraForwardInHost { get; set; } = Vector3.zero; //カメラの向き(入力権限のあるプレイヤーの回転を参照するために使用)
     [Networked] public Vector3 normalizedInputDirectionInHost { get; set; } = Vector3.zero; //入力権限のあるプレイヤーの入力方向を参照するために使用
-
+    [Header("Dummy Settings")]
     [SerializeField] bool isDummy = false;
 
     #region フラグ管理
@@ -159,6 +164,7 @@ public class PlayerAvatar : NetworkBehaviour
 
 
     //ホーミング関連
+    [Header("Homing Settings")]
     [SerializeField] private float chaseAngle = 90f; // FOVの角度（度単位）
     [SerializeField] private float chaseRange = 5f; // 射程距離
     [SerializeField] private float chaseSpeed = 6f; // 移動速度
@@ -363,9 +369,11 @@ public class PlayerAvatar : NetworkBehaviour
 
 
 
-            bool isGrounded = characterController.isGrounded; // 接地判定を取得
+            //レイキャストで接地判定を行う新しい処理を書く
+            isGroundedNow = CheckGround() || characterController.isGrounded;
 
-            if (inputBuffer.jump && isGrounded)//ここに接地判定を追加
+
+            if (inputBuffer.jump && isGroundedNow)//ここに接地判定を追加
             {
                 Jump();
                 inputBuffer.jump = false; //ジャンプのバッファをクリア
@@ -382,7 +390,6 @@ public class PlayerAvatar : NetworkBehaviour
                 stateTimer_ReturnToIdle = Math.Max(stateTimer_ReturnToIdle - Time.deltaTime, 0); //状態タイマーを更新し、最大値を設定
             }
 
-
             if (stateTimer_ReturnToIdle <= 0f) //状態タイマーが0以下になったら、Idle状態に戻す
             {
                 currentWeaponActionState = WeaponActionState.Idle; //現在のアクションをIdleに設定
@@ -397,7 +404,7 @@ public class PlayerAvatar : NetworkBehaviour
                 return;
             }
 
-            
+           
 
 
             //武器毎のUpdate処理
@@ -503,7 +510,6 @@ public class PlayerAvatar : NetworkBehaviour
             inputBufferTimer_swordFireDown = 0f; //タイマーをリセット
         }
 
-
     }
 
  
@@ -518,8 +524,8 @@ public class PlayerAvatar : NetworkBehaviour
             currentAction != WeaponActionState.GrenadeThrowing &
             currentAction != WeaponActionState.Dead;
 
-
         return inputCondition && stateCondition;
+
 
 
     }
@@ -529,7 +535,6 @@ public class PlayerAvatar : NetworkBehaviour
     {
         stateTimer_ReturnToIdle =returnTime; //アクション後、Idle状態に戻るまでの時間を設定
     }
-
 
 
 
@@ -880,43 +885,28 @@ public class PlayerAvatar : NetworkBehaviour
     #region Jump関連
     void Jump()
     {
-
-
-        isGroundedNow = CheckGround(); // 接地判定を行う
-
-        if (isGroundedNow) 
-        {
-
             SetActionAnimationPlayListForAllClients(ActionType.Jump); //アクションアニメーションのリストに追加
-            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity); //ローカルでジャンプの初速度(velocity.y)を与える
-        }
+            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity); //ローカルでジャンプの初速度(velocity.y)を与える   
     }
 
     bool CheckGround()
     {
         Vector3 origin = transform.position; // キャラクターの中心位置を基準にする
-        float rayLength = 1.5f; // レイの長さを設定
-        return Physics.Raycast(origin, Vector3.down, rayLength);
+        return Physics.Raycast(origin, Vector3.down, raycastDistance);
     }
 
     void CheckLand()
     {
-        isGroundedNow = CheckGround(); // 接地判定を行う
-
         if (!wasGrounded && isGroundedNow)
         {
             Land();
         }
-
-        wasGrounded = isGroundedNow; // 前回の接地状態を更新
+        wasGrounded = isGroundedNow; 
     }
 
     void Land()
     {
-        if (!wasGrounded && isGroundedNow)
-        {
-            SetActionAnimationPlayListForAllClients(ActionType.Land);
-        }
+            SetActionAnimationPlayListForAllClients(ActionType.Land);   
     }
 
     #endregion

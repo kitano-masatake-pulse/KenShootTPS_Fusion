@@ -1196,9 +1196,10 @@ MonoBehaviour:
   headObject: {fileID: 2171211468819611867}
   bodyObject: {fileID: 2852828816588928964}
   myPlayerHitboxRoot: {fileID: 0}
-  moveSpeed: 3
+  moveSpeed: 6
   gravity: -9.8
   jumpHeight: 2
+  raycastDistance: 1.5
   cameraTarget: {fileID: 0}
   normalizedInputDirection: {x: 0, y: 0, z: 0}
   _avatarPositionInHost: {x: 0, y: 0, z: 0}
@@ -3544,9 +3545,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa66e4def5876f44783351ae90313653, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainCamera: {fileID: 0}
   sphere: {fileID: 6093465629978082251}
-  distanceFromCamera: 20
 --- !u!1 &8127913009354777147
 GameObject:
   m_ObjectHideFlags: 0
