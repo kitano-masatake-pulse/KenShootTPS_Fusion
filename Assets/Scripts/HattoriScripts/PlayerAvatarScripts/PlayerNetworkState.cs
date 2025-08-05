@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using UnityEngine;
 using Fusion;
 
@@ -15,9 +14,6 @@ public class PlayerNetworkState : NetworkBehaviour
     /// <summary>HPが変更されたとき</summary>
     public event Action<float, PlayerRef> OnHPChanged;
 
-    ///<summary> 無敵状態になった時 </summary>
-    public event Action<bool, float> OnInvincibleChanged;
-
     /// <summary>武器切替がサーバー正史で確定したとき</summary>
     public event Action<WeaponType> OnWeaponChanged_Network;
 
@@ -28,6 +24,8 @@ public class PlayerNetworkState : NetworkBehaviour
     // ���[�J���v���C���[������
     public static event Action<PlayerNetworkState> OnLocalPlayerSpawned;
     
+    /// <summary>プレイヤー死亡時(Victim,Killer)</summary>
+    //public event Action<PlayerRef, PlayerRef> OnPlayerDied;
 
     #endregion
 
@@ -71,13 +69,6 @@ public class PlayerNetworkState : NetworkBehaviour
     void RaiseHPChanged() => OnHPChanged?.Invoke(HpNormalized,Object.InputAuthority);
     void RaiseWeaponChanged() => OnWeaponChanged_Network?.Invoke(CurrentWeapon_Network);
     void RaiseTeamChanged() => OnTeamChanged?.Invoke(Team);
-
-    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
-    void RPC_RaiseInvincibleChanged(bool isInvincible, float remainTime)
-    {
-        // クライアント側で無敵状態の変更を通知
-        OnInvincibleChanged?.Invoke(isInvincible, remainTime);
-    }
     #endregion
 
     #region Unity Callbacks
@@ -164,28 +155,6 @@ public class PlayerNetworkState : NetworkBehaviour
     {
         if (!HasStateAuthority) return;
         IsInvincible = isInvincible;
-        RPC_RaiseInvincibleChanged(isInvincible, 600f); 
-    }
-
-    public void SetInvincible(bool isInvincible, float duration)
-    {
-        if (!HasStateAuthority) return;
-        IsInvincible = isInvincible;
-        // 無敵状態の変更イベントを発火
-        RPC_RaiseInvincibleChanged(isInvincible, duration);
-        // 一定時間後に無敵状態を解除する
-        if (isInvincible)
-        {
-            Runner.StartCoroutine(ResetInvincibilityAfterDelay(duration));
-        }
-    }
-
-    // 無敵状態を一定時間後に解除するコルーチン
-    private IEnumerator ResetInvincibilityAfterDelay(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        IsInvincible = false;
-        RPC_RaiseInvincibleChanged(false, 0f); // 無敵状態が解除されたことを通知
     }
 
     //チーム設定

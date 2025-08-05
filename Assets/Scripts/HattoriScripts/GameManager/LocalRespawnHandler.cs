@@ -44,7 +44,6 @@ public class LocalRespawnHandler: MonoBehaviour
         // 3. フェードアウト後処理
         Debug.Log("LocalRespawnHandler: リスポーン処理を開始します。");
         InitializeAfterFade();
-        yield return new WaitForSeconds(0.5f); // フェードアウト後の待機時間
 
         // 4. フェードイン
         yield return StartCoroutine(fadeUI.FadeAlpha(1f, 0f, respawnFadeInTime));
@@ -73,6 +72,7 @@ public class LocalRespawnHandler: MonoBehaviour
 
         playerAvatar.IsHoming = false;
         playerAvatar.IsFollowingCameraForward = true; //カメラ追従を有効化
+        playerAvatar.TeleportToInitialSpawnPoint(GetRespawnPoint());
 
         //ホストにリスポーン処理を要求
         RespawnManager.Instance.RPC_RequestRespawn(myPlayer);
@@ -82,10 +82,18 @@ public class LocalRespawnHandler: MonoBehaviour
     {
         //行動制限を解除
         playerAvatar.IsDuringWeaponAction = false;
+        playerAvatar.CurrentWeaponActionState = WeaponActionState.Idle;
         playerAvatar.IsImmobilized = false;
 
         //ホストにリスポーン後の処理を要求
         RespawnManager.Instance.RPC_RespawnEnd(myPlayer);
+    }
+
+
+    public Vector3 GetRespawnPoint()
+    {
+        var randomValue = UnityEngine.Random.insideUnitCircle * 5f;
+        return new Vector3(randomValue.x, 5f, randomValue.y);
     }
 
 }

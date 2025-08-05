@@ -57,6 +57,29 @@ public class Sword : WeaponBase
     }
 
 
+    public override void CalledOnUpdate(PlayerInputData localInputData, InputBufferStruct inputBuffer, WeaponActionState currentAction)
+    {
+
+        if (CanAttack(localInputData, inputBuffer, currentAction)  )
+        {
+            Debug.Log("Can Attack!"); // デバッグ用ログ出力
+            StartCoroutine(CollisionDetectionCoroutine());
+            playerAvatar.SwordAction();
+
+
+        }
+    }
+
+
+    bool CanAttack(PlayerInputData localInputData, InputBufferStruct inputBuffer, WeaponActionState currentAction)
+    { 
+        bool inputCondition = inputBuffer.swordFireDown ; // 発射ボタンが押されていることを確認
+        bool stateCondition = currentAction == WeaponActionState.Idle; // 現在のアクションがアイドル状態であることを確認
+
+        return inputCondition && stateCondition; // 両方の条件を満たす場合にtrueを返す
+
+    }
+
     public override void FireDown()
     {
       
@@ -210,7 +233,7 @@ public class Sword : WeaponBase
             // レイキャストの結果を確認,何回も刺さないように注意
             //着弾処理 
 
-            Debug.Log($"Raycast hitReslut Layer: {hitResult.GameObject.layer}");
+            //Debug.Log($"Raycast hitReslut Layer: {hitResult.GameObject.layer}");
             if (hitResult.GameObject != null && ((1<<hitResult.GameObject.layer) &playerLayer) !=0) // プレイヤーのレイヤーにヒットしたか確認
             {
 
