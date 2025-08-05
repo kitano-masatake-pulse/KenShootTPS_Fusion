@@ -101,4 +101,4 @@ MonoBehaviour:
   - {x: 49, y: 5, z: 18}
   - {x: -20, y: 3, z: 64}
   - {x: 57.5, y: 9.5, z: -44}
-  mapScale: 0.8
+  mapScale: 1
