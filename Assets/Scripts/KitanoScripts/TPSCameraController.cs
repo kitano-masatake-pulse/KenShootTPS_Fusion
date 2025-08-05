@@ -3,8 +3,10 @@ using Fusion;
 using RootMotion.Demos;
 using System;
 using System.Collections.Generic;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static UnityEngine.UI.Image;
 
 //CinemachineVirtualCameraにアタッチすること
 public class TPSCameraController : MonoBehaviour
@@ -15,6 +17,8 @@ public class TPSCameraController : MonoBehaviour
     [Header("Cinemachine Virtual Camera")]
     [SerializeField] private CinemachineVirtualCamera virtualCamera;
     [Header("マウス操作")]
+
+
 
     [SerializeField] private float minVerticalAngle = -40f;
     [SerializeField] private float maxVerticalAngle = 75f;
@@ -38,6 +42,10 @@ public class TPSCameraController : MonoBehaviour
     bool isRecovering = false; // リコイル回復中かどうかのフラグ
 
 
+
+    [Header("障害物判定")]
+    [SerializeField] private LayerMask obstacleLayer; // 障害物のレイヤー
+    [SerializeField] private float obstacleBuffer = 0.02f; // 障害物からの距離
 
     [Header("リコイルのdebug用")]
     //リコイルのdebug用
@@ -426,6 +434,38 @@ public class TPSCameraController : MonoBehaviour
     public Transform GetTPSCameraTransform()
     {
         return this.gameObject.transform;
+    }
+
+
+    void ControlDistance()
+    {
+
+        Vector3 rayStartPos = cameraTarget.position;
+
+
+        Vector3 rayEndPos = this.transform.position;
+
+
+        Vector3 direction = rayEndPos - rayStartPos;
+
+        RaycastHit hit
+
+
+        if (Physics.Raycast(rayStartPos , direction/ direction.magnitude, out hit, direction.magnitude, obstacleLayer))
+        {
+            // hitLayers に含まれるレイヤーのオブジェクトだけ検出
+            this.transform.position=hit.point - direction* ( obstacleBuffer / direction.magnitude);
+
+        }
+        else
+        {
+            // 障害物がない場合はカメラの位置を更新
+            this.transform.position = rayEndPos;
+        }   
+
+
+
+
     }
 
 }
