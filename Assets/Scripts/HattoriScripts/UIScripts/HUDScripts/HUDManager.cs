@@ -7,8 +7,7 @@ public class HUDManager : MonoBehaviour
     [SerializeField] private ScorePanel score;
     [SerializeField] private WeaponPanel weapon;
     [SerializeField] private TimerPanel timer;
-    [SerializeField] private ADSCrossHair adsCrossHair; 
-    [SerializeField] private InvincibleUIPanel invincibleUIPanel; 
+    [SerializeField] private ADSCrossHair adsCrossHair; // ADS用のクロスヘアパネル
 
 
     private void OnEnable()
@@ -28,14 +27,13 @@ public class HUDManager : MonoBehaviour
     private void PlayerHUDInitialize(PlayerNetworkState pState)
     {
         hp.Initialize(pState, null);
-        invincibleUIPanel.Initialize(pState, null); 
 
     }
 
     private void WeaponHUDInitialize(PlayerAvatar wState)
     {
         weapon.Initialize(null, wState);
-        adsCrossHair.Initialize(null, wState); 
+        adsCrossHair.Initialize(null, wState); // ADSクロスヘアの初期化
     }
 
     private void GameHUDInitialize()
@@ -53,8 +51,7 @@ public class HUDManager : MonoBehaviour
         score.Cleanup();
         weapon.Cleanup();
         timer.Cleanup();
-        adsCrossHair.Cleanup(); 
-        invincibleUIPanel.Cleanup(); 
+        adsCrossHair.Cleanup(); // ADSクロスヘアのクリーンアップ
 
 
 
