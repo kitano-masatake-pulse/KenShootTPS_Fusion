@@ -26,7 +26,6 @@ public class GrenadeBomb : NetworkBehaviour
     [SerializeField] private float damageDuration = 1f; // 爆発時間(当たり時間)
     [SerializeField] private float explosionDelay = 3.5f; // 爆発までの遅延時間
 
-    [SerializeField] private Transform explosionCenter; // 爆発の中心位置
 
     private float rayDrawingDuration = 1f; // Rayの描画時間
 
@@ -56,7 +55,7 @@ public class GrenadeBomb : NetworkBehaviour
         // 爆発範囲の描画
         if (OverlapSphereVisualizer.Instance != null)
         {
-            OverlapSphereVisualizer.Instance.ShowSphere(explosionCenter.position, blastHitRadius, rayDrawingDuration, "Sword Attack Area", Color.blue); // 攻撃判定の範囲を可視化する
+            OverlapSphereVisualizer.Instance.ShowSphere(this.transform.position, blastHitRadius, rayDrawingDuration, "Sword Attack Area", Color.blue); // 攻撃判定の範囲を可視化する
         }
         else
         {
@@ -83,7 +82,7 @@ public class GrenadeBomb : NetworkBehaviour
 
         var hits = new List<LagCompensatedHit>();
         int hitCount = Runner.LagCompensation.OverlapSphere( // 攻撃判定を行う
-            explosionCenter.position,
+            this.transform.position,
             blastHitRadius,
             Object.InputAuthority,
             hits,
@@ -154,13 +153,13 @@ public class GrenadeBomb : NetworkBehaviour
     {
         raycastHit = default; // 初期化
         minHitDistance = float.PositiveInfinity;
-        Vector3 explosionDirection = sphereHit.GameObject.transform.position - explosionCenter.position; // 剣の方向を計算(後々、被弾側のspineを参照するようにする)
+        Vector3 explosionDirection = sphereHit.GameObject.transform.position - this.transform.position; // 剣の方向を計算(後々、被弾側のspineを参照するようにする)
         List<Vector3> rayDirections = CornRaycastDirections(explosionDirection, cornRayAngleDeg, cornRayNum); // 30度の円錐形の方向に4本のRayを放射状に飛ばす
 
         foreach (var direction in rayDirections)
         {
             Runner.LagCompensation.Raycast(
-           explosionCenter.position,
+           this.transform.position,
            direction,
            blastHitRadius,   // 爆風の範囲でレイキャスト
            Object.InputAuthority,
@@ -171,14 +170,14 @@ public class GrenadeBomb : NetworkBehaviour
             );
 
 
-            //Debug.DrawRay(explosionCenter.position, direction * blastHitRadius, Color.blue, rayDrawingDuration);
+            //Debug.DrawRay(this.transform.position, direction * blastHitRadius, Color.blue, rayDrawingDuration);
 
 
             if (RaycastLinePoolManager.Instance != null)
             {
                 Vector3 rayEnd = Vector3.zero;
 
-                //rayEnd = explosionCenter.position + direction * blastHitRadius; // ヒットポイントがない場合は剣の長さまでのRayを描画
+                //rayEnd = this.transform.position + direction * blastHitRadius; // ヒットポイントがない場合は剣の長さまでのRayを描画
 
 
                 if (hitResult.Point != null)
@@ -187,11 +186,11 @@ public class GrenadeBomb : NetworkBehaviour
                 }
                 else
                 {
-                    rayEnd = explosionCenter.position + direction * blastHitRadius; // ヒットポイントがない場合は爆風範囲までのRayを描画
+                    rayEnd = this.transform.position + direction * blastHitRadius; // ヒットポイントがない場合は爆風範囲までのRayを描画
 
                 }
 
-                RaycastLinePoolManager.Instance.ShowRay(explosionCenter.position, rayEnd, Color.blue, rayDrawingDuration);
+                RaycastLinePoolManager.Instance.ShowRay(this.transform.position, rayEnd, Color.blue, rayDrawingDuration);
             }
 
 
@@ -291,6 +290,12 @@ public class GrenadeBomb : NetworkBehaviour
         return Mathf.RoundToInt(Mathf.Lerp(weaponType.Damage(), minBlastDamage, t));
     }
 
+
+    public void SetThrowPlayer(PlayerRef playerRef)
+    {
+        throwPlayer = playerRef; // 投げたプレイヤーのPlayerRefを設定する
+        Debug.Log($"GrenadeBomb: SetThrowPlayer called with PlayerRef: {playerRef}");
+    }
 
 
 

@@ -394,7 +394,14 @@ public class PlayerAvatar : NetworkBehaviour
 
 
             //武器アクションの状態管理
-            stateTimer_ReturnToIdle = Math.Max(stateTimer_ReturnToIdle - Time.deltaTime, 0); //状態タイマーを更新し、最大値を設定
+
+            //死んでる時と投擲準備中は、明示的にIdleに戻さないと復帰しない
+            if (currentWeaponActionState != WeaponActionState.Dead && currentWeaponActionState != WeaponActionState.GrenadePreparing) 
+            {
+                stateTimer_ReturnToIdle = Math.Max(stateTimer_ReturnToIdle - Time.deltaTime, 0); //状態タイマーを更新し、最大値を設定
+            }
+
+
             if (stateTimer_ReturnToIdle <= 0f) //状態タイマーが0以下になったら、Idle状態に戻す
             {
                 currentWeaponActionState = WeaponActionState.Idle; //現在のアクションをIdleに設定
@@ -425,74 +432,7 @@ public class PlayerAvatar : NetworkBehaviour
 
 
 
-            //if (currentWeapon == WeaponType.Sword)
-            //{
-
-
-            //    if (hasBufferedInput_swordFireDown)
-            //    {
-            //        // Swordの場合はFireDownは無視
-            //        hasBufferedInput_swordFireDown = false; // SwordではFireDownのバッファをクリア
-
-            //    }
-
-            //}
-            //else if (currentWeapon == WeaponType.AssaultRifle)
-            //{
-            //    if (!hasBufferedInput_swordFireDown)
-            //    { 
-
-
-            //    }
-
-            //}
-            //else
-            //{
-            //    if (localInputData.FirePressedDown) //発射ボタンが押されたら、武器の発射処理を呼ぶ
-            //    {
-            //        FireDown();
-            //        //Debug.Log($"FirePressedDown {currentWeapon.GetName()}"); //デバッグログ
-            //    }
-
-            //}
-
-
-
-            //if (localInputData.FirePressedStay) //発射ボタンが押され続けている間、武器の発射処理を呼ぶ
-            //{
-            //    Fire();
-            //    //Debug.Log($"FirePressedStay {currentWeapon.GetName()}"); //デバッグログ
-            //}
-
-            //if (localInputData.FirePressedUp) //発射ボタンが離されたら、武器の発射処理を呼ぶ
-            //{
-            //    if (currentWeapon != WeaponType.Grenade) // Swordの場合はFireUpは無視
-            //    {
-            //        FireUp();
-            //        //Debug.Log($"FirePressedUp {currentWeapon.GetName()}"); //デバッグログ
-            //    }
-
-
-
-            //}
-
-            //if (inputBuffer.reload) //リロードボタンが押されたら、武器のリロード処理を呼ぶ
-            //{
-            //    Reload();
-            //    inputBuffer.reload = false; //リロードのバッファをクリア
-            //}
-
-
-
-            //if (localInputData.weaponChangeScroll != 0f) //武器変更のスクロールがあれば、武器の変更処理を呼ぶ
-            //{
-            //    ChangeWeapon(localInputData.weaponChangeScroll);
-            //}
-
-
-            //ExecuteWeaponActions(localInputData);
-
-
+           
             normalizedInputDirection = localInputData.wasdInput.normalized;
 
 
@@ -609,131 +549,8 @@ public class PlayerAvatar : NetworkBehaviour
 
     }
 
-    void ExecuteBufferedActions()
-    {
-        //バッファされたアクションを実行する
-        if (inputBuffer.jump && characterController.isGrounded)
-        {
-            Jump();
-            inputBuffer.jump = false; //バッファをクリア
-            inputBufferTimer_jump = 0f; //タイマーをリセット
-        }
-        if (inputBuffer.swordFireDown && IsViableActionState())
-        {
-            FireDown();
-            inputBuffer.swordFireDown = false; //バッファをクリア
-            inputBufferTimer_swordFireDown = 0f; //タイマーをリセット
-        }
-        if (inputBuffer.grenadeFireUp && IsViableActionState())
-        {
-            FireUp();
-            inputBuffer.grenadeFireUp = false; //バッファをクリア
-            inputBufferTimer_fireUp = 0f; //タイマーをリセット
-        }
-        if (inputBuffer.reload && IsViableActionState())
-        {
-            Reload();
-            inputBuffer.reload = false; //バッファをクリア
-            inputBufferTimer_reload = 0f; //タイマーをリセット
+ 
 
-        }
-    }
-
-
-    //排他的な武器アクションの実行を行う
-    void ExecuteWeaponActions(PlayerInputData localInputData)
-    {
-        //武器切り替え
-
-        if (localInputData.weaponChangeScroll != 0f && IsViableActionState()) //武器変更のスクロールがあれば、武器の変更処理を呼ぶ
-        {
-            ChangeWeapon(localInputData.weaponChangeScroll);
-            return;
-        }
-
-
-        //リロード
-
-        if (currentWeapon.IsReloadable())
-        {
-            if (inputBuffer.reload && IsViableActionState())
-            {
-                Reload();
-                inputBuffer.reload = false; //バッファをクリア
-                inputBufferTimer_reload = 0f; //タイマーをリセット
-                return;
-            }
-        }
-
-
-        //射撃
-
-        if (currentWeapon == WeaponType.Sword)
-        {
-            if (inputBuffer.swordFireDown && IsViableActionState())
-            {
-                FireDown();
-                inputBuffer.swordFireDown = false; //バッファをクリア
-                inputBufferTimer_swordFireDown = 0f; //タイマーをリセット
-            }
-
-        }
-        else if (currentWeapon == WeaponType.AssaultRifle)
-        {
-            if (inputBuffer.assaultFire && IsViableActionState())
-            {
-                FireDown();
-            }
-            if (localInputData.FirePressedStay && IsViableActionState()) //発射ボタンが押され続けている間、武器の発射処理を呼ぶ
-
-            {
-                Fire();
-                //Debug.Log($"FirePressedStay {currentWeapon.GetName()}"); //デバッグログ
-            }
-            if (inputBuffer.grenadeFireUp && IsViableActionState())
-            {
-                FireUp();
-                inputBuffer.grenadeFireUp = false; //バッファをクリア
-                inputBufferTimer_fireUp = 0f; //タイマーをリセット
-            }
-
-        }
-        else if (currentWeapon == WeaponType.Grenade)
-        {
-            if (inputBuffer.grenadeFireUp && IsViableActionState())
-            {
-                FireUp();
-                inputBuffer.grenadeFireUp = false; //バッファをクリア
-                inputBufferTimer_fireUp = 0f; //タイマーをリセット
-            }
-        }
-        else
-        {
-            if (localInputData.FirePressedDown) //発射ボタンが押されたら、武器の発射処理を呼ぶ
-            {
-                FireDown();
-                //Debug.Log($"FirePressedDown {currentWeapon.GetName()}"); //デバッグログ
-            }
-
-
-
-
-            if (localInputData.FirePressedStay) //発射ボタンが押され続けている間、武器の発射処理を呼ぶ
-            {
-                Fire();
-                //Debug.Log($"FirePressedStay {currentWeapon.GetName()}"); //デバッグログ
-            }
-
-            if (localInputData.FirePressedUp) //発射ボタンが離されたら、武器の発射処理を呼ぶ
-            {
-                if (currentWeapon != WeaponType.Grenade) // Swordの場合はFireUpは無視
-                {
-                    FireUp();
-                    //Debug.Log($"FirePressedUp {currentWeapon.GetName()}"); //デバッグログ
-                }
-            }
-        }
-    }
 
 
     bool IsViableActionState()
@@ -756,23 +573,19 @@ public class PlayerAvatar : NetworkBehaviour
         return inputCondition && stateCondition;
 
 
+    }
 
 
-            isGroundedNow = characterController.isGrounded; // 現在の接地判定を取得
-            if (!wasGrounded && isGroundedNow)
-            {
-                // 接地した瞬間に呼ばれる処理
-                Land();
-            }
-            wasGrounded = isGroundedNow; // 前回の接地状態を更新
-
-
-
-            ChangeTransformLocally(normalizedInputDirection, tpsCameraTransform.forward);//ジャンプによる初速度も考慮して移動する
+    public void SetReturnTimeToIdle(float returnTime)
+    {
+        stateTimer_ReturnToIdle =returnTime; //アクション後、Idle状態に戻るまでの時間を設定
 
 
 
     }
+
+
+
 
     #endregion
 
@@ -1178,6 +991,8 @@ public class PlayerAvatar : NetworkBehaviour
 
         isFollowingCameraForward = false; // カメラの向きに追従しないように設定
 
+        inputBuffer.swordFireDown = false; //近接攻撃のバッファをクリア  
+
         //攻撃の当たり判定やアニメーションは変わらないので共通
         //weaponClassDictionary[currentWeapon].FireDown(); //現在の武器の発射処理を呼ぶ
         SetActionAnimationPlayListForAllClients(currentWeapon.FireDownAction()); //アクションアニメーションのリストに発射ダウンを追加
@@ -1207,6 +1022,7 @@ public class PlayerAvatar : NetworkBehaviour
     public void FireAction()
     {
         currentWeaponActionState = WeaponActionState.Firing; //武器アクション状態を射撃に設定
+        stateTimer_ReturnToIdle = currentWeapon.FireWaitTime(); //発射ダウンの時間を設定
         //isDuringWeaponAction = true;
 
         weaponClassDictionary[currentWeapon].Fire(); //現在の武器の発射処理を呼ぶ
@@ -1218,8 +1034,41 @@ public class PlayerAvatar : NetworkBehaviour
         OnAmmoChanged?.Invoke(weaponClassDictionary[currentWeapon].currentMagazine, weaponClassDictionary[currentWeapon].currentReserve); //弾薬変更イベントを発火
 
         //StartCoroutine(FireRoutine(currentWeapon.FireWaitTime())); //発射ダウンのコルーチンを開始
-        stateTimer_ReturnToIdle = currentWeapon.FireWaitTime(); //発射ダウンの時間を設定
+        
     }
+
+
+
+
+    public void PrepareGrenade()
+    {
+
+        currentWeaponActionState= WeaponActionState.GrenadePreparing; //武器アクション状態をグレネード投擲に設定
+        stateTimer_ReturnToIdle = currentWeapon.FireWaitTime(); //発射ダウンの時間を設定
+        weaponClassDictionary[currentWeapon].FireDown(); //現在の武器の発射処理を呼ぶ
+        SetActionAnimationPlayListForAllClients(currentWeapon.FireDownAction()); //アクションアニメーションのリストに発射アップを追加
+
+
+    }
+
+
+    public void ThrowGrenade()
+    {
+        currentWeaponActionState = WeaponActionState.GrenadeThrowing; //武器アクション状態をグレネード投擲に設定
+        stateTimer_ReturnToIdle = currentWeapon.FireWaitTime(); //発射ダウンの時間を設定
+
+        inputBuffer.grenadeFireUp= false; //グレネード投擲のバッファをクリア
+
+        weaponClassDictionary[currentWeapon].FireUp(); //現在の武器の発射処理を呼ぶ
+        SetActionAnimationPlayListForAllClients(currentWeapon.FireUpAction()); //アクションアニメーションのリストに発射アップを追加
+        OnAmmoChanged?.Invoke(weaponClassDictionary[currentWeapon].currentMagazine, weaponClassDictionary[currentWeapon].currentReserve); //弾薬変更イベントを発火
+
+
+        Debug.Log($"FireUp {currentWeapon.GetName()}"); //デバッグログ
+
+
+    }
+
 
     //単発武器の射撃。マガジンが空ならリロードする
     void FireDown()
@@ -1280,51 +1129,7 @@ public class PlayerAvatar : NetworkBehaviour
 
 
 
-
-
-
-            /////
-            ///
-
-            //    if (CanWeaponAction()) //発射可能かどうかを判定
-            //{
-            //    if (currentWeapon != WeaponType.Sword)
-            //    {
-            //        //遠距離武器の処理
-            //        if (weaponClassDictionary[currentWeapon].IsMagazineEmpty())
-            //        {
-            //            Reload(); //マガジンが空ならリロードする
-            //        }
-            //        else
-            //        {
-
-            //            isDuringWeaponAction = true;
-            //            weaponClassDictionary[currentWeapon].FireDown(); //現在の武器の発射処理を呼ぶ
-            //            SetActionAnimationPlayListForAllClients(currentWeapon.FireDownAction()); //アクションアニメーションのリストに発射ダウンを追加
-
-            //            if (currentWeapon.RecoilAmount_Pitch() > 0f || currentWeapon.RecoilAmount_Yaw() > 0f) tpsCameraController.StartRecoil(currentWeapon);//リコイル開始
-
-            //            OnAmmoChanged?.Invoke(weaponClassDictionary[currentWeapon].currentMagazine, weaponClassDictionary[currentWeapon].currentReserve); //弾薬変更イベントを発火
-
-            //            StartCoroutine(FireRoutine(currentWeapon.FireWaitTime())); //発射ダウンのコルーチンを開始
-            //                                                                       //Debug.Log($"FireDown {currentWeapon.GetName()}"); //デバッグログ
-            //        }
-
-            //    }
-            //    else
-            //    {
-
-
-
-
-            //    }
-            //}
-
-            //else
-            //{
-            //    //Debug.Log($"Cannot fire {currentWeapon.GetName()}: Magazine is empty or not ready to fire.");
-            //}
-
+   
     }
 
     //連射武器の射撃。マガジンが空でもリロードしない
@@ -1358,8 +1163,6 @@ public class PlayerAvatar : NetworkBehaviour
 
     void FireUp()
     {
-
-
 
 
         if (CanWeaponAction()) { return; }//連射武器で、かつ発射可能な場合

@@ -19,13 +19,13 @@ public class GrenadeSpawner : WeaponBase
                                                         // Start is called before the first frame update
 
     // グレネードのプレハブ
-    public GameObject grenadePrefab;
+    [SerializeField] private NetworkObject grenadePrefab;
     // 投げる位置
-    public Transform throwPoint;
+    [SerializeField] private Transform throwPoint;
     // 軌跡描画のスクリプト
-    public TrajectoryDrawer trajectoryDrawer;
+    [SerializeField] private TrajectoryDrawer trajectoryDrawer;
     // アニメータ―型変数
-    public Animator animator;
+    [SerializeField] private Animator animator;
 
     // 投げる力の大きさ
     private float throwForce = 10f;
@@ -44,40 +44,64 @@ public class GrenadeSpawner : WeaponBase
 
     public override void CalledOnUpdate(PlayerInputData localInputData, InputBufferStruct inputBuffer, WeaponActionState currentAction)
     {
-        
-        if (CanPrepare(localInputData, inputBuffer, currentAction))
+
+        if (IsHoldingGrenade(localInputData, inputBuffer, currentAction))
         {
-            // 投擲準備アニメーションを再生
-            animator.SetTrigger("ThrowPrepare");
-            animator.SetFloat("ThrowAnimSpeed", throwAnimSpeed);
-            hasEnterThrowOnce = false;
+            //投擲予測線
+            DisplayTrajectory();
+
+
         }
 
+        if (CanPrepare(localInputData, inputBuffer, currentAction))
+        {
+            // 投擲準備を開始
+            playerAvatar.PrepareGrenade();
+            return;
+        }
+        else if (CanThrow(localInputData, inputBuffer, currentAction))
+        {
+            // 投擲を開始
+            playerAvatar.ThrowGrenade();
 
-
-
-
-
-
+        }
     }
+
+
 
     bool CanPrepare(PlayerInputData localInputData, InputBufferStruct inputBuffer, WeaponActionState currentAction)
     {
         // 投擲可能な状態かどうかを判定
-        bool inputCondition = inputBuffer.grenadeFireDown  ;
+        bool inputCondition = localInputData.FirePressedStay;
         bool stateCondition = currentAction == WeaponActionState.Idle; // ���݂̃A�N�V�������A�C�h����Ԃł��邱�Ƃ��m�F
-        bool bulletCondition = currentMagazine > 0; // グレネードが残っているかどうか
+        bool bulletCondition = currentReserve > 0; // グレネードが残っているかどうか
         return inputCondition && stateCondition && bulletCondition;
     }
+
+    //投擲準備が完了しているかどうかを判定する関数
+    bool IsHoldingGrenade(PlayerInputData localInputData, InputBufferStruct inputBuffer, WeaponActionState currentAction)
+    {
+        // グレネードを保持している状態かどうかを判定
+        bool inputCondition = localInputData.FirePressedStay; // 投げるボタンが押されている間
+        bool stateCondition =
+            (currentAction == WeaponActionState.GrenadePreparing) &&
+            (animator.GetCurrentAnimatorStateInfo(1).IsName("PrepareToThrowLoop")); // 投擲アニメーション中
+        return inputCondition && stateCondition;
+    }
+
+
 
     bool CanThrow(PlayerInputData localInputData, InputBufferStruct inputBuffer, WeaponActionState currentAction)
     {
         // 投擲可能な状態かどうかを判定
-        bool inputCondition = inputBuffer.grenadeFireUp; // 投げるボタンが押されている間
+        bool inputCondition = !(localInputData.FirePressedStay); // 投げるボタンが離されたとき
 
 
-        bool stateCondition = 
-            (currentAction == WeaponActionState.GrenadePreparing)&&( animator.GetCurrentAnimatorStateInfo(1).IsName("Prepare to throw loop")) ; // 投擲アニメーション中
+        bool stateCondition =
+            (currentAction == WeaponActionState.GrenadePreparing) &&
+            (animator.GetCurrentAnimatorStateInfo(1).IsName("PrepareToThrowLoop")); // 投擲アニメーション中
+
+
         return inputCondition && stateCondition;
     }
 
@@ -85,51 +109,105 @@ public class GrenadeSpawner : WeaponBase
 
     void Update()
     {
-        AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(1);
+        
+        //// 投擲準備完了モーションの間LineRendererを表示
+        //// ボタン離した後でも、アニメーションは少し続くので、フラグ判定挿入
+        //if (animator.GetCurrentAnimatorStateInfo(1).IsName("Prepare to throw loop"))
+        //{
+        //    Debug.Log("Throwing grenade Loop...");
+        //    //　投げる向きを取得する
+        //    throwDirection = throwPoint.forward;
+        //    //　投げる力の大きさを計算する
+        //    velocity = throwDirection * throwForce;
 
-        // 投擲準備完了モーションの間LineRendererを表示
-        // ボタン離した後でも、アニメーションは少し続くので、フラグ判定挿入
-        if (animator.GetCurrentAnimatorStateInfo(1).IsName("Prepare to throw loop"))
-        {
-            Debug.Log("Throwing grenade Loop...");
-            //　投げる向きを取得する
-            throwDirection = throwPoint.forward;
-            //　投げる力の大きさを計算する
-            velocity = throwDirection * throwForce;
+        //    // 関数呼び出し（投げる位置,投げる向きと大きさ）
+        //    trajectoryDrawer.RaycastDrawTrajectory(throwPoint.position, velocity);
+        //}
 
-            // 関数呼び出し（投げる位置,投げる向きと大きさ）
-            trajectoryDrawer.RaycastDrawTrajectory(throwPoint.position, velocity);
-        }
-
-        if (animator.GetCurrentAnimatorStateInfo(1).IsName("Throw"))
-        {
-            if (!hasEnterThrowOnce)
-            {
-                // グレネードを投げる
-                ThrowGrenade(velocity);
-                // 軌跡を非表示にする
-                trajectoryDrawer.HideTrajectory();
-                hasEnterThrowOnce = true;
-            }
-        }
-        else
-        {
-            hasEnterThrowOnce = false;
-        }
+        //if (animator.GetCurrentAnimatorStateInfo(1).IsName("Throw"))
+        //{
+        //    if (!hasEnterThrowOnce)
+        //    {
+        //        // グレネードを投げる
+        //        ThrowGrenade(throwPoint.position ,velocity);
+        //        // 軌跡を非表示にする
+        //        trajectoryDrawer.HideTrajectory();
+        //        hasEnterThrowOnce = true;
+        //    }
+        //}
+        //else
+        //{
+        //    hasEnterThrowOnce = false;
+        //}
 
 
 
     }
 
-    void ThrowGrenade(Vector3 velocity)
+    void DisplayTrajectory()
     {
+        // 投げる向きを取得する
+        throwDirection = throwPoint.forward;
+        // 投げる力の大きさを計算する
+        velocity = throwDirection * throwForce;
+        // 軌跡を描画
+        trajectoryDrawer.RaycastDrawTrajectory(throwPoint.position, velocity);
+    }
+
+    private IEnumerator HideTrajectoryCoroutine()
+    {
+        yield return null; // 1フレーム待つ
+        trajectoryDrawer.HideTrajectory();
+    }
+
+    public override void FireDown()
+    {
+       
+    }
+
+
+    public override void FireUp()
+    {
+        
+        // 投げる向きを取得する
+        throwDirection = throwPoint.forward;
+        // 投げる力の大きさを計算する
+        velocity = throwDirection * throwForce;
+        ThrowGrenade(throwPoint.position, velocity);
+    }
+
+    void ThrowGrenade(Vector3 throwPosition, Vector3 velocity)
+    {
+
+        DisplayTrajectory(); // 軌跡を表示
+        StartCoroutine(HideTrajectoryCoroutine()); // 軌跡を非表示にする
+        RPC_LaunchGrenade(throwPosition, velocity);
+        currentReserve= Mathf.Max(currentReserve - 1, 0); // グレネードを1つ消費
+
+    }
+
+    // 投擲処理RPC(同期処理)
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority, HostMode = RpcHostMode.SourceIsHostPlayer, TickAligned = false)]
+    public void RPC_LaunchGrenade(Vector3 launchPosition, Vector3 launchVelocity, RpcInfo  rpcInfo = default)
+    { 
         // グレネードのインスタンスを生成
-        GameObject grenade = Instantiate(grenadePrefab, throwPoint.position, Quaternion.identity);
+        NetworkObject grenade = Runner.Spawn(
+            grenadePrefab,
+            throwPoint.position,
+            Quaternion.identity,
+            inputAuthority: PlayerRef.None, // 入力権限を持たない場合はPlayerRef.Noneを指定
+
+            // ← ここが OnBeforeSpawned デリゲート
+            (runner, spawnedObj) =>
+            {
+               spawnedObj.GetComponent<GrenadeBomb>().SetThrowPlayer(rpcInfo.Source); // Rigidbodyの速度を設定
+             
+
+            }
+            );
+
         // グレネードのRigidbodyコンポーネントを取得し、投げる力を設定
         Rigidbody rb = grenade.GetComponent<Rigidbody>();
         rb.velocity = velocity;
     }
-
-    // 投擲処理RPC(同期処理)
-
 }

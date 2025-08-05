@@ -84,6 +84,7 @@ public class BattleEndProcessor : NetworkBehaviour
         NetworkObject myPlayer = GameManager2.Instance.GetMyPlayer();
         PlayerAvatar playerAvatar = myPlayer.GetComponent<PlayerAvatar>();
         playerAvatar.IsDuringWeaponAction = true;
+        playerAvatar.CurrentWeaponActionState = WeaponActionState.Dead;
         playerAvatar.IsImmobilized = true;
         StartCoroutine(watingCoroutine(waitingTime));
     }

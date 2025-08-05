@@ -186,6 +186,7 @@ MonoBehaviour:
   - {fileID: 9200981800825702439}
   - {fileID: 2280059693031336937}
   - {fileID: 338725240706343348}
+  - {fileID: 9015997000155887892}
   - {fileID: 4488827322797360692}
   SimulationBehaviours: []
 --- !u!143 &6278831117568584565
@@ -241,6 +242,8 @@ MonoBehaviour:
   _cameraForwardInHost: {x: 0, y: 0, z: 0}
   _normalizedInputDirectionInHost: {x: 0, y: 0, z: 0}
   isDummy: 0
+  wasGrounded: 0
+  isGroundedNow: 0
   chaseAngle: 90
   chaseRange: 5
   chaseSpeed: 6
@@ -255,8 +258,6 @@ MonoBehaviour:
   obstructionMask:
     serializedVersion: 2
     m_Bits: 128
-  wasGraunded: 0
-  isGraundedNow: 0
 --- !u!114 &6887860513559479073
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -446,6 +447,7 @@ MonoBehaviour:
   WordOffset: 0
   WordCount: 0
   _interpolationDataSource: 0
+  playerAvatar: {fileID: 0}
   playerCamera: {fileID: 0}
   fireDistance: 100
   currentMagazine: 0
@@ -477,6 +479,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3943920815003293396}
   - component: {fileID: 338725240706343348}
+  - component: {fileID: 9015997000155887892}
   m_Layer: 0
   m_Name: Grenade
   m_TagString: Untagged
@@ -515,6 +518,7 @@ MonoBehaviour:
   WordOffset: 0
   WordCount: 0
   _interpolationDataSource: 0
+  playerAvatar: {fileID: 0}
   playerCamera: {fileID: 0}
   fireDistance: 100
   currentMagazine: 0
@@ -533,6 +537,38 @@ MonoBehaviour:
   explosionCenter: {fileID: 8240920900079387489}
   cornRayAngleDeg: 20
   cornRayNum: 10
+--- !u!114 &9015997000155887892
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4172183429204410978}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f93f71381e641de48801724ce981960e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  WordOffset: 0
+  WordCount: 0
+  _interpolationDataSource: 0
+  playerAvatar: {fileID: 0}
+  playerCamera: {fileID: 0}
+  fireDistance: 100
+  currentMagazine: 0
+  currentReserve: 0
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  obstructionLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  explosionCenter: {fileID: 0}
+  grenadePrefab: {fileID: 0}
+  throwPoint: {fileID: 0}
+  trajectoryDrawer: {fileID: 0}
+  animator: {fileID: 0}
+  throwAnimSpeed: 1
 --- !u!1 &4652923114602094334
 GameObject:
   m_ObjectHideFlags: 0
@@ -686,6 +722,7 @@ MonoBehaviour:
   WordOffset: 0
   WordCount: 0
   _interpolationDataSource: 0
+  playerAvatar: {fileID: 0}
   playerCamera: {fileID: 0}
   fireDistance: 100
   currentMagazine: 0
@@ -754,6 +791,7 @@ MonoBehaviour:
   WordOffset: 0
   WordCount: 0
   _interpolationDataSource: 0
+  playerAvatar: {fileID: 0}
   playerCamera: {fileID: 0}
   fireDistance: 100
   currentMagazine: 0
