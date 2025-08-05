@@ -92,3 +92,13 @@ MonoBehaviour:
   WordOffset: 0
   WordCount: 0
   _interpolationDataSource: 0
+  respawnPoints:
+  - {x: -9, y: 2, z: -93}
+  - {x: 94, y: 5, z: 14}
+  - {x: 27, y: 0, z: 91}
+  - {x: -97, y: 5, z: 7.5}
+  - {x: -40, y: 5, z: -55}
+  - {x: 49, y: 5, z: 18}
+  - {x: -20, y: 3, z: 64}
+  - {x: 57.5, y: 9.5, z: -44}
+  mapScale: 0.8
