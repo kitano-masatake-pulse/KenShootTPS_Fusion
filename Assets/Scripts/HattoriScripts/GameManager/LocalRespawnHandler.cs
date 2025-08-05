@@ -81,7 +81,7 @@ public class LocalRespawnHandler: MonoBehaviour
     private void AfterRespawn()
     {
         //s“®§ŒÀ‚ğ‰ğœ
-        playerAvatar.IsDuringWeaponAction = false;
+        
         playerAvatar.CurrentWeaponActionState = WeaponActionState.Idle;
         playerAvatar.IsImmobilized = false;
 

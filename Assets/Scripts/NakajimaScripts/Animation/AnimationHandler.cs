@@ -234,7 +234,7 @@ public class AnimationHandler : NetworkBehaviour
                     //animator.SetBool("EquipGrenade", true);
                     break;
             }
-            Debug.Log($"actionType: {action.actionType}, actionCalledTimeOnSimulationTime: {action.actionCalledTimeOnSimulationTime}");
+            //Debug.Log($"actionType: {action.actionType}, actionCalledTimeOnSimulationTime: {action.actionCalledTimeOnSimulationTime}");
         }
         playerAvatar.ClearActionAnimationPlayList();
     }

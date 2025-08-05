@@ -49,7 +49,7 @@ public class GrenadeSpawner : WeaponBase
         {
             //投擲予測線
             DisplayTrajectory();
-
+            Debug.Log("Holding grenade...");
 
         }
 
@@ -57,12 +57,14 @@ public class GrenadeSpawner : WeaponBase
         {
             // 投擲準備を開始
             playerAvatar.PrepareGrenade();
-            return;
+            Debug.Log("Preparing grenade...");
+      
         }
         else if (CanThrow(localInputData, inputBuffer, currentAction))
         {
             // 投擲を開始
             playerAvatar.ThrowGrenade();
+            Debug.Log("Throwing grenade...");
 
         }
     }
@@ -107,42 +109,7 @@ public class GrenadeSpawner : WeaponBase
 
 
 
-    void Update()
-    {
-        
-        //// 投擲準備完了モーションの間LineRendererを表示
-        //// ボタン離した後でも、アニメーションは少し続くので、フラグ判定挿入
-        //if (animator.GetCurrentAnimatorStateInfo(1).IsName("Prepare to throw loop"))
-        //{
-        //    Debug.Log("Throwing grenade Loop...");
-        //    //　投げる向きを取得する
-        //    throwDirection = throwPoint.forward;
-        //    //　投げる力の大きさを計算する
-        //    velocity = throwDirection * throwForce;
-
-        //    // 関数呼び出し（投げる位置,投げる向きと大きさ）
-        //    trajectoryDrawer.RaycastDrawTrajectory(throwPoint.position, velocity);
-        //}
-
-        //if (animator.GetCurrentAnimatorStateInfo(1).IsName("Throw"))
-        //{
-        //    if (!hasEnterThrowOnce)
-        //    {
-        //        // グレネードを投げる
-        //        ThrowGrenade(throwPoint.position ,velocity);
-        //        // 軌跡を非表示にする
-        //        trajectoryDrawer.HideTrajectory();
-        //        hasEnterThrowOnce = true;
-        //    }
-        //}
-        //else
-        //{
-        //    hasEnterThrowOnce = false;
-        //}
-
-
-
-    }
+    
 
     void DisplayTrajectory()
     {
@@ -201,8 +168,7 @@ public class GrenadeSpawner : WeaponBase
             (runner, spawnedObj) =>
             {
                spawnedObj.GetComponent<GrenadeBomb>().SetThrowPlayer(rpcInfo.Source); // Rigidbodyの速度を設定
-             
-
+ 
             }
             );
 
@@ -210,4 +176,12 @@ public class GrenadeSpawner : WeaponBase
         Rigidbody rb = grenade.GetComponent<Rigidbody>();
         rb.velocity = velocity;
     }
+
+
+    public override void ResetOnChangeWeapon()
+    {
+        trajectoryDrawer.HideTrajectory();
+
+    }
+
 }

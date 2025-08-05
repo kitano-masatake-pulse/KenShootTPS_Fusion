@@ -7,7 +7,7 @@ public class TrajectoryDrawer : MonoBehaviour
 {
     public LineRenderer lineRenderer;
     //‹OÕ‚Ì•`‰æ“_‚Ì”
-    private int resolution = 3000;
+    private int resolution = 300;
     //‹OÕ‚ÌŠÔŠÔŠu
     private float timeStep = 1/60f;
     //‚Ç‚ÌƒŒƒCƒ„[ƒ}ƒXƒN‚É‹OÕ‚Ì“–‚½‚è”»’è‚ª‚ ‚é‚©

@@ -185,7 +185,6 @@ MonoBehaviour:
   - {fileID: 6211025095353693436}
   - {fileID: 9200981800825702439}
   - {fileID: 2280059693031336937}
-  - {fileID: 338725240706343348}
   - {fileID: 9015997000155887892}
   - {fileID: 4488827322797360692}
   SimulationBehaviours: []
@@ -478,8 +477,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3943920815003293396}
-  - component: {fileID: 338725240706343348}
   - component: {fileID: 9015997000155887892}
+  - component: {fileID: 4162972397966100608}
+  - component: {fileID: 6366065793343430218}
   m_Layer: 0
   m_Name: Grenade
   m_TagString: Untagged
@@ -503,40 +503,6 @@ Transform:
   - {fileID: 8240920900079387489}
   m_Father: {fileID: 6911752650476808855}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &338725240706343348
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4172183429204410978}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b73b7492a45f29544be75ad38b733678, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  WordOffset: 0
-  WordCount: 0
-  _interpolationDataSource: 0
-  playerAvatar: {fileID: 0}
-  playerCamera: {fileID: 0}
-  fireDistance: 100
-  currentMagazine: 0
-  currentReserve: 0
-  playerLayer:
-    serializedVersion: 2
-    m_Bits: 64
-  obstructionLayer:
-    serializedVersion: 2
-    m_Bits: 128
-  directHitRadius: 1
-  blastHitRadius: 5
-  minBlastDamage: 20
-  damageDuration: 1
-  explosionDelay: 3
-  explosionCenter: {fileID: 8240920900079387489}
-  cornRayAngleDeg: 20
-  cornRayNum: 10
 --- !u!114 &9015997000155887892
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -559,16 +525,137 @@ MonoBehaviour:
   currentReserve: 0
   playerLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   obstructionLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
   explosionCenter: {fileID: 0}
-  grenadePrefab: {fileID: 0}
-  throwPoint: {fileID: 0}
-  trajectoryDrawer: {fileID: 0}
+  grenadePrefab: {fileID: 7729538735358623607, guid: d6b20e281e0176245b01623170a74c39, type: 3}
+  throwPoint: {fileID: 8240920900079387489}
+  trajectoryDrawer: {fileID: 4162972397966100608}
   animator: {fileID: 0}
   throwAnimSpeed: 1
+--- !u!114 &4162972397966100608
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4172183429204410978}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c26ea178e2e19dd4b9f2d28c4b87726a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lineRenderer: {fileID: 6366065793343430218}
+  collisionMask:
+    serializedVersion: 2
+    m_Bits: 128
+  impactMarkerPrefab: {fileID: 3686337052451485103, guid: d307c7b76332eff40bcd518f15206054, type: 3}
+--- !u!120 &6366065793343430218
+LineRenderer:
+  serializedVersion: 2
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4172183429204410978}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 0
+  m_LightProbeUsage: 0
+  m_ReflectionProbeUsage: 0
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_Positions:
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 1}
+  m_Parameters:
+    serializedVersion: 3
+    widthMultiplier: 1
+    widthCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0.11194115
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    colorGradient:
+      serializedVersion: 2
+      key0: {r: 1, g: 0, b: 0.10067558, a: 0}
+      key1: {r: 0.49056602, g: 0.20594516, b: 0.22941905, a: 1}
+      key2: {r: 0, g: 0, b: 0, a: 1}
+      key3: {r: 0, g: 0, b: 0, a: 0}
+      key4: {r: 0, g: 0, b: 0, a: 0}
+      key5: {r: 0, g: 0, b: 0, a: 0}
+      key6: {r: 0, g: 0, b: 0, a: 0}
+      key7: {r: 0, g: 0, b: 0, a: 0}
+      ctime0: 0
+      ctime1: 65535
+      ctime2: 0
+      ctime3: 0
+      ctime4: 0
+      ctime5: 0
+      ctime6: 0
+      ctime7: 0
+      atime0: 0
+      atime1: 3277
+      atime2: 60716
+      atime3: 65535
+      atime4: 0
+      atime5: 0
+      atime6: 0
+      atime7: 0
+      m_Mode: 0
+      m_ColorSpace: 0
+      m_NumColorKeys: 2
+      m_NumAlphaKeys: 4
+    numCornerVertices: 0
+    numCapVertices: 0
+    alignment: 0
+    textureMode: 0
+    textureScale: {x: 1, y: 1}
+    shadowBias: 0.5
+    generateLightingData: 0
+  m_MaskInteraction: 0
+  m_UseWorldSpace: 1
+  m_Loop: 0
+  m_ApplyActiveColorSpace: 1
 --- !u!1 &4652923114602094334
 GameObject:
   m_ObjectHideFlags: 0
