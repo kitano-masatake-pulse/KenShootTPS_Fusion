@@ -52,15 +52,16 @@ public class SceneTransitionManager : MonoBehaviour,INetworkRunnerCallbacks
     }
     public void OnEnable()
     {
-        SceneManager.sceneLoaded -= StartScene; 
-        SceneManager.sceneLoaded += StartScene; 
+        //SceneManager.sceneLoaded -= StartScene; 
+        //SceneManager.sceneLoaded += StartScene; 
         ConnectionManager.OnNetworkRunnerGenerated -= SubscribeRunner;
         ConnectionManager.OnNetworkRunnerGenerated += SubscribeRunner;
     }
+
     private void OnDisable()
     {
         StopAllCoroutines(); // 全てのコルーチンを停止
-        SceneManager.sceneLoaded -= StartScene; // シーンロード時のイベントを解除
+        //SceneManager.sceneLoaded -= StartScene; // シーンロード時のイベントを解除
         ConnectionManager.OnNetworkRunnerGenerated -= SubscribeRunner;
     }
 
@@ -76,16 +77,14 @@ public class SceneTransitionManager : MonoBehaviour,INetworkRunnerCallbacks
     //======================
 
 
-    //シーン開始時の処理
-    private void StartScene(Scene scene, LoadSceneMode mode)
-    {
 
+    public void StartScene()
+    {
         //シーンロード後にフェードインを開始
         if (sceneCoroutine != null) StopCoroutine(sceneCoroutine);
         OnSceneLoad?.Invoke(CurrentSceneType); // シーンロードイベントを発火
-        sceneCoroutine = StartCoroutine(sceneTrasitionFade.FadeRoutine(1f, 0f, fadeInDuration));
+        sceneCoroutine = StartCoroutine(WaitFadeIn(1f));
     }
-
 
     //シーン変更を行うメソッド
     public void ChangeScene(SceneType nextScene,bool leaveRoom = false)
@@ -196,6 +195,13 @@ public class SceneTransitionManager : MonoBehaviour,INetworkRunnerCallbacks
     //====================
     //コルーチン類
     //====================
+    public IEnumerator WaitFadeIn(float duration = 1f)
+    {
+        yield return new WaitForSeconds(duration);
+        sceneCoroutine = StartCoroutine(sceneTrasitionFade.FadeRoutine(1f, 0f, fadeInDuration));
+        yield return sceneCoroutine;
+    }
+
     public IEnumerator TransitionProcessCoroutine(SceneType nextScene, bool isOnline = false)
     {
         yield return StartCoroutine(sceneTrasitionFade.FadeRoutine(0f, 1f, fadeOutDuration)); 

@@ -93,6 +93,13 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
             runner.AddCallbacks(this);
             NetworkRunner.CloudConnectionLost += (NetworkRunner runner, ShutdownReason reason, bool reconnecting) => { };
             Debug.Log("GameLauncher.AddCallbackMe called. Runner: " + runner);
+
+
+            if(runner.IsServer)
+            {
+                runner.SessionInfo.IsOpen = true; // セッションを開く   
+                runner.SessionInfo.IsVisible = true; // セッションを表示する
+            }
         }
     }
 
@@ -218,6 +225,11 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
         }
 
+        if(player == runner.LocalPlayer)
+        {
+            SceneTransitionManager.Instance.StartScene();
+        }
+
     }
 
     void ShowSessionInfo(NetworkRunner runner)
@@ -341,20 +353,25 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
             }
         }
 
-        //以降の処理はホストのみ実行
-        if (!runner.IsServer) return;
 
-        foreach (var player in runner.ActivePlayers)
+        if (runner.IsServer)
         {
-            if (runner.GetPlayerObject(player) == null)
+            foreach (var player in runner.ActivePlayers)
             {
-                CreatePlayerAvatar(runner, player);
+                if (runner.GetPlayerObject(player) == null)
+                {
+                    CreatePlayerAvatar(runner, player);
+                }
+
             }
-            
+
+            Debug.Log("ホストが参加 → ボタン表示指示");
+            lobbyUI.ShowStartButton(runner);
         }
 
-        Debug.Log("ホストが参加 → ボタン表示指示");
-        lobbyUI.ShowStartButton(runner);
+
+
+        SceneTransitionManager.Instance.StartScene();
 
         //ConnectionManager.OnNetworkRunnerConnected?.Invoke(networkRunner); // ゲーム開始のイベントを発火(NetworkObjectのSpawnなど)
 

@@ -38,6 +38,8 @@ public class LobbyUIController : MonoBehaviour
         {
             // バトルシーンに遷移
             Debug.Log("バトルシーンに遷移します");
+            runner.SessionInfo.IsOpen = false; // セッションを閉じる
+            runner.SessionInfo.IsVisible = false; // セッションを非表示にする
             string sceneName = GameLauncher.Instance.nextScene.ToSceneName();
             SceneTransitionManager.Instance.ChangeScene(GameLauncher.Instance.nextScene);
             //runner.SetActiveScene(sceneName);
