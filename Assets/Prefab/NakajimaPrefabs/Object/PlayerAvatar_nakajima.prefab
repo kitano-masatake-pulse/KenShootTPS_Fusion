@@ -881,8 +881,8 @@ MonoBehaviour:
   fixTransforms: 1
   solver:
     executedInEditor: 0
-    IKPosition: {x: 3.88703, y: 0.3937339, z: 0.005290722}
-    IKPositionWeight: 0.886
+    IKPosition: {x: 3.8870301, y: 0.39373413, z: 0.0052913628}
+    IKPositionWeight: 0.517
     root: {fileID: 5741007329088205313}
     target: {fileID: 6093465629978082251}
     tolerance: 0
@@ -956,10 +956,10 @@ MonoBehaviour:
     transform: {fileID: 1560757154449737764}
     axis: {x: 0, y: 0, z: -1}
     poleAxis: {x: 0, y: 1, z: 0}
-    polePosition: {x: 0.88702506, y: -0.7300858, z: 2.7868378}
+    polePosition: {x: 0.8870245, y: -0.7300867, z: 2.7868378}
     poleWeight: 0
     poleTarget: {fileID: 0}
-    clampWeight: 0.514
+    clampWeight: 0.817
     clampSmoothing: 2
 --- !u!114 &1681751182215312542
 MonoBehaviour:
@@ -3460,7 +3460,7 @@ GameObject:
   - component: {fileID: 5877800938495730484}
   - component: {fileID: 1264711710324453888}
   - component: {fileID: 5575046454873532138}
-  - component: {fileID: 5129793386319416659}
+  - component: {fileID: 5807682702273655822}
   m_Layer: 0
   m_Name: IKtarget
   m_TagString: LookTarget
@@ -3554,7 +3554,7 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &5129793386319416659
+--- !u!114 &5807682702273655822
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3563,7 +3563,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8125208558984841086}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa66e4def5876f44783351ae90313653, type: 3}
+  m_Script: {fileID: 11500000, guid: 929483fe12170f34cbdcac221b402f81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   sphere: {fileID: 6093465629978082251}
