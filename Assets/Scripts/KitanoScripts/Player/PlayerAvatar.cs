@@ -92,7 +92,7 @@ public class PlayerAvatar : NetworkBehaviour
         set { currentWeaponActionState = value; }
     }
 
-
+    [Header("Player State Flags")]
     [SerializeField]
     private bool isImmobilized = false; //行動不能中かどうか(移動・ジャンプもできない)
 

@@ -15,7 +15,10 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
     //初期化のためのフラグ
     private bool _afterSpawned = false;
     private bool _sceneLoaded = false;
-    
+
+    // 準備完了したプレイヤーのカウント
+    private int readyPlayerCount = 0;
+
     //生成時イベント
     public static event Action OnManagerInitialized;
     //試合終了イベント
@@ -114,17 +117,12 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
     public void InitializeGameManager()
     {
         Debug.Log("GameManager2: InitializeGameManager called.");
-        //if (Runner == null)
-        //{
-        //    Debug.LogError("GameManager2: Spawned > Runner is null. ");
-        //    return;
-        //}
+
 
         if (Runner.IsServer)
         {
             RemainingSeconds = initialTimeSec;
             startSimTime = Runner.SimulationTime;
-            CountdownBattleStart();
         }
 
 
@@ -141,12 +139,17 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
             // クライアント側ではRPC_RequestIdを待つ
         }
 
+        if(Runner.TryGetPlayerObject(Runner.LocalPlayer, out NetworkObject playerObject))
+        {
+            PlayerAvatar avatar = playerObject.GetComponent<PlayerAvatar>();
+            avatar.StunPlayer();
+        }
+        else
+        {
+            Debug.LogError("Player object not found for local player.");
+        }
 
-
-
-
-        
-        //OnManagerInitialized?.Invoke();
+        RPC_ReadyGame();
     }
 
 
@@ -409,6 +412,17 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
 
     }
 
+
+    //こっから点呼(各環境で、GameManagerの初期化が各々終わったかどうかを確認する)
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void RPC_ReadyGame()
+    {
+        readyPlayerCount++;
+        if( readyPlayerCount >= Runner.ActivePlayers.Count())
+        {
+            CountdownBattleStart();
+        }
+    }
 
 
     //===========================================
