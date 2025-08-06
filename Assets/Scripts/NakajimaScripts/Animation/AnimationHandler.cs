@@ -6,6 +6,7 @@ using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static RootMotion.FinalIK.IKSolverVR;
 
 public class AnimationHandler : NetworkBehaviour
 {
@@ -32,13 +33,25 @@ public class AnimationHandler : NetworkBehaviour
     [SerializeField] private GameObject semiAutoRifle;
     [SerializeField] private GameObject grenade;
 
+
+
     private AimIK aimIK;
     private LimbIK limbIK;
     private AimController aimController;
     private bool isInTargetState;
     private bool wasInTargetState = false;
     private string targetStateName = "Put";
-    private int idleTagHash = Animator.StringToHash("Idle");
+    private int idleTagHash = Animator.StringToHash("EnableIKWeapon");
+
+
+    public Transform hip;
+    public Transform spine;
+    public Transform spine1;
+    public Transform spine2;
+    public Transform rightShoulder;
+    public Transform rightArm;
+    public Transform rightHand;
+
 
 
     private void Start()
@@ -97,7 +110,11 @@ public class AnimationHandler : NetworkBehaviour
 
         if (animator.GetCurrentAnimatorStateInfo(1).tagHash == idleTagHash)
         {
-            FinalIKenable();
+            RifleFinalIKenable();
+        }
+        if (animator.GetCurrentAnimatorStateInfo(1).IsName("IdleGrenade"))
+        {
+            GrenadeFinalIKenable();
         }
 
         wasInTargetState = isInTargetState;
@@ -290,10 +307,33 @@ public class AnimationHandler : NetworkBehaviour
         limbIK.enabled = false;
         aimController.enabled = false;
     }
-    private void FinalIKenable()
+    private void RifleFinalIKenable()
     {
         aimIK.enabled = true;
         limbIK.enabled = true;
         aimController.enabled = true;
+
+        aimIK.solver.bones[0] = new IKSolverAim.Bone(hip, 0.397f);
+        aimIK.solver.bones[1] = new IKSolverAim.Bone(spine, 0.4f);
+        aimIK.solver.bones[2] = new IKSolverAim.Bone(spine1, 0.4f);
+        aimIK.solver.bones[3] = new IKSolverAim.Bone(spine2, 0.4f);
+        aimIK.solver.bones[4] = new IKSolverAim.Bone(rightShoulder, 0.4f);
+        aimIK.solver.bones[5] = new IKSolverAim.Bone(rightArm, 0.64f);
+        aimIK.solver.bones[6] = new IKSolverAim.Bone(rightHand, 1f);
+    }
+
+    private void GrenadeFinalIKenable()
+    {
+        aimIK.enabled = true;
+        aimController.enabled = true;
+
+        aimIK.solver.bones[0] = new IKSolverAim.Bone(hip, 0f);
+        aimIK.solver.bones[1] = new IKSolverAim.Bone(spine, 0.26f);
+        aimIK.solver.bones[2] = new IKSolverAim.Bone(spine1, 0.046f);
+        aimIK.solver.bones[3] = new IKSolverAim.Bone(spine2, 0.029f);
+        aimIK.solver.bones[4] = new IKSolverAim.Bone(rightShoulder, 0f);
+        aimIK.solver.bones[5] = new IKSolverAim.Bone(rightArm, 0f);
+        aimIK.solver.bones[6] = new IKSolverAim.Bone(rightHand, 0f);
+
     }
 }
