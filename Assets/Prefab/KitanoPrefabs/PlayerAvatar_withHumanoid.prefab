@@ -1120,7 +1120,7 @@ GameObject:
   - component: {fileID: 9087073000084578297}
   m_Layer: 0
   m_Name: PlayerAvatar_withHumanoid
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

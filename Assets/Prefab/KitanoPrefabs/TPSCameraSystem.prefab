@@ -11,7 +11,8 @@ GameObject:
   - component: {fileID: 6365592854497356057}
   - component: {fileID: 6330573148637516948}
   - component: {fileID: 472528626033478026}
-  m_Layer: 0
+  - component: {fileID: 4019736386521262820}
+  m_Layer: 12
   m_Name: TPSCamera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -86,11 +87,63 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   virtualCamera: {fileID: 6330573148637516948}
-  sensitivityX: 3
-  sensitivityY: 1.5
   minVerticalAngle: -40
   maxVerticalAngle: 75
   cameraTarget: {fileID: 4343798349570308516}
+  obstacleLayer:
+    serializedVersion: 2
+    m_Bits: 129
+  obstacleBuffer: 0.02
+  debug_recoilAmount_Pitch: 5
+  debug_recoilSpeed_Pitch: 100
+  debug_recoverSpeed_Pitch: 50
+  debug_recoilLimit_Pitch: 30
+  debug_recoilAmount_Yaw: 0.5
+  debug_recoilSpeed_Yaw: 10
+  debug_recoverSpeed_Yaw: 5
+  debug_recoilLimit_Yaw: 3
+  isDebugParameter: 0
+  normalShoulderOffset: {x: 0.5, y: 0, z: 0}
+  adsShoulderOffset: {x: 0, y: 0, z: 0}
+  normalDistance: 2
+  adsDistance: 0
+  offsetLerpSpeed: 10
+  normalFOV: 60
+  adsFOV: 30
+  fovLerpSpeed: 15
+  normalSensitivity: {x: 3, y: 1.5}
+  adsSensitivity: {x: 1.5, y: 0.75}
+  ADSRecoilMultiplier: 0.5
+--- !u!114 &4019736386521262820
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2593932167009962297}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e501d18bb52cf8c40b1853ca4904654f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_CollideAgainst:
+    serializedVersion: 2
+    m_Bits: 4225
+  m_IgnoreTag: Player
+  m_TransparentLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_MinimumDistanceFromTarget: 0.01
+  m_AvoidObstacles: 1
+  m_DistanceLimit: 0
+  m_MinimumOcclusionTime: 0
+  m_CameraRadius: 0.25
+  m_Strategy: 0
+  m_MaximumEffort: 4
+  m_SmoothingTime: 0
+  m_Damping: 0
+  m_DampingWhenOccluded: 0
+  m_OptimalTargetDistance: 0
 --- !u!1 &2600202703652871900
 GameObject:
   m_ObjectHideFlags: 0
@@ -102,7 +155,7 @@ GameObject:
   - component: {fileID: 7909571748238897817}
   - component: {fileID: 2522238364488256964}
   - component: {fileID: 1602320259104743750}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: cm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -187,7 +240,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3435448675808792945}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -622.1333, y: -354.9374, z: -3.9453344}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0

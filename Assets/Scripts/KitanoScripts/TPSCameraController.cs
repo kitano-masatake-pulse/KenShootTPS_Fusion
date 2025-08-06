@@ -16,6 +16,9 @@ public class TPSCameraController : MonoBehaviour
 
     [Header("Cinemachine Virtual Camera")]
     [SerializeField] private CinemachineVirtualCamera virtualCamera;
+
+    Vector3 initialShoulderOffset=Vector3.zero; // 初期のショルダーオフセット
+
     [Header("マウス操作")]
 
 
@@ -45,7 +48,7 @@ public class TPSCameraController : MonoBehaviour
 
     [Header("障害物判定")]
     [SerializeField] private LayerMask obstacleLayer; // 障害物のレイヤー
-    [SerializeField] private float obstacleBuffer = 0.02f; // 障害物からの距離
+    [SerializeField] private float obstacleBuffer = 0.05f; // 障害物からの距離
 
     [Header("リコイルのdebug用")]
     //リコイルのdebug用
@@ -114,6 +117,10 @@ public class TPSCameraController : MonoBehaviour
         LockCursor();
 
         thirdPersonFollow = virtualCamera.GetCinemachineComponent<Cinemachine3rdPersonFollow>();
+
+
+        
+
         InitializeADS(); // ADSの初期化
 
         foreach (WeaponType type in Enum.GetValues(typeof(WeaponType)))
@@ -159,8 +166,13 @@ public class TPSCameraController : MonoBehaviour
             //myPlayerAvatar.ChangeTransformLocally(); // アバターの向きをカメラ方向に合わせる処理を呼び出す
             if (thirdPersonFollow == null) return;
 
+
+
+            
+
             ADStransition(); // ADSの補間処理を呼び出す
 
+            
         }
 
         // Escapeキーでモード切り替え
@@ -185,6 +197,8 @@ public class TPSCameraController : MonoBehaviour
 
 
     }
+
+
 
     // リコイル開始時の処理(射撃時にPlayerAvatarから呼ばれる)
     public void StartRecoil(WeaponType weaponType)
@@ -431,41 +445,70 @@ public class TPSCameraController : MonoBehaviour
     #endregion
 
 
+
+    
+
     public Transform GetTPSCameraTransform()
     {
         return this.gameObject.transform;
     }
 
 
-    void ControlDistance()
+    // TPSカメラのTransformを取得するメソッド
+    //cinemachine colliderに同じ機能あったので、こちらは使用しない！！！！！
+    void ControlDistanceWithCollision()
     {
+        Debug.Log("ControlDistanceWithCollision called"); // デバッグ用ログ出力
+        Vector3 rayStartPos = CalculateCameraPosition(cameraTarget, thirdPersonFollow.ShoulderOffset,adsDistance);
 
-        Vector3 rayStartPos = cameraTarget.position;
+        Vector3 rayEndPos = CalculateCameraPosition(cameraTarget, thirdPersonFollow.ShoulderOffset, normalDistance);
 
 
-        Vector3 rayEndPos = this.transform.position;
+        Vector3 direction = rayEndPos- rayStartPos ; // カメラの位置からターゲットの位置への方向ベクトルを計算
 
-
-        Vector3 direction = rayEndPos - rayStartPos;
-
-        RaycastHit hit
+        RaycastHit hit;
 
 
         if (Physics.Raycast(rayStartPos , direction/ direction.magnitude, out hit, direction.magnitude, obstacleLayer))
         {
             // hitLayers に含まれるレイヤーのオブジェクトだけ検出
-            this.transform.position=hit.point - direction* ( obstacleBuffer / direction.magnitude);
+
+            Debug.Log($"Obstacle detected at distance: {hit.distance}"); // 障害物検出のデバッグ用ログ出力
+            thirdPersonFollow.CameraDistance = hit.distance - obstacleBuffer; // カメラの距離を障害物までの距離からバッファを引いた値に設定
+            
+
 
         }
         else
         {
             // 障害物がない場合はカメラの位置を更新
-            this.transform.position = rayEndPos;
+            
+            thirdPersonFollow.CameraDistance= targetDistance; // targetDistanceをカメラの距離に設定
         }   
 
 
 
 
+    }
+
+    Vector3 CalculateCameraPosition(Transform target,Vector3 shoulderOffset,float cameraDistance)
+    {
+        // 1) ローカル空間でのオフセットベクトルを作成
+        //    X : 横（右方向が正）
+        //    Y : 上下（上方向が正）
+        //    Z : 奥行（背後：-cameraDistance）
+        var localOffset = new Vector3(
+            shoulderOffset.x,
+            shoulderOffset.y,
+            shoulderOffset.z - cameraDistance
+        );
+
+        // 2) target の回転を使ってローカル→ワールド方向に変換
+        //    TransformDirection は回転のみを適用
+        Vector3 worldOffset = target.TransformDirection(localOffset);
+
+        // 3) ワールド座標上の最終位置を計算
+        return target.position + worldOffset;
     }
 
 }
