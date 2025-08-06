@@ -98,6 +98,9 @@ public class RespawnManager : NetworkBehaviour
 
         if (playerObject != null && playerObject.IsValid)
         {
+            playerAvatar.SetActionAnimationPlayList(ActionType.Respawn,Runner.SimulationTime);
+            Debug.Log($"RPC_InitializePlayerInAll: Player {playerObject.InputAuthority} action animation set to Respawn.");
+
             // プレイヤーのアニメーションをアイドル状態に
             var animator = playerObject.GetComponent<Animator>();
             if (animator != null)

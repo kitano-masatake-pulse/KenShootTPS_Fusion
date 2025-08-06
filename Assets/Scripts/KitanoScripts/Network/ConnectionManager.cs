@@ -86,14 +86,14 @@ public class ConnectionManager : MonoBehaviour, INetworkRunnerCallbacks
 
 
 
-    private async void Start()
+    private void Start()
     {
         Debug.Log("GameLauncher: Start Called");
         // 今アクティブなシーンを擬似的に渡して初期化
         OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single);
     }
 
-    async void  OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    void  OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
 
         

@@ -20,7 +20,7 @@ public enum WeaponActionState
     SwordAttacking,
     GrenadePreparing,
     GrenadeThrowing,
-    Dead, //死亡状態
+    Stun, //行動不能中、武器アクションも移動もできない
 
 }
 
@@ -93,7 +93,7 @@ public class PlayerAvatar : NetworkBehaviour
     }
 
 
-    
+    [SerializeField]
     private bool isImmobilized = false; //行動不能中かどうか(移動・ジャンプもできない)
 
     public bool wasGrounded;
@@ -322,6 +322,21 @@ public class PlayerAvatar : NetworkBehaviour
 
     }
 
+    public void StunPlayer()
+    {
+        currentWeaponActionState = WeaponActionState.Stun; //行動不能状態に設定
+        isImmobilized = true; //行動不能フラグを設定
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All, HostMode = RpcHostMode.SourceIsHostPlayer, TickAligned = false)]
+    public void RPC_ClearStun()
+    {
+        
+        currentWeaponActionState = WeaponActionState.Idle; //行動不能状態を解除
+        isImmobilized = false; //行動不能フラグを解除
+
+    }
+
 
     #endregion
 
@@ -370,10 +385,10 @@ public class PlayerAvatar : NetworkBehaviour
 
 
             //レイキャストで接地判定を行う新しい処理を書く
-            isGroundedNow = CheckGround() || characterController.isGrounded;
+            isGroundedNow = characterController.isGrounded || CheckGround();
 
 
-            if (inputBuffer.jump && isGroundedNow)//ここに接地判定を追加
+            if (inputBuffer.jump && isGroundedNow && !isImmobilized)//ここに接地判定を追加
             {
                 Jump();
                 inputBuffer.jump = false; //ジャンプのバッファをクリア
@@ -385,15 +400,16 @@ public class PlayerAvatar : NetworkBehaviour
             //武器アクションの状態管理
 
             //死んでる時と投擲準備中は、明示的にIdleに戻さないと復帰しない
-            if (currentWeaponActionState != WeaponActionState.Dead && currentWeaponActionState != WeaponActionState.GrenadePreparing) 
+            if (currentWeaponActionState != WeaponActionState.Stun && currentWeaponActionState != WeaponActionState.GrenadePreparing) 
             {
                 stateTimer_ReturnToIdle = Math.Max(stateTimer_ReturnToIdle - Time.deltaTime, 0); //状態タイマーを更新し、最大値を設定
+                if (stateTimer_ReturnToIdle <= 0f) //状態タイマーが0以下になったら、Idle状態に戻す
+                {
+                    currentWeaponActionState = WeaponActionState.Idle; //現在のアクションをIdleに設定
+                }
             }
 
-            if (stateTimer_ReturnToIdle <= 0f) //状態タイマーが0以下になったら、Idle状態に戻す
-            {
-                currentWeaponActionState = WeaponActionState.Idle; //現在のアクションをIdleに設定
-            }
+            
 
             //武器切り替え
             //武器切り替え条件を満たしている場合、武器を切り替える
@@ -522,7 +538,7 @@ public class PlayerAvatar : NetworkBehaviour
         bool stateCondition =
             currentAction != WeaponActionState.SwordAttacking &
             currentAction != WeaponActionState.GrenadeThrowing &
-            currentAction != WeaponActionState.Dead;
+            currentAction != WeaponActionState.Stun;
 
         return inputCondition && stateCondition;
 

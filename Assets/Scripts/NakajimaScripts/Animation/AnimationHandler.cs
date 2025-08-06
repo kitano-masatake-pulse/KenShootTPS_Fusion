@@ -88,7 +88,7 @@ public class AnimationHandler : NetworkBehaviour
         {
             FinalIKDisable();
         }
-        if (animator.GetCurrentAnimatorStateInfo(1).IsName("Dead"))
+        if (animator.GetCurrentAnimatorStateInfo(1).IsName("Stun"))
         {
             FinalIKDisable();
         }

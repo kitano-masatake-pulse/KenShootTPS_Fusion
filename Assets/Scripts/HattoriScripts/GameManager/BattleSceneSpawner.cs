@@ -107,7 +107,7 @@ public class BattleSceneSpawner : MonoBehaviour, INetworkRunnerCallbacks
         spawnedPlayers.Add(player);
         // PlayerRefを使用して、アバターはプレイヤーに関連付ける
         runner.SetPlayerObject(player, avatar);
-       
+        avatar.GetComponent<PlayerAvatar>().StunPlayer();
         Debug.Log($"[Spawn] プレイヤー {player} をスポーンしました");
     }
 
