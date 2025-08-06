@@ -6,6 +6,9 @@ using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static RootMotion.FinalIK.IKSolverVR;
+
+
 public class AnimationHandler : NetworkBehaviour
 {
     [Header("References")]
@@ -14,25 +17,36 @@ public class AnimationHandler : NetworkBehaviour
     public CharacterController characterController;
     [SerializeField] private Transform modelTransform;
     [Header("Animation Settings")]
-    private const float MoveDeltaAmplify = 100f;      // ˆÚ“®·•ª‚ª¬‚³‚­‚È‚è‚·‚¬‚È‚¢‚æ‚¤‚ÉŠg‘å
-    private const float DampTime = 0.001f;             // ƒAƒjƒ[ƒVƒ‡ƒ“•âŠÔ‚Ég‚¤ dampTime
+    private const float MoveDeltaAmplify = 100f;      // ç§»å‹•å·®åˆ†ãŒå°ã•ããªã‚Šã™ããªã„ã‚ˆã†ã«æ‹¡å¤§
+    private const float DampTime = 0.001f;             // ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³è£œé–“ã«ä½¿ã† dampTime
     [Header("Animation State")]
     private Vector3 lastPlayerPosition;
     private float horizontal;
     private float vertical;
     private float LastTick = 0;
-    private float changeTime = 1f; // •Ší•ÏX‚ÌƒAƒjƒ[ƒVƒ‡ƒ“ŠÔ
+    private float changeTime = 1f; // æ­¦å™¨å¤‰æ›´ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³æ™‚é–“
     [SerializeField] private GameObject sword;
     [SerializeField] private GameObject assaultRifle;
     [SerializeField] private GameObject semiAutoRifle;
     [SerializeField] private GameObject grenade;
+
     private AimIK aimIK;
     private LimbIK limbIK;
     private AimController aimController;
     private bool isInTargetState;
     private bool wasInTargetState = false;
     private string targetStateName = "Put";
-    private int idleTagHash = Animator.StringToHash("Idle");
+    private int idleTagHash = Animator.StringToHash("EnableIKWeapon");
+
+
+    public Transform hip;
+    public Transform spine;
+    public Transform spine1;
+    public Transform spine2;
+    public Transform rightShoulder;
+    public Transform rightArm;
+    public Transform rightHand;
+
     private void Start()
     {
         aimIK = GetComponentInChildren<AimIK>();
@@ -74,14 +88,18 @@ public class AnimationHandler : NetworkBehaviour
         if (animator.GetCurrentAnimatorStateInfo(1).IsName("PutBack"))
         {
         }
-        if (wasInTargetState && !isInTargetState)//Put‚ªI—¹‚µ‚½‚Æ‚«‚ÉŒÄ‚Î‚ê‚éƒtƒ‰ƒO
+        if (wasInTargetState && !isInTargetState)//PutãŒçµ‚äº†ã—ãŸã¨ãã«å‘¼ã°ã‚Œã‚‹ãƒ•ãƒ©ã‚°
         {
             HideAllWeapons();
             ShowNextWeapons();
         }
         if (animator.GetCurrentAnimatorStateInfo(1).tagHash == idleTagHash)
         {
-            FinalIKenable();
+            RifleFinalIKenable();
+        }
+        if (animator.GetCurrentAnimatorStateInfo(1).IsName("IdleGrenade"))
+        {
+            GrenadeFinalIKenable();
         }
         wasInTargetState = isInTargetState;
         if (animator.GetCurrentAnimatorStateInfo(1).IsName("ReloadRifle"))
@@ -97,17 +115,17 @@ public class AnimationHandler : NetworkBehaviour
     {
         Vector3 worldDelta = transform.position - lastPlayerPosition;
         Vector3 localDelta = modelTransform.InverseTransformDirection(worldDelta);
-        Vector3.Distance(lastPlayerPosition, transform.position); // ‘O‰ñ‚ÌˆÊ’u‚ÆŒ»İ‚ÌˆÊ’u‚Ì‹——£‚ğŒvZ
+        Vector3.Distance(lastPlayerPosition, transform.position); // å‰å›ã®ä½ç½®ã¨ç¾åœ¨ã®ä½ç½®ã®è·é›¢ã‚’è¨ˆç®—
         horizontal = localDelta.x * MoveDeltaAmplify;
         vertical = localDelta.z * MoveDeltaAmplify;
         animator.SetFloat("Horizontal", horizontal, DampTime, Time.deltaTime);
         animator.SetFloat("Vertical", vertical, DampTime, Time.deltaTime);
-        lastPlayerPosition = transform.position; // ‘O‰ñ‚ÌˆÊ’u‚ğ•Û‘¶
+        lastPlayerPosition = transform.position; // å‰å›ã®ä½ç½®ã‚’ä¿å­˜
         if (!HasInputAuthority)
         {
             Debug.Log($"Animation called. Horizontal: {horizontal}, Vertical: {vertical} ");
         }
-        LastTick = Runner.Simulation.Tick; // ‘O‰ñ‚ÌTick‚ğ•Û‘¶
+        LastTick = Runner.Simulation.Tick; // å‰å›ã®Tickã‚’ä¿å­˜
     }
     private void SetAnimationFromPlayList()
     {
@@ -158,7 +176,7 @@ public class AnimationHandler : NetworkBehaviour
                     animator.SetBool("IsGrenadePreparation", false);
                     break;
                 case ActionType.Reload_Sword:
-                    //g‚Á‚Ä‚¢‚È‚¢
+                    //ä½¿ã£ã¦ã„ãªã„
                     break;
                 case ActionType.Reload_AssaultRifle:
                     Debug.Log($"IsReloading True");
@@ -169,12 +187,12 @@ public class AnimationHandler : NetworkBehaviour
                     animator.SetTrigger("IsReload");
                     break;
                 case ActionType.Reload_Grenade:
-                    //g‚Á‚Ä‚¢‚È‚¢
+                    //ä½¿ã£ã¦ã„ãªã„
                     break;
                 case ActionType.ChangeWeaponTo_Sword:
                     Debug.Log($"ChangeWeaponTo_Sword");
                     ChangeWeapon();
-                    //animator.SetBool("EquipRifle", true);//Œã‚Å•Ï‚¦‚é
+                    //animator.SetBool("EquipRifle", true);//å¾Œã§å¤‰ãˆã‚‹
                     break;
                 case ActionType.ChangeWeaponTo_AssaultRifle:
                     Debug.Log($"ChangeWeaponTo_AssaultRifle");
@@ -184,7 +202,7 @@ public class AnimationHandler : NetworkBehaviour
                 case ActionType.ChangeWeaponTo_SemiAutoRifle:
                     Debug.Log($"ChangeWeaponTo_SemiAutoRifle");
                     ChangeWeapon();
-                    //animator.SetBool("EquipRifle", true);//Œã‚Å•Ï‚¦‚é
+                    //animator.SetBool("EquipRifle", true);//å¾Œã§å¤‰ãˆã‚‹
                     break;
                 case ActionType.ChangeWeaponTo_Grenade:
                     Debug.Log($"ChangeWeaponTo_Grenade");
@@ -239,10 +257,33 @@ public class AnimationHandler : NetworkBehaviour
         limbIK.enabled = false;
         aimController.enabled = false;
     }
-    private void FinalIKenable()
+    private void RifleFinalIKenable()
     {
         aimIK.enabled = true;
         limbIK.enabled = true;
         aimController.enabled = true;
+
+        aimIK.solver.bones[0] = new IKSolverAim.Bone(hip, 0.397f);
+        aimIK.solver.bones[1] = new IKSolverAim.Bone(spine, 0.4f);
+        aimIK.solver.bones[2] = new IKSolverAim.Bone(spine1, 0.4f);
+        aimIK.solver.bones[3] = new IKSolverAim.Bone(spine2, 0.4f);
+        aimIK.solver.bones[4] = new IKSolverAim.Bone(rightShoulder, 0.4f);
+        aimIK.solver.bones[5] = new IKSolverAim.Bone(rightArm, 0.64f);
+        aimIK.solver.bones[6] = new IKSolverAim.Bone(rightHand, 1f);
+    }
+
+    private void GrenadeFinalIKenable()
+    {
+        aimIK.enabled = true;
+        aimController.enabled = true;
+
+        aimIK.solver.bones[0] = new IKSolverAim.Bone(hip, 0f);
+        aimIK.solver.bones[1] = new IKSolverAim.Bone(spine, 0.26f);
+        aimIK.solver.bones[2] = new IKSolverAim.Bone(spine1, 0.046f);
+        aimIK.solver.bones[3] = new IKSolverAim.Bone(spine2, 0.029f);
+        aimIK.solver.bones[4] = new IKSolverAim.Bone(rightShoulder, 0f);
+        aimIK.solver.bones[5] = new IKSolverAim.Bone(rightArm, 0f);
+        aimIK.solver.bones[6] = new IKSolverAim.Bone(rightHand, 0f);
+
     }
 }

@@ -803,6 +803,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5741007329088205313}
   - component: {fileID: 2231931972422335784}
+  - component: {fileID: 5114934518789499110}
   - component: {fileID: 697723341968169883}
   - component: {fileID: 1681751182215312542}
   - component: {fileID: 4514362404523301730}
@@ -852,6 +853,19 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &5114934518789499110
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2808416894933013532}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32ef816d22e99b544835c53321509652, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 2231931972422335784}
 --- !u!114 &697723341968169883
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -868,7 +882,7 @@ MonoBehaviour:
   solver:
     executedInEditor: 0
     IKPosition: {x: 3.88703, y: 0.3937339, z: 0.005290722}
-    IKPositionWeight: 1
+    IKPositionWeight: 0.886
     root: {fileID: 5741007329088205313}
     target: {fileID: 6093465629978082251}
     tolerance: 0
@@ -877,7 +891,7 @@ MonoBehaviour:
     XY: 0
     bones:
     - transform: {fileID: 3849797229976430139}
-      weight: 0.4
+      weight: 0.397
       solverPosition: {x: 0, y: 0, z: 0}
       solverRotation: {x: 0, y: 0, z: 0, w: 0}
       defaultLocalPosition: {x: 0, y: 0, z: 0}
@@ -945,7 +959,7 @@ MonoBehaviour:
     polePosition: {x: 0.88702506, y: -0.7300858, z: 2.7868378}
     poleWeight: 0
     poleTarget: {fileID: 0}
-    clampWeight: 0.5
+    clampWeight: 0.514
     clampSmoothing: 2
 --- !u!114 &1681751182215312542
 MonoBehaviour:
@@ -1317,6 +1331,13 @@ MonoBehaviour:
   assaultRifle: {fileID: 1774829473275132974}
   semiAutoRifle: {fileID: 8025751748858714653}
   grenade: {fileID: 3813583473911735479}
+  hip: {fileID: 3849797229976430139}
+  spine: {fileID: 593863151118619923}
+  spine1: {fileID: 4261313274317243810}
+  spine2: {fileID: 6741360080232217152}
+  rightShoulder: {fileID: 7623584901645125014}
+  rightArm: {fileID: 5968713785609872425}
+  rightHand: {fileID: 284458419751249391}
 --- !u!1 &2958646034594578311
 GameObject:
   m_ObjectHideFlags: 0
