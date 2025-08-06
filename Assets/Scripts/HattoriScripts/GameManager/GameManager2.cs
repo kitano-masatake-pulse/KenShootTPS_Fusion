@@ -148,7 +148,7 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
         {
             Debug.LogError("Player object not found for local player.");
         }
-
+        SceneTransitionManager.Instance.StartScene();
         RPC_ReadyGame();
     }
 

@@ -74,6 +74,8 @@ public class PlayerAvatar : NetworkBehaviour
 
     public Vector3 normalizedInputDirection = Vector3.zero; //入力方向の正規化されたベクトル。OnInput()で参照するためpublic
 
+    //見た目周り
+    private SkinnedMeshRenderer[] _renderers;
 
     //座標同期用のネットワークプロパティ
     [Networked] public Vector3 avatarPositionInHost { get; set; } = Vector3.zero; //ホスト環境でのアバター位置(入力権限のあるプレイヤーの位置を参照するために使用)
@@ -187,7 +189,8 @@ public class PlayerAvatar : NetworkBehaviour
     public override void Spawned()
     {
         //SetNickName($"Player({Object.InputAuthority.PlayerId})");
-
+        //PlayerAvatarのRenderer
+        _renderers = GetComponentsInChildren<SkinnedMeshRenderer>();
 
         myPlayerHitboxRoot = GetComponent<HitboxRoot>();
 
@@ -304,10 +307,12 @@ public class PlayerAvatar : NetworkBehaviour
 
 
     public void TeleportToInitialSpawnPoint(Vector3 initialSpawnPoint)
-    {         // 初期スポーンポイントにテレポートする
+    {   
+        // 初期スポーンポイントにテレポートする
         transform.position = initialSpawnPoint; // プレイヤーの位置を初期スポーンポイントに設定
         characterController.enabled = false; // CharacterControllerを一時的に無効化
         characterController.enabled = true; // 再度有効化して、衝突判定をリセット
+
     }
 
 
@@ -556,6 +561,28 @@ public class PlayerAvatar : NetworkBehaviour
 
     #endregion
 
+
+    #region 見た目関連
+
+    public void HideMesh()
+    {
+        foreach (var rend in _renderers)
+        {
+            rend.enabled = false;
+        }
+    }
+
+    public void ShowMesh()
+    {
+        foreach (var rend in _renderers)
+        {
+            rend.enabled = true;
+        }
+    }
+
+
+
+    #endregion
 
     #region transform変化
 
