@@ -66,7 +66,7 @@ public abstract class WeaponBase : NetworkBehaviour
 
         bool stateCondition = 
             currentAction != WeaponActionState.Reloading||
-            currentAction != WeaponActionState.Dead; 
+            currentAction != WeaponActionState.Stun; 
 
         //Debug.Log($"CanChangeWeapon() called. Current Action: {currentAction}");
         return currentAction == WeaponActionState.Idle; // 現在のアクションがアイドル状態であることを確認

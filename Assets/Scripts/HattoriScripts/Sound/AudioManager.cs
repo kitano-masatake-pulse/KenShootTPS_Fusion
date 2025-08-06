@@ -168,7 +168,7 @@ public class AudioManager : MonoBehaviour
         if (_bgmClips != null && _bgmClips.TryGetValue(key, out clip)) return clip;
         var current = SceneTransitionManager.Instance.CurrentSceneType.ToSceneName();
         if (_sceneClips.TryGetValue(current, out var dict) && dict.TryGetValue(key, out clip)) return clip;
-        Debug.LogWarning($"AudioClip '{key}' not found.");
+        Debug.LogError($"AudioClip '{key}' not found.");
         return null;
     }
 

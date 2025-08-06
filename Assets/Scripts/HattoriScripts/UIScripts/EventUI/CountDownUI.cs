@@ -19,6 +19,8 @@ public class CountDownUI : MonoBehaviour, IUIPanel
         Debug.Log($"CountDownUI: Initialize called, respawnHandler exist {respawnHandler!=null}");
         respawnHandler.OnRespawnStuned -= DisplayCountDownPanel;
         respawnHandler.OnRespawnStuned += DisplayCountDownPanel;
+        GameManager2.Instance.OnCountDownBattleStart -= DisplayCountDownPanel;
+        GameManager2.Instance.OnCountDownBattleStart += DisplayCountDownPanel;
         countdownText.raycastTarget = false; // カウントダウンテキストはクリックできないようにする
         countdownText.text = ""; 
     }
@@ -27,7 +29,8 @@ public class CountDownUI : MonoBehaviour, IUIPanel
     {
         Debug.Log($"CountDownUI: Cleanup called, removing event handler.handler exist {respawnHandler!=null}");
         respawnHandler.OnRespawnStuned -= DisplayCountDownPanel;
-        
+        GameManager2.Instance.OnCountDownBattleStart -= DisplayCountDownPanel;
+
         SetVisible(false); // パネルを非表示にする
     }
 

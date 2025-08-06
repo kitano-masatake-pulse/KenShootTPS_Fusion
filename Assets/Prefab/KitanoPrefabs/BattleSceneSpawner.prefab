@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerAvatarPrefab:
-    RawGuidValue: e3a82d0b2f494b943b3e00b2529e0776
+    RawGuidValue: 8fba914ae66ccef408ea980f880aa84f
   dummyAvatarPrefab:
     RawGuidValue: 21efbc1a8c65855478e1cb3748d2fe84
   gameManagerPrefab:

@@ -1220,6 +1220,7 @@ MonoBehaviour:
   _cameraForwardInHost: {x: 0, y: 0, z: 0}
   _normalizedInputDirectionInHost: {x: 0, y: 0, z: 0}
   isDummy: 0
+  isImmobilized: 0
   wasGrounded: 0
   isGroundedNow: 0
   chaseAngle: 90
@@ -3563,7 +3564,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8125208558984841086}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa66e4def5876f44783351ae90313653, type: 3}
+  m_Script: {fileID: 11500000, guid: 929483fe12170f34cbdcac221b402f81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   sphere: {fileID: 6093465629978082251}

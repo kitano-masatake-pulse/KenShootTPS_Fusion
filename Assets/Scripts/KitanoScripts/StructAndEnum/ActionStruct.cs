@@ -17,6 +17,7 @@ public enum ActionType
     Land,
 
     Dead,
+    Respawn,
 
     ADS_On,
     ADS_Off,

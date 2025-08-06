@@ -61,6 +61,10 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
     //============================================
     //時間関係
     //============================================
+    [Header("ゲームスタートまでのカウント(3秒以上)")]
+    private const float countdownTime = 5f;
+    private Coroutine countdownCoroutine;
+    public event Action<float> OnCountDownBattleStart;
     [Networked(OnChanged = nameof(TimeChangedCallback))]
     public int RemainingSeconds { get; private set; }
     public int initialTimeSec = 180;
@@ -120,7 +124,7 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
         {
             RemainingSeconds = initialTimeSec;
             startSimTime = Runner.SimulationTime;
-            TimerStart();
+            CountdownBattleStart();
         }
 
 
@@ -407,11 +411,6 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
 
 
 
-
-
-
-
-
     //===========================================
     //ホスト環境でのみ呼ばれるメソッド群
     //===========================================
@@ -456,6 +455,88 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
 
     }
 
+    private void CountdownBattleStart()
+    {
+        if (!Object.HasStateAuthority) return;
+        if (countdownTime < 3)
+        {
+            Debug.LogError("Countdown time is less than 3 seconds. Cannot start countdown.");
+            return;
+        }
+        if (countdownCoroutine != null)
+        {
+            StopCoroutine(countdownCoroutine); // 既存のカウントダウンを停止
+        }
+        StartCoroutine(CountdownCoroutine());
+    }
+
+
+    private System.Collections.IEnumerator CountdownCoroutine()
+    {
+        float countdown = countdownTime;
+        while (countdown > 0)
+        {
+            yield return new WaitForSeconds(1f);
+            countdown--;
+            //
+            if(countdown == 3)
+            {
+                RPC_InvokeCountDown(countdown); // 全クライアントにカウントダウン開始を通知
+            }
+        }
+        // カウントダウン終了後にゲームを開始
+        TimerStart();
+
+        //PlayerAvatarの行動不能を解除
+        foreach (var player in Runner.ActivePlayers)
+        {
+            var playerObject = Runner.GetPlayerObject(player);
+            if (playerObject != null)
+            {
+                var avatar = playerObject.GetComponent<PlayerAvatar>();
+                if (avatar != null)
+                {
+                    //RPCで行動不能を解除
+                    avatar.RPC_ClearStun();
+                }
+            }
+        }
+    }
+
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    private void RPC_InvokeCountDown(float countdown)
+    {
+        OnCountDownBattleStart?.Invoke(countdown);
+    }
+
+
+    private void UpdateTimer()
+    {
+        // タイマー更新処理
+        if (!Object.HasStateAuthority) return;
+        if (!IsTimerRunning) return;
+
+
+        //Debug.Log($"GameManager2: FixedUpdateNetwork called. IsTimerRunning: {IsTimerRunning}, RemainingSeconds: {RemainingSeconds}");
+
+        double elapsed = Runner.SimulationTime - startSimTime;
+        int elapsedSeconds = Mathf.FloorToInt((float)elapsed);
+
+        int newRemainingSeconds = Mathf.Max(initialTimeSec - elapsedSeconds);
+
+        if (newRemainingSeconds != RemainingSeconds)
+        {
+            RemainingSeconds = newRemainingSeconds;
+            if (RemainingSeconds <= 0)
+            {
+                IsTimerRunning = false;
+                //試合終了処理を開始
+                EndGame();
+            }
+        }
+    }
+
     //時間更新
     public override void FixedUpdateNetwork()
     {
@@ -472,48 +553,22 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
 
         }
 
-
-
-
-            if (NextTickTimer.Expired(Runner))
+        //スコア更新タイミング
+        if (NextTickTimer.Expired(Runner))
+        {
+            NextTickTimer = TickTimer.None;   // リセット
+            if (_scoreDirty)
             {
-                NextTickTimer = TickTimer.None;   // リセット
-                if (_scoreDirty)
-                {
-                    //スコア変更イベントを発火
-                    OnScoreChanged?.Invoke();
-                    _scoreDirty = false;
-                }
-
+                //スコア変更イベントを発火
+                OnScoreChanged?.Invoke();
+                _scoreDirty = false;
             }
 
+        }
 
-            //Debug.Log($"GameManager2: FixedUpdateNetwork called. UserDataArray is dirty. Sharing data with clients.");
-
-
-            // タイマー更新処理
-            if (!Object.HasStateAuthority) return;
-            if (!IsTimerRunning) return;
+        UpdateTimer(); // タイマーの更新処理を呼び出す
 
 
-            //Debug.Log($"GameManager2: FixedUpdateNetwork called. IsTimerRunning: {IsTimerRunning}, RemainingSeconds: {RemainingSeconds}");
-
-            double elapsed = Runner.SimulationTime - startSimTime;
-            int elapsedSeconds = Mathf.FloorToInt((float)elapsed);
-
-            int newRemainingSeconds = Mathf.Max(initialTimeSec - elapsedSeconds);
-
-            if (newRemainingSeconds != RemainingSeconds)
-            {
-                RemainingSeconds = newRemainingSeconds;
-                if (RemainingSeconds <= 0)
-                {
-                    IsTimerRunning = false;
-                    //試合終了処理を開始
-                    EndGame();
-                }
-            }
-        
     }
 
     public void TimerStart()
