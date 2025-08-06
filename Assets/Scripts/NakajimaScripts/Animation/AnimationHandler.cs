@@ -36,7 +36,7 @@ public class AnimationHandler : NetworkBehaviour
     private bool isInTargetState;
     private bool wasInTargetState = false;
     private string targetStateName = "Put";
-    private int idleTagHash = Animator.StringToHash("EnableIKWeapon");
+    
 
 
     public Transform hip;
@@ -93,7 +93,7 @@ public class AnimationHandler : NetworkBehaviour
             HideAllWeapons();
             ShowNextWeapons();
         }
-        if (animator.GetCurrentAnimatorStateInfo(1).tagHash == idleTagHash)
+        if (animator.GetCurrentAnimatorStateInfo(1).IsName("IdleAssaultRifle") || animator.GetCurrentAnimatorStateInfo(1).IsName("IdleSemiAuto"))
         {
             RifleFinalIKenable();
         }
@@ -278,9 +278,9 @@ public class AnimationHandler : NetworkBehaviour
         aimController.enabled = true;
 
         aimIK.solver.bones[0] = new IKSolverAim.Bone(hip, 0f);
-        aimIK.solver.bones[1] = new IKSolverAim.Bone(spine, 0.26f);
-        aimIK.solver.bones[2] = new IKSolverAim.Bone(spine1, 0.046f);
-        aimIK.solver.bones[3] = new IKSolverAim.Bone(spine2, 0.029f);
+        aimIK.solver.bones[1] = new IKSolverAim.Bone(spine, 0.4f);
+        aimIK.solver.bones[2] = new IKSolverAim.Bone(spine1, 0.072f);
+        aimIK.solver.bones[3] = new IKSolverAim.Bone(spine2, 0.061f);
         aimIK.solver.bones[4] = new IKSolverAim.Bone(rightShoulder, 0f);
         aimIK.solver.bones[5] = new IKSolverAim.Bone(rightArm, 0f);
         aimIK.solver.bones[6] = new IKSolverAim.Bone(rightHand, 0f);
