@@ -12,8 +12,6 @@ public class AssaultRifle : WeaponBase
 
     CharacterController avatarCharacterController; // キャラクターコントローラーを取得するための変数
 
-
-
     [SerializeField] private LayerMask playerLayer;
     public override LayerMask PlayerLayer => playerLayer;
 
@@ -382,5 +380,11 @@ public class AssaultRifle : WeaponBase
     {
         isADS = ADSflag; //ADS状態を更新
         Debug.Log($"AssaultRifle ADS state changed: {isADS}");
+    }
+
+
+    public override void ResetOnChangeWeapon()
+    {
+        reloadTimer = 0f;
     }
 }

@@ -1210,9 +1210,10 @@ MonoBehaviour:
   headObject: {fileID: 2171211468819611867}
   bodyObject: {fileID: 2852828816588928964}
   myPlayerHitboxRoot: {fileID: 0}
-  moveSpeed: 3
+  moveSpeed: 6
   gravity: -9.8
   jumpHeight: 2
+  raycastDistance: 1.5
   cameraTarget: {fileID: 0}
   normalizedInputDirection: {x: 0, y: 0, z: 0}
   _avatarPositionInHost: {x: 0, y: 0, z: 0}

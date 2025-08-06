@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using static RootMotion.FinalIK.IKSolverVR;
 
+
 public class AnimationHandler : NetworkBehaviour
 {
     [Header("References")]
@@ -15,25 +16,19 @@ public class AnimationHandler : NetworkBehaviour
     public Animator animator;
     public CharacterController characterController;
     [SerializeField] private Transform modelTransform;
-
     [Header("Animation Settings")]
-    private const float MoveDeltaAmplify = 100f;      // à⁄ìÆç∑ï™Ç™è¨Ç≥Ç≠Ç»ÇËÇ∑Ç¨Ç»Ç¢ÇÊÇ§Ç…ägëÂ
-    private const float DampTime = 0.001f;             // ÉAÉjÉÅÅ[ÉVÉáÉìï‚ä‘Ç…égÇ§ dampTime
-
+    private const float MoveDeltaAmplify = 100f;      // ÁßªÂãïÂ∑ÆÂàÜ„ÅåÂ∞è„Åï„Åè„Å™„Çä„Åô„Åé„Å™„ÅÑ„Çà„ÅÜ„Å´Êã°Â§ß
+    private const float DampTime = 0.001f;             // „Ç¢„Éã„É°„Éº„Ç∑„Éß„É≥Ë£úÈñì„Å´‰Ωø„ÅÜ dampTime
     [Header("Animation State")]
     private Vector3 lastPlayerPosition;
     private float horizontal;
     private float vertical;
-
     private float LastTick = 0;
-    private float changeTime = 1f; // ïêäÌïœçXÇÃÉAÉjÉÅÅ[ÉVÉáÉìéûä‘
-
+    private float changeTime = 1f; // Ê≠¶Âô®Â§âÊõ¥„ÅÆ„Ç¢„Éã„É°„Éº„Ç∑„Éß„É≥ÊôÇÈñì
     [SerializeField] private GameObject sword;
     [SerializeField] private GameObject assaultRifle;
     [SerializeField] private GameObject semiAutoRifle;
     [SerializeField] private GameObject grenade;
-
-
 
     private AimIK aimIK;
     private LimbIK limbIK;
@@ -52,33 +47,28 @@ public class AnimationHandler : NetworkBehaviour
     public Transform rightArm;
     public Transform rightHand;
 
-
-
     private void Start()
     {
         aimIK = GetComponentInChildren<AimIK>();
         limbIK = GetComponentInChildren<LimbIK>();
         aimController = GetComponentInChildren<AimController>();
     }
-
     // Update is called once per frame
     private void Update()
     {
-        
         if (Runner.Simulation.Tick != LastTick)
         {
             MovementAnimation();
             LastTick = Runner.Simulation.Tick;
         }
         SetAnimationFromPlayList();
-
         isInTargetState = animator.GetCurrentAnimatorStateInfo(1).IsName(targetStateName);
-
         if (animator.GetCurrentAnimatorStateInfo(1).IsName("PutAway"))
         {
             FinalIKDisable();
         }
-        if (animator.GetCurrentAnimatorStateInfo(1).IsName("Put")){
+        if (animator.GetCurrentAnimatorStateInfo(1).IsName("Put"))
+        {
             switch (playerAvatar.CurrentWeapon)
             {
                 case WeaponType.Sword:
@@ -93,21 +83,16 @@ public class AnimationHandler : NetworkBehaviour
                 case WeaponType.Grenade:
                     animator.SetBool("EquipGrenade", true);
                     break;
-
             }
         }
         if (animator.GetCurrentAnimatorStateInfo(1).IsName("PutBack"))
         {
-
         }
-        if (wasInTargetState && !isInTargetState)//PutÇ™èIóπÇµÇΩÇ∆Ç´Ç…åƒÇŒÇÍÇÈÉtÉâÉO
+        if (wasInTargetState && !isInTargetState)//Put„ÅåÁµÇ‰∫Ü„Åó„Åü„Å®„Åç„Å´Âëº„Å∞„Çå„Çã„Éï„É©„Ç∞
         {
-
             HideAllWeapons();
             ShowNextWeapons();
-
         }
-
         if (animator.GetCurrentAnimatorStateInfo(1).tagHash == idleTagHash)
         {
             RifleFinalIKenable();
@@ -116,9 +101,7 @@ public class AnimationHandler : NetworkBehaviour
         {
             GrenadeFinalIKenable();
         }
-
         wasInTargetState = isInTargetState;
-
         if (animator.GetCurrentAnimatorStateInfo(1).IsName("ReloadRifle"))
         {
             FinalIKDisable();
@@ -128,28 +111,22 @@ public class AnimationHandler : NetworkBehaviour
             FinalIKDisable();
         }
     }
-
-
     private void MovementAnimation()
     {
         Vector3 worldDelta = transform.position - lastPlayerPosition;
         Vector3 localDelta = modelTransform.InverseTransformDirection(worldDelta);
-
-        Vector3.Distance(lastPlayerPosition, transform.position); // ëOâÒÇÃà íuÇ∆åªç›ÇÃà íuÇÃãóó£ÇåvéZ
-
-
+        Vector3.Distance(lastPlayerPosition, transform.position); // ÂâçÂõû„ÅÆ‰ΩçÁΩÆ„Å®ÁèæÂú®„ÅÆ‰ΩçÁΩÆ„ÅÆË∑ùÈõ¢„ÇíË®àÁÆó
         horizontal = localDelta.x * MoveDeltaAmplify;
         vertical = localDelta.z * MoveDeltaAmplify;
         animator.SetFloat("Horizontal", horizontal, DampTime, Time.deltaTime);
         animator.SetFloat("Vertical", vertical, DampTime, Time.deltaTime);
-        lastPlayerPosition = transform.position; // ëOâÒÇÃà íuÇï€ë∂
+        lastPlayerPosition = transform.position; // ÂâçÂõû„ÅÆ‰ΩçÁΩÆ„Çí‰øùÂ≠ò
         if (!HasInputAuthority)
         {
             Debug.Log($"Animation called. Horizontal: {horizontal}, Vertical: {vertical} ");
         }
-        LastTick = Runner.Simulation.Tick; // ëOâÒÇÃTickÇï€ë∂
+        LastTick = Runner.Simulation.Tick; // ÂâçÂõû„ÅÆTick„Çí‰øùÂ≠ò
     }
-
     private void SetAnimationFromPlayList()
     {
         foreach (var action in playerAvatar.ActionAnimationPlayList)
@@ -160,111 +137,88 @@ public class AnimationHandler : NetworkBehaviour
                     Debug.Log($"IsJumping True");
                     animator.SetBool("IsJumping", true);
                     break;
-
                 case ActionType.Land:
                     Debug.Log($"IsJumping False");
                     animator.SetBool("IsJumping", false);
                     break;
-
                 case ActionType.Dead:
                     Debug.Log($"IsDead True");
                     animator.SetBool("IsDead", true);
-                    break;  
-
+                    break;
                 case ActionType.ADS_On:
                     Debug.Log($"IsADS True");
                     animator.SetBool("IsADS", true);
                     break;
-
                 case ActionType.ADS_Off:
                     Debug.Log($"IsADS False");
                     animator.SetBool("IsADS", false);
                     break;
-
                 case ActionType.Fire_Sword:
                     Debug.Log($"IsSwordAttack True");
                     animator.SetTrigger("IsSwordAttack");
                     break;
-
                 case ActionType.FireStart_AssaultRifle:
                     Debug.Log($"IsRifleFire True");
                     animator.SetTrigger("IsRifleFire");
                     break;
-
                 case ActionType.FireEnd_AssaultRifle:
                     break;
-
                 case ActionType.Fire_SemiAutoRifle:
                     Debug.Log($"IsSemiAutoRifleFire True");
                     animator.SetBool("IsSemiAutoRifleFire", true);
                     break;
-
                 case ActionType.FirePrepare_Grenade:
                     Debug.Log($"IsGrenadePreparation True");
                     animator.SetBool("IsGrenadePreparation", true);
                     break;
-
                 case ActionType.FireThrow_Grenade:
                     Debug.Log($"IsGrenadePreparation False");
                     animator.SetBool("IsGrenadePreparation", false);
                     break;
-
                 case ActionType.Reload_Sword:
-                    //égÇ¡ÇƒÇ¢Ç»Ç¢
+                    //‰Ωø„Å£„Å¶„ÅÑ„Å™„ÅÑ
                     break;
-
                 case ActionType.Reload_AssaultRifle:
                     Debug.Log($"IsReloading True");
                     animator.SetTrigger("IsReload");
                     break;
-
                 case ActionType.Reload_SemiAutoRifle:
                     Debug.Log($"IsReloading True");
                     animator.SetTrigger("IsReload");
                     break;
-
                 case ActionType.Reload_Grenade:
-                    //égÇ¡ÇƒÇ¢Ç»Ç¢
+                    //‰Ωø„Å£„Å¶„ÅÑ„Å™„ÅÑ
                     break;
-
                 case ActionType.ChangeWeaponTo_Sword:
                     Debug.Log($"ChangeWeaponTo_Sword");
                     ChangeWeapon();
-                    //animator.SetBool("EquipRifle", true);//å„Ç≈ïœÇ¶ÇÈ
+                    //animator.SetBool("EquipRifle", true);//Âæå„ÅßÂ§â„Åà„Çã
                     break;
-
                 case ActionType.ChangeWeaponTo_AssaultRifle:
                     Debug.Log($"ChangeWeaponTo_AssaultRifle");
                     ChangeWeapon();
                     //animator.SetBool("EquipRifle", true);
                     break;
-
                 case ActionType.ChangeWeaponTo_SemiAutoRifle:
                     Debug.Log($"ChangeWeaponTo_SemiAutoRifle");
                     ChangeWeapon();
-                    //animator.SetBool("EquipRifle", true);//å„Ç≈ïœÇ¶ÇÈ
+                    //animator.SetBool("EquipRifle", true);//Âæå„ÅßÂ§â„Åà„Çã
                     break;
-
                 case ActionType.ChangeWeaponTo_Grenade:
                     Debug.Log($"ChangeWeaponTo_Grenade");
                     ChangeWeapon();
                     //animator.SetBool("EquipGrenade", true);
                     break;
             }
-            Debug.Log($"actionType: {action.actionType}, actionCalledTimeOnSimulationTime: {action.actionCalledTimeOnSimulationTime}");
+            //Debug.Log($"actionType: {action.actionType}, actionCalledTimeOnSimulationTime: {action.actionCalledTimeOnSimulationTime}");
         }
         playerAvatar.ClearActionAnimationPlayList();
     }
-
-
-
-
     private void ChangeWeapon()
     {
         ResetWeaponEquipBools();
         animator.SetTrigger("ChangeWeapons");
     }
-
     private void HideAllWeapons()
     {
         sword.SetActive(false);
@@ -288,10 +242,8 @@ public class AnimationHandler : NetworkBehaviour
             case WeaponType.Grenade:
                 grenade.SetActive(true);
                 break;
-
         }
     }
-
     void ResetWeaponEquipBools()
     {
         animator.SetBool("EquipRifle", false);
@@ -299,8 +251,6 @@ public class AnimationHandler : NetworkBehaviour
         animator.SetBool("EquipSword", false);
         animator.SetBool("EquipSemiAutoRifle", false);
     }
-
-
     private void FinalIKDisable()
     {
         aimIK.enabled = false;

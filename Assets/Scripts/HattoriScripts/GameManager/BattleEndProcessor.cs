@@ -83,7 +83,8 @@ public class BattleEndProcessor : NetworkBehaviour
         //全プレイヤー(自分のプレイヤー)の行動を停止
         NetworkObject myPlayer = GameManager2.Instance.GetMyPlayer();
         PlayerAvatar playerAvatar = myPlayer.GetComponent<PlayerAvatar>();
-        playerAvatar.IsDuringWeaponAction = true;
+        playerAvatar.CurrentWeaponActionState = WeaponActionState.Dead;
+        playerAvatar.SetReturnTimeToIdle(0f);
         playerAvatar.IsImmobilized = true;
         StartCoroutine(watingCoroutine(waitingTime));
     }
