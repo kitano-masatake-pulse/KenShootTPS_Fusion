@@ -282,13 +282,16 @@ public class AnimationHandler : NetworkBehaviour
         limbIK.enabled = true;
         aimController.enabled = true;
 
-        //aimIK.solver.bones[0] = new IKSolverAim.Bone(hip, 0.397f);
-        //aimIK.solver.bones[1] = new IKSolverAim.Bone(spine, 0.4f);
-        //aimIK.solver.bones[2] = new IKSolverAim.Bone(spine1, 0.4f);
-        //aimIK.solver.bones[3] = new IKSolverAim.Bone(spine2, 0.4f);
-        //aimIK.solver.bones[4] = new IKSolverAim.Bone(rightShoulder, 0.4f);
-        //aimIK.solver.bones[5] = new IKSolverAim.Bone(rightArm, 0.64f);
-        //aimIK.solver.bones[6] = new IKSolverAim.Bone(rightHand, 1f);
+        aimIK.solver.axis = new Vector3(0, 0, -1);
+        aimIK.solver.clampWeight = 0.5f;
+
+        aimIK.solver.bones[0] = new IKSolverAim.Bone(hip, 0.397f);
+        aimIK.solver.bones[1] = new IKSolverAim.Bone(spine, 0.4f);
+        aimIK.solver.bones[2] = new IKSolverAim.Bone(spine1, 0.4f);
+        aimIK.solver.bones[3] = new IKSolverAim.Bone(spine2, 0.4f);
+        aimIK.solver.bones[4] = new IKSolverAim.Bone(rightShoulder, 0.4f);
+        aimIK.solver.bones[5] = new IKSolverAim.Bone(rightArm, 0.64f);
+        aimIK.solver.bones[6] = new IKSolverAim.Bone(rightHand, 1f);
     }
 
     private void GrenadeFinalIKenable()
@@ -296,13 +299,16 @@ public class AnimationHandler : NetworkBehaviour
         aimIK.enabled = true;
         aimController.enabled = true;
 
-        //aimIK.solver.bones[0] = new IKSolverAim.Bone(hip, 0f);
-        //aimIK.solver.bones[1] = new IKSolverAim.Bone(spine, 0.4f);
-        //aimIK.solver.bones[2] = new IKSolverAim.Bone(spine1, 0.0f);
-        //aimIK.solver.bones[3] = new IKSolverAim.Bone(spine2, 0.0f);
-        //aimIK.solver.bones[4] = new IKSolverAim.Bone(rightShoulder, 0f);
-        //aimIK.solver.bones[5] = new IKSolverAim.Bone(rightArm, 0f);
-        //aimIK.solver.bones[6] = new IKSolverAim.Bone(rightHand, 0f);
+        aimIK.solver.axis = new Vector3(0, 1, 0);
+        aimIK.solver.clampWeight = 0.8f;
+
+        aimIK.solver.bones[0] = new IKSolverAim.Bone(hip, 0f);
+        aimIK.solver.bones[1] = new IKSolverAim.Bone(spine, 0.4f);
+        aimIK.solver.bones[2] = new IKSolverAim.Bone(spine1, 0.0f);
+        aimIK.solver.bones[3] = new IKSolverAim.Bone(spine2, 0.0f);
+        aimIK.solver.bones[4] = new IKSolverAim.Bone(rightShoulder, 0f);
+        aimIK.solver.bones[5] = new IKSolverAim.Bone(rightArm, 0f);
+        aimIK.solver.bones[6] = new IKSolverAim.Bone(rightHand, 0f);
 
     }
 }
