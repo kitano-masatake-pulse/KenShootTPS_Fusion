@@ -9,10 +9,6 @@ public class PlayerWorldUIController : NetworkBehaviour
     [Header("World-Space Canvas 上の UI 要素")]
     [SerializeField] private TextMeshProUGUI nameLabel;
     [SerializeField] private Slider hpBar;
-    [Header("WeaponType に対応するスプライト(順番を enum と合わせる)")]
-    [Tooltip("0:Sword, 1:AssaultRifle, 2:SemiAutoRifle, 3:GrenadeLauncher")]
-    [SerializeField] private Sprite[] weaponSprites = new Sprite[4];
-    [SerializeField] private Image weaponImage;
 
 
     private PlayerNetworkState pNState;
@@ -33,7 +29,6 @@ public class PlayerWorldUIController : NetworkBehaviour
         bool isLocal = HasInputAuthority;
         nameLabel.gameObject.SetActive(!isLocal);
         hpBar.gameObject.SetActive(!isLocal);
-        weaponImage.gameObject.SetActive(!isLocal);
 
         //チームカラーを適用
         nameLabel.color = pNState.Team.GetColor(); 
@@ -48,12 +43,10 @@ public class PlayerWorldUIController : NetworkBehaviour
     {
         // 先に解除してから
         pNState.OnHPChanged -= UpdateWorldHPBar;
-        pNState.OnWeaponChanged_Network -= UpdateWorldWeapon;
         pNState.OnTeamChanged -= UpdateNemeColor;
 
         // 改めて登録
         pNState.OnHPChanged += UpdateWorldHPBar;
-        pNState.OnWeaponChanged_Network += UpdateWorldWeapon;
         pNState.OnTeamChanged += UpdateNemeColor;
     }
 
@@ -63,24 +56,7 @@ public class PlayerWorldUIController : NetworkBehaviour
     {
         hpBar.value = normalized;
     }
-    void UpdateWorldWeapon(WeaponType type)
-    {
-        var idx = (int)type;
-        if (idx < 0 || idx >= weaponSprites.Length || weaponSprites[idx] == null)
-        {
-            Debug.LogWarning("対応するスプライトがありません");
-            return;
-        }
 
-        Sprite sp = weaponSprites[idx];
-        weaponImage.sprite = sp;
-
-        // スケールは元のまま
-        float scale = 1f;
-        var rt = weaponImage.rectTransform;
-        rt.sizeDelta = sp.rect.size * scale;
-
-    }
 
     private void UpdateNemeColor(TeamType team)
     {
@@ -92,7 +68,6 @@ public class PlayerWorldUIController : NetworkBehaviour
         if (pNState != null)
         {
             pNState.OnHPChanged -= UpdateWorldHPBar;
-            pNState.OnWeaponChanged_Network -= UpdateWorldWeapon;
 
         }
     }
