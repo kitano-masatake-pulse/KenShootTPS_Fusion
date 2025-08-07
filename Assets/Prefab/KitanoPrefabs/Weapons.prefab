@@ -114,6 +114,7 @@ MonoBehaviour:
   WordOffset: 0
   WordCount: 0
   _interpolationDataSource: 0
+  playerAvatar: {fileID: 0}
   playerCamera: {fileID: 0}
   fireDistance: 100
   currentMagazine: 0
@@ -125,6 +126,15 @@ MonoBehaviour:
   obstructionLayer:
     serializedVersion: 2
     m_Bits: 128
+  liftingSpreadGauge: 0
+  randomSpreadGauge: 0
+  liftingSpreadLimit: 1
+  randomSpreadLimit: 1
+  runninngSpreadLimit: 1
+  liftingSpreadMultiplier: {x: 0, y: 0}
+  randomSpreadMultiplier: {x: 0, y: 0}
+  runninngSpreadMultiplier: {x: 3, y: 6}
+  ADSspreadReduction: 0.8
 --- !u!1 &2941208343699631044
 GameObject:
   m_ObjectHideFlags: 0
@@ -139,7 +149,7 @@ GameObject:
   - component: {fileID: 934183119531169519}
   m_Layer: 0
   m_Name: SwordRoot
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -278,6 +288,7 @@ MonoBehaviour:
   WordOffset: 0
   WordCount: 0
   _interpolationDataSource: 0
+  playerAvatar: {fileID: 0}
   playerCamera: {fileID: 0}
   fireDistance: 100
   currentMagazine: 0
@@ -289,7 +300,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   swordRoot: {fileID: 8168406862472361461}
-  attackActiveTime: 0.5
 --- !u!1 &5069872888955393737
 GameObject:
   m_ObjectHideFlags: 0
@@ -400,6 +410,7 @@ MonoBehaviour:
   WordOffset: 0
   WordCount: 0
   _interpolationDataSource: 0
+  playerAvatar: {fileID: 0}
   playerCamera: {fileID: 0}
   fireDistance: 100
   currentMagazine: 0
@@ -411,6 +422,16 @@ MonoBehaviour:
   obstructionLayer:
     serializedVersion: 2
     m_Bits: 128
+  liftingSpreadGauge: 0
+  randomSpreadGauge: 0
+  liftingSpreadLimit: 1
+  randomSpreadLimit: 1
+  runninngSpreadLimit: 1
+  liftingSpreadMultiplier: {x: 5, y: 0}
+  randomSpreadMultiplier: {x: 3, y: 6}
+  runninngSpreadMultiplier: {x: 3, y: 6}
+  debug_moveSpeed: 0
+  ADSspreadReduction: 0.8
 --- !u!1 &6912535540066160233
 GameObject:
   m_ObjectHideFlags: 0
@@ -459,6 +480,7 @@ MonoBehaviour:
   WordOffset: 0
   WordCount: 0
   _interpolationDataSource: 0
+  playerAvatar: {fileID: 0}
   playerCamera: {fileID: 0}
   fireDistance: 100
   currentMagazine: 0
@@ -475,3 +497,5 @@ MonoBehaviour:
   damageDuration: 1
   explosionDelay: 3
   explosionCenter: {fileID: 1465201701097770858}
+  cornRayAngleDeg: 30
+  cornRayNum: 10
