@@ -510,11 +510,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1516604608215421652, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
       propertyPath: playerAvatarPrefab.RawGuidValue.Array.data[0]
-      value: -806587546903397745
+      value: 3787067905171981268
       objectReference: {fileID: 0}
     - target: {fileID: 1516604608215421652, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
       propertyPath: playerAvatarPrefab.RawGuidValue.Array.data[1]
-      value: 5739849304577206792
+      value: -299955381400440278
       objectReference: {fileID: 0}
     - target: {fileID: 2130494428451515322, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
       propertyPath: battleEndProcessor
