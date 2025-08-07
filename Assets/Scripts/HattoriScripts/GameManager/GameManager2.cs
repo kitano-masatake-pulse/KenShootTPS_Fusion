@@ -530,15 +530,15 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
         // タイマー更新処理
         if (!Object.HasStateAuthority) return;
         if (!IsTimerRunning) return;
-
-
-        //Debug.Log($"GameManager2: FixedUpdateNetwork called. IsTimerRunning: {IsTimerRunning}, RemainingSeconds: {RemainingSeconds}");
-
+        //現在の時間からスタート時間を引いた時間が経過時間
         double elapsed = Runner.SimulationTime - startSimTime;
+        //経過時間を秒に変換
         int elapsedSeconds = Mathf.FloorToInt((float)elapsed);
 
+        //残り時間を計算
         int newRemainingSeconds = Mathf.Max(initialTimeSec - elapsedSeconds);
 
+        // 残り時間が変わった場合のみ更新
         if (newRemainingSeconds != RemainingSeconds)
         {
             RemainingSeconds = newRemainingSeconds;

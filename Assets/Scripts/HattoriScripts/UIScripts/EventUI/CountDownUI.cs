@@ -52,7 +52,7 @@ public class CountDownUI : MonoBehaviour, IUIPanel
     private IEnumerator CountDownCoroutine(float countTime)
     {
         float rem = countTime;
-        while (rem > 0)
+        while (rem > 0.01f)
         {
             countdownText.text = $"{rem:F0}";
             yield return new WaitForSeconds(1f);
