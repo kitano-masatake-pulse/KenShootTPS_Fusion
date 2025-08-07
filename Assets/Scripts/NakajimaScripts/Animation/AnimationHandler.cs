@@ -47,11 +47,16 @@ public class AnimationHandler : NetworkBehaviour
     public Transform rightArm;
     public Transform rightHand;
 
-    private void Start()
+    public override void Spawned()
     {
         aimIK = GetComponentInChildren<AimIK>();
         limbIK = GetComponentInChildren<LimbIK>();
         aimController = GetComponentInChildren<AimController>();
+
+        HideAllWeapons();
+        ShowNextWeapons();
+        Debug.Log($"アニメーションハンドラーのスポーン処理");
+
     }
     // Update is called once per frame
     private void Update()
@@ -102,14 +107,18 @@ public class AnimationHandler : NetworkBehaviour
             GrenadeFinalIKenable();
         }
         wasInTargetState = isInTargetState;
-        if (animator.GetCurrentAnimatorStateInfo(1).IsName("ReloadRifle"))
+        if (animator.GetCurrentAnimatorStateInfo(1).IsName("ReloadRifle") || animator.GetCurrentAnimatorStateInfo(1).IsName("ReloadSemiAuto"))
         {
             FinalIKDisable();
         }
-        if (animator.GetCurrentAnimatorStateInfo(1).IsName("Stun"))
-        {
-            FinalIKDisable();
-        }
+        //if(Input.GetKeyDown(KeyCode.Y))
+        //{
+        //    playerAvatar.SetActionAnimationPlayList(ActionType.Dead, Runner.SimulationTime);
+        //}
+        //if (Input.GetKeyDown(KeyCode.U))
+        //{
+        //    playerAvatar.SetActionAnimationPlayList(ActionType.Respawn, Runner.SimulationTime);
+        //}
     }
     private void MovementAnimation()
     {
@@ -144,6 +153,10 @@ public class AnimationHandler : NetworkBehaviour
                 case ActionType.Dead:
                     Debug.Log($"IsDead True");
                     animator.SetBool("IsDead", true);
+                    break;
+                case ActionType.Respawn:
+                    Debug.Log($"Respawn");
+                    animator.SetTrigger("Respawn");
                     break;
                 case ActionType.ADS_On:
                     Debug.Log($"IsADS True");
@@ -221,6 +234,7 @@ public class AnimationHandler : NetworkBehaviour
     }
     private void HideAllWeapons()
     {
+        Debug.Log("武器を消す");
         sword.SetActive(false);
         assaultRifle.SetActive(false);
         semiAutoRifle.SetActive(false);
@@ -228,6 +242,7 @@ public class AnimationHandler : NetworkBehaviour
     }
     private void ShowNextWeapons()
     {
+        Debug.Log($"次の武器は{playerAvatar.CurrentWeapon}");
         switch (playerAvatar.CurrentWeapon)
         {
             case WeaponType.Sword:
