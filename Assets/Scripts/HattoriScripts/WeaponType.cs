@@ -82,7 +82,7 @@ public static class WeaponTypeExtensions
         return weaponType switch
         {
             WeaponType.Sword => 1f,
-            WeaponType.AssaultRifle => 0.3f,
+            WeaponType.AssaultRifle => 0.1f,
             WeaponType.SemiAutoRifle => 1f,
             WeaponType.Grenade => 1f,
             _ => 0f
