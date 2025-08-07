@@ -11,7 +11,7 @@ public class WeaponPanel : MonoBehaviour, IHUDPanel
     [SerializeField] private Sprite[] weaponSprites = new Sprite[4];
     [Header("Imageの大きさ設定")]
     [SerializeField] private float RifleScale = 0.53f; // AssaultRifle, SemiAutoRifle の大きさ
-    [SerializeField] private float GrenadeLauncherScale = 0.68f; // Grenade の大きさ
+    [SerializeField] private float GrenadeScale = 0.68f; // Grenade の大きさ
     private PlayerAvatar weaponState;
 
     public void Initialize(PlayerNetworkState _, PlayerAvatar wState)
@@ -40,12 +40,26 @@ public class WeaponPanel : MonoBehaviour, IHUDPanel
 
 
         // 武器のスプライトサイズに応じてImageのサイズを調整
+        //武器の種類によってテキストの表示非表示を変更
         float scale = 1f;
         if (currentWeapon == WeaponType.AssaultRifle || currentWeapon == WeaponType.SemiAutoRifle)
+        {
             scale = RifleScale;
+            magText.enabled = true;
+            resText.enabled = true;
+        }
         else if (currentWeapon == WeaponType.Grenade)
-            scale = GrenadeLauncherScale;
-
+        {
+            scale = GrenadeScale;
+            magText.enabled = true;
+            resText.enabled = false; 
+        }
+        else if (currentWeapon == WeaponType.Sword)
+        {
+            scale = 1f;
+            magText.enabled = false;
+            resText.enabled = false;
+        }
         var rt = weaponImage.rectTransform;
         rt.sizeDelta = weaponSprites[idx].rect.size * scale;
 
