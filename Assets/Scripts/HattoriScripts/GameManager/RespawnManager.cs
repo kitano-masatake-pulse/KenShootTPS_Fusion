@@ -93,7 +93,9 @@ public class RespawnManager : NetworkBehaviour
         var playerAvatar = playerObject.GetComponent<PlayerAvatar>();
         if (playerAvatar != null)
         {
+            playerAvatar.HideMesh(); // メッシュを非表示にする
             playerAvatar.TeleportToInitialSpawnPoint(respawnPoint);
+            playerAvatar.ShowMesh(); // メッシュを表示する
         }
 
         if (playerObject != null && playerObject.IsValid)
@@ -101,12 +103,6 @@ public class RespawnManager : NetworkBehaviour
             playerAvatar.SetActionAnimationPlayList(ActionType.Respawn,Runner.SimulationTime);
             Debug.Log($"RPC_InitializePlayerInAll: Player {playerObject.InputAuthority} action animation set to Respawn.");
 
-            // プレイヤーのアニメーションをアイドル状態に
-            var animator = playerObject.GetComponent<Animator>();
-            if (animator != null)
-            {
-                animator.Play("Idle");
-            }
         }
         
 
@@ -240,14 +236,15 @@ public class RespawnManager : NetworkBehaviour
         Debug.Log($"RPC_TeleportSpawnPoint: Local = Player?:{Runner.LocalPlayer == spawnPlayer}");
         Debug.Log($"RPC_TeleportSpawnPoint: Try Get ? : {Runner.TryGetPlayerObject(spawnPlayer, out NetworkObject o)}");
 
-        if (Runner.LocalPlayer == spawnPlayer &&
-            Runner.TryGetPlayerObject(spawnPlayer, out NetworkObject playerObject) && 
+        if (Runner.TryGetPlayerObject(spawnPlayer, out NetworkObject playerObject) && 
             playerObject != null)
         {
             var playerAvatar = playerObject.GetComponent<PlayerAvatar>();
             if (playerAvatar != null)
             {
+                playerAvatar.HideMesh(); // メッシュを非表示にする
                 playerAvatar.TeleportToInitialSpawnPoint(respawnPoint);
+                playerAvatar.ShowMesh(); // メッシュを表示する
             }
             else
             {
