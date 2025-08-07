@@ -35,7 +35,7 @@ public class AnimationHandler : NetworkBehaviour
     private AimController aimController;
     private bool isInTargetState;
     private bool wasInTargetState = false;
-    private string targetStateName = "Put";
+    private WeaponType nowWeapon = WeaponType.AssaultRifle;
     
 
 
@@ -67,14 +67,14 @@ public class AnimationHandler : NetworkBehaviour
             LastTick = Runner.Simulation.Tick;
         }
         SetAnimationFromPlayList();
-        isInTargetState = animator.GetCurrentAnimatorStateInfo(1).IsName(targetStateName);
+        isInTargetState = animator.GetCurrentAnimatorStateInfo(1).IsName("Put");
         if (animator.GetCurrentAnimatorStateInfo(1).IsName("PutAway"))
         {
             FinalIKDisable();
         }
         if (animator.GetCurrentAnimatorStateInfo(1).IsName("Put"))
         {
-            switch (playerAvatar.CurrentWeapon)
+            switch (nowWeapon)
             {
                 case WeaponType.Sword:
                     animator.SetBool("EquipSword", true);
@@ -205,21 +205,25 @@ public class AnimationHandler : NetworkBehaviour
                 case ActionType.ChangeWeaponTo_Sword:
                     Debug.Log($"ChangeWeaponTo_Sword");
                     ChangeWeapon();
+                    nowWeapon = WeaponType.Sword;
                     //animator.SetBool("EquipRifle", true);//後で変える
                     break;
                 case ActionType.ChangeWeaponTo_AssaultRifle:
                     Debug.Log($"ChangeWeaponTo_AssaultRifle");
                     ChangeWeapon();
+                    nowWeapon = WeaponType.AssaultRifle;
                     //animator.SetBool("EquipRifle", true);
                     break;
                 case ActionType.ChangeWeaponTo_SemiAutoRifle:
                     Debug.Log($"ChangeWeaponTo_SemiAutoRifle");
                     ChangeWeapon();
+                    nowWeapon = WeaponType.SemiAutoRifle;
                     //animator.SetBool("EquipRifle", true);//後で変える
                     break;
                 case ActionType.ChangeWeaponTo_Grenade:
                     Debug.Log($"ChangeWeaponTo_Grenade");
                     ChangeWeapon();
+                    nowWeapon = WeaponType.Grenade;
                     //animator.SetBool("EquipGrenade", true);
                     break;
             }
@@ -242,8 +246,8 @@ public class AnimationHandler : NetworkBehaviour
     }
     private void ShowNextWeapons()
     {
-        Debug.Log($"次の武器は{playerAvatar.CurrentWeapon}");
-        switch (playerAvatar.CurrentWeapon)
+        Debug.Log($"次の武器は{nowWeapon}");
+        switch (nowWeapon)
         {
             case WeaponType.Sword:
                 sword.SetActive(true);
@@ -278,13 +282,13 @@ public class AnimationHandler : NetworkBehaviour
         limbIK.enabled = true;
         aimController.enabled = true;
 
-        aimIK.solver.bones[0] = new IKSolverAim.Bone(hip, 0.397f);
-        aimIK.solver.bones[1] = new IKSolverAim.Bone(spine, 0.4f);
-        aimIK.solver.bones[2] = new IKSolverAim.Bone(spine1, 0.4f);
-        aimIK.solver.bones[3] = new IKSolverAim.Bone(spine2, 0.4f);
-        aimIK.solver.bones[4] = new IKSolverAim.Bone(rightShoulder, 0.4f);
-        aimIK.solver.bones[5] = new IKSolverAim.Bone(rightArm, 0.64f);
-        aimIK.solver.bones[6] = new IKSolverAim.Bone(rightHand, 1f);
+        //aimIK.solver.bones[0] = new IKSolverAim.Bone(hip, 0.397f);
+        //aimIK.solver.bones[1] = new IKSolverAim.Bone(spine, 0.4f);
+        //aimIK.solver.bones[2] = new IKSolverAim.Bone(spine1, 0.4f);
+        //aimIK.solver.bones[3] = new IKSolverAim.Bone(spine2, 0.4f);
+        //aimIK.solver.bones[4] = new IKSolverAim.Bone(rightShoulder, 0.4f);
+        //aimIK.solver.bones[5] = new IKSolverAim.Bone(rightArm, 0.64f);
+        //aimIK.solver.bones[6] = new IKSolverAim.Bone(rightHand, 1f);
     }
 
     private void GrenadeFinalIKenable()
@@ -292,13 +296,13 @@ public class AnimationHandler : NetworkBehaviour
         aimIK.enabled = true;
         aimController.enabled = true;
 
-        aimIK.solver.bones[0] = new IKSolverAim.Bone(hip, 0f);
-        aimIK.solver.bones[1] = new IKSolverAim.Bone(spine, 0.4f);
-        aimIK.solver.bones[2] = new IKSolverAim.Bone(spine1, 0.072f);
-        aimIK.solver.bones[3] = new IKSolverAim.Bone(spine2, 0.061f);
-        aimIK.solver.bones[4] = new IKSolverAim.Bone(rightShoulder, 0f);
-        aimIK.solver.bones[5] = new IKSolverAim.Bone(rightArm, 0f);
-        aimIK.solver.bones[6] = new IKSolverAim.Bone(rightHand, 0f);
+        //aimIK.solver.bones[0] = new IKSolverAim.Bone(hip, 0f);
+        //aimIK.solver.bones[1] = new IKSolverAim.Bone(spine, 0.4f);
+        //aimIK.solver.bones[2] = new IKSolverAim.Bone(spine1, 0.0f);
+        //aimIK.solver.bones[3] = new IKSolverAim.Bone(spine2, 0.0f);
+        //aimIK.solver.bones[4] = new IKSolverAim.Bone(rightShoulder, 0f);
+        //aimIK.solver.bones[5] = new IKSolverAim.Bone(rightArm, 0f);
+        //aimIK.solver.bones[6] = new IKSolverAim.Bone(rightHand, 0f);
 
     }
 }
