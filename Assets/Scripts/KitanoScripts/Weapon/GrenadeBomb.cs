@@ -73,7 +73,7 @@ public class GrenadeBomb : NetworkBehaviour
         //ダメージ用のリストをクリア
         alreadyDamagedPlayers.Clear();
 
-        Despawned(Runner,true); // 爆発後にオブジェクトを破棄する
+        Runner.Despawn(this.Object); // 爆発後にオブジェクトを破棄する
 
     }
 
