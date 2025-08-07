@@ -164,8 +164,8 @@ public class PlayerAvatar : NetworkBehaviour
     public event Action<WeaponType, int, int> OnWeaponChanged;
     public event Action<bool> OnADSChanged; // ADS状態変更イベント
 
-
-    //ホーミング関連
+    #region ホーミング関連
+    //
     [Header("Homing Settings")]
     [SerializeField] private float chaseAngle = 90f; // FOVの角度（度単位）
     [SerializeField] private float chaseRange = 5f; // 射程距離
@@ -179,6 +179,8 @@ public class PlayerAvatar : NetworkBehaviour
     private Transform currentTargetTransform; // 現在のターゲットのTransform
     [SerializeField] private LayerMask playerLayer;
     [SerializeField] private LayerMask obstructionMask;
+
+    #endregion
 
 
     //----------------------ここまで変数宣言----------------------------------
@@ -612,6 +614,7 @@ public class PlayerAvatar : NetworkBehaviour
             Quaternion currentRotation = headObject.transform.rotation;
             Quaternion targetRotation = Quaternion.LookRotation(lookForwardDir.normalized);
             headObject.transform.rotation = Quaternion.Slerp(currentRotation, targetRotation, Time.deltaTime * 10f);
+            
         }
         else
         {
