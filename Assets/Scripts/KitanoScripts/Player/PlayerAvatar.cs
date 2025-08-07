@@ -716,6 +716,7 @@ public class PlayerAvatar : NetworkBehaviour
                 }
                 else
                 {
+                    Debug.Log("homing not have playerAvatar");
                     continue; // PlayerAvatarコンポーネントがない場合はスキップ
                 }
                 //continue; // PlayerAvatarコンポーネントがない場合はスキップ
@@ -730,6 +731,7 @@ public class PlayerAvatar : NetworkBehaviour
 
             if (angle > fovAngle / 2f || distance > range)
             {
+                Debug.Log("homing not correct angle or distance");
                 continue;
             }
 
@@ -743,6 +745,7 @@ public class PlayerAvatar : NetworkBehaviour
             if (Physics.Raycast(from, direction, out RaycastHit hitInfo, rayDistance, obstructionMask))
             {
                 // Rayが途中で何かに当たっていたら視線が通っていない
+                Debug.Log("not homing because raycasthit something");
                 continue;
             }
 
@@ -755,6 +758,7 @@ public class PlayerAvatar : NetworkBehaviour
 
         }
 
+        Debug.Log("homing target:", targetTransform);
         return targetTransform != null;
     }
 
