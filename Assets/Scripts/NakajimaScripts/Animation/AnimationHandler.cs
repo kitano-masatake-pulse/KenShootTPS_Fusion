@@ -74,21 +74,7 @@ public class AnimationHandler : NetworkBehaviour
         }
         if (animator.GetCurrentAnimatorStateInfo(1).IsName("Put"))
         {
-            switch (nowWeapon)
-            {
-                case WeaponType.Sword:
-                    animator.SetBool("EquipSword", true);
-                    break;
-                case WeaponType.AssaultRifle:
-                    animator.SetBool("EquipRifle", true);
-                    break;
-                case WeaponType.SemiAutoRifle:
-                    animator.SetBool("EquipSemiAutoRifle", true);
-                    break;
-                case WeaponType.Grenade:
-                    animator.SetBool("EquipGrenade", true);
-                    break;
-            }
+            EquipWeapon(nowWeapon);
         }
         if (animator.GetCurrentAnimatorStateInfo(1).IsName("PutBack"))
         {
@@ -119,6 +105,25 @@ public class AnimationHandler : NetworkBehaviour
         //{
         //    playerAvatar.SetActionAnimationPlayList(ActionType.Respawn, Runner.SimulationTime);
         //}
+    }
+
+    private void EquipWeapon(WeaponType nowWeapon)
+    {
+        switch (nowWeapon)
+        {
+            case WeaponType.Sword:
+                animator.SetBool("EquipSword", true);
+                break;
+            case WeaponType.AssaultRifle:
+                animator.SetBool("EquipRifle", true);
+                break;
+            case WeaponType.SemiAutoRifle:
+                animator.SetBool("EquipSemiAutoRifle", true);
+                break;
+            case WeaponType.Grenade:
+                animator.SetBool("EquipGrenade", true);
+                break;
+        }
     }
     private void MovementAnimation()
     {
@@ -159,6 +164,8 @@ public class AnimationHandler : NetworkBehaviour
                     animator.SetTrigger("Respawn");
                     HideAllWeapons();
                     nowWeapon = WeaponType.AssaultRifle; //リスポーン時はアサルトライフルを装備
+                    ResetWeaponEquipBools();
+                    EquipWeapon(nowWeapon);
                     assaultRifle.SetActive(true);
 
                     break;
