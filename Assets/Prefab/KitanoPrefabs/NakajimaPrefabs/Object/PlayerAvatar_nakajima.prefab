@@ -400,11 +400,12 @@ MonoBehaviour:
   WordCount: 0
   _interpolationDataSource: 0
   playerAvatar: {fileID: 0}
-  playerCamera: {fileID: 0}
   fireDistance: 100
   currentMagazine: 0
   currentReserve: 0
+  LineOfFirePrefab: {fileID: 0}
   muzzleTransform: {fileID: 0}
+  TPSCameraTransform: {fileID: 0}
   playerLayer:
     serializedVersion: 2
     m_Bits: 0
@@ -807,6 +808,7 @@ GameObject:
   - component: {fileID: 697723341968169883}
   - component: {fileID: 1681751182215312542}
   - component: {fileID: 4514362404523301730}
+  - component: {fileID: 3719357326205133392}
   m_Layer: 0
   m_Name: body
   m_TagString: Untagged
@@ -1048,6 +1050,19 @@ MonoBehaviour:
   turnToTargetTime: 0
   useAnimatedAimDirection: 0
   animatedAimDirection: {x: 0, y: 0, z: 1}
+--- !u!114 &3719357326205133392
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2808416894933013532}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32ef816d22e99b544835c53321509652, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 2231931972422335784}
 --- !u!1 &2822452212972808736
 GameObject:
   m_ObjectHideFlags: 0
@@ -1220,6 +1235,7 @@ MonoBehaviour:
   _cameraForwardInHost: {x: 0, y: 0, z: 0}
   _normalizedInputDirectionInHost: {x: 0, y: 0, z: 0}
   isDummy: 0
+  currentWeaponActionState: 0
   isImmobilized: 0
   wasGrounded: 0
   isGroundedNow: 0
@@ -2120,10 +2136,10 @@ MonoBehaviour:
   WordCount: 0
   _interpolationDataSource: 0
   playerAvatar: {fileID: 0}
-  playerCamera: {fileID: 0}
   fireDistance: 100
   currentMagazine: 0
   currentReserve: 0
+  LineOfFirePrefab: {fileID: 0}
   playerLayer:
     serializedVersion: 2
     m_Bits: 0
@@ -2717,10 +2733,10 @@ MonoBehaviour:
   WordCount: 0
   _interpolationDataSource: 0
   playerAvatar: {fileID: 0}
-  playerCamera: {fileID: 0}
   fireDistance: 100
   currentMagazine: 0
   currentReserve: 0
+  LineOfFirePrefab: {fileID: 0}
   playerLayer:
     serializedVersion: 2
     m_Bits: 1088
@@ -3190,11 +3206,12 @@ MonoBehaviour:
   WordCount: 0
   _interpolationDataSource: 0
   playerAvatar: {fileID: 0}
-  playerCamera: {fileID: 0}
   fireDistance: 100
   currentMagazine: 0
   currentReserve: 0
+  LineOfFirePrefab: {fileID: 0}
   muzzleTransform: {fileID: 0}
+  TPSCameraTransform: {fileID: 0}
   playerLayer:
     serializedVersion: 2
     m_Bits: 0

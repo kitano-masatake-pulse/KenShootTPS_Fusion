@@ -10,7 +10,7 @@ public class LineOfFire : MonoBehaviour
     LineRenderer lineRenderer;
     [SerializeField] Vector3 startPoint;
     [SerializeField] Vector3 endPoint;
-    [SerializeField] float lifeTime= 1f; // Duration for which the line will be visible   
+    float lifeTime= 0.1f; // Duration for which the line will be visible   
 
 
     // Start is called before the first frame update
