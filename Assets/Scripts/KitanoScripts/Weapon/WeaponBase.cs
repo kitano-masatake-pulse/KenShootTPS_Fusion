@@ -77,13 +77,7 @@ public abstract class WeaponBase : NetworkBehaviour
 
     public virtual void FireDown()
     {
-        //FireRay();
-        //localState.ConsumeAmmo(weaponType);
-        if (weaponType!=WeaponType.Sword)
-        {
-            currentMagazine--;
-        }
-        
+      
         Debug.Log($"{weaponType.GetName()} fired down! Current Magazine: {currentMagazine}, Current Reserve: {currentReserve}");
     }
 

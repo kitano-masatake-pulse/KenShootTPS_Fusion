@@ -1009,7 +1009,6 @@ MonoBehaviour:
   - {fileID: 2021065878438807355}
   - {fileID: 4387391994600960506}
   - {fileID: 1714944430590394515}
-  - {fileID: 2750055372053041274}
   - {fileID: 6918057990478731326}
   SimulationBehaviours: []
 --- !u!143 &6278831117568584565
@@ -1066,6 +1065,7 @@ MonoBehaviour:
   _cameraForwardInHost: {x: 0, y: 0, z: 0}
   _normalizedInputDirectionInHost: {x: 0, y: 0, z: 0}
   isDummy: 0
+  currentWeaponActionState: 0
   isImmobilized: 0
   wasGrounded: 0
   isGroundedNow: 0
@@ -2420,7 +2420,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8851967464698682618}
-  - component: {fileID: 2750055372053041274}
   m_Layer: 10
   m_Name: Target_LeftHand
   m_TagString: Untagged
@@ -2443,27 +2442,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1780102415932120048}
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 90}
---- !u!114 &2750055372053041274
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6330141011200369747}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1ff9aadf4545e4e42a7c4aadbc73152d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  WordOffset: 0
-  WordCount: 0
-  _interpolationDataSource: 0
-  playerCamera: {fileID: 0}
-  fireDistance: 100
-  hitMask:
-    serializedVersion: 2
-    m_Bits: 192
-  weaponDamage: 10
 --- !u!1 &6435574926903253053
 GameObject:
   m_ObjectHideFlags: 0

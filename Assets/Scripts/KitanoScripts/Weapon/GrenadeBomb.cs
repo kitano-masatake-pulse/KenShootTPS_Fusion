@@ -271,6 +271,7 @@ public class GrenadeBomb : NetworkBehaviour
             PlayerRef myPlayerRef =throwPlayer;
             Debug.Log($"Player {myPlayerRef} hit Player {targetPlayerRef} with {weaponDamage} damage");
             PlayerHP targetHP = playerHitbox.GetComponentInParent<PlayerHP>();
+            Debug.Log($"throwPlayer {throwPlayer}");
             targetHP.RPC_RequestDamage(myPlayerRef, weaponDamage);
         }
         else

@@ -1019,6 +1019,7 @@ public class PlayerAvatar : NetworkBehaviour
     //射撃。マガジンが空でもリロードしない
     public void FireAction()
     {
+        Debug.Log($"FireAction called for {currentWeapon.GetName()},{Runner.Tick}"); //デバッグログ
         currentWeaponActionState = WeaponActionState.Firing; //武器アクション状態を射撃に設定
         stateTimer_ReturnToIdle = currentWeapon.FireWaitTime(); //発射ダウンの時間を設定
         //isDuringWeaponAction = true;

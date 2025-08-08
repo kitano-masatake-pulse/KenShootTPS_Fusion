@@ -196,6 +196,7 @@ public class AssaultRifle : WeaponBase
 
     public override void FireDown()
     {
+        Debug.Log("AssaultRifle FireDown called"); //デバッグ用ログ出力
         base.FireDown();
         spreadPatternIndex = 0; //スプレッドパターンのインデックスをリセット
 
@@ -204,6 +205,8 @@ public class AssaultRifle : WeaponBase
 
     public override void Fire()
     {
+
+        Debug.Log("AssaultRifle Fire called"); //デバッグ用ログ出力
         base.Fire(); //ベースクラスの発射処理を呼び出す
         currentMagazine--;
         spreadPatternIndex++; //スプレッドパターンのインデックスを更新
@@ -233,6 +236,7 @@ public class AssaultRifle : WeaponBase
 
         //射線の拡散を計算する
         //Vector3 spreadDirection = SpreadRaycastDirection(direction, liftingSpreadGauge, randomSpreadGauge,debug_moveSpeed); //射線の拡散を計算
+
 
 
         Runner.LagCompensation.Raycast(

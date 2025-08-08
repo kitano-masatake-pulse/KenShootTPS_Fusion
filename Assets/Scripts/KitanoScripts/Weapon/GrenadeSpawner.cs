@@ -167,7 +167,7 @@ public class GrenadeSpawner : WeaponBase
             // ← ここが OnBeforeSpawned デリゲート
             (runner, spawnedObj) =>
             {
-               spawnedObj.GetComponent<GrenadeBomb>().SetThrowPlayer(rpcInfo.Source); // Rigidbodyの速度を設定
+               spawnedObj.GetComponent<GrenadeBomb>().SetThrowPlayer(rpcInfo.Source); 
  
             }
             );
