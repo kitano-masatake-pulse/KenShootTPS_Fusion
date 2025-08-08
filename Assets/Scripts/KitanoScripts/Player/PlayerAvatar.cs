@@ -1151,6 +1151,23 @@ public class PlayerAvatar : NetworkBehaviour
     
     }
 
+    public void ForceWeaponChange(WeaponType newWeapon)
+    {
+        weaponClassDictionary[currentWeapon].ResetOnChangeWeapon(); //現在の武器の状態をリセット
+        if (currentWeapon.CanADS())
+        {
+            CancelADS(); //現在の武器がADS可能ならADSをキャンセル
+        }
+        currentWeapon = newWeapon;
+        RPC_NotifyChangeWeapon(newWeapon);
+        OnWeaponChanged?.Invoke(currentWeapon, weaponClassDictionary[currentWeapon].currentMagazine, weaponClassDictionary[currentWeapon].currentReserve); //武器変更イベントを発火
+
+    }
+
+
+
+
+
     [Rpc(RpcSources.All, RpcTargets.All, HostMode = RpcHostMode.SourceIsHostPlayer, TickAligned = false)]
     public void RPC_NotifyChangeWeapon(WeaponType newWeapon, RpcInfo rpcInfo = default)
     {
