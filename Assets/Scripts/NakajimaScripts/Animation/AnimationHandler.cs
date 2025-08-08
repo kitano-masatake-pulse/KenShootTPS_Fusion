@@ -157,6 +157,10 @@ public class AnimationHandler : NetworkBehaviour
                 case ActionType.Respawn:
                     Debug.Log($"Respawn");
                     animator.SetTrigger("Respawn");
+                    HideAllWeapons();
+                    nowWeapon = WeaponType.AssaultRifle; //リスポーン時はアサルトライフルを装備
+                    assaultRifle.SetActive(true);
+
                     break;
                 case ActionType.ADS_On:
                     Debug.Log($"IsADS True");
