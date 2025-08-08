@@ -87,6 +87,7 @@ public class PlayerAvatar : NetworkBehaviour
     #region フラグ管理
     //行動可能かどうかのフラグ
 
+    [SerializeField, Tooltip("デバッグ用の現在の状態")]
     private WeaponActionState currentWeaponActionState; //行動可能状態かどうか(移動・ジャンプ・武器アクションが可能かどうか)
     public WeaponActionState CurrentWeaponActionState
     {
