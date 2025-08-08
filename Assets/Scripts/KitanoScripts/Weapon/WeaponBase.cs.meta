@@ -3,7 +3,11 @@ guid: fbe19e1c922c6a94194d4e21ed4ed01d
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - Runner: {instanceID: 0}
+  - Object: {instanceID: 0}
+  - playerAvatar: {instanceID: 0}
+  - LineOfFirePrefab: {fileID: 6970359527731190685, guid: f7125f6161e9b0b459848fecb3f3bb15, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

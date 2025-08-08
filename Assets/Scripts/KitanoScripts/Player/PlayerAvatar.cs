@@ -275,12 +275,14 @@ public class PlayerAvatar : NetworkBehaviour
                 weapon.currentMagazine = weapon.weaponType.MagazineCapacity(); //初期マガジンは最大値に設定
                 weapon.currentReserve = weapon.weaponType.ReserveCapacity(); //初期リザーブは50
 
+                weapon.playerAvatar = this; //武器のPlayerAvatarを設定
+
                 if (weapon.weaponType == WeaponType.AssaultRifle)
                 {
                     AssaultRifle rifle = weapon as AssaultRifle; //AssaultRifle型にキャスト
                     if (rifle != null)
                     {
-                        rifle.muzzleTransform = tpsCameraTransform; //マズルのTransformをカメラのTransformに設定
+                        rifle.TPSCameraTransform = tpsCameraTransform; //マズルのTransformをカメラのTransformに設定
 
                     }
                 }
@@ -289,7 +291,7 @@ public class PlayerAvatar : NetworkBehaviour
                     SemiAutoRifle rifle = weapon as SemiAutoRifle; //SemiAutoRifle型にキャスト
                     if (rifle != null)
                     {
-                        rifle.muzzleTransform = tpsCameraTransform; //マズルのTransformをカメラのTransformに設定
+                        rifle.TPSCameraTransform = tpsCameraTransform; //マズルのTransformをカメラのTransformに設定
                     }
                 }
 

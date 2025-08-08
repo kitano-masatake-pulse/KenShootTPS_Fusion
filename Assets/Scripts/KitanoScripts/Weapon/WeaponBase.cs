@@ -1,5 +1,6 @@
 using UnityEngine;
 using Fusion;
+using System;
 
 public abstract class WeaponBase : NetworkBehaviour
 {
@@ -11,13 +12,15 @@ public abstract class WeaponBase : NetworkBehaviour
 
     public WeaponType weaponType => weapon;
 
-    public TPSCameraController playerCamera; // 自分のTPSカメラ
+    //public TPSCameraController playerCamera; // 自分のTPSカメラ
     public float fireDistance = 100f;
     public abstract LayerMask PlayerLayer { get; }
     public abstract LayerMask ObstructionLayer { get; }
 
     public int currentMagazine;
     public int currentReserve;
+
+    [SerializeField] protected GameObject LineOfFirePrefab; // 射線のプレハブ
 
 
     public override void Spawned()
@@ -169,6 +172,38 @@ public abstract class WeaponBase : NetworkBehaviour
     }
 
 
+    public void GenerateLineOfFireGorAllClients(Vector3 startPoint, Vector3 EndPoint)
+    {
+
+        GenerateLineOfFire(startPoint, EndPoint); // LineOfFireを生成
+        //全クライアントにLineOfFireを生成するRPCを送信
+        RPC_RequestLineOfFire(startPoint, EndPoint);
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority, HostMode = RpcHostMode.SourceIsHostPlayer, TickAligned = false)]
+    public void RPC_RequestLineOfFire(Vector3 startPoint, Vector3 EndPoint, RpcInfo rpcInfo = default)
+    {
+        RPC_ApplyLineOfFire(startPoint, EndPoint, rpcInfo.Source); // LineOfFireを生成するRPCを呼び出す
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All, HostMode = RpcHostMode.SourceIsHostPlayer, TickAligned = false)]
+    public void RPC_ApplyLineOfFire(Vector3 startPoint, Vector3 EndPoint, PlayerRef shooter, RpcInfo rpcInfo = default)
+    {
+        if (shooter != Runner.LocalPlayer)
+        { 
+        
+        GenerateLineOfFire(startPoint, EndPoint); // LineOfFireを生成
+        }
+    }
 
 
+    public void GenerateLineOfFire(Vector3 startPoint,Vector3  EndPoint)
+    { 
+        GameObject LineOfFireInstance =  Instantiate(LineOfFirePrefab, startPoint, Quaternion.identity); // LineOfFireのインスタンスを生成
+
+        LineOfFireInstance.GetComponent<LineOfFire>().SetLinePoints(startPoint, EndPoint); // LineOfFireの始点と終点を設定
+
+    }
+
+    
 }
