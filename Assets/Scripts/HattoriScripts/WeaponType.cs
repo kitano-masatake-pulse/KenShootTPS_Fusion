@@ -32,7 +32,7 @@ public static class WeaponTypeExtensions
             WeaponType.Sword => 0,
             WeaponType.AssaultRifle => 200,
             WeaponType.SemiAutoRifle => 500,
-            WeaponType.Grenade => 1,
+            WeaponType.Grenade => 5,
             _ => 0
         };
     }
@@ -43,7 +43,7 @@ public static class WeaponTypeExtensions
             WeaponType.Sword => 0,
             WeaponType.AssaultRifle => 1000,
             WeaponType.SemiAutoRifle => 1500,
-            WeaponType.Grenade => 5,
+            WeaponType.Grenade => 0,
             _ => 0
         };
     }

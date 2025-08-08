@@ -128,7 +128,7 @@ public class SemiAutoRifle : WeaponBase
             else 
             {
                 //Fire(); 
-                playerAvatar.Fire(); //PlayerAvatar‚ÌËŒ‚ˆ—‚ğŒÄ‚Ño‚·
+                playerAvatar.FireAction(); //PlayerAvatar‚ÌËŒ‚ˆ—‚ğŒÄ‚Ño‚·
                 Debug.Log($"Firing {weaponType.GetName()} stay! Current Magazine: {currentMagazine}, Current Reserve: {currentReserve}");
                 return;
 

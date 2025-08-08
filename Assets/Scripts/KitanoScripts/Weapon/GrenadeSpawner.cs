@@ -76,7 +76,7 @@ public class GrenadeSpawner : WeaponBase
         // 投擲可能な状態かどうかを判定
         bool inputCondition = localInputData.FirePressedStay;
         bool stateCondition = currentAction == WeaponActionState.Idle; // ���݂̃A�N�V�������A�C�h����Ԃł��邱�Ƃ��m�F
-        bool bulletCondition = currentReserve > 0; // グレネードが残っているかどうか
+        bool bulletCondition = currentMagazine > 0; // グレネードが残っているかどうか
         return inputCondition && stateCondition && bulletCondition;
     }
 
@@ -149,7 +149,7 @@ public class GrenadeSpawner : WeaponBase
         DisplayTrajectory(); // 軌跡を表示
         StartCoroutine(HideTrajectoryCoroutine()); // 軌跡を非表示にする
         RPC_LaunchGrenade(throwPosition, velocity);
-        currentReserve= Mathf.Max(currentReserve - 1, 0); // グレネードを1つ消費
+        currentMagazine= Mathf.Max(currentMagazine - 1, 0); // グレネードを1つ消費
 
     }
 

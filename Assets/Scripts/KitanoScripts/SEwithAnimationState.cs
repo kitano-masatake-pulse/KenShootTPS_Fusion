@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 /// <summary>
 /// Animator のステートに入ったら AudioManager で音を鳴らし、
@@ -14,6 +15,11 @@ public class PlaySoundOnStateEnter : StateMachineBehaviour
     public SoundCategory category = SoundCategory.Action;
 
     [Header("任意")]
+
+    [Header("再生設定")]
+    [Tooltip("ステートに入ってから何秒後に再生するか")]
+    public float delay = 0f;
+
     [Tooltip("再生開始位置（秒）。デフォルト 0s")]
     public float startTime = 0f;
 
@@ -34,6 +40,23 @@ public class PlaySoundOnStateEnter : StateMachineBehaviour
 
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+
+
+        AudioManager.Instance.StartCoroutine(DelayedPlay(animator));
+
+
+        
+
+    }
+
+
+
+    private IEnumerator DelayedPlay(Animator animator)
+    {
+        // 指定秒だけ待機
+        if (delay > 0f)
+        { yield return new WaitForSeconds(delay); }
+
         // 位置 or 追従ターゲットを設定
         Vector3? pos = useSpatial ? (Vector3?)animator.transform.position : null;
         Transform follow = useFollow ? animator.transform : null;
@@ -52,8 +75,10 @@ public class PlaySoundOnStateEnter : StateMachineBehaviour
 
 
 
-
     }
+
+
+
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {

@@ -173,7 +173,7 @@ public class PlayerAvatar : NetworkBehaviour
     [SerializeField] private float maxTurnAnglePerFrame = 5f; // 追尾の角度（度単位）
     [SerializeField] private float maxAlignToCameraAnglePerSecond = 360f; // 追尾の角度（度単位）
     [SerializeField] private float homingTime = 2f; // ホーミングの時間
-    [SerializeField] private float attackImmolizedTime = 3f; // 攻撃開始→攻撃後硬直終了までの時間
+    [SerializeField] private float attackImmolizedTime = 2f; // 攻撃開始→攻撃後硬直終了までの時間
     [SerializeField] private float rotationDuration = 0.1f; //カメラの前方向に向くまでの時間(0.1秒かけてカメラの前方向に向く)
     private Vector3 homingMoveDirection = Vector3.forward; // ホーミング中の現在の移動方向
     private Transform currentTargetTransform; // 現在のターゲットのTransform
@@ -683,18 +683,26 @@ public class PlayerAvatar : NetworkBehaviour
     public bool TryGetClosestTargetInRange(Vector3 origin, Vector3 forward, float range, float fovAngle, out Transform targetTransform)
     {
 
+        var hits = new List<LagCompensatedHit>();
+        int hitCount=Runner.LagCompensation.OverlapSphere(
+            origin, 
+            range,
+            Object.InputAuthority,
+            hits,
+            playerLayer,
+            //HitOptions.IgnoreInputAuthority
+            HitOptions.IgnoreInputAuthority // HitOptions.Noneを使用して、すべてのヒットを取得する
+            ); // プレイヤーのレイヤーマスクを使用して近くの敵を検出
 
-        Collider[] hits = Physics.OverlapSphere(origin, range, playerLayer); // プレイヤーのレイヤーマスクを使用して近くの敵を検出
+        Debug.Log("Homing hitCount:" +hitCount);
+
         float closestDistance = Mathf.Infinity;
         targetTransform = null;
         //float minDistance = Mathf.Infinity;
 
-
-
-
-        foreach (Collider hit in hits)
+        foreach (LagCompensatedHit hit in hits)
         {
-            Transform enemyTransform = hit.transform;
+            Transform enemyTransform = hit.GameObject.transform;
             Transform enemyHeadTransform = null; // 敵の頭のTransformを格納する変数
             if (enemyTransform.TryGetComponent<PlayerAvatar>(out PlayerAvatar enemyPlayerAvatar))
             {
@@ -710,6 +718,7 @@ public class PlayerAvatar : NetworkBehaviour
                 }
                 else
                 {
+                    Debug.Log("homing not have playerAvatar");
                     continue; // PlayerAvatarコンポーネントがない場合はスキップ
                 }
                 //continue; // PlayerAvatarコンポーネントがない場合はスキップ
@@ -724,6 +733,7 @@ public class PlayerAvatar : NetworkBehaviour
 
             if (angle > fovAngle / 2f || distance > range)
             {
+                Debug.Log("homing not correct angle or distance");
                 continue;
             }
 
@@ -737,6 +747,7 @@ public class PlayerAvatar : NetworkBehaviour
             if (Physics.Raycast(from, direction, out RaycastHit hitInfo, rayDistance, obstructionMask))
             {
                 // Rayが途中で何かに当たっていたら視線が通っていない
+                Debug.Log("not homing because raycasthit something");
                 continue;
             }
 
@@ -749,6 +760,7 @@ public class PlayerAvatar : NetworkBehaviour
 
         }
 
+        Debug.Log("homing target:", targetTransform);
         return targetTransform != null;
     }
 
@@ -1001,6 +1013,7 @@ public class PlayerAvatar : NetworkBehaviour
 
     }
 
+    //射撃。マガジンが空でもリロードしない
     public void FireAction()
     {
         currentWeaponActionState = WeaponActionState.Firing; //武器アクション状態を射撃に設定
@@ -1018,6 +1031,8 @@ public class PlayerAvatar : NetworkBehaviour
         //StartCoroutine(FireRoutine(currentWeapon.FireWaitTime())); //発射ダウンのコルーチンを開始
         
     }
+    
+
 
 
 
@@ -1050,32 +1065,7 @@ public class PlayerAvatar : NetworkBehaviour
     }
 
 
-    //連射武器の射撃。マガジンが空でもリロードしない
-
-    public void Fire()
-    {
-        
-
-
-            currentWeaponActionState = WeaponActionState.Firing; //武器アクション状態を射撃に設定
-
-            weaponClassDictionary[currentWeapon].Fire(); //現在の武器の発射処理を呼ぶ
-
-            tpsCameraController.StartRecoil(currentWeapon); //リコイル開始
-
-
-            //アクションアニメーションのリストに発射を追加
-            SetActionAnimationPlayListForAllClients(currentWeapon.FireDownAction()); //アクションアニメーションのリストに発射ダウンを追加
-
-
-            OnAmmoChanged?.Invoke(weaponClassDictionary[currentWeapon].currentMagazine, weaponClassDictionary[currentWeapon].currentReserve); //弾薬変更イベントを発火
-            //StartCoroutine(FireRoutine(currentWeapon.FireWaitTime())); //発射ダウンのコルーチンを開始
-
-            stateTimer_ReturnToIdle = currentWeapon.FireWaitTime(); //発射後の待機時間を設定
-
-       
-
-}
+    
 
     public void Reload()
     {
@@ -1136,6 +1126,7 @@ public class PlayerAvatar : NetworkBehaviour
                 }
 
                 currentWeapon = newWeaponType;
+                RPC_NotifyChangeWeapon(newWeaponType);
 
                 Debug.Log($"ChangingWeapon {currentWeapon.GetName()}"); //デバッグログ
 
@@ -1150,11 +1141,24 @@ public class PlayerAvatar : NetworkBehaviour
             }
             else
             {
-                Debug.LogWarning($"Weapon {newWeaponType} not found in weapon dictionary.");
+                Debug.LogWarning($"Weapon {newWeaponType} not found in newWeapon dictionary.");
             }
 
     
     }
+
+    [Rpc(RpcSources.All, RpcTargets.All, HostMode = RpcHostMode.SourceIsHostPlayer, TickAligned = false)]
+    public void RPC_NotifyChangeWeapon(WeaponType newWeapon, RpcInfo rpcInfo = default)
+    {
+        if (Runner.LocalPlayer != rpcInfo.Source)
+        {
+            currentWeapon = newWeapon;
+
+        }
+
+
+    }
+
 
 
     public void InitializeAllAmmo()//各武器の弾薬を初期化
@@ -1202,7 +1206,10 @@ public class PlayerAvatar : NetworkBehaviour
      
     }
 
-  
+   
+
+
+
 
     void CancelADS()
     {
@@ -1253,7 +1260,7 @@ public class PlayerAvatar : NetworkBehaviour
         // RPC送信（即送信）
        // Debug.Log($" {info.Source} Requests Jump. {info.Tick} SimuTime: {calledTime}");
         RPC_ApplyActionAnimation(info.Source,actionType, calledTime); //アクションアニメーションのリストに追加するだけ(接地判定も座標変化もしない)
-
+        Debug.Log("RPC_RequestActionAnimation actionType:" + actionType);
 
     }
 

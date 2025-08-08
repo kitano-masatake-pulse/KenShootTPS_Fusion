@@ -16,7 +16,7 @@ public class TrajectoryDrawer : MonoBehaviour
     //軌跡の終着点に表示スルプレハブ
     public GameObject impactMarkerPrefab;
     //衝突した位置に表示するマーカーのインスタンス
-    private GameObject impactMarkerInstance;
+    public GameObject impactMarkerInstance;
     //軌跡の衝突点が見つかったかどうかのフラグ
     private bool impactPointFound = false;
 

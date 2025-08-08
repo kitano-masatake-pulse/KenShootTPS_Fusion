@@ -105,7 +105,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2081241857454589302}
+  m_Father: {fileID: 768207338265179846}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1325863236806171950
 MonoBehaviour:
@@ -324,10 +324,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 8412427944962179152}
-  - {fileID: 4595677544700788218}
-  - {fileID: 2157610036415504278}
+  m_Children: []
   m_Father: {fileID: 768207338265179846}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2852828816588928964
@@ -374,6 +371,9 @@ Transform:
   - {fileID: 6364942180942722991}
   - {fileID: 6633865732095017302}
   - {fileID: 6911752650476808855}
+  - {fileID: 8412427944962179152}
+  - {fileID: 4595677544700788218}
+  - {fileID: 2157610036415504278}
   - {fileID: 2081241857454589302}
   - {fileID: 3399392014856174371}
   m_Father: {fileID: 0}
@@ -458,12 +458,16 @@ MonoBehaviour:
   moveSpeed: 3
   gravity: -9.8
   jumpHeight: 2
+  raycastDistance: 1.5
   cameraTarget: {fileID: 0}
   normalizedInputDirection: {x: 0, y: 0, z: 0}
   _avatarPositionInHost: {x: 0, y: 0, z: 0}
   _cameraForwardInHost: {x: 0, y: 0, z: 0}
   _normalizedInputDirectionInHost: {x: 0, y: 0, z: 0}
   isDummy: 0
+  isImmobilized: 0
+  wasGrounded: 0
+  isGroundedNow: 0
   chaseAngle: 90
   chaseRange: 5
   chaseSpeed: 6
@@ -493,10 +497,12 @@ MonoBehaviour:
   WordOffset: 0
   WordCount: 0
   _interpolationDataSource: 0
+  playerAvatar: {fileID: 0}
   _CurrentHP: 100
   _MaxHP: 100
   _IsInvincible: 0
   _CurrentWeapon_Network: 0
+  _Team: 0
 --- !u!114 &7045168527131226642
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -581,7 +587,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2081241857454589302}
+  m_Father: {fileID: 768207338265179846}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8217764061698147893
 MonoBehaviour:
@@ -746,6 +752,7 @@ MonoBehaviour:
   WordOffset: 0
   WordCount: 0
   _interpolationDataSource: 0
+  playerAvatar: {fileID: 0}
   playerCamera: {fileID: 0}
   fireDistance: 100
   currentMagazine: 0
@@ -757,6 +764,16 @@ MonoBehaviour:
   obstructionLayer:
     serializedVersion: 2
     m_Bits: 0
+  liftingSpreadGauge: 0
+  randomSpreadGauge: 0
+  liftingSpreadLimit: 1
+  randomSpreadLimit: 1
+  runninngSpreadLimit: 1
+  liftingSpreadMultiplier: {x: 5, y: 0}
+  randomSpreadMultiplier: {x: 3, y: 6}
+  runninngSpreadMultiplier: {x: 3, y: 6}
+  debug_moveSpeed: 0
+  ADSspreadReduction: 0.8
 --- !u!1 &4172183429204410978
 GameObject:
   m_ObjectHideFlags: 0
@@ -804,6 +821,7 @@ MonoBehaviour:
   WordOffset: 0
   WordCount: 0
   _interpolationDataSource: 0
+  playerAvatar: {fileID: 0}
   playerCamera: {fileID: 0}
   fireDistance: 100
   currentMagazine: 0
@@ -820,6 +838,8 @@ MonoBehaviour:
   damageDuration: 1
   explosionDelay: 3
   explosionCenter: {fileID: 0}
+  cornRayAngleDeg: 30
+  cornRayNum: 10
 --- !u!1 &4176965755305398582
 GameObject:
   m_ObjectHideFlags: 0
@@ -1061,6 +1081,7 @@ MonoBehaviour:
   WordOffset: 0
   WordCount: 0
   _interpolationDataSource: 0
+  playerAvatar: {fileID: 0}
   playerCamera: {fileID: 0}
   fireDistance: 100
   currentMagazine: 0
@@ -1072,6 +1093,15 @@ MonoBehaviour:
   obstructionLayer:
     serializedVersion: 2
     m_Bits: 0
+  liftingSpreadGauge: 0
+  randomSpreadGauge: 0
+  liftingSpreadLimit: 1
+  randomSpreadLimit: 1
+  runninngSpreadLimit: 1
+  liftingSpreadMultiplier: {x: 0, y: 0}
+  randomSpreadMultiplier: {x: 0, y: 0}
+  runninngSpreadMultiplier: {x: 3, y: 6}
+  ADSspreadReduction: 0.8
 --- !u!1 &5018395386530166793
 GameObject:
   m_ObjectHideFlags: 0
@@ -1221,6 +1251,7 @@ MonoBehaviour:
   WordOffset: 0
   WordCount: 0
   _interpolationDataSource: 0
+  playerAvatar: {fileID: 0}
   playerCamera: {fileID: 0}
   fireDistance: 100
   currentMagazine: 0
@@ -1232,7 +1263,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   swordRoot: {fileID: 1681199498018109950}
-  attackActiveTime: 0.5
 --- !u!1 &5681736977746601935
 GameObject:
   m_ObjectHideFlags: 0
@@ -1475,7 +1505,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2081241857454589302}
+  m_Father: {fileID: 768207338265179846}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &11149558625110233
 MonoBehaviour:
