@@ -96,10 +96,18 @@ public class RespawnManager : NetworkBehaviour
             playerAvatar.HideMesh(); // メッシュを非表示にする
             playerAvatar.TeleportToInitialSpawnPoint(respawnPoint);
             playerAvatar.ShowMesh(); // メッシュを表示する
-        }
+
+            //内部的に無理やりcurrrentWeaponを変更する
+            playerAvatar.ForceWeaponChange(WeaponType.AssaultRifle);
+    {
+
+
+            }
 
         if (playerObject != null && playerObject.IsValid)
         {
+
+
             playerAvatar.SetActionAnimationPlayList(ActionType.Respawn,Runner.SimulationTime);
             Debug.Log($"RPC_InitializePlayerInAll: Player {playerObject.InputAuthority} action animation set to Respawn.");
 
