@@ -99,7 +99,7 @@ public class RespawnManager : NetworkBehaviour
 
             //“à•”“I‚É–³—‚â‚ècurrrentWeapon‚ğ•ÏX‚·‚é
             playerAvatar.ForceWeaponChange(WeaponType.AssaultRifle);
-    {
+    
 
 
             }
