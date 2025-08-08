@@ -20,8 +20,6 @@ public class EventUIManager : MonoBehaviour
     LocalRespawnHandler respawnHandler;
 
 
-    private UIInputData localInputData;
-
 
     private void OnEnable()
     {
@@ -57,24 +55,5 @@ public class EventUIManager : MonoBehaviour
         countDownUI.Cleanup();
         gameEndUI.Cleanup();
         fadeUI.Cleanup();
-    }
-
-    void Update()
-    {
-        InputCheck();
-    }
-
-    private void InputCheck()
-    {
-        localInputData = LocalInputHandler.CollectUIInput();
-
-        if(localInputData.ScoreBoardPressdDown)
-        {
-            scoreboardUI.SetVisible(true);
-        }else if(localInputData.ScoreBoardPressdUp)
-        {
-            scoreboardUI.SetVisible(false);
-        }
-
     }
 }

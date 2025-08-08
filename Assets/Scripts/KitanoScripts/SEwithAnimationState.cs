@@ -17,6 +17,9 @@ public class PlaySoundOnStateEnter : StateMachineBehaviour
     [Tooltip("再生開始位置（秒）。デフォルト 0s")]
     public float startTime = 0f;
 
+    [Tooltip("音量(%)。デフォルト 1(100%)")]
+    public float volume = 1f;   
+
     [Tooltip("再生タイプ。一度だけ鳴らすかループさせるか")]
     public SoundType type = SoundType.OneShot;
 
@@ -43,6 +46,7 @@ public class PlaySoundOnStateEnter : StateMachineBehaviour
             clipKey,
             category,
             startTime,
+            volume,
             type,
             pos,
             follow

@@ -191,7 +191,7 @@ public class NetworkDebugStartGUI : Fusion.Behaviour {
           }
           GUILayout.EndHorizontal();
 
-          if (GUILayout.Button(EnableHotkeys ? "Start Single Player (I)" : "Start Single Player", GUILayout.Height(height))) {
+          if (GUILayout.Button(EnableHotkeys ? "Start Single Player (Instance)" : "Start Single Player", GUILayout.Height(height))) {
             nds.StartSinglePlayer();
           }
 

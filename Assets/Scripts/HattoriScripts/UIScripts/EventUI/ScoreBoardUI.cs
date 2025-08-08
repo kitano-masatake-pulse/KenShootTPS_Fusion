@@ -19,6 +19,10 @@ public class ScoreBoardUI : MonoBehaviour, IUIPanel
         GameManager2.Instance.OnScoreChanged += UpdateAllRows;
         HPObserver.Instance.OnAnyHPChanged -= UpdateLivingStates;
         HPObserver.Instance.OnAnyHPChanged += UpdateLivingStates;
+        UIInputHub.OnScoreBoardDown -= OnBecameVisible;
+        UIInputHub.OnScoreBoardDown += OnBecameVisible;
+        UIInputHub.OnScoreBoardUp -= OnBecameInvisible;
+        UIInputHub.OnScoreBoardUp += OnBecameInvisible;
         scoreboardGroup.alpha = 0;
         scoreboardGroup.interactable = false;
         scoreboardGroup.blocksRaycasts = false;
@@ -29,6 +33,8 @@ public class ScoreBoardUI : MonoBehaviour, IUIPanel
     {
         GameManager2.Instance.OnScoreChanged -= UpdateAllRows;
         HPObserver.Instance.OnAnyHPChanged -= UpdateLivingStates;
+        UIInputHub.OnScoreBoardDown -= OnBecameVisible;
+        UIInputHub.OnScoreBoardUp -= OnBecameInvisible;
         // Ç∑Ç◊ÇƒÇÃçsÇçÌèú
         foreach (var row in rowInstances.Values)
         {
@@ -107,6 +113,14 @@ public class ScoreBoardUI : MonoBehaviour, IUIPanel
         {
             row.transform.Find("ColorBar").gameObject.SetActive(false);
         }
+    }
+    private void OnBecameVisible()
+    {
+        SetVisible(true);
+    }
+    private void OnBecameInvisible()
+    {
+        SetVisible(false);
     }
 
 }

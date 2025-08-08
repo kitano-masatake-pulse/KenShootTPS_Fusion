@@ -54,3 +54,4 @@ MonoBehaviour:
   - category: 2
     mixerGroup: {fileID: -4620042585183018183, guid: 8e6166c1eed7f32409a5c0d281bbfc3e, type: 2}
   poolSize: 30
+  audioMixer: {fileID: 24100000, guid: 8e6166c1eed7f32409a5c0d281bbfc3e, type: 2}

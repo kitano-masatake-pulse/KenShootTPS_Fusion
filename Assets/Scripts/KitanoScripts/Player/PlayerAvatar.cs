@@ -383,9 +383,11 @@ public class PlayerAvatar : NetworkBehaviour
 
         if (Object.HasInputAuthority) //入力権限がない場合は何もしない
         {
-
-            PlayerInputData localInputData = LocalInputHandler.CollectInput();
-
+            PlayerInputData localInputData = PlayerInputData.Default();
+            if (!LocalInputHandler.isOpenMenu) //メニューが開いていないなら更新
+            {
+               　localInputData = LocalInputHandler.CollectInput();
+            }
             ManageInputBufferDuration(localInputData); //入力バッファの持続時間を管理する
 
 

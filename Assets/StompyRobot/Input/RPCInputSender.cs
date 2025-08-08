@@ -79,7 +79,7 @@ public class RPCInputSender : NetworkBehaviour
         }
         else
         {
-            Debug.Log($"Don't Apply Jump because I'm source  {sourcePlayer}.  {info.Tick} SimuTime: {Runner.SimulationTime}");
+            Debug.Log($"Don't Apply Jump because Instance'm source  {sourcePlayer}.  {info.Tick} SimuTime: {Runner.SimulationTime}");
         }
 
     }
