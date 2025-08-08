@@ -1,6 +1,7 @@
 using Fusion;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class AssaultRifle : WeaponBase
@@ -8,7 +9,12 @@ public class AssaultRifle : WeaponBase
 
     protected override WeaponType weapon => WeaponType.AssaultRifle; // 武器の種類を指定
 
-    public Transform muzzleTransform; // 銃口(=Raycastの光源)の位置を指定するTransform。一旦、PlayerAvatarからcameraをせっていする
+    
+
+    private Transform bulletFiringTransform; // Raycastの光源の位置を指定するTransform。ADSの有無によって変わる
+
+    [SerializeField] private Transform muzzleTransform; //weaponにおける銃口。腰だめ時にはここから撃つ
+    public Transform TPSCameraTransform;// TPSカメラのTransform。PlayerAvatarから設定される。ADS時にはここから撃つ
 
     CharacterController avatarCharacterController; // キャラクターコントローラーを取得するための変数
 
@@ -82,7 +88,7 @@ public class AssaultRifle : WeaponBase
 
 
     // Start is called before the first frame update
-    void Start()
+    public override void Spawned()
     {
         int magazineCapacity = weaponType.MagazineCapacity(); //マガジンの容量を取得
 
@@ -93,7 +99,9 @@ public class AssaultRifle : WeaponBase
         randomPattern_RunningSpreadAngle = GenerateRandomPattern(seed_RunningSpreadAngle, magazineCapacity, 0f, 2 * Mathf.PI); //ランニングスプレッドの角度のパターンを生成
 
         avatarCharacterController=GetComponentInParent<CharacterController>(); //親のキャラクターコントローラーを取得
-        
+
+        bulletFiringTransform = isADS ? TPSCameraTransform : muzzleTransform; //ADS状態に応じて弾の発射位置を切り替え
+
 
     }
 
@@ -206,7 +214,7 @@ public class AssaultRifle : WeaponBase
 
         Vector3 spreadDirection = 
             SpreadRaycastDirection(
-                muzzleTransform.forward, 
+                bulletFiringTransform.forward, 
                 liftingSpreadGauge, 
                 randomSpreadGauge, 
                 avatarCharacterController.velocity.magnitude, 
@@ -215,7 +223,7 @@ public class AssaultRifle : WeaponBase
         
         
         
-        GunRaycast(muzzleTransform.position,spreadDirection);
+        GunRaycast(bulletFiringTransform.position,spreadDirection);
         UpdateSpreadGauge(liftingSpreadRate, randomSpreadRate); //弾の拡散を更新
         // ここにアサルトライフル特有の発射処理を追加することができます
     }
@@ -238,29 +246,37 @@ public class AssaultRifle : WeaponBase
 
               );
 
-       if(RaycastLinePoolManager.Instance != null)
+
+        //射線の可視化
+        Vector3 rayEnd = Vector3.zero;
+        rayEnd = origin + direction * fireDistance; // ヒットポイントがない場合は剣の長さまでのRayを描画
+
+        if(hit.Point != null && hit.Point != Vector3.zero)
             {
-            Vector3 rayEnd = Vector3.zero;
-            rayEnd = origin + direction * fireDistance; // ヒットポイントがない場合は剣の長さまでのRayを描画
+            rayEnd = hit.Point; // ヒットしたポイントがある場合はそこまでのRayを描画
+            Debug.Log("Hit Point: " + rayEnd);
+        }
+        else
+        {
+            rayEnd = origin + direction * fireDistance;  // ヒットポイントがない場合は剣の長さまでのRayを描画
+            Debug.Log("No Hit Point, using fireDistance: " + rayEnd);
+
+        }
+
+        base.GenerateLineOfFireGorAllClients(origin, rayEnd); //着弾位置にRayを生成
+        Debug.Log($"GenerateLineOfFire from {origin} to {rayEnd} with hit point: {hit.Point}");
 
 
-            //rayEnd = origin + direction * fireDistance; // ヒットポイントがない場合は剣の長さまでのRayを描画
 
-            if (hit.Point != null && hit.Point!=Vector3.zero)
+        if (RaycastLinePoolManager.Instance != null)
             {
-                rayEnd = hit.Point; // ヒットしたポイントがある場合はそこまでのRayを描画
-                Debug.Log("Hit Point: " + rayEnd);
-            }
-            else
-            {
-                rayEnd = origin + direction * fireDistance;  // ヒットポイントがない場合は剣の長さまでのRayを描画
-                Debug.Log("No Hit Point, using fireDistance: " + rayEnd);
-
-            }
-
+            
             RaycastLinePoolManager.Instance.ShowRay(origin, rayEnd, Color.red, rayDrawingDuration);
             Debug.Log("Raycast Line drawn from " + origin + " to " + rayEnd);
         }
+
+
+       
 
         Debug.Log("Hit?" + hit.GameObject);
         //着弾処理 
@@ -288,6 +304,10 @@ public class AssaultRifle : WeaponBase
 
 
         }
+
+
+        
+        
 
     }
 
@@ -380,6 +400,8 @@ public class AssaultRifle : WeaponBase
     {
         isADS = ADSflag; //ADS状態を更新
         Debug.Log($"AssaultRifle ADS state changed: {isADS}");
+
+        bulletFiringTransform = isADS ? TPSCameraTransform : muzzleTransform; //ADS状態に応じて発射位置を切り替え
     }
 
 
