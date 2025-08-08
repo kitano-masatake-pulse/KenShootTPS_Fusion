@@ -162,7 +162,7 @@ public class GrenadeSpawner : WeaponBase
             grenadePrefab,
             throwPoint.position,
             Quaternion.identity,
-            inputAuthority: PlayerRef.None, // 入力権限を持たない場合はPlayerRef.Noneを指定
+            inputAuthority: rpcInfo.Source, // 入力権限を持たない場合はPlayerRef.Noneを指定
 
             // ← ここが OnBeforeSpawned デリゲート
             (runner, spawnedObj) =>

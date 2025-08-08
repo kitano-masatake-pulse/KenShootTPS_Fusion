@@ -41,7 +41,10 @@ public class GrenadeBomb : NetworkBehaviour
         //base.Spawned();
         // Initialization code here, if needed
 
-        StartCoroutine(DamageCoroutine());
+        if (HasStateAuthority)
+        {
+            StartCoroutine(DamageCoroutine());
+        }
     }
 
     private IEnumerator DamageCoroutine()
@@ -81,6 +84,7 @@ public class GrenadeBomb : NetworkBehaviour
     {
 
         var hits = new List<LagCompensatedHit>();
+        Debug.Log($"GrenadeBomb CollisionDetection called. Already damaged count: {alreadyDamaged.Count},Runner:{Runner!=null}");
         int hitCount = Runner.LagCompensation.OverlapSphere( // 攻撃判定を行う
             this.transform.position,
             blastHitRadius,
@@ -93,7 +97,7 @@ public class GrenadeBomb : NetworkBehaviour
 
 
 
-
+        Debug.Log($"GrenadeBomb OverlapSphere hit count: {hitCount}"); // ヒット数をログに出力
 
         if (hitCount > 0)
         {
@@ -268,10 +272,11 @@ public class GrenadeBomb : NetworkBehaviour
         if (hit.Hitbox is PlayerHitbox playerHitbox)
         {
             PlayerRef targetPlayerRef = playerHitbox.hitPlayerRef;
-            PlayerRef myPlayerRef =throwPlayer;
+            PlayerRef myPlayerRef = Object.InputAuthority;
             Debug.Log($"Player {myPlayerRef} hit Player {targetPlayerRef} with {weaponDamage} damage");
             PlayerHP targetHP = playerHitbox.GetComponentInParent<PlayerHP>();
-            Debug.Log($"throwPlayer {throwPlayer}");
+            Debug.Log($"GrenadeBomb throwPlayer {throwPlayer}");
+            Debug.Log($"GrenadeBomb InputAuthority {Object.InputAuthority}");
             targetHP.RPC_RequestDamage(myPlayerRef, weaponDamage);
         }
         else
