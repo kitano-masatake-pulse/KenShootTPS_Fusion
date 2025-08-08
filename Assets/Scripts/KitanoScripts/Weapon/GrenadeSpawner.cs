@@ -174,7 +174,7 @@ public class GrenadeSpawner : WeaponBase
 
         // グレネードのRigidbodyコンポーネントを取得し、投げる力を設定
         Rigidbody rb = grenade.GetComponent<Rigidbody>();
-        rb.velocity = velocity;
+        rb.velocity = launchVelocity;
     }
 
 
