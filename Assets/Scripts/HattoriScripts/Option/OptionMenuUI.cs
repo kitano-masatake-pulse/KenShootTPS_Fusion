@@ -1,10 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 using UnityEngine.UI;
 
 public class OptionMenuUI : MonoBehaviour
 {
+    [SerializeField] private OptionMenuController optionMenuController; // OptionMenuControllerへの参照
+    [Header("UI要素")]
     [SerializeField] private Slider mouseSensitivitySlider;
     [SerializeField] private Toggle invertYToggle;
     [SerializeField] private Toggle invertXToggle;
@@ -16,11 +19,40 @@ public class OptionMenuUI : MonoBehaviour
     [SerializeField] private Button applyButton;
     [SerializeField] private Button cancelButton;
     [SerializeField] private Button resetButton;
+    [SerializeField] private Button returnButton;
 
+    [SerializeField] private GameObject QuitDialog;
+    [Header("戻り先のシーン")]
+    [SerializeField] private SceneType sceneType; // 戻り先のシーンの種類を指定するための変数
+
+    void OnEnable()
+    {
+        SceneTransitionManager.OnSceneLoad -= ChangeSceneMenu;
+        SceneTransitionManager.OnSceneLoad += ChangeSceneMenu;
+    }
+    void OnDisable()
+    {
+        SceneTransitionManager.OnSceneLoad -= ChangeSceneMenu;
+    }
 
     private void Start()
     {
+        returnButton.gameObject.SetActive(false); // 初期状態では非表示
+        QuitDialog.SetActive(false); // QuitDialogを非表示にする
         RefreshUI();
+    }
+
+    private void ChangeSceneMenu(SceneType sceneType)
+    {
+        Debug.Log($"ChangeSceneMenu: {sceneType.ToSceneName()}");
+        if (sceneType.ToSceneName().Contains("Title") || sceneType.ToSceneName().Contains("Battle"))
+        {
+            returnButton.gameObject.SetActive(false); 
+        }
+        else
+        {
+            returnButton.gameObject.SetActive(true); 
+        }
     }
 
     //UIの見た目を編集中データと再同期
@@ -94,4 +126,30 @@ public class OptionMenuUI : MonoBehaviour
     public void OnCancelButton(){OptionsManager.Instance.Cancel(); RefreshUI(); }
     public void OnResetButton(){OptionsManager.Instance.ResetToDefault(); RefreshUI();}
 
+    public void OnReturnButton()
+    {
+        SceneTransitionManager.Instance.ChangeScene(sceneType, true); // シーンを変更
+        optionMenuController.Close(); 
+    }
+
+    public void OnShowQuitDialog()
+    {
+        QuitDialog.SetActive(true); // QuitDialogを表示
+    }
+    // QuitDialogの表示
+
+    public void OnQuitGameButton()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false; // エディタ上での停止
+#else
+
+        Application.Quit(); // アプリケーションを終了
+#endif
+        Debug.Log("Application closed.");
+    }
+    public void OnCancelQuitDialog()
+    {
+        QuitDialog.SetActive(false); // QuitDialogを非表示
+    }
 }

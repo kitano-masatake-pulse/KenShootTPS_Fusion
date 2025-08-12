@@ -113,17 +113,15 @@ public class PlayerNetworkState : NetworkBehaviour
     //デバッグ用 
     void Update()
     {
-
-        if (HasInputAuthority && Input.GetKeyDown(KeyCode.K))
+        
+        if (GameManager2.Instance!=null && GameManager2.Instance.debugInput.SuicidePressedDown)
         {
-            // 自分を即死させる
             RPC_RequestDamageHP(int.MaxValue, PlayerRef.None);
         }
     }
     #endregion
 
     #region Public Methods
-
 
     /// <summary>HPを減らすメソッド</summary>
     public void DamageHP(int damage, PlayerRef attacker = default, TeamType atkTeam = default)

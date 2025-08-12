@@ -809,50 +809,6 @@ Material:
     - _NoneColor: {r: 0, g: 0, b: 0, a: 0}
     - _WarnColor: {r: 0.75, g: 0.75, b: 0.2, a: 0.9}
   m_BuildTextureStacks: []
---- !u!1 &1856924298
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1856924300}
-  - component: {fileID: 1856924299}
-  m_Layer: 0
-  m_Name: CursorManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1856924299
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1856924298}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b92b81ecb154f444aa1a9ba9b7f91434, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!4 &1856924300
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1856924298}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 416.4808, y: 215.01588, z: 15.073143}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!21 &1868143427
 Material:
   serializedVersion: 8
@@ -1222,6 +1178,10 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 1944239326}
+    - target: {fileID: 2849719888014897366, guid: 5c51c096cf7287f44b35786fdcf4b89b, type: 3}
+      propertyPath: sceneType
+      value: 4096
+      objectReference: {fileID: 0}
     - target: {fileID: 3047094527566947122, guid: 5c51c096cf7287f44b35786fdcf4b89b, type: 3}
       propertyPath: m_AnchorMax.x
       value: 1
@@ -1386,4 +1346,3 @@ SceneRoots:
   - {fileID: 1234754409}
   - {fileID: 1501710545}
   - {fileID: 764397602936388086}
-  - {fileID: 1856924300}

@@ -57,6 +57,19 @@ public struct CameraInputData
     }
 }
 
+public struct DebugInputData
+{
+    public bool BattleEndPressedDown;
+    public bool SuicidePressedDown;
+    public static DebugInputData Default()
+    {
+        DebugInputData input;
+        input.BattleEndPressedDown = false;
+        input.SuicidePressedDown = false;
+        return input;
+    }
+}
+
 
 // This class is responsible for handling local player input.
 public static class LocalInputHandler 
@@ -94,6 +107,12 @@ public static class LocalInputHandler
         input.cursorLockButton = Input.GetKeyDown(KeyCode.Escape); // 中クリックでカーソルロック
         return input;
     }
-
+    public static DebugInputData CollectDebugInput()
+    {
+        DebugInputData input;
+        input.BattleEndPressedDown = Input.GetKeyDown(KeyCode.N); 
+        input.SuicidePressedDown = Input.GetKeyDown(KeyCode.K); 
+        return input;
+    }
 
 }

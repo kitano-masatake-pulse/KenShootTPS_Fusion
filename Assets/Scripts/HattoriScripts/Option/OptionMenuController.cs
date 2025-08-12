@@ -32,6 +32,7 @@ public class OptionMenuController : MonoBehaviour
         rootPanel.SetActive(false);
         OptionsManager.Instance.Cancel(); 
         optionMenuUI.RefreshUI();
+        optionMenuUI.OnCancelQuitDialog();
         CursorManager.Instance.ReleaseUI(this);
         LocalInputHandler.isOpenMenu = false; // ƒƒjƒ…[‚ª•Â‚¶‚Ä‚¢‚éó‘Ô‚ğİ’è
 

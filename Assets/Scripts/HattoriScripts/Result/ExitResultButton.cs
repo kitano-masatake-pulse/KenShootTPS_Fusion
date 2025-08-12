@@ -21,7 +21,7 @@ public class ExitResultButton : MonoBehaviour
         }
         else
         {
-            exitButtonText.text = "Leave the Room"; // クライアントの場合
+            exitButtonText.text = "Return to Title"; // クライアントの場合
         }
 
     }
@@ -30,5 +30,6 @@ public class ExitResultButton : MonoBehaviour
     public async void OnExitButtonClicked()
     {
             SceneTransitionManager.Instance.ChangeScene(sceneType, true); // シーンを変更
+
     }
 }

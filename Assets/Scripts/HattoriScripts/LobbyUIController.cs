@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using Fusion;
+using TMPro;
 
 
 
@@ -12,6 +13,10 @@ public class LobbyUIController : MonoBehaviour
 
     [Header("退出ボタン")]
     public Button leaveRoomButton;
+
+    [Header("スタートテキスト")]
+    [SerializeField]
+    private GameObject startText;
 
     private NetworkRunner runner;
 
@@ -29,7 +34,8 @@ public class LobbyUIController : MonoBehaviour
     public void ShowStartButton(NetworkRunner runner)
     {
         this.runner = runner;
-        startBattleButton.gameObject.SetActive(true);
+        //startBattleButton.gameObject.SetActive(true);
+        startText.SetActive(true);
     }
 
     void OnStartBattleClicked()
