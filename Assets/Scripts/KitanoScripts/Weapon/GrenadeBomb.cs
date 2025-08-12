@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
+using System;
 
 public class GrenadeBomb : NetworkBehaviour
 {
@@ -34,6 +35,15 @@ public class GrenadeBomb : NetworkBehaviour
     [SerializeField] float cornRayAngleDeg = 30f; // 円錐形の角度
     [SerializeField] int cornRayNum = 10; // 円錐形の放射状のRayの本数
 
+    [Header("音関係")]
+    [SerializeField] private string timerClipKey; // 爆発音のクリップ
+    [SerializeField] private float timerInterVal =1f ; // 爆発音の間隔
+    [SerializeField][Range(0f, 1f)] private float timerClipVolume = 1f; // 爆発音の音量
+    private float timerElapsed = 0f; // タイマーの経過時間
+
+    [SerializeField] private string explosionClipKey; // 爆発音のクリップ
+    [SerializeField][Range(0f, 1f)] private float explosionClipVolume = 1f; // 爆発音の音量
+
 
 
     public override void Spawned()
@@ -47,9 +57,40 @@ public class GrenadeBomb : NetworkBehaviour
         }
     }
 
+    private void Update()
+    {
+        timerElapsed += Time.deltaTime; // タイマーの経過時間を更新
+        if (timerElapsed > timerInterVal)
+        { 
+            timerElapsed = 0f; // タイマーをリセット
+
+            //タイマー音を再生する
+            if (AudioManager.Instance != null && !string.IsNullOrEmpty(timerClipKey)) // AudioManagerが存在し、クリップキーが設定されている場合
+            {
+                SoundHandle SEHandle=AudioManager.Instance.PlaySound(timerClipKey, SoundCategory.Weapon,0f,SoundType.OneShot,this.transform.position,this.transform);
+                AudioManager.Instance.SetSoundVolume(SEHandle, timerClipVolume);
+            }
+            else
+            {
+                Debug.LogWarning("AudioManager or timerClipKey is not set!");
+            }
+
+        }
+
+
+    }
+
     private IEnumerator DamageCoroutine()
     {
         yield return new WaitForSeconds(explosionDelay); // 爆発までの遅延時間を待つ
+
+        //爆発音を再生する
+        SoundHandle exHandle = AudioManager.Instance.PlaySound(explosionClipKey, SoundCategory.Weapon, 0f, SoundType.OneShot, this.transform.position, this.transform);
+        AudioManager.Instance.SetSoundVolume(exHandle, explosionClipVolume);
+
+        //タイマーの音を停止する
+        timerElapsed = 0f; // タイマーをリセット
+
 
         float elapsed = 0f;
         List<HitboxRoot> alreadyDamagedPlayers = new List<HitboxRoot>(); // すでにダメージを与えたプレイヤーを記録するリスト(今のフレームでダメージが確定した人も含む)
@@ -67,6 +108,9 @@ public class GrenadeBomb : NetworkBehaviour
 
         while (elapsed < damageDuration)
         {
+            //タイマーの音を停止する
+            timerElapsed = 0f; // タイマーをリセット
+
             CollisionDetection(alreadyDamagedPlayers);
 
             elapsed += Time.deltaTime;
