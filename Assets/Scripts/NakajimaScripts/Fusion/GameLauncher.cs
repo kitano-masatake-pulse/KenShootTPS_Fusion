@@ -9,6 +9,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using static Unity.Collections.Unicode;
 
 
 //[DefaultExecutionOrder(-100)]
@@ -81,6 +82,8 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
         ConnectionManager.OnNetworkRunnerGenerated -= AddCallbackMe;
         ConnectionManager.OnNetworkRunnerGenerated += AddCallbackMe;
+        UIInputHub.OnStartPressed -= StartGame;
+        UIInputHub.OnStartPressed += StartGame;
 
     }
 
@@ -106,7 +109,8 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     private void OnDisable()
     {
         ConnectionManager.OnNetworkRunnerGenerated -= AddCallbackMe;
-        
+        UIInputHub.OnStartPressed -= StartGame;
+
         if (networkRunner != null)
         { 
         networkRunner.RemoveCallbacks(this);
@@ -187,7 +191,18 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     #endregion
 
 
-
+    private void StartGame()
+    {
+        if (networkRunner != null && networkRunner.IsServer)
+        {
+            // バトルシーンに遷移
+            Debug.Log("バトルシーンに遷移します");
+            networkRunner.SessionInfo.IsOpen = false; // セッションを閉じる
+            networkRunner.SessionInfo.IsVisible = false; // セッションを非表示にする
+            string sceneName = nextScene.ToSceneName();
+            SceneTransitionManager.Instance.ChangeScene(nextScene);
+        }
+    }
 
 
 

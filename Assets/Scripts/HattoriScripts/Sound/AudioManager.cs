@@ -41,6 +41,9 @@ public class AudioManager : MonoBehaviour
     // BGM source
     AudioSource _bgmSource;
 
+    //AudioMixer
+    [SerializeField] 
+    private AudioMixer audioMixer;
 
 
     void Awake()
@@ -98,11 +101,13 @@ public class AudioManager : MonoBehaviour
         SceneTransitionManager.OnSceneUnload -= OnSceneUnloaded;
         SceneTransitionManager.OnSceneLoad += OnSceneLoaded;
         SceneTransitionManager.OnSceneUnload += OnSceneUnloaded;
+        OptionsManager.Instance.OnApplied += ApplyOptions;
     }
     void OnDisable()
     {
         SceneTransitionManager.OnSceneLoad -= OnSceneLoaded;
         SceneTransitionManager.OnSceneUnload  -= OnSceneUnloaded;
+        OptionsManager.Instance.OnApplied -= ApplyOptions;
     }
     void OnSceneLoaded(SceneType scene)
     {
@@ -135,7 +140,7 @@ public class AudioManager : MonoBehaviour
         }
 
     }
-
+    #region AudioSource Management
     AudioSource GetFreeSource()
     {
         if(availableSources.Count > 0)
@@ -160,81 +165,6 @@ public class AudioManager : MonoBehaviour
         src.playOnAwake = false;
         return src;
     }
-
-    //読み込まれたAudioClipの中からkeyに対応するものを取得する
-    AudioClip GetClip(string key)
-    {
-        if (_systemClips != null && _systemClips.TryGetValue(key, out var clip)) return clip;
-        if (_bgmClips != null && _bgmClips.TryGetValue(key, out clip)) return clip;
-        var current = SceneTransitionManager.Instance.CurrentSceneType.ToSceneName();
-        if (_sceneClips.TryGetValue(current, out var dict) && dict.TryGetValue(key, out clip)) return clip;
-        Debug.LogError($"AudioClip '{key}' not found.");
-        return null;
-    }
-
-    public SoundHandle PlaySound(string clipKey, SoundCategory category, float StartTime = 0f, SoundType type = SoundType.OneShot,
-                          Vector3? pos = null, Transform followTarget = null)
-    {
-        var clip = GetClip(clipKey);
-        if (clip == null) return default;
-        var group = _groupMap[category];
-        var src = GetFreeSource();
-        InitializeSource(src);
-        if (type == SoundType.OneShot)
-        {
-            
-            if (pos.HasValue)
-            {
-                src.transform.position = pos.Value;
-                src.spatialBlend = 1f;
-            }
-            else if (followTarget != null)
-            {
-                src.transform.position = followTarget.position;
-                src.spatialBlend = 1f;
-            }
-            else
-            {
-                src.spatialBlend = 0f;
-            }
-            src.clip = clip;
-            src.outputAudioMixerGroup = group;
-            src.time = StartTime; // 再生開始位置を設定
-            int id = _nextSoundId++;
-            _playingSounds[id] = src;
-            StartCoroutine(CleanupAfterPlay(id, src, clip.length));
-
-            src.Play();
-            return new SoundHandle { id = id, clipKey = clipKey };
-        }
-        else 
-        {
-            if (pos.HasValue)
-            {
-                src.transform.position = pos.Value;
-                src.spatialBlend = 1f;
-            }
-            else if (followTarget != null)
-            {
-                src.transform.position = followTarget.position;
-                src.spatialBlend = 1f;
-            } 
-            else
-            {
-                src.spatialBlend = 0f;
-            }
-            src.clip = clip;
-            src.loop = true;
-            src.time = StartTime; // 再生開始位置を設定
-            src.outputAudioMixerGroup = group;
-            int id = _nextSoundId++;
-            _playingSounds[id] = src;
-
-            src.Play();
-            return new SoundHandle { id = id, clipKey = clipKey };
-        }  
-    }
-
     //AudioSourceを初期化
     void InitializeSource(AudioSource src)
     {
@@ -267,6 +197,91 @@ public class AudioManager : MonoBehaviour
             ReturnSource(src);
         }
     }
+
+    #endregion
+
+    #region AudioClip Management
+
+    //読み込まれたAudioClipの中からkeyに対応するものを取得する
+    AudioClip GetClip(string key)
+    {
+        if (_systemClips != null && _systemClips.TryGetValue(key, out var clip)) return clip;
+        if (_bgmClips != null && _bgmClips.TryGetValue(key, out clip)) return clip;
+        var current = SceneTransitionManager.Instance.CurrentSceneType.ToSceneName();
+        if (_sceneClips.TryGetValue(current, out var dict) && dict.TryGetValue(key, out clip)) return clip;
+        Debug.LogError($"AudioClip '{key}' not found.");
+        return null;
+    }
+    #endregion
+
+
+    #region Sound Play Methods
+    public SoundHandle PlaySound(string clipKey, SoundCategory category, float startTime = 0f,float soundVolume = 1.0f, SoundType type = SoundType.OneShot,
+                          Vector3? pos = null, Transform followTarget = null)
+    {
+        var clip = GetClip(clipKey);
+        if (clip == null) return default;
+        var group = _groupMap[category];
+        var src = GetFreeSource();
+        InitializeSource(src);
+        if (type == SoundType.OneShot)
+        {
+            
+            if (pos.HasValue)
+            {
+                src.transform.position = pos.Value;
+                src.spatialBlend = 1f;
+            }
+            else if (followTarget != null)
+            {
+                src.transform.position = followTarget.position;
+                src.spatialBlend = 1f;
+            }
+            else
+            {
+                src.spatialBlend = 0f;
+            }
+            src.clip = clip;
+            src.outputAudioMixerGroup = group;
+            src.time = startTime; // 再生開始位置を設定
+            src.volume = soundVolume; // 音量を設定
+            int id = _nextSoundId++;
+            _playingSounds[id] = src;
+            StartCoroutine(CleanupAfterPlay(id, src, clip.length));
+
+            src.Play();
+            return new SoundHandle { id = id, clipKey = clipKey };
+        }
+        else 
+        {
+            if (pos.HasValue)
+            {
+                src.transform.position = pos.Value;
+                src.spatialBlend = 1f;
+            }
+            else if (followTarget != null)
+            {
+                src.transform.position = followTarget.position;
+                src.spatialBlend = 1f;
+            } 
+            else
+            {
+                src.spatialBlend = 0f;
+            }
+            src.clip = clip;
+            src.loop = true;
+            src.time = startTime; // 再生開始位置を設定
+            src.volume = soundVolume; // 音量を設定
+            src.outputAudioMixerGroup = group;
+            int id = _nextSoundId++;
+            _playingSounds[id] = src;
+
+            src.Play();
+            return new SoundHandle { id = id, clipKey = clipKey };
+        }  
+    }
+
+
 
     // 指定されたハンドルのサウンドを停止
     public void StopSound(SoundHandle handle)
@@ -330,6 +345,7 @@ public class AudioManager : MonoBehaviour
         _playingSounds.Clear();
         StopBgm();
     }
+
     //再生中のサウンドの音量(AudioSource)を変更
     public void SetSoundVolume(SoundHandle handle, float volume)
     {
@@ -338,6 +354,7 @@ public class AudioManager : MonoBehaviour
             src.volume = volume;
         }
     }
+
     //SetSoundVolumeを使って音量フェード
     public void FadeSound(SoundHandle handle, float targetVolume, float duration)
     {
@@ -346,6 +363,7 @@ public class AudioManager : MonoBehaviour
             StartCoroutine(FadeCoroutine(src, targetVolume, duration));
         }
     }
+
     IEnumerator FadeCoroutine(AudioSource src, float targetVolume, float duration)
     {
         float startVolume = src.volume;
@@ -358,6 +376,26 @@ public class AudioManager : MonoBehaviour
         }
         src.volume = targetVolume; // 最終的な音量を設定
     }
+    #endregion
+    #region AudioMixer Control
 
+    private void ApplyOptions(OptionData data)
+    {
+        //音量をAudioMixerに適用
+        SetMixerVolume("Master", data.masterVolume);
+        SetMixerVolume("System", data.systemVolume);
+        SetMixerVolume("BGM", data.bgmVolume);
+        SetMixerVolume("Weapon", data.weaponVolume);
+        SetMixerVolume("Action", data.actionVolume);
+    }
+
+    private void SetMixerVolume(string param,float volume )
+    {
+        float dB = (volume <= 0f) ? -80f
+                   : Mathf.Log10(Mathf.Clamp(volume, 0f, 1f)) * 20f;
+        audioMixer.SetFloat(param, dB);
+    }
+    
+    #endregion
 }
 

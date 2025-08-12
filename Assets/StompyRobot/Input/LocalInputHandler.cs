@@ -12,24 +12,70 @@ public struct PlayerInputData
     public bool ReloadPressedDown; //リロードボタンが押されたかどうか
     public float weaponChangeScroll;
     public bool ADSPressedDown; //ADSボタンが押されたかどうか
+    public static PlayerInputData Default()
+    {
+        PlayerInputData input;
+        input.wasdInput = Vector3.zero;
+        input.JumpPressedDown = false;
+        input.FirePressedDown = false;
+        input.FirePressedStay = false;
+        input.FirePressedUp = false;
+        input.ReloadPressedDown = false;
+        input.weaponChangeScroll = 0f;
+        input.ADSPressedDown = false;
+        return input;
+    }
 }
 
 public struct UIInputData
 {
-    public bool ScoreBoardPressdDown;
-    public bool ScoreBoardPressdUp;
+    public bool ToggleMenu;
+    public bool ScoreBoardPressedDown;
+    public bool ScoreBoardPressedUp;
+    public bool StartPressedDown; 
+    public static UIInputData Default()
+    {
+        UIInputData input;
+        input.ToggleMenu = false;
+        input.ScoreBoardPressedDown = false;
+        input.ScoreBoardPressedUp = false;
+        input.StartPressedDown = false;
+        return input;
+    }
 }
 
-public class CameraInputData
+public struct CameraInputData
 {
     public Vector2  mouseMovement ;
     public bool cursorLockButton;
+    public static CameraInputData Default()
+    {
+        CameraInputData input;
+        input.mouseMovement = Vector2.zero;
+        input.cursorLockButton = false;
+        return input;
+    }
+}
+
+public struct DebugInputData
+{
+    public bool BattleEndPressedDown;
+    public bool SuicidePressedDown;
+    public static DebugInputData Default()
+    {
+        DebugInputData input;
+        input.BattleEndPressedDown = false;
+        input.SuicidePressedDown = false;
+        return input;
+    }
 }
 
 
 // This class is responsible for handling local player input.
 public static class LocalInputHandler 
 {
+    public static bool isOpenMenu;
+
     public static PlayerInputData CollectInput()
     {
         PlayerInputData input;
@@ -48,8 +94,10 @@ public static class LocalInputHandler
     public static UIInputData CollectUIInput()
     {
         UIInputData input;
-        input.ScoreBoardPressdDown = Input.GetKeyDown(KeyCode.Tab);
-        input.ScoreBoardPressdUp = Input.GetKeyUp(KeyCode.Tab);
+        input.ToggleMenu = Input.GetKeyDown(KeyCode.Escape); 
+        input.ScoreBoardPressedDown = Input.GetKeyDown(KeyCode.Tab);
+        input.ScoreBoardPressedUp = Input.GetKeyUp(KeyCode.Tab);
+        input.StartPressedDown = Input.GetKeyDown(KeyCode.Return); 
         return input;
     }
     public static CameraInputData CollectCameraInput()
@@ -59,6 +107,12 @@ public static class LocalInputHandler
         input.cursorLockButton = Input.GetKeyDown(KeyCode.Escape); // 中クリックでカーソルロック
         return input;
     }
-
+    public static DebugInputData CollectDebugInput()
+    {
+        DebugInputData input;
+        input.BattleEndPressedDown = Input.GetKeyDown(KeyCode.N); 
+        input.SuicidePressedDown = Input.GetKeyDown(KeyCode.K); 
+        return input;
+    }
 
 }
