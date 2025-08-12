@@ -388,6 +388,9 @@ MonoBehaviour:
   liftingSpreadMultiplier: {x: 5, y: 0}
   randomSpreadMultiplier: {x: 3, y: 6}
   runninngSpreadMultiplier: {x: 3, y: 6}
+  fireClipKey: Weapon_Fire_AssaultRifle_OneShot
+  fireClipVolume: 1
+  fireClipStartTime: 0
   debug_moveSpeed: 0
   ADSspreadReduction: 0.8
 --- !u!1 &2171211468819611867
@@ -3175,6 +3178,9 @@ MonoBehaviour:
   randomSpreadMultiplier: {x: 0, y: 0}
   runninngSpreadMultiplier: {x: 3, y: 6}
   ADSspreadReduction: 0.8
+  fireClipKey: Weapon_Fire_SemiAutoRifle
+  fireClipVolume: 1
+  fireClipStartTime: 0
 --- !u!1 &7746169022328754119
 GameObject:
   m_ObjectHideFlags: 0

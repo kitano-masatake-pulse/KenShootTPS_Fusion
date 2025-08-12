@@ -62,10 +62,16 @@ public class SemiAutoRifle : WeaponBase
 
     [SerializeField] float ADSspreadReduction = 0.8f; //ADS中かどうかのフラグ
     int spreadPatternIndex = 0; //スプレッドのパターンのインデックス
-    
+
 
 
     #endregion
+
+
+    [Header("音関係")]
+    [SerializeField] private string  fireClipKey = "Weapon_Fire_SemiAutoRifle"; //射撃音のクリップキー
+    [SerializeField] private float fireClipVolume = 1f; 
+    [SerializeField] private float fireClipStartTime = 0f; 
 
     // Start is called before the first frame update
     public override void Spawned()
@@ -166,6 +172,18 @@ public class SemiAutoRifle : WeaponBase
     public override void Fire()
     {
         base.FireDown();
+        currentMagazine--;
+
+        //射撃音の再生
+        if (AudioManager.Instance != null && !string.IsNullOrEmpty(fireClipKey)) // AudioManagerが存在し、クリップキーが設定されている場合
+        {
+            SoundHandle SEHandle = AudioManager.Instance.PlaySound(fireClipKey, SoundCategory.Weapon, 0f, SoundType.OneShot, this.transform.position);
+            AudioManager.Instance.SetSoundVolume(SEHandle, fireClipVolume);
+        }
+        else
+        {
+            Debug.LogWarning("AudioManager or timerClipKey is not set!");
+        }
 
 
         Vector3 spreadDirection =

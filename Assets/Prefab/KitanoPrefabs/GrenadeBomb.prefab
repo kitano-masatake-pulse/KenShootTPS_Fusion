@@ -284,6 +284,11 @@ MonoBehaviour:
   explosionDelay: 3.5
   cornRayAngleDeg: 30
   cornRayNum: 10
+  timerClipKey: Weapon_BombTimer_Grenade
+  timerInterVal: 1
+  timerClipVolume: 0.5
+  explosionClipKey: Weapon_Bomb_Grenade
+  explosionClipVolume: 0.5
 --- !u!114 &7729538735358623607
 MonoBehaviour:
   m_ObjectHideFlags: 0

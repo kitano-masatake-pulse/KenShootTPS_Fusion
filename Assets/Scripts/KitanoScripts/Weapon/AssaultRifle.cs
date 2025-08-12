@@ -66,6 +66,13 @@ public class AssaultRifle : WeaponBase
     #endregion
 
 
+    [Header("音関係")]
+    [SerializeField] private string fireClipKey = "Weapon_Fire_AssaultRifle_OneShot"; //射撃音のクリップキー
+    [SerializeField] private float fireClipVolume = 1f; 
+    [SerializeField] private float fireClipStartTime = 0f; 
+
+
+
     //bool isConvergenceNow = false; //収束中かどうかのフラグ
     int  spreadPatternIndex = 0; //スプレッドのパターンのインデックス
 
@@ -209,6 +216,22 @@ public class AssaultRifle : WeaponBase
         Debug.Log("AssaultRifle Fire called"); //デバッグ用ログ出力
         base.Fire(); //ベースクラスの発射処理を呼び出す
         currentMagazine--;
+
+
+        //射撃音の再生
+        if (AudioManager.Instance != null && !string.IsNullOrEmpty(fireClipKey)) // AudioManagerが存在し、クリップキーが設定されている場合
+        {
+            SoundHandle SEHandle = AudioManager.Instance.PlaySound(fireClipKey, SoundCategory.Weapon, 0f, SoundType.OneShot, this.transform.position);
+            AudioManager.Instance.SetSoundVolume(SEHandle, fireClipVolume);
+        }
+        else
+        {
+            Debug.LogWarning("AudioManager or timerClipKey is not set!");
+        }
+
+
+
+
         spreadPatternIndex++; //スプレッドパターンのインデックスを更新
         if (spreadPatternIndex >= randomPattern_RandomSpreadRadius.Count) //スプレッドパターンのインデックスが範囲外になったらリセット
         {
