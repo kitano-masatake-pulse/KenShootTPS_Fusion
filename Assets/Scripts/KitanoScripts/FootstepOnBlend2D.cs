@@ -94,7 +94,8 @@ public class FootstepOnBlend2D_UsingAudioManager : StateMachineBehaviour
             handle = AudioManager.Instance.PlaySound(
                 clipKey: key,
                 category: category,
-                StartTime: 0f,
+                startTime: 0f,
+                soundVolume: 1f,
                 type: SoundType.OneShot,
                 pos: null,
                 followTarget: animator.transform // ÉLÉÉÉâÇ…í«è]
@@ -105,7 +106,8 @@ public class FootstepOnBlend2D_UsingAudioManager : StateMachineBehaviour
             handle = AudioManager.Instance.PlaySound(
                 clipKey: key,
                 category: category,
-                StartTime: 0f,
+                startTime: 0f,
+                soundVolume: 1f,
                 type: SoundType.OneShot,
                 pos: null,
                 followTarget: null // 2Dâπ

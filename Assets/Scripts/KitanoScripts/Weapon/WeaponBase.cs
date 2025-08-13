@@ -109,7 +109,6 @@ public abstract class WeaponBase : NetworkBehaviour
 
     public virtual void FireUp()
     {
-       
         Debug.Log($"{weaponType.GetName()} fired up! Current Magazine: {currentMagazine}, Current Reserve: {currentReserve}");
     }
 

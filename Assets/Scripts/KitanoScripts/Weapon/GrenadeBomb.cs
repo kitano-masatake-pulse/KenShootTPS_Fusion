@@ -67,8 +67,7 @@ public class GrenadeBomb : NetworkBehaviour
             //タイマー音を再生する
             if (AudioManager.Instance != null && !string.IsNullOrEmpty(timerClipKey)) // AudioManagerが存在し、クリップキーが設定されている場合
             {
-                SoundHandle SEHandle=AudioManager.Instance.PlaySound(timerClipKey, SoundCategory.Weapon,0f,SoundType.OneShot,this.transform.position,this.transform);
-                AudioManager.Instance.SetSoundVolume(SEHandle, timerClipVolume);
+                SoundHandle SEHandle=AudioManager.Instance.PlaySound(timerClipKey, SoundCategory.Weapon,0f,explosionClipVolume, SoundType.OneShot,this.transform.position,this.transform);
             }
             else
             {
@@ -85,8 +84,7 @@ public class GrenadeBomb : NetworkBehaviour
         yield return new WaitForSeconds(explosionDelay); // 爆発までの遅延時間を待つ
 
         //爆発音を再生する
-        SoundHandle exHandle = AudioManager.Instance.PlaySound(explosionClipKey, SoundCategory.Weapon, 0f, SoundType.OneShot, this.transform.position, this.transform);
-        AudioManager.Instance.SetSoundVolume(exHandle, explosionClipVolume);
+        SoundHandle exHandle = AudioManager.Instance.PlaySound(explosionClipKey, SoundCategory.Weapon, 0f, explosionClipVolume, SoundType.OneShot, this.transform.position, this.transform);
 
         //タイマーの音を停止する
         timerElapsed = 0f; // タイマーをリセット
