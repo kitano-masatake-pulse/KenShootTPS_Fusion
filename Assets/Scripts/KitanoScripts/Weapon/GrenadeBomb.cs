@@ -100,8 +100,7 @@ public class GrenadeBomb : NetworkBehaviour
 
         yield return new WaitForSeconds(explosionDelay);
         //爆発音を再生する
-        SoundHandle exHandle = AudioManager.Instance.PlaySound(explosionClipKey, SoundCategory.Weapon, 0f, SoundType.OneShot, this.transform.position, this.transform);
-        AudioManager.Instance.SetSoundVolume(exHandle, explosionClipVolume);
+        SoundHandle exHandle = AudioManager.Instance.PlaySound(explosionClipKey, SoundCategory.Weapon, 0f, explosionClipVolume, SoundType.OneShot, this.transform.position, this.transform);
         //タイマーの音を停止する
         timerElapsed = 0f; // タイマーをリセット
 
