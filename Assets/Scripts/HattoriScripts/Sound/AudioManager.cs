@@ -315,11 +315,12 @@ public class AudioManager : MonoBehaviour
     /// <summary>
     /// BGM用ストリーミング再生
     /// </summary>
-    public void PlayBgm(string clipKey,SoundCategory soundCategory = SoundCategory.BGM,SoundType soundType = SoundType.Loop)
+    public void PlayBgm(string clipKey,float soundVolume, SoundCategory soundCategory = SoundCategory.BGM,SoundType soundType = SoundType.Loop)
     {
         var clip = GetClip(clipKey);
         if (clip == null) return;
         _bgmSource.clip = clip;
+        _bgmSource.volume = soundVolume;
         _bgmSource.outputAudioMixerGroup = _groupMap[soundCategory];
         _bgmSource.loop = (soundType == SoundType.Loop);
         _bgmSource.Play();
