@@ -39,6 +39,7 @@ public class RespawnUI : MonoBehaviour,IUIPanel
 
     private void DisplayRespawnPanel(float hostTimeStamp, PlayerRef killer)
     {
+        CursorManager.Instance.RequestUI(this);
         if (co != null) StopCoroutine(co);
         co = StartCoroutine(WaitRespawnCoroutine(killer));
     }
@@ -75,7 +76,7 @@ public class RespawnUI : MonoBehaviour,IUIPanel
     public void OnRespawnClick()
     {
         Debug.Log("RespawnPanel:リスポーンボタンが押されました。リスポーン処理を開始します。");
-
+        CursorManager.Instance.ReleaseUI(this);
         // コルーチンを停止
         if (co != null)
         {

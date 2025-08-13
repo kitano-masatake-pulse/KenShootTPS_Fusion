@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using Fusion;
+using TMPro;
 
 
 
@@ -13,6 +14,10 @@ public class LobbyUIController : MonoBehaviour
     [Header("退出ボタン")]
     public Button leaveRoomButton;
 
+    [Header("スタートテキスト")]
+    [SerializeField]
+    private GameObject startText;
+
     private NetworkRunner runner;
 
     //[SerializeField] GameLauncher gameLauncher;
@@ -21,6 +26,7 @@ public class LobbyUIController : MonoBehaviour
     {
         // 初期非表示
         startBattleButton.gameObject.SetActive(false);
+        startText.GetComponentInChildren<TextMeshProUGUI>().text = "Waiting for Host to Start Battle…";
         startBattleButton.onClick.AddListener(OnStartBattleClicked);
         leaveRoomButton.onClick.AddListener(OnLeaveRoomClicked);
 
@@ -29,7 +35,8 @@ public class LobbyUIController : MonoBehaviour
     public void ShowStartButton(NetworkRunner runner)
     {
         this.runner = runner;
-        startBattleButton.gameObject.SetActive(true);
+        //startBattleButton.gameObject.SetActive(true);
+        startText.GetComponentInChildren<TextMeshProUGUI>().text = "Press Enter to Start Battle";
     }
 
     void OnStartBattleClicked()

@@ -10,10 +10,12 @@ public class UIAudioEmitter : MonoBehaviour,IPointerEnterHandler,IPointerDownHan
     public string clickKey = "se_confirm_new";
     public string submitKey = "se_confirm_new";
     public string cancelKey = "se_cancel";
+    [SerializeField]
+    private float hoverVolume = 0.3f;
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        AudioManager.Instance.PlaySound(hoverKey,SoundCategory.System,0.01f);
+        AudioManager.Instance.PlaySound(hoverKey,SoundCategory.System,0.01f,hoverVolume);
     }
     public void OnPointerDown(PointerEventData eventData)
     {

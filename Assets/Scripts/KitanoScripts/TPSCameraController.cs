@@ -3,6 +3,7 @@ using Fusion;
 using RootMotion.Demos;
 using System;
 using System.Collections.Generic;
+using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using static UnityEngine.UI.Image;
@@ -92,6 +93,13 @@ public class TPSCameraController : MonoBehaviour
     [SerializeField] private Vector2 normalSensitivity = new Vector2(3.0f,1.5f);
     [SerializeField] private Vector2 adsSensitivity = new Vector2(1.5f, 0.75f);
     private Vector2 currentSensitivity;
+    [SerializeField] private float mouseSenRange = 4.0f; // マウス感度の範囲 
+    // マウス感度（X, Y）を補正する変数
+    private float sensitivityMultiplier;
+    // X・Y軸の反転（1: 正常, -1: 反転）
+    private int directionX = 1; 
+    private int directionY = 1;
+
 
     [SerializeField]float ADSRecoilMultiplier = 0.5f; // ADS時のリコイル倍率
     float currentRecoilMultiplier = 1f; // 現在のリコイル倍率
@@ -110,11 +118,20 @@ public class TPSCameraController : MonoBehaviour
     CameraInputData cameraInputData; // カメラ入力データ
 
     #endregion
+    private void OnEnable()
+    {
+        OptionsManager.OnApplied -= UpdateMouseOption; // オプション適用イベントを購読解除
+        OptionsManager.OnApplied += UpdateMouseOption; // オプション適用イベントを購読
+
+    }
+    private void OnDisable()
+    {
+        OptionsManager.OnApplied -= UpdateMouseOption; // オプション適用イベントを購読解除
+    }
+
 
     void Start()
     {
-        LockCursor();
-
         thirdPersonFollow = virtualCamera.GetCinemachineComponent<Cinemachine3rdPersonFollow>();
 
 
@@ -134,16 +151,17 @@ public class TPSCameraController : MonoBehaviour
     void Update()
     {
 
-
-        cameraInputData=LocalInputHandler.CollectCameraInput(); // カメラ入力データを取得
-
+        cameraInputData = CameraInputData.Default();
+        if (!LocalInputHandler.isOpenMenu) { 
+           cameraInputData = LocalInputHandler.CollectCameraInput(); // カメラ入力データを取得
+        }
         //ApplyRecoil(WeaponType.AssaultRifle); // 仮の武器タイプを指定。実際には現在の武器タイプに応じて変更する必要があります
         ApplyRecoil(currentRecoilingWeapon); //リコイルの適用
 
         if ( isSetCameraTarget)
            {
-            float mouseX = cameraInputData.mouseMovement.x * currentSensitivity.x;
-            float mouseY = cameraInputData.mouseMovement.y * currentSensitivity.y;
+            float mouseX = cameraInputData.mouseMovement.x * currentSensitivity.x * sensitivityMultiplier*directionX;
+            float mouseY = cameraInputData.mouseMovement.y * currentSensitivity.y * sensitivityMultiplier*directionY;
 
             //Debug.Log($"Mouse X: {mouseX}, Mouse Y: {mouseY}"); // デバッグ用ログ出力
             yaw += mouseX;
@@ -174,16 +192,21 @@ public class TPSCameraController : MonoBehaviour
             
         }
 
-        // Escapeキーでモード切り替え
-        if (cameraInputData.cursorLockButton)
-        {
-            if (cursorLocked)
-                UnlockCursor();
-            else
-                LockCursor();
-        }
     }
 
+    #region マウス感度調整
+    public void UpdateMouseOption(OptionData data)
+    {  
+        float mouseSensitivity = data.mouseSensitivity;
+        //対数でマウス感度を1/4～4倍に調整(デフォルト値)
+        sensitivityMultiplier = Mathf.Pow(mouseSenRange, mouseSensitivity);
+
+        bool inverX = data.invertX; 
+        bool inverY = data.invertY;
+        directionX = inverX ? -1 : 1; 
+        directionY = inverY ? -1 : 1;
+    }
+    #endregion
 
     #region　リコイル関連  
 
@@ -425,27 +448,16 @@ public class TPSCameraController : MonoBehaviour
 
     #endregion
 
-
-    #region カーソル関連
-    void LockCursor()
+    public void SetYawPitch(float yaw, float pitch)
     {
-        Cursor.lockState = CursorLockMode.Locked; // 中央固定
-        Cursor.visible = false;
-        cursorLocked = true;
+        this.yaw = yaw;
+        this.pitch = pitch;
+        cameraTarget.rotation = Quaternion.Euler(pitch - currentRecoil_Pitch, yaw + currentRecoil_Yaw, 0f);
     }
 
-    void UnlockCursor()
-    {
-        Cursor.lockState = CursorLockMode.None; // 通常カーソル
-        Cursor.visible = true;
-        cursorLocked = false;
-    }
-
-    #endregion
 
 
 
-    
 
     public Transform GetTPSCameraTransform()
     {

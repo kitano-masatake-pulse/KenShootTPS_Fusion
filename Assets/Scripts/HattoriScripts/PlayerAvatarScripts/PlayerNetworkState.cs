@@ -119,17 +119,15 @@ public class PlayerNetworkState : NetworkBehaviour
     //デバッグ用 
     void Update()
     {
-
-        if (HasInputAuthority && Input.GetKeyDown(KeyCode.K))
+        
+        if (GameManager2.Instance!=null && GameManager2.Instance.debugInput.SuicidePressedDown)
         {
-            // 自分を即死させる
             RPC_RequestDamageHP(int.MaxValue, PlayerRef.None);
         }
     }
     #endregion
 
     #region Public Methods
-
 
     /// <summary>HPを減らすメソッド</summary>
     public void DamageHP(int damage, PlayerRef attacker = default, TeamType atkTeam = default)
@@ -195,7 +193,8 @@ public class PlayerNetworkState : NetworkBehaviour
     // 無敵状態を一定時間後に解除するコルーチン
     private IEnumerator ResetInvincibilityAfterDelay(float delay)
     {
-        yield return new WaitForSeconds(delay);
+        yield return new WaitForSeconds(delay);        
+        if (playerAvatar == null) yield break; // playerAvatarがnullの場合は処理を中断
         IsInvincible = false;
         RPC_RaiseInvincibleChanged(false, 0f); // 無敵状態が解除されたことを通知
     }

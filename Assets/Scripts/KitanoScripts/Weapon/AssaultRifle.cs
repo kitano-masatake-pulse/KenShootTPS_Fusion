@@ -221,8 +221,7 @@ public class AssaultRifle : WeaponBase
         //射撃音の再生
         if (AudioManager.Instance != null && !string.IsNullOrEmpty(fireClipKey)) // AudioManagerが存在し、クリップキーが設定されている場合
         {
-            SoundHandle SEHandle = AudioManager.Instance.PlaySound(fireClipKey, SoundCategory.Weapon, 0f, SoundType.OneShot, this.transform.position);
-            AudioManager.Instance.SetSoundVolume(SEHandle, fireClipVolume);
+            SoundHandle SEHandle = AudioManager.Instance.PlaySound(fireClipKey, SoundCategory.Weapon, 0f,fireClipVolume, SoundType.OneShot, this.transform.position);
         }
         else
         {

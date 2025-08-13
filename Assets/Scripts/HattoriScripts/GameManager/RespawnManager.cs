@@ -1,4 +1,5 @@
 using Fusion;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,19 +10,33 @@ public class RespawnManager : NetworkBehaviour
 {
     // シングルトンインスタンス
     public static RespawnManager Instance { get; private set; }
-
+    [Serializable]
+    private struct RespawnPoint
+    {
+        public Vector3 Position;
+        public Quaternion Rotation;
+        public RespawnPoint(Vector3 position, Quaternion rotation)
+        {
+            Position = position;
+            Rotation = rotation;
+        }
+    }
     [SerializeField]
-    private List<Vector3> respawnPoints =
-    new List<Vector3>{
-        new Vector3(-9, 2, -93), // リスポーン地点1
-        new Vector3(94, 5, 14), // リスポーン地点2
-        new Vector3(27, 0, 91), // リスポーン地点3
-        new Vector3(-97, 5, 7.5f), // リスポーン地点4
-        new Vector3(-40, 5, -55), // リスポーン地点5
-        new Vector3(49, 5, 18), // リスポーン地点6
-        new Vector3(-20, 3, 64), // リスポーン地点7
-        new Vector3(57.5f, 9.5f, -44), // リスポーン地点8
-    }; // リスポーン地点のリスト
+    private List<RespawnPoint> respawnPoints =
+    new List<RespawnPoint>
+    {
+        new RespawnPoint(new Vector3(-9, 2, -93), Quaternion.Euler(0, 90, 0)), // リスポーン地点1
+        new RespawnPoint(new Vector3(94, 5, 14), Quaternion.Euler(0, 180, 0)), // リスポーン地点2
+        new RespawnPoint(new Vector3(27, 0, 91), Quaternion.Euler(0, 90, 0)), // リスポーン地点3
+        new RespawnPoint(new Vector3(-97, 5, 7.5f), Quaternion.Euler(0, 0, 0)), // リスポーン地点4
+        new RespawnPoint(new Vector3(-40, 5, -55), Quaternion.Euler(0, 45, 0)), // リスポーン地点5
+        new RespawnPoint(new Vector3(49, 5, 18), Quaternion.Euler(0, 90, 0)), // リスポーン地点6
+        new RespawnPoint(new Vector3(-20, 3, 64), Quaternion.Euler(0, 135, 0)), // リスポーン地点7
+        new RespawnPoint(new Vector3(57.5f, 9.5f, -44), Quaternion.Euler(0, -135, 0)), // リスポーン地点8
+
+    };
+
+
     [SerializeField]
     private float mapScale = 1.0f;
 
@@ -38,6 +53,7 @@ public class RespawnManager : NetworkBehaviour
         {
             Destroy(gameObject);
         }
+
     }
 
     public override void FixedUpdateNetwork()
@@ -66,7 +82,7 @@ public class RespawnManager : NetworkBehaviour
         //ホストのみ実行
         if(!Object.HasStateAuthority) return;        
 
-        Vector3 respawnPoint = GetRespawnPoint(playerObject.InputAuthority);
+        RespawnPoint respawnPoint = GetRespawnPoint(playerObject.InputAuthority);
 
         
 
@@ -80,13 +96,13 @@ public class RespawnManager : NetworkBehaviour
         }
         
         //RPCを呼び出して、クライアント側でもリスポーン処理を実行
-        RPC_InitializePlayerInAll(playerObject, respawnPoint);
+        RPC_InitializePlayerInAll(playerObject, respawnPoint.Position, respawnPoint.Rotation);
 
     }
 
     //クライアント側のリスポーン処理
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RPC_InitializePlayerInAll(NetworkObject playerObject, Vector3 respawnPoint)
+    public void RPC_InitializePlayerInAll(NetworkObject playerObject,Vector3 respawnPosition,Quaternion respawnRotation)
     {
         Debug.Log($"InitializePlayerInAll: Player {playerObject.InputAuthority} Local Initialized");
 
@@ -94,7 +110,7 @@ public class RespawnManager : NetworkBehaviour
         if (playerAvatar != null)
         {
             playerAvatar.HideMesh(); // メッシュを非表示にする
-            playerAvatar.TeleportToInitialSpawnPoint(respawnPoint);
+            playerAvatar.TeleportToInitialSpawnPoint(respawnPosition, respawnRotation);
             playerAvatar.ShowMesh(); // メッシュを表示する
 
             //内部的に無理やりcurrrentWeaponを変更する
@@ -148,12 +164,12 @@ public class RespawnManager : NetworkBehaviour
     }
 
     // リスポーン地点を取得するメソッド
-    private Vector3 GetRespawnPoint(PlayerRef respawnPlayer)
+    private RespawnPoint GetRespawnPoint(PlayerRef respawnPlayer)
     {
         if(!Runner.IsServer)
         {
             Debug.LogError("GetRespawnPoint: This method should only be called on the server.");
-            return Vector3.zero; // サーバーでない場合はデフォルトの位置を返す
+            return new RespawnPoint(); // サーバーでない場合はデフォルトの位置を返す
         }
         // 他のプレイヤーの位置を取得
         List<Vector3> otherPlayerPositions = GetOtherPlayerPositions(respawnPlayer);
@@ -161,13 +177,17 @@ public class RespawnManager : NetworkBehaviour
         {
             Debug.LogWarning("No other player positions found. Using default respawn point.");
             // 他のプレイヤーがいない場合はランダムなスポーン地点を使用
-            return respawnPoints[Random.Range(0, respawnPoints.Count-1)] * mapScale;
+            var randomIndex = UnityEngine.Random.Range(0, respawnPoints.Count);
+            Vector3 respownPosition = respawnPoints[randomIndex].Position * mapScale;
+            Quaternion respownRotation = respawnPoints[randomIndex].Rotation;
+            return new RespawnPoint(respownPosition, respownRotation);
         }
-        //各スポーン地点のスコア計算
-        List<(Vector3 point, float score)> scoredSpawnPoints = new();
+        //各スポーン地点のスコア計算(地点、スコア、元のインデックス)
+        List<(Vector3 point, float score, int index)> scoredSpawnPoints = new();
 
-        var scaledRespawnPoints = respawnPoints.Select(p => p * mapScale).ToList();
+        var scaledRespawnPoints = respawnPoints.Select(p => p.Position * mapScale).ToList();
 
+        int index = 0;
         foreach (var point in scaledRespawnPoints)
         {
             float closestSqrDistance = float.MaxValue;
@@ -180,7 +200,8 @@ public class RespawnManager : NetworkBehaviour
                     closestSqrDistance = sqrDistance;
                 }
             }
-            scoredSpawnPoints.Add((point, closestSqrDistance));
+            scoredSpawnPoints.Add((point, closestSqrDistance,index));
+            index++;
         }
 
         //距離が最も遠い順にソート
@@ -188,8 +209,9 @@ public class RespawnManager : NetworkBehaviour
         
         //予約されていない地点を探す
         int chosenIndex = FindAvailableSpawnIndex(scoredSpawnPoints.Select(p => p.point).ToList());
-        
-        return scoredSpawnPoints[chosenIndex].point;
+
+        //元々のインデックスからスポーン地点を取得
+        return respawnPoints[scoredSpawnPoints[chosenIndex].index];
     }
 
     private List<Vector3> GetOtherPlayerPositions(PlayerRef respawnPlayer)
@@ -226,20 +248,20 @@ public class RespawnManager : NetworkBehaviour
             }
         }
 
-        //空いてない場合は最初の地点を返す
-        return 0;
+        //空いてない場合はランダムな地点を選ぶ
+        return UnityEngine.Random.Range(0,respawnPoints.Count);
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_RequestTeleportSpawnPoint(PlayerRef spawnPlayer)
     {
         // スポーン地点を取得
-        Vector3 respawnPoint = GetRespawnPoint(spawnPlayer);
-        RPC_TeleportSpawnPoint(spawnPlayer, respawnPoint);
+        RespawnPoint respawnPoint = GetRespawnPoint(spawnPlayer);
+        RPC_TeleportSpawnPoint(spawnPlayer, respawnPoint.Position, respawnPoint.Rotation);
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    private void RPC_TeleportSpawnPoint(PlayerRef spawnPlayer, Vector3 respawnPoint)
+    private void RPC_TeleportSpawnPoint(PlayerRef spawnPlayer, Vector3 respawnPosition, Quaternion respownRotation)
     {
         Debug.Log($"RPC_TeleportSpawnPoint: Local = Player?:{Runner.LocalPlayer == spawnPlayer}");
         Debug.Log($"RPC_TeleportSpawnPoint: Try Get ? : {Runner.TryGetPlayerObject(spawnPlayer, out NetworkObject o)}");
@@ -251,7 +273,7 @@ public class RespawnManager : NetworkBehaviour
             if (playerAvatar != null)
             {
                 playerAvatar.HideMesh(); // メッシュを非表示にする
-                playerAvatar.TeleportToInitialSpawnPoint(respawnPoint);
+                playerAvatar.TeleportToInitialSpawnPoint(respawnPosition,respownRotation);
                 playerAvatar.ShowMesh(); // メッシュを表示する
             }
             else

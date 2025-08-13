@@ -90,6 +90,12 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
     }
     private Queue<DeathEventData> deathEventQueue = new Queue<DeathEventData>();
     [Networked] TickTimer NextTickTimer { get; set; }
+
+    //============================================
+    //デバッグ用入力
+    //============================================
+    public DebugInputData debugInput = DebugInputData.Default();
+
     //===========================================
     //初期化処理
     //===========================================
@@ -778,14 +784,13 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
         } while (killer == victim); // 自分をキルすることはできない
         NotifyDeath(Runner.SimulationTime, victim, killer);
     }
-    //===========================================
-    
+
     private void Update()
     {
-        
-        if (Input.GetKeyDown(KeyCode.N))
+         debugInput = LocalInputHandler.CollectDebugInput();
+        if (debugInput.BattleEndPressedDown)
         {
-            OnTimeUp?.Invoke();
+            OnTimeUp?.Invoke(); // デバッグ用に試合終了イベントを発火
         }
     }
    
