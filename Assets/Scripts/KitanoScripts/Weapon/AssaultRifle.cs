@@ -173,7 +173,7 @@ public class AssaultRifle : WeaponBase
         else if (localInputData.FirePressedUp || IsMagazineEmpty() || currentAction == WeaponActionState.Idle) //射撃ボタンが離されたら、または弾切れ、またはIdle状態なら
         {
             FireUp(); //射撃終了処理を呼び出す
-            Debug.Log($"Firing {weaponType.GetName()} up! Current Magazine: {currentMagazine}, Current Reserve: {currentReserve}");
+           // Debug.Log($"Firing {weaponType.GetName()} up! Current Magazine: {currentMagazine}, Current Reserve: {currentReserve}");
         }
 
 

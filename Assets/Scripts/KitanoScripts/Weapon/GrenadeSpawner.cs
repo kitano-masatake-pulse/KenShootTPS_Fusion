@@ -49,7 +49,7 @@ public class GrenadeSpawner : WeaponBase
         {
             //投擲予測線
             DisplayTrajectory();
-            Debug.Log("Holding grenade...");
+            //Debug.Log("Holding grenade...");
 
         }
 

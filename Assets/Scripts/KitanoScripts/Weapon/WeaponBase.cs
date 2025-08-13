@@ -12,7 +12,7 @@ public abstract class WeaponBase : NetworkBehaviour
 
     public WeaponType weaponType => weapon;
 
-    //public TPSCameraController playerCamera; // ©•ª‚ÌTPSƒJƒƒ‰
+    //public TPSCameraController playerCamera; // è‡ªåˆ†ã®TPSã‚«ãƒ¡ãƒ©
     public float fireDistance = 100f;
     public abstract LayerMask PlayerLayer { get; }
     public abstract LayerMask ObstructionLayer { get; }
@@ -20,12 +20,16 @@ public abstract class WeaponBase : NetworkBehaviour
     public int currentMagazine;
     public int currentReserve;
 
-    [SerializeField] protected GameObject LineOfFirePrefab; // Ëü‚ÌƒvƒŒƒnƒu
+    [SerializeField] protected GameObject LineOfFirePrefab; // å°„ç·šã®ãƒ—ãƒ¬ãƒãƒ–
+
+    [Header("éŸ³é–¢ä¿‚")]
+    [SerializeField] private string hitClipKey="Action_Hit_Damage"; // çˆ†ç™ºéŸ³ã®ã‚¯ãƒªãƒƒãƒ—
+    [SerializeField][Range(0f, 1f)] private float hitClipVolume = 1f; // çˆ†ç™ºéŸ³ã®éŸ³é‡
 
 
     public override void Spawned()
     {
-        playerAvatar = GetComponentInParent<PlayerAvatar>(); //e‚ÌPlayerAvatar‚ğæ“¾
+        playerAvatar = GetComponentInParent<PlayerAvatar>(); //è¦ªã®PlayerAvatarã‚’å–å¾—
     }
 
 
@@ -39,8 +43,8 @@ public abstract class WeaponBase : NetworkBehaviour
 
     public virtual void CalledOnUpdate(PlayerInputData localInputData, InputBufferStruct inputBuffer , WeaponActionState currentAction)
     {
-        //Debug.Log("CalledOnUpdate() called"); //ƒfƒoƒbƒO—pƒƒOo—Í
-        //UpdateSpreadGauge(-liftingConvergenceRate * Time.deltaTime, -randomConvergenceRate * Time.deltaTime); //’e‚ÌŠgU‚ğû‘©‚³‚¹‚é
+        //Debug.Log("CalledOnUpdate() called"); //ãƒ‡ãƒãƒƒã‚°ç”¨ãƒ­ã‚°å‡ºåŠ›
+        //UpdateSpreadGauge(-liftingConvergenceRate * Time.deltaTime, -randomConvergenceRate * Time.deltaTime); //å¼¾ã®æ‹¡æ•£ã‚’åæŸã•ã›ã‚‹
     }
 
     public virtual bool CanReload(PlayerInputData localInputData, InputBufferStruct inputBuffer, WeaponActionState currentAction)
@@ -48,7 +52,7 @@ public abstract class WeaponBase : NetworkBehaviour
         bool inputCondition =  weapon.IsReloadable() && inputBuffer.reload;
 
         bool stateCondition =
-            currentAction == WeaponActionState.Idle; // Œ»İ‚ÌƒAƒNƒVƒ‡ƒ“‚ªƒAƒCƒhƒ‹ó‘Ô‚Å‚ ‚é‚±‚Æ‚ğŠm”F
+            currentAction == WeaponActionState.Idle; // ç¾åœ¨ã®ã‚¢ã‚¯ã‚·ãƒ§ãƒ³ãŒã‚¢ã‚¤ãƒ‰ãƒ«çŠ¶æ…‹ã§ã‚ã‚‹ã“ã¨ã‚’ç¢ºèª
 
         bool bulletCondition = currentMagazine < weaponType.MagazineCapacity() && currentReserve > 0;   
 
@@ -59,20 +63,20 @@ public abstract class WeaponBase : NetworkBehaviour
 
     public virtual bool CanFire(PlayerInputData localInputData, InputBufferStruct inputBuffer, WeaponActionState currentAction)
     {
-        return false; //ƒfƒtƒHƒ‹ƒg‚Å‚Í”­Ë‚Å‚«‚È‚¢
+        return false; //ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã§ã¯ç™ºå°„ã§ããªã„
 
     }
 
     public virtual bool CanChangeWeapon(PlayerInputData localInputData, InputBufferStruct inputBuffer, WeaponActionState currentAction)
     {
-        bool inputCondition = localInputData.weaponChangeScroll != 0f; // ƒXƒNƒ[ƒ‹ƒzƒC[ƒ‹‚Ì“ü—Í‚ª‚ ‚é‚©‚Ç‚¤‚©‚ğŠm”F
+        bool inputCondition = localInputData.weaponChangeScroll != 0f; // ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒ›ã‚¤ãƒ¼ãƒ«ã®å…¥åŠ›ãŒã‚ã‚‹ã‹ã©ã†ã‹ã‚’ç¢ºèª
 
         bool stateCondition = 
             currentAction != WeaponActionState.Reloading||
             currentAction != WeaponActionState.Stun; 
 
         //Debug.Log($"CanChangeWeapon() called. Current Action: {currentAction}");
-        return currentAction == WeaponActionState.Idle; // Œ»İ‚ÌƒAƒNƒVƒ‡ƒ“‚ªƒAƒCƒhƒ‹ó‘Ô‚Å‚ ‚é‚±‚Æ‚ğŠm”F
+        return currentAction == WeaponActionState.Idle; // ç¾åœ¨ã®ã‚¢ã‚¯ã‚·ãƒ§ãƒ³ãŒã‚¢ã‚¤ãƒ‰ãƒ«çŠ¶æ…‹ã§ã‚ã‚‹ã“ã¨ã‚’ç¢ºèª
     }
 
     public virtual void FireDown()
@@ -88,10 +92,10 @@ public abstract class WeaponBase : NetworkBehaviour
         int currentMagazine = this.currentMagazine;
         int currentReserve = this.currentReserve;
         int magazineCapacity = weaponType.MagazineCapacity();
-        int reloadededAmmo = Mathf.Min(currentReserve, magazineCapacity - currentMagazine); //ƒŠƒ[ƒh‚³‚ê‚é’e–ò”
+        int reloadededAmmo = Mathf.Min(currentReserve, magazineCapacity - currentMagazine); //ãƒªãƒ­ãƒ¼ãƒ‰ã•ã‚Œã‚‹å¼¾è–¬æ•°
 
-        this.currentMagazine += reloadededAmmo; //ƒ}ƒKƒWƒ“‚ÉƒŠƒ[ƒh‚³‚ê‚½’e–ò‚ğ’Ç‰Á
-        this.currentReserve -= reloadededAmmo; //ƒŠƒU[ƒu‚©‚çƒŠƒ[ƒh‚³‚ê‚½’e–ò‚ğŒ¸‚ç‚·
+        this.currentMagazine += reloadededAmmo; //ãƒã‚¬ã‚¸ãƒ³ã«ãƒªãƒ­ãƒ¼ãƒ‰ã•ã‚ŒãŸå¼¾è–¬ã‚’è¿½åŠ 
+        this.currentReserve -= reloadededAmmo; //ãƒªã‚¶ãƒ¼ãƒ–ã‹ã‚‰ãƒªãƒ­ãƒ¼ãƒ‰ã•ã‚ŒãŸå¼¾è–¬ã‚’æ¸›ã‚‰ã™
 
         playerAvatar.InvokeAmmoChanged();
     }
@@ -109,7 +113,9 @@ public abstract class WeaponBase : NetworkBehaviour
 
     public virtual void FireUp()
     {
-        Debug.Log($"{weaponType.GetName()} fired up! Current Magazine: {currentMagazine}, Current Reserve: {currentReserve}");
+
+      //  Debug.Log($"{weaponType.GetName()} fired up! Current Magazine: {currentMagazine}, Current Reserve: {currentReserve}");
+
     }
 
 
@@ -129,7 +135,7 @@ public abstract class WeaponBase : NetworkBehaviour
     public virtual void CauseDamage(LagCompensatedHit hit, int weaponDamage)
     {
 
-        //“–‚½‚Á‚½‘ÎÛ‚ªPlayerHitbox‚ğ‚Á‚Ä‚¢‚½‚çƒ_ƒ[ƒWˆ—
+        //å½“ãŸã£ãŸå¯¾è±¡ãŒPlayerHitboxã‚’æŒã£ã¦ã„ãŸã‚‰ãƒ€ãƒ¡ãƒ¼ã‚¸å‡¦ç†
         if (hit.Hitbox is PlayerHitbox playerHitbox)
         {
             PlayerRef targetPlayerRef = playerHitbox.hitPlayerRef;
@@ -137,6 +143,8 @@ public abstract class WeaponBase : NetworkBehaviour
             Debug.Log($"Player {myPlayerRef} hit Player {targetPlayerRef} with {weaponDamage} damage");
             PlayerHP targetHP = playerHitbox.GetComponentInParent<PlayerHP>();
             targetHP.RPC_RequestDamage(myPlayerRef, weaponDamage);
+
+            PlayHitSE(); //ãƒ’ãƒƒãƒˆéŸ³ã‚’å†ç”Ÿ
         }
         else
 
@@ -149,12 +157,20 @@ public abstract class WeaponBase : NetworkBehaviour
 
     protected virtual void OnEmptyAmmo()
     {
-        Debug.Log("ƒJƒ`ƒbi’eØ‚êSEj");
+        Debug.Log("ã‚«ãƒãƒƒï¼ˆå¼¾åˆ‡ã‚ŒSEï¼‰");
     }
 
     public virtual void SetADS(bool ADSflag)
     {
        
+    }
+
+    void PlayHitSE()
+    {
+        SoundHandle SEHandle = AudioManager.Instance.PlaySound(hitClipKey, SoundCategory.Action);
+        AudioManager.Instance.SetSoundVolume(SEHandle, hitClipVolume); // éŸ³é‡ã‚’è¨­å®š
+
+
     }
 
 
@@ -168,15 +184,15 @@ public abstract class WeaponBase : NetworkBehaviour
     public void GenerateLineOfFireGorAllClients(Vector3 startPoint, Vector3 EndPoint)
     {
 
-        GenerateLineOfFire(startPoint, EndPoint); // LineOfFire‚ğ¶¬
-        //‘SƒNƒ‰ƒCƒAƒ“ƒg‚ÉLineOfFire‚ğ¶¬‚·‚éRPC‚ğ‘—M
+        GenerateLineOfFire(startPoint, EndPoint); // LineOfFireã‚’ç”Ÿæˆ
+        //å…¨ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆã«LineOfFireã‚’ç”Ÿæˆã™ã‚‹RPCã‚’é€ä¿¡
         RPC_RequestLineOfFire(startPoint, EndPoint);
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority, HostMode = RpcHostMode.SourceIsHostPlayer, TickAligned = false)]
     public void RPC_RequestLineOfFire(Vector3 startPoint, Vector3 EndPoint, RpcInfo rpcInfo = default)
     {
-        RPC_ApplyLineOfFire(startPoint, EndPoint, rpcInfo.Source); // LineOfFire‚ğ¶¬‚·‚éRPC‚ğŒÄ‚Ño‚·
+        RPC_ApplyLineOfFire(startPoint, EndPoint, rpcInfo.Source); // LineOfFireã‚’ç”Ÿæˆã™ã‚‹RPCã‚’å‘¼ã³å‡ºã™
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All, HostMode = RpcHostMode.SourceIsHostPlayer, TickAligned = false)]
@@ -185,16 +201,16 @@ public abstract class WeaponBase : NetworkBehaviour
         if (shooter != Runner.LocalPlayer)
         { 
         
-        GenerateLineOfFire(startPoint, EndPoint); // LineOfFire‚ğ¶¬
+        GenerateLineOfFire(startPoint, EndPoint); // LineOfFireã‚’ç”Ÿæˆ
         }
     }
 
 
     public void GenerateLineOfFire(Vector3 startPoint,Vector3  EndPoint)
     { 
-        GameObject LineOfFireInstance =  Instantiate(LineOfFirePrefab, startPoint, Quaternion.identity); // LineOfFire‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğ¶¬
+        GameObject LineOfFireInstance =  Instantiate(LineOfFirePrefab, startPoint, Quaternion.identity); // LineOfFireã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ç”Ÿæˆ
 
-        LineOfFireInstance.GetComponent<LineOfFire>().SetLinePoints(startPoint, EndPoint); // LineOfFire‚Ìn“_‚ÆI“_‚ğİ’è
+        LineOfFireInstance.GetComponent<LineOfFire>().SetLinePoints(startPoint, EndPoint); // LineOfFireã®å§‹ç‚¹ã¨çµ‚ç‚¹ã‚’è¨­å®š
 
     }
 

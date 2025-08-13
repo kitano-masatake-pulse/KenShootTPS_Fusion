@@ -372,6 +372,8 @@ MonoBehaviour:
   currentMagazine: 0
   currentReserve: 0
   LineOfFirePrefab: {fileID: 57295007179658881, guid: f7125f6161e9b0b459848fecb3f3bb15, type: 3}
+  hitClipKey: Action_Hit_Damage
+  hitClipVolume: 1
   muzzleTransform: {fileID: 648396351080835309}
   TPSCameraTransform: {fileID: 0}
   playerLayer:
@@ -1073,12 +1075,12 @@ MonoBehaviour:
   wasGrounded: 0
   isGroundedNow: 0
   chaseAngle: 90
-  chaseRange: 5
+  chaseRange: 12
   chaseSpeed: 6
   maxTurnAnglePerFrame: 5
   maxAlignToCameraAnglePerSecond: 360
-  homingTime: 2
-  attackImmolizedTime: 3
+  homingTime: 1
+  attackImmolizedTime: 1.5
   rotationDuration: 0.1
   playerLayer:
     serializedVersion: 2
@@ -1107,6 +1109,8 @@ MonoBehaviour:
   _IsInvincible: 0
   _CurrentWeapon_Network: 0
   _Team: 0
+  damagedClipKey: Action_Damage
+  damagedClipVolume: 1
 --- !u!114 &-4328647438270834359
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1962,6 +1966,8 @@ MonoBehaviour:
   currentMagazine: 0
   currentReserve: 0
   LineOfFirePrefab: {fileID: 0}
+  hitClipKey: Action_Hit_Damage
+  hitClipVolume: 1
   playerLayer:
     serializedVersion: 2
     m_Bits: 64
@@ -2688,6 +2694,8 @@ MonoBehaviour:
   currentMagazine: 0
   currentReserve: 0
   LineOfFirePrefab: {fileID: 0}
+  hitClipKey: Action_Hit_Damage
+  hitClipVolume: 1
   playerLayer:
     serializedVersion: 2
     m_Bits: 64
@@ -2695,6 +2703,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 129
   swordRoot: {fileID: 5906915347762662885}
+  swordLength: 1
+  timeUntilAttack: 1
 --- !u!1 &7002177026448560468
 GameObject:
   m_ObjectHideFlags: 0
@@ -3161,6 +3171,8 @@ MonoBehaviour:
   currentMagazine: 0
   currentReserve: 0
   LineOfFirePrefab: {fileID: 57295007179658881, guid: f7125f6161e9b0b459848fecb3f3bb15, type: 3}
+  hitClipKey: Action_Hit_Damage
+  hitClipVolume: 1
   muzzleTransform: {fileID: 6048135313256945153}
   TPSCameraTransform: {fileID: 0}
   playerLayer:
@@ -3657,7 +3669,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8959172497993204794}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1

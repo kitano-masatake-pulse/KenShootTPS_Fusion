@@ -44,6 +44,13 @@ public class GrenadeBomb : NetworkBehaviour
     [SerializeField] private string explosionClipKey; // 爆発音のクリップ
     [SerializeField][Range(0f, 1f)] private float explosionClipVolume = 1f; // 爆発音の音量
 
+    [Header("VFX関係")]
+    //[SerializeField] private ParticleSystem particlePrefab; // Inspectorに登録するパーティクルシステムのプレハブ
+    [SerializeField] GameObject explosionPrefab; // 半透明の球プレハブ
+    [SerializeField] private LayerMask wallMask; // 壁のレイヤーマスク
+    [SerializeField] private float normalOffset = 0.1f; // SphereCastの半径
+    [SerializeField] private float castRadius = 0.1f; // SphereCastの半径
+    [SerializeField] ExplosionSphereSpawner spawner;
 
 
     public override void Spawned()
@@ -51,9 +58,17 @@ public class GrenadeBomb : NetworkBehaviour
         //base.Spawned();
         // Initialization code here, if needed
 
+        ExplosionSphereSpawner spawner = GetComponent<ExplosionSphereSpawner>();
+
         if (HasStateAuthority)
         {
             StartCoroutine(DamageCoroutine());
+        }
+        else
+        {
+            OnlyEffectCoroutine();
+
+
         }
     }
 
@@ -79,6 +94,22 @@ public class GrenadeBomb : NetworkBehaviour
 
     }
 
+
+    private IEnumerator OnlyEffectCoroutine()
+    {
+
+        yield return new WaitForSeconds(explosionDelay);
+        //爆発音を再生する
+        SoundHandle exHandle = AudioManager.Instance.PlaySound(explosionClipKey, SoundCategory.Weapon, 0f, SoundType.OneShot, this.transform.position, this.transform);
+        AudioManager.Instance.SetSoundVolume(exHandle, explosionClipVolume);
+        //タイマーの音を停止する
+        timerElapsed = 0f; // タイマーをリセット
+
+        // 爆発範囲の描画
+        SpawnParticle(this.transform.position, damageDuration);
+    }   
+
+
     private IEnumerator DamageCoroutine()
     {
         yield return new WaitForSeconds(explosionDelay); // 爆発までの遅延時間を待つ
@@ -89,6 +120,8 @@ public class GrenadeBomb : NetworkBehaviour
         //タイマーの音を停止する
         timerElapsed = 0f; // タイマーをリセット
 
+        // 爆発範囲の描画
+        SpawnParticle(this.transform.position, damageDuration);
 
         float elapsed = 0f;
         List<HitboxRoot> alreadyDamagedPlayers = new List<HitboxRoot>(); // すでにダメージを与えたプレイヤーを記録するリスト(今のフレームでダメージが確定した人も含む)
@@ -161,7 +194,10 @@ public class GrenadeBomb : NetworkBehaviour
                         continue;
                     }
 
-                    if (TryRaycastCornRadialAndGetDistance(hit, out LagCompensatedHit raycastHit, out float hitDistance))// 円錐形のRaycastを行う
+                    bool isHitCornRay = TryRaycastCornRadialAndGetDistance(hit, out LagCompensatedHit raycastHit, out float hitDistance);
+
+
+                    if(isHitCornRay )// 円錐形のRaycastを行う
                     {
                         alreadyDamaged.Add(targetPlayerRoot); // ヒットしたプレイヤーのRootを記録
                         damagedHitsWithDistance[hit] = hitDistance; // ダメージを与えたヒット情報、ヒット距離を記録
@@ -211,7 +247,7 @@ public class GrenadeBomb : NetworkBehaviour
            Object.InputAuthority,
            out LagCompensatedHit hitResult,
            playerLayer | obstructionLayer, // 判定を行うレイヤーを制限する。プレイヤーと障害物のレイヤーを指定
-           HitOptions.IgnoreInputAuthority
+           HitOptions.IncludePhysX
 
             );
 
@@ -226,7 +262,7 @@ public class GrenadeBomb : NetworkBehaviour
                 //rayEnd = this.transform.position + direction * blastHitRadius; // ヒットポイントがない場合は剣の長さまでのRayを描画
 
 
-                if (hitResult.Point != null)
+                if (hitResult.Point != null && hitResult.Point!=Vector3.zero)
                 {
                     rayEnd = hitResult.Point; // ヒットしたポイントがある場合はそこまでのRayを描画
                 }
@@ -239,6 +275,10 @@ public class GrenadeBomb : NetworkBehaviour
                 RaycastLinePoolManager.Instance.ShowRay(this.transform.position, rayEnd, Color.blue, rayDrawingDuration);
             }
 
+            if (hitResult.GameObject != null)
+            {
+                Debug.Log($"Bomb Raycast hit. Layer:{hitResult.GameObject.layer},isPlayerLayer:{((1 << hitResult.GameObject.layer) & playerLayer) != 0}");
+            }
 
             //最近接の着弾位置を更新 
             if (hitResult.GameObject != null && ((1 << hitResult.GameObject.layer) & playerLayer) != 0 && hitResult.Distance < minHitDistance)
@@ -343,6 +383,38 @@ public class GrenadeBomb : NetworkBehaviour
     {
         throwPlayer = playerRef; // 投げたプレイヤーのPlayerRefを設定する
         Debug.Log($"GrenadeBomb: SetThrowPlayer called with PlayerRef: {playerRef}");
+    }
+
+    /// <summary>
+    /// 指定位置にパーティクルを出し、再生時間に合わせて速度を調整
+    /// </summary>
+    public void SpawnParticle(Vector3 position, float targetDuration)
+    {
+        //Vector3 desiredPos=this.transform.position; // 位置はGrenadeBombの位置を使用
+        //Vector3 spawnPos = desiredPos;
+        //Quaternion spawnRot = Quaternion.identity;
+
+        //// どの方向からでも拾えるように、少しだけ外側へ押し出すSphereCast
+        //if (Physics.SphereCast(desiredPos + Vector3.forward * 0.01f, castRadius, Vector3.back,
+        //                       out RaycastHit hit, 0.05f, wallMask, QueryTriggerInteraction.Ignore)
+        //    || Physics.SphereCast(desiredPos + Vector3.right * 0.01f, castRadius, Vector3.left,
+        //                          out hit, 0.05f, wallMask, QueryTriggerInteraction.Ignore)
+        //    || Physics.SphereCast(desiredPos + Vector3.up * 0.01f, castRadius, Vector3.down,
+        //                          out hit, 0.05f, wallMask, QueryTriggerInteraction.Ignore))
+        //{
+        //    spawnPos = hit.point + hit.normal * normalOffset;         // めり込み防止
+        //    spawnRot = Quaternion.LookRotation(hit.normal);           // 面の外向きへ向ける
+        //    Debug.Log($"GrenadeBomb: SpawnParticle position adjusted to {spawnPos} based on SphereCast hit. DesiredPos:{desiredPos}");
+        //}
+
+        // インスタンス化
+        spawner.Spawn(
+             explosionPrefab,
+             position: transform.position,
+             startRadius: 0.5f, growTime: 0.15f, endRadius: 5.0f,
+             startAlpha: 0.9f, endAlpha: 0.3f,
+             duration: 1f, fadeTime: 0.1f
+         );
     }
 
 

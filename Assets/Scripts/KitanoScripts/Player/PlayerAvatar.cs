@@ -173,8 +173,8 @@ public class PlayerAvatar : NetworkBehaviour
     [SerializeField] private float chaseSpeed = 6f; // 移動速度
     [SerializeField] private float maxTurnAnglePerFrame = 5f; // 追尾の角度（度単位）
     [SerializeField] private float maxAlignToCameraAnglePerSecond = 360f; // 追尾の角度（度単位）
-    [SerializeField] private float homingTime = 2f; // ホーミングの時間
-    [SerializeField] private float attackImmolizedTime = 2f; // 攻撃開始→攻撃後硬直終了までの時間
+    [SerializeField] private float homingTime = 1f; // ホーミングの時間
+    [SerializeField] private float attackImmolizedTime = 1.5f; // 攻撃開始→攻撃後硬直終了までの時間
     [SerializeField] private float rotationDuration = 0.1f; //カメラの前方向に向くまでの時間(0.1秒かけてカメラの前方向に向く)
     private Vector3 homingMoveDirection = Vector3.forward; // ホーミング中の現在の移動方向
     private Transform currentTargetTransform; // 現在のターゲットのTransform
