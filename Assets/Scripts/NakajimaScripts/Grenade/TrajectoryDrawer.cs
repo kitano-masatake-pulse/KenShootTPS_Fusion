@@ -36,7 +36,7 @@ public class TrajectoryDrawer : MonoBehaviour
     public void RaycastDrawTrajectory(Vector3 startPos, Vector3 velocity)
     {
 
-        Debug.Log("SphereCastDrawTrajectory called with startPos: " + startPos + ", velocity: " + velocity);
+        //Debug.Log("SphereCastDrawTrajectory called with startPos: " + startPos + ", velocity: " + velocity);
         // ‹OÕ‚Ì•`‰æ“_‚Ì”‚ğİ’è
         lineRenderer.positionCount = resolution;
         // d—Íæ“¾

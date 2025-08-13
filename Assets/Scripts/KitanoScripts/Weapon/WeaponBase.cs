@@ -22,6 +22,10 @@ public abstract class WeaponBase : NetworkBehaviour
 
     [SerializeField] protected GameObject LineOfFirePrefab; // 射線のプレハブ
 
+    [Header("音関係")]
+    [SerializeField] private string hitClipKey="Action_Hit_Damage"; // 爆発音のクリップ
+    [SerializeField][Range(0f, 1f)] private float hitClipVolume = 1f; // 爆発音の音量
+
 
     public override void Spawned()
     {
@@ -110,7 +114,7 @@ public abstract class WeaponBase : NetworkBehaviour
     public virtual void FireUp()
     {
        
-        Debug.Log($"{weaponType.GetName()} fired up! Current Magazine: {currentMagazine}, Current Reserve: {currentReserve}");
+      //  Debug.Log($"{weaponType.GetName()} fired up! Current Magazine: {currentMagazine}, Current Reserve: {currentReserve}");
     }
 
 
@@ -138,6 +142,8 @@ public abstract class WeaponBase : NetworkBehaviour
             Debug.Log($"Player {myPlayerRef} hit Player {targetPlayerRef} with {weaponDamage} damage");
             PlayerHP targetHP = playerHitbox.GetComponentInParent<PlayerHP>();
             targetHP.RPC_RequestDamage(myPlayerRef, weaponDamage);
+
+            PlayHitSE(); //ヒット音を再生
         }
         else
 
@@ -156,6 +162,14 @@ public abstract class WeaponBase : NetworkBehaviour
     public virtual void SetADS(bool ADSflag)
     {
        
+    }
+
+    void PlayHitSE()
+    {
+        SoundHandle SEHandle = AudioManager.Instance.PlaySound(hitClipKey, SoundCategory.Action);
+        AudioManager.Instance.SetSoundVolume(SEHandle, hitClipVolume); // 音量を設定
+
+
     }
 
 

@@ -404,6 +404,8 @@ MonoBehaviour:
   currentMagazine: 0
   currentReserve: 0
   LineOfFirePrefab: {fileID: 0}
+  hitClipKey: Action_Hit_Damage
+  hitClipVolume: 1
   muzzleTransform: {fileID: 0}
   TPSCameraTransform: {fileID: 0}
   playerLayer:
@@ -420,6 +422,9 @@ MonoBehaviour:
   liftingSpreadMultiplier: {x: 5, y: 0}
   randomSpreadMultiplier: {x: 3, y: 6}
   runninngSpreadMultiplier: {x: 3, y: 6}
+  fireClipKey: Weapon_Fire_AssaultRifle_OneShot
+  fireClipVolume: 1
+  fireClipStartTime: 0
   debug_moveSpeed: 0
   ADSspreadReduction: 0.8
 --- !u!1 &1999383711037729311
@@ -1244,8 +1249,8 @@ MonoBehaviour:
   chaseSpeed: 6
   maxTurnAnglePerFrame: 5
   maxAlignToCameraAnglePerSecond: 360
-  homingTime: 2
-  attackImmolizedTime: 3
+  homingTime: 1
+  attackImmolizedTime: 1.5
   rotationDuration: 0.1
   playerLayer:
     serializedVersion: 2
@@ -1274,6 +1279,8 @@ MonoBehaviour:
   _IsInvincible: 0
   _CurrentWeapon_Network: 0
   _Team: 0
+  damagedClipKey: 
+  damagedClipVolume: 1
 --- !u!114 &-4328647438270834359
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2140,6 +2147,8 @@ MonoBehaviour:
   currentMagazine: 0
   currentReserve: 0
   LineOfFirePrefab: {fileID: 0}
+  hitClipKey: Action_Hit_Damage
+  hitClipVolume: 1
   playerLayer:
     serializedVersion: 2
     m_Bits: 0
@@ -2737,6 +2746,8 @@ MonoBehaviour:
   currentMagazine: 0
   currentReserve: 0
   LineOfFirePrefab: {fileID: 0}
+  hitClipKey: Action_Hit_Damage
+  hitClipVolume: 1
   playerLayer:
     serializedVersion: 2
     m_Bits: 1088
@@ -2744,6 +2755,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   swordRoot: {fileID: 5906915347762662885}
+  swordLength: 1
+  timeUntilAttack: 1
 --- !u!1 &7002177026448560468
 GameObject:
   m_ObjectHideFlags: 0
@@ -3210,6 +3223,8 @@ MonoBehaviour:
   currentMagazine: 0
   currentReserve: 0
   LineOfFirePrefab: {fileID: 0}
+  hitClipKey: Action_Hit_Damage
+  hitClipVolume: 1
   muzzleTransform: {fileID: 0}
   TPSCameraTransform: {fileID: 0}
   playerLayer:
@@ -3227,6 +3242,9 @@ MonoBehaviour:
   randomSpreadMultiplier: {x: 0, y: 0}
   runninngSpreadMultiplier: {x: 3, y: 6}
   ADSspreadReduction: 0.8
+  fireClipKey: Weapon_Fire_SemiAutoRifle
+  fireClipVolume: 1
+  fireClipStartTime: 0
 --- !u!1 &7746169022328754119
 GameObject:
   m_ObjectHideFlags: 0

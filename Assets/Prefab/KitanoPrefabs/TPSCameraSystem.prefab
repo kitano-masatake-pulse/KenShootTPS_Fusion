@@ -137,7 +137,7 @@ MonoBehaviour:
   m_AvoidObstacles: 1
   m_DistanceLimit: 0
   m_MinimumOcclusionTime: 0
-  m_CameraRadius: 0.25
+  m_CameraRadius: 0.3
   m_Strategy: 0
   m_MaximumEffort: 4
   m_SmoothingTime: 0

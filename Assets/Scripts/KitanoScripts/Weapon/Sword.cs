@@ -18,8 +18,8 @@ public class Sword : WeaponBase
 
 
     [SerializeField] Transform swordRoot;//球状の判定の中心位置
-    float swordLength = 1f; // 球状の判定の半径
-    float timeUntilAttack= 1f; // モーション開始から攻撃判定までの時間
+    [SerializeField] float swordLength = 1f; // 球状の判定の半径
+    [SerializeField] float timeUntilAttack= 1f; // モーション開始から攻撃判定までの時間
  
 
 
@@ -113,7 +113,7 @@ public class Sword : WeaponBase
             hits, 
             playerLayer,
             //HitOptions.IgnoreInputAuthority
-            HitOptions.IgnoreInputAuthority // HitOptions.Noneを使用して、すべてのヒットを取得する
+            HitOptions.IgnoreInputAuthority | HitOptions.IncludePhysX // HitOptions.Noneを使用して、すべてのヒットを取得する
             );
 
         if (OverlapSphereVisualizer.Instance != null)

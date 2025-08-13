@@ -179,6 +179,7 @@ GameObject:
   - component: {fileID: 3153487212041384059}
   - component: {fileID: 7377834490861277576}
   - component: {fileID: 8639525502424469828}
+  - component: {fileID: 4819034671325671825}
   - component: {fileID: 7729538735358623607}
   - component: {fileID: 8866535128478781858}
   - component: {fileID: 2868931174358470703}
@@ -276,7 +277,7 @@ MonoBehaviour:
     m_Bits: 64
   obstructionLayer:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 129
   directHitRadius: 1
   blastHitRadius: 5
   minBlastDamage: 20
@@ -289,6 +290,25 @@ MonoBehaviour:
   timerClipVolume: 0.5
   explosionClipKey: Weapon_Bomb_Grenade
   explosionClipVolume: 0.5
+  explosionPrefab: {fileID: 535414631533796622, guid: 9d447e19258fe2f4494127994e949b42, type: 3}
+  wallMask:
+    serializedVersion: 2
+    m_Bits: 129
+  normalOffset: 0.2
+  castRadius: 0.4
+  spawner: {fileID: 4819034671325671825}
+--- !u!114 &4819034671325671825
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5956020747884612091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 773f4faec78ccbe4db8f9b89dc5b9c23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &7729538735358623607
 MonoBehaviour:
   m_ObjectHideFlags: 0
