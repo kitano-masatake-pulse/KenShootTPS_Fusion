@@ -120,13 +120,13 @@ public class TPSCameraController : MonoBehaviour
     #endregion
     private void OnEnable()
     {
-        OptionsManager.Instance.OnApplied -= UpdateMouseOption; // オプション適用イベントを購読解除
-        OptionsManager.Instance.OnApplied += UpdateMouseOption; // オプション適用イベントを購読
+        OptionsManager.OnApplied -= UpdateMouseOption; // オプション適用イベントを購読解除
+        OptionsManager.OnApplied += UpdateMouseOption; // オプション適用イベントを購読
 
     }
     private void OnDisable()
     {
-        OptionsManager.Instance.OnApplied -= UpdateMouseOption; // オプション適用イベントを購読解除
+        OptionsManager.OnApplied -= UpdateMouseOption; // オプション適用イベントを購読解除
     }
 
 
@@ -448,27 +448,16 @@ public class TPSCameraController : MonoBehaviour
 
     #endregion
 
-
-    #region カーソル関連
-    void LockCursor()
+    public void SetYawPitch(float yaw, float pitch)
     {
-        Cursor.lockState = CursorLockMode.Locked; // 中央固定
-        Cursor.visible = false;
-        cursorLocked = true;
+        this.yaw = yaw;
+        this.pitch = pitch;
+        cameraTarget.rotation = Quaternion.Euler(pitch - currentRecoil_Pitch, yaw + currentRecoil_Yaw, 0f);
     }
 
-    void UnlockCursor()
-    {
-        Cursor.lockState = CursorLockMode.None; // 通常カーソル
-        Cursor.visible = true;
-        cursorLocked = false;
-    }
-
-    #endregion
 
 
 
-    
 
     public Transform GetTPSCameraTransform()
     {

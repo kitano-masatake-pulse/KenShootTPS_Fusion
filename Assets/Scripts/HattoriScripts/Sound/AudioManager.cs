@@ -101,13 +101,13 @@ public class AudioManager : MonoBehaviour
         SceneTransitionManager.OnSceneUnload -= OnSceneUnloaded;
         SceneTransitionManager.OnSceneLoad += OnSceneLoaded;
         SceneTransitionManager.OnSceneUnload += OnSceneUnloaded;
-        OptionsManager.Instance.OnApplied += ApplyOptions;
+        OptionsManager.OnApplied += ApplyOptions;
     }
     void OnDisable()
     {
         SceneTransitionManager.OnSceneLoad -= OnSceneLoaded;
         SceneTransitionManager.OnSceneUnload  -= OnSceneUnloaded;
-        OptionsManager.Instance.OnApplied -= ApplyOptions;
+        OptionsManager.OnApplied -= ApplyOptions;
     }
     void OnSceneLoaded(SceneType scene)
     {

@@ -9,7 +9,7 @@ public class OptionsManager : MonoBehaviour
     public OptionData CurrentData; //適用中
     public OptionData WorkingData;　//編集中
 
-    public Action<OptionData> OnApplied;
+    public static Action<OptionData> OnApplied;
 
 
     void Awake()
@@ -18,8 +18,12 @@ public class OptionsManager : MonoBehaviour
         else Destroy(gameObject);
         Load();
         WorkingData = CurrentData;//初期状態は適用中のデータをコピー
-        OnApplied?.Invoke(CurrentData);
 
+    }
+    void Start()
+    {
+        //初期状態で適用
+        OnApplied?.Invoke(CurrentData);
     }
 
     private void OnEnable()

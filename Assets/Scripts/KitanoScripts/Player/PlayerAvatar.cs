@@ -255,7 +255,7 @@ public class PlayerAvatar : NetworkBehaviour
         }
         else
         {
-            TeleportToInitialSpawnPoint(new Vector3(0, 2, 0));
+            TeleportToInitialSpawnPoint(new Vector3(0, 2, 0), Quaternion.Euler(0,180,0));
         }
 
     }
@@ -311,11 +311,16 @@ public class PlayerAvatar : NetworkBehaviour
     }
 
 
-    public void TeleportToInitialSpawnPoint(Vector3 initialSpawnPoint)
-    {   
-        // 初期スポーンポイントにテレポートする
-        transform.position = initialSpawnPoint; // プレイヤーの位置を初期スポーンポイントに設定
+    public void TeleportToInitialSpawnPoint(Vector3 initialSpawnPoint, Quaternion? playerRotation =null)
+    {
         characterController.enabled = false; // CharacterControllerを一時的に無効化
+
+        var rot = playerRotation ?? Quaternion.identity;
+        Debug.Log($"Teleporting to initial spawn point: {initialSpawnPoint}, rotation: {rot.eulerAngles}"); //デバッグログ
+        // 初期スポーンポイントにテレポートする
+        if(tpsCameraController != null){tpsCameraController.SetYawPitch(rot.eulerAngles.y, rot.eulerAngles.x);}
+        transform.SetPositionAndRotation(initialSpawnPoint, rot);
+        
         characterController.enabled = true; // 再度有効化して、衝突判定をリセット
 
     }
