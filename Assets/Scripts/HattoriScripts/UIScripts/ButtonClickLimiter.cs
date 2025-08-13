@@ -8,7 +8,8 @@ public class ButtonClickLimiter : MonoBehaviour
     [SerializeField]
     Button[] buttons;
     [SerializeField]
-    UnityEngine.Events.UnityEvent onFirstClick;
+    CanvasGroup canvasGroup; 
+
     private bool _isClicked = false;
 
     private void Awake()
@@ -16,6 +17,10 @@ public class ButtonClickLimiter : MonoBehaviour
         if (buttons == null || buttons.Length == 0)
         {
             buttons = GetComponentsInChildren<Button>(true);
+        }
+        if (canvasGroup == null)
+        {
+            canvasGroup = GetComponent<CanvasGroup>();
         }
         foreach (Button button in buttons)
         {
@@ -33,7 +38,17 @@ public class ButtonClickLimiter : MonoBehaviour
     {
         if (_isClicked) return;
         _isClicked = true;
-        onFirstClick?.Invoke();
+        if (canvasGroup != null)
+        {
+            canvasGroup.interactable = false;
+            canvasGroup.blocksRaycasts = false;
+        }
+        else {             
+            foreach (Button button in buttons)
+            {
+                button.interactable = false;
+            }
+        }
     }
 }
 
