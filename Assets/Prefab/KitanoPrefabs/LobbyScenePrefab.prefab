@@ -269,6 +269,14 @@ PrefabInstance:
       propertyPath: networkInputManager
       value: 
       objectReference: {fileID: 1089007334912242511}
+    - target: {fileID: 5254638866690879586, guid: ae1d5ef37f3ed3245a94ed95ec9d90a4, type: 3}
+      propertyPath: playerAvatarPrefab.RawGuidValue.Array.data[0]
+      value: 3787067905171981268
+      objectReference: {fileID: 0}
+    - target: {fileID: 5254638866690879586, guid: ae1d5ef37f3ed3245a94ed95ec9d90a4, type: 3}
+      propertyPath: playerAvatarPrefab.RawGuidValue.Array.data[1]
+      value: -299955381400440278
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -847,6 +855,7 @@ MonoBehaviour:
   clickKey: se_confirm_new
   submitKey: se_confirm_new
   cancelKey: se_cancel
+  hoverVolume: 0.3
 --- !u!114 &4837962720996736568 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4547017541915565445, guid: 1de900dc938bd534c95841352cb078fa, type: 3}
@@ -879,6 +888,7 @@ MonoBehaviour:
   clickKey: se_confirm_new
   submitKey: se_confirm_new
   cancelKey: se_cancel
+  hoverVolume: 0.3
 --- !u!224 &7663152544308784040 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1612668590814169109, guid: 1de900dc938bd534c95841352cb078fa, type: 3}

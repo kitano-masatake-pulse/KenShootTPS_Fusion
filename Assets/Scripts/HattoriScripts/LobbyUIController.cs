@@ -26,6 +26,7 @@ public class LobbyUIController : MonoBehaviour
     {
         // ‰Šú”ñ•\¦
         startBattleButton.gameObject.SetActive(false);
+        startText.GetComponentInChildren<TextMeshProUGUI>().text = "Waiting for Host to Start Battlec";
         startBattleButton.onClick.AddListener(OnStartBattleClicked);
         leaveRoomButton.onClick.AddListener(OnLeaveRoomClicked);
 
@@ -35,7 +36,7 @@ public class LobbyUIController : MonoBehaviour
     {
         this.runner = runner;
         //startBattleButton.gameObject.SetActive(true);
-        startText.SetActive(true);
+        startText.GetComponentInChildren<TextMeshProUGUI>().text = "Press Enter to Start Battle";
     }
 
     void OnStartBattleClicked()
