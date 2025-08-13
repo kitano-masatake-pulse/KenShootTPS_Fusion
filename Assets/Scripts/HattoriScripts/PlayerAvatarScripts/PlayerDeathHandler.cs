@@ -34,7 +34,8 @@ public class PlayerDeathHandler : NetworkBehaviour
         }
         Debug.Log($"PlayerDeathHandler: Player{victim.PlayerId} has died at {hostTimeStamp} by {killer.PlayerId}");
         //プレイヤーアバターに死亡アニメーションを設定
-        playerAvatar.SetActionAnimationPlayListForAllClients(ActionType.Dead);
+
+        playerAvatar.SetActionAnimationPlayList(ActionType.Dead,hostTimeStamp);
         //行動不能化
        
         playerAvatar.CurrentWeaponActionState= WeaponActionState.Stun;

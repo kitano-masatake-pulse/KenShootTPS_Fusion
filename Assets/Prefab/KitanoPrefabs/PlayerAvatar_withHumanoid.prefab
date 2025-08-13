@@ -1060,7 +1060,7 @@ MonoBehaviour:
   headObject: {fileID: 2171211468819611867}
   bodyObject: {fileID: 2852828816588928964}
   myPlayerHitboxRoot: {fileID: 0}
-  moveSpeed: 6
+  moveSpeed: 12
   gravity: -9.8
   jumpHeight: 2
   raycastDistance: 1.5

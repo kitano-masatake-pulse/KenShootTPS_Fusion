@@ -120,7 +120,7 @@ public class RespawnManager : NetworkBehaviour
 
             }
 
-        if (playerObject != null && playerObject.IsValid)
+        if (playerObject != null)
         {
 
 
@@ -149,7 +149,7 @@ public class RespawnManager : NetworkBehaviour
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_RespawnEnd(NetworkObject playerObject)
     {
-        if (playerObject == null || !playerObject.IsValid)
+        if (playerObject == null)
         {
             Debug.LogWarning("RPC_RespawnEnd: Invalid player object.");
             return;

@@ -1241,6 +1241,7 @@ public class PlayerAvatar : NetworkBehaviour
 
     void CancelADS()
     {
+        if (!HasInputAuthority) return;
         if (currentWeapon.CanADS())
         {
             isADS = false; //ADSを解除
@@ -1282,11 +1283,12 @@ public class PlayerAvatar : NetworkBehaviour
 
 
 
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority, HostMode = RpcHostMode.SourceIsHostPlayer, TickAligned = false)]
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority, HostMode = RpcHostMode.SourceIsHostPlayer, TickAligned = false)]
     public void RPC_RequestActionAnimation(ActionType actionType, float calledTime, RpcInfo info = default)
     {
         // RPC送信（即送信）
-       // Debug.Log($" {info.Source} Requests Jump. {info.Tick} SimuTime: {calledTime}");
+        // Debug.Log($" {info.Source} Requests Jump. {info.Tick} SimuTime: {calledTime}");
+        Debug.Log("Before RPC_RequestActionAnimation actionType:" + actionType);
         RPC_ApplyActionAnimation(info.Source,actionType, calledTime); //アクションアニメーションのリストに追加するだけ(接地判定も座標変化もしない)
         Debug.Log("RPC_RequestActionAnimation actionType:" + actionType);
 
@@ -1297,6 +1299,7 @@ public class PlayerAvatar : NetworkBehaviour
     {
         //Debug.Log($"LocalPlayer {Runner.LocalPlayer}");
         //Debug.Log($"SourcePlayer {sourcePlayer}");
+        Debug.Log($"RPC_ApplyActionAnimation called. Source: {sourcePlayer}, ActionType: {actionType}");
         if (Runner.LocalPlayer != sourcePlayer)
         {
            // Debug.Log($" Apply Jump of  {sourcePlayer}. Tick:{info.Tick} SimuTime: {Runner.SimulationTime}");
