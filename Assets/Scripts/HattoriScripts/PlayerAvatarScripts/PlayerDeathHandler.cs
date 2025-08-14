@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using System.Collections;
 using Fusion;
 using TMPro;
@@ -13,6 +13,7 @@ public class PlayerDeathHandler : NetworkBehaviour
         if(GameManager2.Instance != null)
         {
             GameManager2.Instance.OnAnyPlayerDied += HandleDeath;
+            Debug.Log("PlayerDeathHandler: Registered to GameManager2.OnAnyPlayerDied");
         }
         
     }
@@ -22,34 +23,36 @@ public class PlayerDeathHandler : NetworkBehaviour
         if (GameManager2.Instance != null)
         {
             GameManager2.Instance.OnAnyPlayerDied -= HandleDeath;
+            Debug.Log("PlayerDeathHandler: Unregistered from GameManager2.OnAnyPlayerDied");
         }
     }
 
-    private void HandleDeath( float hostTimeStamp, PlayerRef victim, PlayerRef killer)
+    public void HandleDeath( float hostTimeStamp, PlayerRef victim, PlayerRef killer)
     {
-        //‚±‚ÌƒvƒŒƒCƒ„[‚Å‚È‚¢ê‡‚Í‰½‚à‚µ‚È‚¢
+        Debug.Log($"PlayerDeathHandlerBefore:victim:{victim}, killer: {killer}, hostTimeStamp: {hostTimeStamp},InputAuthority:{Object.InputAuthority}");
+        //ã“ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã§ãªã„å ´åˆã¯ä½•ã‚‚ã—ãªã„
         if (victim != Object.InputAuthority)
         {
             return;
         }
         Debug.Log($"PlayerDeathHandler: Player{victim.PlayerId} has died at {hostTimeStamp} by {killer.PlayerId}");
-        //ƒvƒŒƒCƒ„[ƒAƒoƒ^[‚É€–SƒAƒjƒ[ƒVƒ‡ƒ“‚ğİ’è
+        //ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚¢ãƒã‚¿ãƒ¼ã«æ­»äº¡ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’è¨­å®š
 
         playerAvatar.SetActionAnimationPlayList(ActionType.Dead,hostTimeStamp);
-        //s“®•s”\‰»
+        //è¡Œå‹•ä¸èƒ½åŒ–
        
         playerAvatar.CurrentWeaponActionState= WeaponActionState.Stun;
         playerAvatar.SetReturnTimeToIdle(0f);
         playerAvatar.IsImmobilized = true;
-        //Šç‚ÌƒJƒƒ‰’Ç]‚ğØ‚é
+        //é¡”ã®ã‚«ãƒ¡ãƒ©è¿½å¾“ã‚’åˆ‡ã‚‹
         playerAvatar.IsFollowingCameraForward = false;
-        //Collider –³Œø‰»(ƒŒƒCƒ„[Ø‚è‘Ö‚¦)
+        //Collider ç„¡åŠ¹åŒ–(ãƒ¬ã‚¤ãƒ¤ãƒ¼åˆ‡ã‚Šæ›¿ãˆ)
         foreach (var col in GetComponentsInChildren<Collider>())
             col.gameObject.layer = LayerMask.NameToLayer("DeadPlayer");
-        //Hitbox –³Œø‰»(ƒŒƒCƒ„[Ø‚è‘Ö‚¦)
+        //Hitbox ç„¡åŠ¹åŒ–(ãƒ¬ã‚¤ãƒ¤ãƒ¼åˆ‡ã‚Šæ›¿ãˆ)
         foreach (var hitbox in GetComponentsInChildren<PlayerHitbox>())
             hitbox.gameObject.layer = LayerMask.NameToLayer("DeadHitbox");
-        //ƒl[ƒ€ƒ^ƒO”ñ•\¦
+        //ãƒãƒ¼ãƒ ã‚¿ã‚°éè¡¨ç¤º
         WorldUICanvas.SetActive(false);
         
 
