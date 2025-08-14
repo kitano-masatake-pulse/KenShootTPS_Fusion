@@ -75,7 +75,7 @@ public class PlayerAvatar : NetworkBehaviour
     public Vector3 normalizedInputDirection = Vector3.zero; //入力方向の正規化されたベクトル。OnInput()で参照するためpublic
 
     //見た目周り
-    private SkinnedMeshRenderer[] _renderers;
+    private Renderer[] _renderers;
 
     //座標同期用のネットワークプロパティ
     [Networked] public Vector3 avatarPositionInHost { get; set; } = Vector3.zero; //ホスト環境でのアバター位置(入力権限のあるプレイヤーの位置を参照するために使用)
@@ -170,10 +170,12 @@ public class PlayerAvatar : NetworkBehaviour
     [Header("Homing Settings")]
     [SerializeField] private float chaseAngle = 90f; // FOVの角度（度単位）
     [SerializeField] private float chaseRange = 5f; // 射程距離
-    [SerializeField] private float chaseSpeed = 6f; // 移動速度
+    [SerializeField] private float chaseSpeed = 12f; // 移動速度
     [SerializeField] private float maxTurnAnglePerFrame = 5f; // 追尾の角度（度単位）
+    [SerializeField] private float homingDistanceThreshold = 0.1f; // ホーミングの距離しきい値
     [SerializeField] private float maxAlignToCameraAnglePerSecond = 360f; // 追尾の角度（度単位）
-    [SerializeField] private float homingTime = 1f; // ホーミングの時間
+    [SerializeField] private float homingStartTime = 0.2f; // ホーミングの時間
+    [SerializeField] private float homingTime = 0.8f; // ホーミングの時間
     [SerializeField] private float attackImmolizedTime = 1.5f; // 攻撃開始→攻撃後硬直終了までの時間
     [SerializeField] private float rotationDuration = 0.1f; //カメラの前方向に向くまでの時間(0.1秒かけてカメラの前方向に向く)
     private Vector3 homingMoveDirection = Vector3.forward; // ホーミング中の現在の移動方向
@@ -193,7 +195,7 @@ public class PlayerAvatar : NetworkBehaviour
     {
         //SetNickName($"Player({Object.InputAuthority.PlayerId})");
         //PlayerAvatarのRenderer
-        _renderers = GetComponentsInChildren<SkinnedMeshRenderer>();
+        _renderers = GetComponentsInChildren<Renderer>(includeInactive:true);
 
         myPlayerHitboxRoot = GetComponent<HitboxRoot>();
 
@@ -216,6 +218,7 @@ public class PlayerAvatar : NetworkBehaviour
             //自分のアバターなら、TPSカメラに紐づける
             tpsCameraController = FindObjectOfType<TPSCameraController>();
 
+            tpsCameraController.SetPlayerAvatar(this); //TPSカメラコントローラーに自身のPlayerAvatarを設定
             tpsCameraTransform = tpsCameraController.transform;
 
             // 入力管理オブジェクトを取得し、自身のアバターを登録
@@ -580,6 +583,9 @@ public class PlayerAvatar : NetworkBehaviour
     {
         foreach (var rend in _renderers)
         {
+            bool isMesh = rend is MeshRenderer || rend is SkinnedMeshRenderer;
+            if (!isMesh) continue;
+
             rend.enabled = false;
         }
     }
@@ -588,6 +594,8 @@ public class PlayerAvatar : NetworkBehaviour
     {
         foreach (var rend in _renderers)
         {
+            bool isMesh = rend is MeshRenderer || rend is SkinnedMeshRenderer;
+            if (!isMesh) continue;
             rend.enabled = true;
         }
     }
@@ -786,7 +794,7 @@ public class PlayerAvatar : NetworkBehaviour
             toTarget.y = 0f; // Y軸の成分をゼロにして水平面上の方向を取得
             toTarget.Normalize(); // 正規化して方向ベクトルにする
 
-            bodyObject.transform.forward = toTarget; // プレイヤーの向きをターゲット方向に設定
+            //bodyObject.transform.forward = toTarget; // プレイヤーの向きをターゲット方向に設定
 
             homingMoveDirection = toTarget; // 現在の移動方向を更新
 
@@ -794,37 +802,55 @@ public class PlayerAvatar : NetworkBehaviour
 
 
         }
+        else
+        {
+            isHoming = true;// ホーミングを開始
+            // ターゲットが見つからない場合は前進するだけ
+            StartCoroutine(HomingCoroutine()); // ホーミング時間の管理を開始
+        }
     }
 
 
     void Homing(Vector3 attackerTransform, Transform targetTransform)
     {
-
-
-        Vector3 toTarget = (targetTransform.position - attackerTransform);
-        toTarget.y = 0f; // Y軸の成分をゼロにして水平面上の方向を取得
-        toTarget.Normalize(); // 正規化して方向ベクトルにする
-
-        // 今の移動方向から敵への方向との差を角度で計算
-        float angleToTarget = Vector3.Angle(homingMoveDirection, toTarget);
-
-        // 角度差がある場合は補正
-        if (angleToTarget > 0f)
-        {
-            // 回転角の制限（最大maxTurnAnglePerFrame度）
-            float t = Mathf.Min(1f, maxTurnAnglePerFrame / angleToTarget);
-            homingMoveDirection = Vector3.Slerp(homingMoveDirection, toTarget, t);
-        }
-
         // 移動
-        characterController.Move(homingMoveDirection * chaseSpeed * Time.deltaTime);
-        //transform.position += homingMoveDirection * chaseSpeed * Time.deltaTime;
+        
+        if (currentTargetTransform != null)
+        {
+            Vector3 toTarget = (targetTransform.position - attackerTransform);
+            Debug.Log($"Homing to target: {targetTransform.name} at position {targetTransform.position}");
+            toTarget.y = 0f; // Y軸の成分をゼロにして水平面上の方向を取得
+            Vector3  toTargetDirection = toTarget.normalized; // 正規化して方向ベクトルにする
 
-        // 向きを移動方向に合わせる（任意）
-        bodyObject.transform.forward = homingMoveDirection;
+            // 今の移動方向から敵への方向との差を角度で計算
+            float angleToTarget = Vector3.Angle(homingMoveDirection, toTargetDirection);
 
-        //Debug.Log($"Homing towards {targetTransform.name}");
+            // 角度差がある場合は補正
+            if (angleToTarget > 0f)
+            {
+                // 回転角の制限（最大maxTurnAnglePerFrame度）
+                float t = Mathf.Min(1f, maxTurnAnglePerFrame / angleToTarget);
+                homingMoveDirection = Vector3.Slerp(homingMoveDirection, toTargetDirection, t);
+            }
 
+            Debug.Log($"Homing Move Direction: {homingMoveDirection},distance:{toTarget.magnitude}");
+            if (toTarget.magnitude > homingDistanceThreshold)
+            {
+                characterController.Move(bodyObject.transform.forward * chaseSpeed * Time.deltaTime);
+            }
+
+            //transform.position += homingMoveDirection * chaseSpeed * Time.deltaTime;
+
+            // 向きを移動方向に合わせる（任意）
+            bodyObject.transform.forward = homingMoveDirection;
+
+            //Debug.Log($"Homing towards {targetTransform.name}");
+        }
+        else 
+        {
+            characterController.Move(bodyObject.transform.forward * chaseSpeed * Time.deltaTime);
+
+        }
 
 
     }
@@ -833,7 +859,7 @@ public class PlayerAvatar : NetworkBehaviour
     IEnumerator HomingCoroutine()
     {
         yield return new WaitForSeconds(homingTime);
-
+        currentTargetTransform = null; // ターゲットをクリア
         isHoming = false; // ホーミングを終了
     }
 
@@ -1013,8 +1039,9 @@ public class PlayerAvatar : NetworkBehaviour
         }
         else
         {
-            // 近くに敵がいない場合、ホーミングせずその場で攻撃
 
+            // 近くに敵がいない場合、ホーミングせず前進しながら攻撃
+            StartHoming(null); 
             Debug.Log("No target found for homing. Attacking in place.");
 
 

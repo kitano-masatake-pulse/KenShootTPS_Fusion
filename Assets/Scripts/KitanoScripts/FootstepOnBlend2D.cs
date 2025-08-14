@@ -32,6 +32,7 @@ public class FootstepOnBlend2D_UsingAudioManager : StateMachineBehaviour
     [Tooltip("足音をキャラクター位置から鳴らす（true: AnimatorのTransformをfollow、false: 2D=非3D音）")]
     public bool spatialFollowCharacter = true;
 
+
     [Tooltip("ベース音量（OneShot直後にSetSoundVolumeで適用）")]
     [Range(0f, 1f)] public float baseVolume = 1f;
     [Tooltip("音量のランダム幅（±）")]
@@ -95,9 +96,9 @@ public class FootstepOnBlend2D_UsingAudioManager : StateMachineBehaviour
                 clipKey: key,
                 category: category,
                 startTime: 0f,
-                soundVolume: 1f,
+                soundVolume: baseVolume,
                 type: SoundType.OneShot,
-                pos: null,
+                pos: animator.transform.position,
                 followTarget: animator.transform // キャラに追従
             );
         }
@@ -107,19 +108,19 @@ public class FootstepOnBlend2D_UsingAudioManager : StateMachineBehaviour
                 clipKey: key,
                 category: category,
                 startTime: 0f,
-                soundVolume: 1f,
+                soundVolume: baseVolume,
                 type: SoundType.OneShot,
                 pos: null,
                 followTarget: null // 2D音
             );
         }
 
-        // ワンショット直後に音量だけ調整（ピッチはAudioManager APIにないため未対応）
-        if (handle.id != 0)
-        {
-            float vol = Mathf.Clamp01(baseVolume * (1f + Random.Range(-volumeJitter, volumeJitter)));
-            AudioManager.Instance.SetSoundVolume(handle, vol);
-        }
+        //// ワンショット直後に音量だけ調整（ピッチはAudioManager APIにないため未対応）
+        //if (handle.id != 0)
+        //{
+        //    float vol = Mathf.Clamp01(baseVolume * (1f + Random.Range(-volumeJitter, volumeJitter)));
+        //    AudioManager.Instance.SetSoundVolume(handle, vol);
+        //}
     }
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)

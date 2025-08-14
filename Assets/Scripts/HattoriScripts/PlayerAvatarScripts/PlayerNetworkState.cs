@@ -81,9 +81,9 @@ public class PlayerNetworkState : NetworkBehaviour
     #endregion
 
     [Header("音関係")]
-    [SerializeField] private string damagedClipKey; // 爆発音のクリップ
-    [SerializeField][Range(0f, 1f)] private float damagedClipVolume = 1f; // 爆発音の音量
-
+    [SerializeField] private string damagedClipKey; // 被弾音
+    [SerializeField][Range(0f, 1f)] private float damagedClipVolume = 1f; // 被弾音の音量
+    [SerializeField] private float damagedClipStartTime; // 被弾音の開始位置
 
 
     #region Unity Callbacks
@@ -140,6 +140,7 @@ public class PlayerNetworkState : NetworkBehaviour
 
 
         //被弾音を被弾者環境で鳴らす
+        Debug.Log($"RPC_PlayDamagedSE called .SE on {Object.InputAuthority}");
         RPC_PlayDamagedSE(Object.InputAuthority);
 
 
@@ -233,12 +234,23 @@ public class PlayerNetworkState : NetworkBehaviour
     [Rpc(RpcSources.StateAuthority, RpcTargets.All, HostMode = RpcHostMode.SourceIsHostPlayer, TickAligned = false)]
     public void RPC_PlayDamagedSE( PlayerRef targetPlayer)
     {
+        Debug.Log($"RPC_PlayDamagedSE called .SE on {targetPlayer},LocalPlayer:{Runner.LocalPlayer}");
         // ここで被弾音を再生する処理を実装
         // 例えば、AudioManagerなどのシングルトンを使って音を再生する
         if (Runner.LocalPlayer == targetPlayer)
         {
-             SoundHandle  SEHandle=AudioManager.Instance.PlaySound(damagedClipKey, SoundCategory.Action, pos: this.transform.position);
-            AudioManager.Instance.SetSoundVolume(SEHandle,damagedClipVolume); // 音量を設定
+             SoundHandle  SEHandle=AudioManager.Instance.PlaySound(
+                 damagedClipKey, 
+                 SoundCategory.Action,
+                 damagedClipStartTime,
+                 damagedClipVolume
+                 );
+            
+            
+
+            Debug.Log($"RPC_PlayDamagedSE: Played sound {damagedClipKey} with volume {damagedClipVolume} at position {this.transform.position}");
+
+
         }
 
 

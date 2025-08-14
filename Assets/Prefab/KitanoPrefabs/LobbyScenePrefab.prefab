@@ -533,34 +533,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5526528335563473999}
     m_Modifications:
-    - target: {fileID: 472528626033478026, guid: 54019f4e0d244af4d813704914d1fcc6, type: 3}
-      propertyPath: adsDistance
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 472528626033478026, guid: 54019f4e0d244af4d813704914d1fcc6, type: 3}
-      propertyPath: normalDistance
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 472528626033478026, guid: 54019f4e0d244af4d813704914d1fcc6, type: 3}
-      propertyPath: adsShoulderOffset.x
-      value: 0.6
-      objectReference: {fileID: 0}
-    - target: {fileID: 472528626033478026, guid: 54019f4e0d244af4d813704914d1fcc6, type: 3}
-      propertyPath: normalShoulderOffset.x
-      value: 0.6
-      objectReference: {fileID: 0}
-    - target: {fileID: 1618609762572778519, guid: 54019f4e0d244af4d813704914d1fcc6, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1618609762572778519, guid: 54019f4e0d244af4d813704914d1fcc6, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1618609762572778519, guid: 54019f4e0d244af4d813704914d1fcc6, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 5368526740904774832, guid: 54019f4e0d244af4d813704914d1fcc6, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

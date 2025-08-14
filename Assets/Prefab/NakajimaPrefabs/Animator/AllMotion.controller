@@ -555,7 +555,7 @@ MonoBehaviour:
   startTime: 0
   volume: 1
   type: 0
-  useSpatial: 0
+  useSpatial: 1
   useFollow: 0
   normalizedVolume: 1
 --- !u!1101 &-6952128048208987737
@@ -753,7 +753,7 @@ MonoBehaviour:
   startTime: 0
   volume: 1
   type: 0
-  useSpatial: 0
+  useSpatial: 1
   useFollow: 0
   normalizedVolume: 1
 --- !u!1102 &-6231892326552156573
@@ -1638,7 +1638,7 @@ AnimatorStateMachine:
     m_Position: {x: 1700, y: -60, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1850963386278112627}
-    m_Position: {x: 1490, y: -160, z: 0}
+    m_Position: {x: 1500, y: -160, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 8471990094095806690}
     m_Position: {x: 1930, y: -170, z: 0}
@@ -1760,7 +1760,7 @@ MonoBehaviour:
   startTime: 0
   volume: 1
   type: 0
-  useSpatial: 0
+  useSpatial: 1
   useFollow: 0
   normalizedVolume: 1
 --- !u!206 &-4023268524699607508
@@ -1929,6 +1929,31 @@ AnimatorStateTransition:
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
+--- !u!114 &-3201594055268537589
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bbb7538d460ee04bada65aa4b84d1d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  horizontalParam: Horizontal
+  verticalParam: Vertical
+  playThreshold: 0.15
+  stopThreshold: 0.1
+  maxInterval: 0.55
+  minInterval: 0.25
+  normalizeMaxMagnitude: 1
+  footstepClipKeys:
+  - Action_Run_1_OneShot
+  category: 1
+  spatialFollowCharacter: 1
+  baseVolume: 0.3
+  volumeJitter: 0.1
 --- !u!206 &-2991714283512830748
 BlendTree:
   m_ObjectHideFlags: 1
@@ -2161,6 +2186,31 @@ AnimatorStateTransition:
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
+--- !u!114 &-2474238543425327770
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bbb7538d460ee04bada65aa4b84d1d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  horizontalParam: Horizontal
+  verticalParam: Vertical
+  playThreshold: 0.15
+  stopThreshold: 0.1
+  maxInterval: 0.55
+  minInterval: 0.25
+  normalizeMaxMagnitude: 1
+  footstepClipKeys:
+  - Action_Run_1_OneShot
+  category: 1
+  spatialFollowCharacter: 1
+  baseVolume: 1
+  volumeJitter: 0.1
 --- !u!1102 &-2306292621590169964
 AnimatorState:
   serializedVersion: 6
@@ -2283,7 +2333,8 @@ AnimatorState:
   - {fileID: 9101792156283076506}
   - {fileID: 8109304410288948890}
   - {fileID: -5934988574245633354}
-  m_StateMachineBehaviours: []
+  m_StateMachineBehaviours:
+  - {fileID: -3201594055268537589}
   m_Position: {x: 50, y: 50, z: 0}
   m_IKOnFeet: 0
   m_WriteDefaultValues: 1
@@ -2647,7 +2698,7 @@ MonoBehaviour:
   startTime: 0
   volume: 1
   type: 0
-  useSpatial: 0
+  useSpatial: 1
   useFollow: 0
   normalizedVolume: 1
 --- !u!1102 &-906977885068464299
@@ -3089,7 +3140,7 @@ AnimatorStateMachine:
     m_Position: {x: 560, y: -130, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 8457996831135409531}
-    m_Position: {x: -20, y: -280, z: 0}
+    m_Position: {x: -20, y: -290, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -2306292621590169964}
     m_Position: {x: -310, y: -310, z: 0}
@@ -3436,7 +3487,7 @@ MonoBehaviour:
   startTime: 0
   volume: 1
   type: 0
-  useSpatial: 0
+  useSpatial: 1
   useFollow: 0
   normalizedVolume: 1
 --- !u!1101 &1110583611187365673
@@ -4376,7 +4427,8 @@ AnimatorState:
   - {fileID: 4111223106086590420}
   - {fileID: -4752833495099134693}
   - {fileID: 6647776746936263891}
-  m_StateMachineBehaviours: []
+  m_StateMachineBehaviours:
+  - {fileID: 5522619231129525225}
   m_Position: {x: 50, y: 50, z: 0}
   m_IKOnFeet: 0
   m_WriteDefaultValues: 1
@@ -4777,7 +4829,8 @@ AnimatorState:
   - {fileID: 8044099003024552696}
   - {fileID: -4635791489539467674}
   - {fileID: 1629250636420029148}
-  m_StateMachineBehaviours: []
+  m_StateMachineBehaviours:
+  - {fileID: 5845329297745438532}
   m_Position: {x: 50, y: 50, z: 0}
   m_IKOnFeet: 0
   m_WriteDefaultValues: 1
@@ -4814,6 +4867,31 @@ AnimatorStateTransition:
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
+--- !u!114 &5522619231129525225
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bbb7538d460ee04bada65aa4b84d1d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  horizontalParam: Horizontal
+  verticalParam: Vertical
+  playThreshold: 0.15
+  stopThreshold: 0.1
+  maxInterval: 0.55
+  minInterval: 0.25
+  normalizeMaxMagnitude: 1
+  footstepClipKeys:
+  - Action_Run_1_OneShot
+  category: 1
+  spatialFollowCharacter: 1
+  baseVolume: 0.3
+  volumeJitter: 0.1
 --- !u!1102 &5840862608016424708
 AnimatorState:
   serializedVersion: 6
@@ -4845,6 +4923,31 @@ AnimatorState:
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
+--- !u!114 &5845329297745438532
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bbb7538d460ee04bada65aa4b84d1d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  horizontalParam: Horizontal
+  verticalParam: Vertical
+  playThreshold: 0.15
+  stopThreshold: 0.1
+  maxInterval: 0.55
+  minInterval: 0.25
+  normalizeMaxMagnitude: 1
+  footstepClipKeys:
+  - Action_Run_1_OneShot
+  category: 1
+  spatialFollowCharacter: 1
+  baseVolume: 0.3
+  volumeJitter: 0.1
 --- !u!114 &5958192905968488491
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5627,7 +5730,8 @@ AnimatorState:
   - {fileID: -1705316075543547585}
   - {fileID: 6252537734482422692}
   - {fileID: 2907312156047954727}
-  m_StateMachineBehaviours: []
+  m_StateMachineBehaviours:
+  - {fileID: -2474238543425327770}
   m_Position: {x: 50, y: 50, z: 0}
   m_IKOnFeet: 0
   m_WriteDefaultValues: 1
@@ -5746,7 +5850,7 @@ MonoBehaviour:
   startTime: 0
   volume: 1
   type: 0
-  useSpatial: 0
+  useSpatial: 1
   useFollow: 0
   normalizedVolume: 1
 --- !u!1101 &8720840207138680740
@@ -5868,6 +5972,6 @@ MonoBehaviour:
   startTime: 0
   volume: 1
   type: 0
-  useSpatial: 0
+  useSpatial: 1
   useFollow: 0
   normalizedVolume: 1
