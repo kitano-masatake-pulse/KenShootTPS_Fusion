@@ -357,11 +357,9 @@ public class SemiAutoRifle : WeaponBase
         if (Runner.LocalPlayer==Object.InputAuthority)
         {
             SoundHandle SEHandle = AudioManager.Instance.PlaySound(fireClipKey, SoundCategory.Weapon, fireClipStartTime, fireClipVolume, SoundType.OneShot, this.transform.position);
-        }
-        else
-        {
             RPC_RequestPlayFireSE(); //RPCを呼び出して全クライアントに音を再生させる
         }
+        
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority, HostMode = RpcHostMode.SourceIsHostPlayer, TickAligned = false)]

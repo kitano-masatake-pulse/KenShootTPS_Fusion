@@ -170,7 +170,7 @@ public class PlayerAvatar : NetworkBehaviour
     [Header("Homing Settings")]
     [SerializeField] private float chaseAngle = 90f; // FOVの角度（度単位）
     [SerializeField] private float chaseRange = 5f; // 射程距離
-    [SerializeField] private float chaseSpeed = 6f; // 移動速度
+    [SerializeField] private float chaseSpeed = 12f; // 移動速度
     [SerializeField] private float maxTurnAnglePerFrame = 5f; // 追尾の角度（度単位）
     [SerializeField] private float maxAlignToCameraAnglePerSecond = 360f; // 追尾の角度（度単位）
     [SerializeField] private float homingTime = 1f; // ホーミングの時間
