@@ -554,6 +554,7 @@ GameObject:
   - component: {fileID: 6785575513215236141}
   - component: {fileID: 8899285341624780262}
   - component: {fileID: 2407641519552898084}
+  - component: {fileID: 8055161611649304206}
   m_Layer: 5
   m_Name: ReturnButton
   m_TagString: Untagged
@@ -688,6 +689,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneType: 1
+--- !u!114 &8055161611649304206
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2246888848009834684}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c61dfbbf92da347468490da2af2ba231, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hoverKey: se_sentaku
+  clickKey: se_confirm_new
+  submitKey: se_confirm_new
+  cancelKey: se_cancel
+  hoverVolume: 0.3
 --- !u!1 &2572458261262404780
 GameObject:
   m_ObjectHideFlags: 0
@@ -1958,6 +1976,7 @@ GameObject:
   - component: {fileID: 3772817946227212850}
   - component: {fileID: 9135687401899742873}
   - component: {fileID: 7558077688965412513}
+  - component: {fileID: 187969522312770594}
   m_Layer: 5
   m_Name: ExitButton
   m_TagString: Untagged
@@ -2093,6 +2112,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneType: 0
   exitButtonText: {fileID: 4849153501047301918}
+--- !u!114 &187969522312770594
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7137731062445649155}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c61dfbbf92da347468490da2af2ba231, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hoverKey: se_sentaku
+  clickKey: se_confirm_new
+  submitKey: se_confirm_new
+  cancelKey: se_cancel
+  hoverVolume: 0.3
 --- !u!1 &8071613023152019226
 GameObject:
   m_ObjectHideFlags: 0

@@ -1234,6 +1234,10 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 1944239326}
+    - target: {fileID: 5726843950006335380, guid: 5c51c096cf7287f44b35786fdcf4b89b, type: 3}
+      propertyPath: lobbySceneType
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 5759754622283315158, guid: 5c51c096cf7287f44b35786fdcf4b89b, type: 3}
       propertyPath: m_AnchorMax.x
       value: 1
@@ -1320,7 +1324,7 @@ PrefabInstance:
       objectReference: {fileID: 1944239326}
     - target: {fileID: 9050817910657007441, guid: 5c51c096cf7287f44b35786fdcf4b89b, type: 3}
       propertyPath: lobbySceneType
-      value: 1
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 9160069625286161375, guid: 5c51c096cf7287f44b35786fdcf4b89b, type: 3}
       propertyPath: m_AnchorMax.x

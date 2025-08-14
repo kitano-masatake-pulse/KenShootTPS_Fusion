@@ -25,14 +25,15 @@ public class RespawnManager : NetworkBehaviour
     private List<RespawnPoint> respawnPoints =
     new List<RespawnPoint>
     {
-        new RespawnPoint(new Vector3(-9, 2, -93), Quaternion.Euler(0, 90, 0)), // リスポーン地点1
+        new RespawnPoint(new Vector3(46, 5, -29), Quaternion.Euler(0, 90, 0)), // リスポーン地点1
         new RespawnPoint(new Vector3(94, 5, 14), Quaternion.Euler(0, 180, 0)), // リスポーン地点2
         new RespawnPoint(new Vector3(27, 0, 91), Quaternion.Euler(0, 90, 0)), // リスポーン地点3
-        new RespawnPoint(new Vector3(-97, 5, 7.5f), Quaternion.Euler(0, 0, 0)), // リスポーン地点4
-        new RespawnPoint(new Vector3(-40, 5, -55), Quaternion.Euler(0, 45, 0)), // リスポーン地点5
-        new RespawnPoint(new Vector3(49, 5, 18), Quaternion.Euler(0, 90, 0)), // リスポーン地点6
-        new RespawnPoint(new Vector3(-20, 3, 64), Quaternion.Euler(0, 135, 0)), // リスポーン地点7
-        new RespawnPoint(new Vector3(57.5f, 9.5f, -44), Quaternion.Euler(0, -135, 0)), // リスポーン地点8
+        new RespawnPoint(new Vector3(3, 0, 25), Quaternion.Euler(0, -90, 0)), // リスポーン地点4
+        new RespawnPoint(new Vector3(50, 4, 23), Quaternion.Euler(0, -90, 0)), // リスポーン地点5
+        new RespawnPoint(new Vector3(25, 1, 67), Quaternion.Euler(0, -135, 0)), // リスポーン地点6
+        new RespawnPoint(new Vector3(-26, 4, -15), Quaternion.Euler(0, 45, 0)), // リスポーン地点7
+        new RespawnPoint(new Vector3(6, 4, -35), Quaternion.Euler(0, 30, 0)), // リスポーン地点8
+        
 
     };
 

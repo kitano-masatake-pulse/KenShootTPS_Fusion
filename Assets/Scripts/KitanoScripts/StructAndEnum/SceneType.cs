@@ -9,7 +9,7 @@ public enum SceneType
     Lobby = 1 << 0,
     Battle = 1 << 1,
     Result = 1 << 2,
-    Test_Loaded = 1 << 3,
+    HattoriLobby = 1 << 3,
     KitanoBattleTest = 1 << 4,
     NakajimaBattleTest = 1 << 5,
     HattoriBattleTest = 1 << 6,
@@ -39,7 +39,6 @@ public static class SceneTypeExtensions
             SceneType.Lobby => "LobbyScene",
             SceneType.Battle => "BattleScene",
             SceneType.Result => "ResultScene",
-            SceneType.Test_Loaded => "SceneLoadTest_Loaded",
             SceneType.KitanoBattleTest => "KitanoBattleTestScene",
             SceneType.NakajimaBattleTest => "NakajimaBattleTestScene",
             SceneType.HattoriBattleTest => "HattoriBattleTestScene",
@@ -49,7 +48,9 @@ public static class SceneTypeExtensions
             SceneType.HattoriResult => "HattoriResultScene",
             SceneType.KitanoTitle => "KitanoTitleTest",
             SceneType.HattoriTitle => "HattoriTitleScene",
+            SceneType.HattoriLobby => "HattoriLobbyScene",
             SceneType HattoriUITest => "HattoriUITestScene",
+
             //_ => throw new ArgumentOutOfRangeException(nameof(type), $"未定義のSceneTypeです: {type}")
         };
     }
@@ -89,6 +90,7 @@ public static class SceneTypeExtensions
             "KitanoTitleTest"=> SceneType.KitanoTitle,
             "HattoriTitleScene"=> SceneType.HattoriTitle,
             "HattoriUITestScene" => SceneType.HattoriUITest,
+            "HattoriLobbyScene" => SceneType.HattoriLobby,
             _ => SceneType.None
 
         };
