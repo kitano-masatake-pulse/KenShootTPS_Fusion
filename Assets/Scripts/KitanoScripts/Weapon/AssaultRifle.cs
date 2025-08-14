@@ -219,14 +219,7 @@ public class AssaultRifle : WeaponBase
 
 
         //射撃音の再生
-        if (AudioManager.Instance != null && !string.IsNullOrEmpty(fireClipKey)) // AudioManagerが存在し、クリップキーが設定されている場合
-        {
-            SoundHandle SEHandle = AudioManager.Instance.PlaySound(fireClipKey, SoundCategory.Weapon, 0f,fireClipVolume, SoundType.OneShot, this.transform.position);
-        }
-        else
-        {
-            Debug.LogWarning("AudioManager or timerClipKey is not set!");
-        }
+        PlayFireSEForAllClients();
 
 
 
@@ -435,4 +428,49 @@ public class AssaultRifle : WeaponBase
     {
         reloadTimer = 0f;
     }
+
+    #region 音関係
+    void PlayFireSEForAllClients()
+    {
+
+        if (AudioManager.Instance == null || string.IsNullOrEmpty(fireClipKey)) { return; } // AudioManagerが存在し、クリップキーが設定されている場合
+
+        if (Runner.LocalPlayer == Object.InputAuthority)
+        {
+            SoundHandle SEHandle = AudioManager.Instance.PlaySound(fireClipKey, SoundCategory.Weapon, fireClipStartTime, fireClipVolume, SoundType.OneShot, this.transform.position);
+        }
+        else
+        {
+            RPC_RequestPlayFireSE(); //RPCを呼び出して全クライアントに音を再生させる
+        }
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority, HostMode = RpcHostMode.SourceIsHostPlayer, TickAligned = false)]
+    public void RPC_RequestPlayFireSE(RpcInfo rpcinfo = default)
+    {
+        if (AudioManager.Instance == null || string.IsNullOrEmpty(fireClipKey)) { return; } // AudioManagerが存在し、クリップキーが設定されている場合
+        RPC_ApplyPlayFireSE(rpcinfo.Source); //RPCを呼び出して音を再生
+        Debug.Log("RPC_PlayFireSE called on " + Runner.LocalPlayer);
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All, HostMode = RpcHostMode.SourceIsHostPlayer, TickAligned = false)]
+    public void RPC_ApplyPlayFireSE(PlayerRef sourcePlayer)
+    {
+        if (Runner.LocalPlayer != sourcePlayer)
+        {
+            if (AudioManager.Instance == null || string.IsNullOrEmpty(fireClipKey)) { return; } // AudioManagerが存在し、クリップキーが設定されている場合
+
+            SoundHandle SEHandle =
+                AudioManager.Instance.PlaySound
+                (fireClipKey,
+                SoundCategory.Weapon,
+                fireClipStartTime,
+                fireClipVolume,
+                SoundType.OneShot,
+                this.transform.position
+                );
+        }
+
+    }
+    #endregion
 }

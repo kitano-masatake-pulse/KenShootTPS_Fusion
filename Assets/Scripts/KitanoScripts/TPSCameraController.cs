@@ -11,7 +11,7 @@ using static UnityEngine.UI.Image;
 //CinemachineVirtualCameraにアタッチすること
 public class TPSCameraController : MonoBehaviour
 {
-
+    PlayerAvatar myPlayerAvatar; // PlayerAvatarの参照
 
 
     [Header("Cinemachine Virtual Camera")]
@@ -44,6 +44,7 @@ public class TPSCameraController : MonoBehaviour
     bool isRecoiling = false; // リコイル中かどうかのフラグ
     bool isRecovering = false; // リコイル回復中かどうかのフラグ
 
+    [SerializeField] private float headRadius = 0.2f; // 頭部の半径（カメラとの距離計算に使用）
 
 
     [Header("障害物判定")]
@@ -100,6 +101,10 @@ public class TPSCameraController : MonoBehaviour
     private int directionX = 1; 
     private int directionY = 1;
 
+    [Header("Damping")]
+    Vector3 normalDamping = new Vector3(0.1f,0.5f,0.3f); // カメラの動きのダンピング（スムージング）
+    Vector3 adsDamping = new Vector3(0.0f, 0.0f, 0.0f); // ADS時のダンピング
+
 
     [SerializeField]float ADSRecoilMultiplier = 0.5f; // ADS時のリコイル倍率
     float currentRecoilMultiplier = 1f; // 現在のリコイル倍率
@@ -129,6 +134,13 @@ public class TPSCameraController : MonoBehaviour
         OptionsManager.OnApplied -= UpdateMouseOption; // オプション適用イベントを購読解除
     }
 
+
+    public void SetPlayerAvatar(PlayerAvatar playerAvatar)
+    {
+        
+        myPlayerAvatar = playerAvatar; // PlayerAvatarの参照を設定
+        
+    }   
 
     void Start()
     {
@@ -189,7 +201,10 @@ public class TPSCameraController : MonoBehaviour
 
             ADStransition(); // ADSの補間処理を呼び出す
 
-            
+            CullAvatarMesh(); // カメラ距離が近いときにアバターのメッシュをカリングする
+
+
+
         }
 
     }
@@ -387,6 +402,9 @@ public class TPSCameraController : MonoBehaviour
         currentSensitivity = ADSflag ? adsSensitivity : normalSensitivity;
         currentRecoilMultiplier = ADSflag ? ADSRecoilMultiplier : 1f; // ADS時のリコイル倍率を適用
 
+        //Damping
+        thirdPersonFollow.Damping = ADSflag ? adsDamping : normalDamping; // ADS時のダンピングを適用
+
 
         //currentRecoilMultiplier = isADS ? adsRecoilMultiplier : normalRecoilMultiplier;
 
@@ -520,6 +538,31 @@ public class TPSCameraController : MonoBehaviour
 
         // 3) ワールド座標上の最終位置を計算
         return target.position + worldOffset;
+    }
+
+
+    //カメラ距離が近いときにアバターのメッシュをカリングするメソッド
+    private void CullAvatarMesh()
+    {
+        if (myPlayerAvatar == null || virtualCamera == null || thirdPersonFollow == null) return; // 参照が設定されていない場合は何もしない
+        float distanceFromCameraToHeadMesh= thirdPersonFollow.CameraDistance-headRadius; // カメラから頭部メッシュまでの距離を計算
+        float nearPlaneDistance = virtualCamera.m_Lens.NearClipPlane; // カメラの近接クリップ面の距離を取得
+        if (distanceFromCameraToHeadMesh < nearPlaneDistance) 
+        {
+            // アバターのメッシュを非表示にする処理
+            myPlayerAvatar.HideMesh();
+            // 例: myPlayerAvatar.SetMeshActive(false);
+            Debug.Log("Avatar mesh culled due to close camera distance.");
+        }
+        else
+        {
+            // アバターのメッシュを表示する処理
+            // 例: myPlayerAvatar.SetMeshActive(true);
+            myPlayerAvatar.ShowMesh();
+            Debug.Log("Avatar mesh visible.");
+        }
+
+
     }
 
 }

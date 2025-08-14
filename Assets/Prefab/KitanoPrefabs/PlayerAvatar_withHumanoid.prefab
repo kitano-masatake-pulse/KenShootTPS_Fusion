@@ -1109,8 +1109,9 @@ MonoBehaviour:
   _IsInvincible: 0
   _CurrentWeapon_Network: 0
   _Team: 0
-  damagedClipKey: Action_Damage
+  damagedClipKey: Action_Damaged_Voice
   damagedClipVolume: 1
+  damagedClipStartTime: 0
 --- !u!114 &-4328647438270834359
 MonoBehaviour:
   m_ObjectHideFlags: 0

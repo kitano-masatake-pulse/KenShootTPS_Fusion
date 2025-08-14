@@ -75,7 +75,7 @@ public class PlayerAvatar : NetworkBehaviour
     public Vector3 normalizedInputDirection = Vector3.zero; //入力方向の正規化されたベクトル。OnInput()で参照するためpublic
 
     //見た目周り
-    private SkinnedMeshRenderer[] _renderers;
+    private Renderer[] _renderers;
 
     //座標同期用のネットワークプロパティ
     [Networked] public Vector3 avatarPositionInHost { get; set; } = Vector3.zero; //ホスト環境でのアバター位置(入力権限のあるプレイヤーの位置を参照するために使用)
@@ -193,7 +193,7 @@ public class PlayerAvatar : NetworkBehaviour
     {
         //SetNickName($"Player({Object.InputAuthority.PlayerId})");
         //PlayerAvatarのRenderer
-        _renderers = GetComponentsInChildren<SkinnedMeshRenderer>();
+        _renderers = GetComponentsInChildren<Renderer>(includeInactive:true);
 
         myPlayerHitboxRoot = GetComponent<HitboxRoot>();
 
@@ -216,6 +216,7 @@ public class PlayerAvatar : NetworkBehaviour
             //自分のアバターなら、TPSカメラに紐づける
             tpsCameraController = FindObjectOfType<TPSCameraController>();
 
+            tpsCameraController.SetPlayerAvatar(this); //TPSカメラコントローラーに自身のPlayerAvatarを設定
             tpsCameraTransform = tpsCameraController.transform;
 
             // 入力管理オブジェクトを取得し、自身のアバターを登録
@@ -580,6 +581,9 @@ public class PlayerAvatar : NetworkBehaviour
     {
         foreach (var rend in _renderers)
         {
+            bool isMesh = rend is MeshRenderer || rend is SkinnedMeshRenderer;
+            if (!isMesh) continue;
+
             rend.enabled = false;
         }
     }
@@ -588,6 +592,8 @@ public class PlayerAvatar : NetworkBehaviour
     {
         foreach (var rend in _renderers)
         {
+            bool isMesh = rend is MeshRenderer || rend is SkinnedMeshRenderer;
+            if (!isMesh) continue;
             rend.enabled = true;
         }
     }

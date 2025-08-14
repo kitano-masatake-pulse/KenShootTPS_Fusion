@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 2593932167009962297}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -622.1333, y: -354.9374, z: -3.9453344}
+  m_LocalPosition: {x: -622.1333, y: -354.5374, z: -3.9453344}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -113,6 +113,7 @@ MonoBehaviour:
   fovLerpSpeed: 15
   normalSensitivity: {x: 3, y: 1.5}
   adsSensitivity: {x: 1.5, y: 0.75}
+  mouseSenRange: 4
   ADSRecoilMultiplier: 0.5
 --- !u!114 &4019736386521262820
 MonoBehaviour:
@@ -202,7 +203,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Damping: {x: 0.1, y: 0.5, z: 0.3}
-  ShoulderOffset: {x: 0.5, y: -0.4, z: 0}
+  ShoulderOffset: {x: 0.5, y: 0, z: 0}
   VerticalArmLength: 0.4
   CameraSide: 1
   CameraDistance: 2
@@ -241,7 +242,7 @@ Transform:
   m_GameObject: {fileID: 3435448675808792945}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -622.1333, y: -354.9374, z: -3.9453344}
+  m_LocalPosition: {x: -622.1333, y: -354.5374, z: -3.9453344}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -385,7 +386,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 0}
-  offset: {x: 0, y: 0.75, z: 0}
+  offset: {x: 0, y: 0.2, z: 0}
 --- !u!1 &6488695951535435361
 GameObject:
   m_ObjectHideFlags: 0

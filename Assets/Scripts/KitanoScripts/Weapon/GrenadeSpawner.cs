@@ -28,7 +28,7 @@ public class GrenadeSpawner : WeaponBase
     [SerializeField] private Animator animator;
 
     // 投げる力の大きさ
-    private float throwForce = 10f;
+    [SerializeField] private float throwVelocity_scalar = 15f;
     // 投げるアニメーションの速度
     [SerializeField]
     private float throwAnimSpeed = 1.0f;
@@ -116,7 +116,7 @@ public class GrenadeSpawner : WeaponBase
         // 投げる向きを取得する
         throwDirection = throwPoint.forward;
         // 投げる力の大きさを計算する
-        velocity = throwDirection * throwForce;
+        velocity = throwDirection * throwVelocity_scalar;
         // 軌跡を描画
         trajectoryDrawer.RaycastDrawTrajectory(throwPoint.position, velocity);
     }
@@ -139,7 +139,7 @@ public class GrenadeSpawner : WeaponBase
         // 投げる向きを取得する
         throwDirection = throwPoint.forward;
         // 投げる力の大きさを計算する
-        velocity = throwDirection * throwForce;
+        velocity = throwDirection * throwVelocity_scalar;
         ThrowGrenade(throwPoint.position, velocity);
     }
 
