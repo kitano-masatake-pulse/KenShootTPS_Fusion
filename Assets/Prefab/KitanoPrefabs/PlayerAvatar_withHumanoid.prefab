@@ -1060,8 +1060,8 @@ MonoBehaviour:
   headObject: {fileID: 2171211468819611867}
   bodyObject: {fileID: 2852828816588928964}
   myPlayerHitboxRoot: {fileID: 0}
-  moveSpeed: 12
-  gravity: -9.8
+  moveSpeed: 8
+  gravity: -19.6
   jumpHeight: 2
   raycastDistance: 1.5
   cameraTarget: {fileID: 0}
@@ -1076,9 +1076,11 @@ MonoBehaviour:
   isGroundedNow: 0
   chaseAngle: 90
   chaseRange: 12
-  chaseSpeed: 6
+  chaseSpeed: 12
   maxTurnAnglePerFrame: 5
+  homingDistanceThreshold: 0.5
   maxAlignToCameraAnglePerSecond: 360
+  homingStartTime: 0.2
   homingTime: 1
   attackImmolizedTime: 1.5
   rotationDuration: 0.1
@@ -1980,6 +1982,7 @@ MonoBehaviour:
   throwPoint: {fileID: 7223678773325446475}
   trajectoryDrawer: {fileID: 3606554292472295252}
   animator: {fileID: 2231931972422335784}
+  throwVelocity_scalar: 15
   throwAnimSpeed: 1
 --- !u!114 &3606554292472295252
 MonoBehaviour:
@@ -2704,7 +2707,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 129
   swordRoot: {fileID: 5906915347762662885}
-  swordLength: 1
+  swordLength: 1.5
   timeUntilAttack: 1
 --- !u!1 &7002177026448560468
 GameObject:
