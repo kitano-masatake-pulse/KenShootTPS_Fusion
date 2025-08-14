@@ -553,6 +553,7 @@ MonoBehaviour:
   category: 1
   delay: 0
   startTime: 0
+  volume: 1
   type: 0
   useSpatial: 0
   useFollow: 0
@@ -750,6 +751,7 @@ MonoBehaviour:
   category: 2
   delay: 0
   startTime: 0
+  volume: 1
   type: 0
   useSpatial: 0
   useFollow: 0
@@ -1756,6 +1758,7 @@ MonoBehaviour:
   category: 1
   delay: 0
   startTime: 0
+  volume: 1
   type: 0
   useSpatial: 0
   useFollow: 0
@@ -2642,6 +2645,7 @@ MonoBehaviour:
   category: 1
   delay: 0
   startTime: 0
+  volume: 1
   type: 0
   useSpatial: 0
   useFollow: 0
@@ -3430,6 +3434,7 @@ MonoBehaviour:
   category: 1
   delay: 0
   startTime: 0
+  volume: 1
   type: 0
   useSpatial: 0
   useFollow: 0
@@ -3582,7 +3587,7 @@ MonoBehaviour:
   - Action_Run_1_OneShot
   category: 1
   spatialFollowCharacter: 1
-  baseVolume: 0.3
+  baseVolume: 0.5
   volumeJitter: 0.1
 --- !u!206 &1391427011786509753
 BlendTree:
@@ -4856,6 +4861,7 @@ MonoBehaviour:
   category: 1
   delay: 0
   startTime: 0
+  volume: 1
   type: 0
   useSpatial: 0
   useFollow: 0
@@ -5738,6 +5744,7 @@ MonoBehaviour:
   category: 1
   delay: 0
   startTime: 0
+  volume: 1
   type: 0
   useSpatial: 0
   useFollow: 0
@@ -5859,6 +5866,7 @@ MonoBehaviour:
   category: 1
   delay: 0
   startTime: 0
+  volume: 1
   type: 0
   useSpatial: 0
   useFollow: 0

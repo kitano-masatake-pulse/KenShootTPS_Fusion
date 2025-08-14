@@ -258,12 +258,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bgmClipkey: BGM_battle
-  bgmVolume: 0.4
+  bgmVolume: 0.02
   isLoop: 1
   countdownSoundKey: se_countdown
-  countdownSoundVolume: 1
+  countdownSoundVolume: 0.2
   timeUpSoundKey: se_timeout
-  timeUpSoundVolume: 1
+  timeUpSoundVolume: 0.2
 --- !u!1 &8837520755633866738
 GameObject:
   m_ObjectHideFlags: 0

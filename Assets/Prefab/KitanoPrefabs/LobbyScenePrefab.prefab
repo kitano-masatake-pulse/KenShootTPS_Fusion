@@ -85,7 +85,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bgmClipkey: BGM_lobby
-  bgmVolume: 1
+  bgmVolume: 0.15
   isLoop: 1
 --- !u!1 &3541200610011326818
 GameObject:

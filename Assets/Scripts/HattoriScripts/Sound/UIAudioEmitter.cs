@@ -12,6 +12,7 @@ public class UIAudioEmitter : MonoBehaviour,IPointerEnterHandler,IPointerDownHan
     public string cancelKey = "se_cancel";
     [SerializeField]
     private float hoverVolume = 0.3f;
+    private float clickVolume = 0.5f;
 
     public void OnPointerEnter(PointerEventData eventData)
     {
@@ -19,7 +20,7 @@ public class UIAudioEmitter : MonoBehaviour,IPointerEnterHandler,IPointerDownHan
     }
     public void OnPointerDown(PointerEventData eventData)
     {
-        AudioManager.Instance.PlaySound(clickKey, SoundCategory.System);
+        AudioManager.Instance.PlaySound(clickKey, SoundCategory.System,0f,clickVolume);
     }
     public void OnSubmit(BaseEventData eventData)
     {
