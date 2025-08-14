@@ -175,7 +175,7 @@ public class PlayerAvatar : NetworkBehaviour
     [SerializeField] private float homingDistanceThreshold = 0.1f; // ホーミングの距離しきい値
     [SerializeField] private float maxAlignToCameraAnglePerSecond = 360f; // 追尾の角度（度単位）
     [SerializeField] private float homingStartTime = 0.2f; // ホーミングの時間
-    [SerializeField] private float homingTime = 0.8f; // ホーミングの時間
+    [SerializeField] private float homingTime = 1f; // ホーミングの時間
     [SerializeField] private float attackImmolizedTime = 1.5f; // 攻撃開始→攻撃後硬直終了までの時間
     [SerializeField] private float rotationDuration = 0.1f; //カメラの前方向に向くまでの時間(0.1秒かけてカメラの前方向に向く)
     private Vector3 homingMoveDirection = Vector3.forward; // ホーミング中の現在の移動方向
@@ -871,7 +871,10 @@ public class PlayerAvatar : NetworkBehaviour
     {
         yield return new WaitForSeconds(attackImmolizedTime);
 
-        isImmobilized = false; // 行動不能を解除
+        if (currentWeaponActionState != WeaponActionState.Stun)
+        {
+            isImmobilized = false; // 行動不能を解除
+        }
 
         //currentWeaponActionState = WeaponActionState.Idle; // 現在のアクションをIdleに設定
         //キャラの向きをカメラの向きに徐々に戻す
@@ -1024,7 +1027,7 @@ public class PlayerAvatar : NetworkBehaviour
         inputBuffer.swordFireDown = false; //近接攻撃のバッファをクリア  
 
         //攻撃の当たり判定やアニメーションは変わらないので共通
-        //weaponClassDictionary[currentWeapon].FireDown(); //現在の武器の発射処理を呼ぶ
+        weaponClassDictionary[currentWeapon].FireDown(); //現在の武器の発射処理を呼ぶ
         SetActionAnimationPlayListForAllClients(currentWeapon.FireDownAction()); //アクションアニメーションのリストに発射ダウンを追加
 
         StartCoroutine(PostAttackDelayCoroutine()); //攻撃後の硬直時間を管理するコルーチンを開始

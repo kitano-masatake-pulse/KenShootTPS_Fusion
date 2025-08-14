@@ -30,16 +30,16 @@ public class Sword : WeaponBase
     private float rayDrawingDuration = 0.5f; // Rayの描画時間
 
 
+    float timeElapsedUntilCollisionDetection = 0f; // 経過時間
 
-    
 
     //[SerializeField] private float attackActiveTime = 1f; // 当たり判定が出る時間
 
-    
-    
 
 
-    
+
+
+
 
 
     private void Start()
@@ -60,14 +60,41 @@ public class Sword : WeaponBase
     public override void CalledOnUpdate(PlayerInputData localInputData, InputBufferStruct inputBuffer, WeaponActionState currentAction)
     {
 
-        if (CanAttack(localInputData, inputBuffer, currentAction)  )
+
+
+        if (CanCollisionDetection(localInputData, inputBuffer, currentAction))
         {
-            Debug.Log("Can Attack!"); // デバッグ用ログ出力
-            StartCoroutine(CollisionDetectionCoroutine());
-            playerAvatar.SwordAction();
+
+            timeElapsedUntilCollisionDetection += Time.deltaTime; // 経過時間を更新
+            Debug.Log($"SwordAttack Collision Detection Time Elapsed: {timeElapsedUntilCollisionDetection}, Now{Time.time}"); // デバッグ用ログ出力
+            if (timeElapsedUntilCollisionDetection > timeUntilAttack)
+            {
+                timeElapsedUntilCollisionDetection = 0f; // 経過時間をリセット
+
+                //Debug.Log($"SwordAttack Collision Detection Time Elapsed: {timeElapsedUntilCollisionDetection}"); // デバッグ用ログ出力
+                GenerateCollisionDetection();
+                Debug.Log($"SwordAttack Collision Detection Generated!{Time.time}"); // デバッグ用ログ出力
+
+            }
+
 
 
         }
+
+
+        if (CanAttack(localInputData, inputBuffer, currentAction)  )
+        {
+            Debug.Log($"SwordAttack Can Attack! Time:{Time.time}"); // デバッグ用ログ出力
+            //StopCoroutine(CollisionDetectionCoroutine());
+            //StartCoroutine(CollisionDetectionCoroutine());
+            playerAvatar.SwordAction();
+
+            timeElapsedUntilCollisionDetection = 0f; // 経過時間をリセット
+
+
+        }
+
+
     }
 
 
@@ -80,11 +107,23 @@ public class Sword : WeaponBase
 
     }
 
+    bool CanCollisionDetection(PlayerInputData localInputData, InputBufferStruct inputBuffer, WeaponActionState currentAction)
+    {
+        // 攻撃判定が有効で、現在のアクションがアイドル状態であることを確認
+        return currentAction == WeaponActionState.SwordAttacking;
+    }
+
+    bool CanAttack(InputBufferStruct inputBuffer, WeaponActionState currentAction)
+    {
+        // 発射ボタンが押されていて、現在のアクションがアイドル状態であることを確認
+        return inputBuffer.swordFireDown && currentAction == WeaponActionState.Idle;
+    }
+
     public override void FireDown()
     {
       
         //base.FireDown();
-        StartCoroutine(CollisionDetectionCoroutine()); // 攻撃判定のコルーチンを開始
+        //StartCoroutine(CollisionDetectionCoroutine()); // 攻撃判定のコルーチンを開始
     }
 
 
@@ -92,9 +131,12 @@ public class Sword : WeaponBase
     {
         Debug.Log("Start Attack Collision Detection Coroutine!");
         yield return new WaitForSeconds(timeUntilAttack); // モーション開始から攻撃判定までの時間を待つ
- 
-        GenerateCollisionDetection(); // 攻撃判定を生成
-        Debug.Log("Attack Collision Detection Generated!");
+
+        if (playerAvatar.CurrentWeaponActionState == WeaponActionState.SwordAttacking)
+        {
+            GenerateCollisionDetection(); // 攻撃判定を生成
+            Debug.Log("Attack Collision Detection Generated!");
+        }
         yield return new WaitForSeconds(rayDrawingDuration); // モーション開始から攻撃判定までの時間を待つ
 
 
@@ -300,10 +342,17 @@ public class Sword : WeaponBase
     //        // Gizmosを使用して攻撃判定の範囲を可視化
     //        Gizmos.color = Color.red;
     //        Gizmos.DrawWireSphere(swordRoot.position, swordLength);
-   
+
     //    }
-        
+
     //}
+
+    public override void ResetOnChangeWeapon()
+    {
+        base.ResetOnChangeWeapon();
+        timeElapsedUntilCollisionDetection = 0f; // 経過時間をリセット
+
+    }
 
 
 

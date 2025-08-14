@@ -1082,7 +1082,7 @@ MonoBehaviour:
   maxAlignToCameraAnglePerSecond: 360
   homingStartTime: 0.2
   homingTime: 1
-  attackImmolizedTime: 1.5
+  attackImmolizedTime: 1.9
   rotationDuration: 0.1
   playerLayer:
     serializedVersion: 2
