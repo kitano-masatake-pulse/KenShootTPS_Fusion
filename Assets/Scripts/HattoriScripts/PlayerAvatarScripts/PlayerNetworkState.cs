@@ -140,6 +140,7 @@ public class PlayerNetworkState : NetworkBehaviour
 
 
         //被弾音を被弾者環境で鳴らす
+        Debug.Log($"RPC_PlayDamagedSE called .SE on {Object.InputAuthority}");
         RPC_PlayDamagedSE(Object.InputAuthority);
 
 
@@ -233,12 +234,16 @@ public class PlayerNetworkState : NetworkBehaviour
     [Rpc(RpcSources.StateAuthority, RpcTargets.All, HostMode = RpcHostMode.SourceIsHostPlayer, TickAligned = false)]
     public void RPC_PlayDamagedSE( PlayerRef targetPlayer)
     {
+        Debug.Log($"RPC_PlayDamagedSE called .SE on {targetPlayer},LocalPlayer:{Runner.LocalPlayer}");
         // ここで被弾音を再生する処理を実装
         // 例えば、AudioManagerなどのシングルトンを使って音を再生する
         if (Runner.LocalPlayer == targetPlayer)
         {
              SoundHandle  SEHandle=AudioManager.Instance.PlaySound(damagedClipKey, SoundCategory.Action, pos: this.transform.position);
-            AudioManager.Instance.SetSoundVolume(SEHandle,damagedClipVolume); // 音量を設定
+            AudioManager.Instance.SetSoundVolume(SEHandle,damagedClipVolume); 
+            Debug.Log($"RPC_PlayDamagedSE: Played sound {damagedClipKey} with volume {damagedClipVolume} at position {this.transform.position}");
+
+
         }
 
 
