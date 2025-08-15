@@ -1,17 +1,17 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public struct PlayerInputData
 {
-    public Vector3 wasdInput; //³‹K‰»‚µ‚Ä‚¢‚È‚¢ˆÚ“®“ü—Í
+    public Vector3 wasdInput; //æ­£è¦åŒ–ã—ã¦ã„ãªã„ç§»å‹•å…¥åŠ›
     public bool JumpPressedDown;
     public bool FirePressedDown;
     public bool FirePressedStay;
     public bool FirePressedUp; 
-    public bool ReloadPressedDown; //ƒŠƒ[ƒhƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚½‚©‚Ç‚¤‚©
+    public bool ReloadPressedDown; //ãƒªãƒ­ãƒ¼ãƒ‰ãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚ŒãŸã‹ã©ã†ã‹
     public float weaponChangeScroll;
-    public bool ADSPressedDown; //ADSƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚½‚©‚Ç‚¤‚©
+    public bool ADSPressedDown; //ADSãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚ŒãŸã‹ã©ã†ã‹
     public static PlayerInputData Default()
     {
         PlayerInputData input;
@@ -95,7 +95,7 @@ public static class LocalInputHandler
         input.FirePressedUp = Input.GetMouseButtonUp(0);
         input.ReloadPressedDown = Input.GetKeyDown(KeyCode.R);
         input.weaponChangeScroll = Input.GetAxis("Mouse ScrollWheel");
-        input.ADSPressedDown = Input.GetMouseButtonDown(1); // ‰EƒNƒŠƒbƒN‚ÅADS
+        input.ADSPressedDown = Input.GetMouseButtonDown(1); // å³ã‚¯ãƒªãƒƒã‚¯ã§ADS
 
         return input;
     }
@@ -113,14 +113,16 @@ public static class LocalInputHandler
     {
         CameraInputData input = new CameraInputData(); // Initialize the variable to avoid CS0165
         input.mouseMovement = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
-        input.cursorLockButton = Input.GetKeyDown(KeyCode.Escape); // ’†ƒNƒŠƒbƒN‚ÅƒJ[ƒ\ƒ‹ƒƒbƒN
+        input.cursorLockButton = Input.GetKeyDown(KeyCode.Escape); // ä¸­ã‚¯ãƒªãƒƒã‚¯ã§ã‚«ãƒ¼ã‚½ãƒ«ãƒ­ãƒƒã‚¯
         return input;
     }
     public static DebugInputData CollectDebugInput()
     {
         DebugInputData input;
-        input.BattleEndPressedDown = Input.GetKeyDown(KeyCode.N); 
-        input.SuicidePressedDown = Input.GetKeyDown(KeyCode.K); 
+        //input.BattleEndPressedDown = Input.GetKeyDown(KeyCode.N); 
+        //input.SuicidePressedDown = Input.GetKeyDown(KeyCode.K); 
+        input.BattleEndPressedDown =false; // F12ã‚­ãƒ¼ã§ãƒãƒˆãƒ«çµ‚äº†
+        input.SuicidePressedDown = false; // F11ã‚­ãƒ¼ã§è‡ªæ®º
         return input;
     }
 

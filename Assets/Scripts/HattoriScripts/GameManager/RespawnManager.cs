@@ -1,14 +1,14 @@
-using Fusion;
+ï»¿using Fusion;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-// ƒŠƒXƒ|[ƒ“ŠÇ—ƒNƒ‰ƒX
+// ãƒªã‚¹ãƒãƒ¼ãƒ³ç®¡ç†ã‚¯ãƒ©ã‚¹
 public class RespawnManager : NetworkBehaviour
 {
-    // ƒVƒ“ƒOƒ‹ƒgƒ“ƒCƒ“ƒXƒ^ƒ“ƒX
+    // ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
     public static RespawnManager Instance { get; private set; }
     [Serializable]
     private struct RespawnPoint
@@ -25,14 +25,14 @@ public class RespawnManager : NetworkBehaviour
     private List<RespawnPoint> respawnPoints =
     new List<RespawnPoint>
     {
-        new RespawnPoint(new Vector3(46, 5, -29), Quaternion.Euler(0, 90, 0)), // ƒŠƒXƒ|[ƒ“’n“_1
-        new RespawnPoint(new Vector3(94, 5, 14), Quaternion.Euler(0, 180, 0)), // ƒŠƒXƒ|[ƒ“’n“_2
-        new RespawnPoint(new Vector3(27, 0, 91), Quaternion.Euler(0, 90, 0)), // ƒŠƒXƒ|[ƒ“’n“_3
-        new RespawnPoint(new Vector3(3, 0, 25), Quaternion.Euler(0, -90, 0)), // ƒŠƒXƒ|[ƒ“’n“_4
-        new RespawnPoint(new Vector3(50, 4, 23), Quaternion.Euler(0, -90, 0)), // ƒŠƒXƒ|[ƒ“’n“_5
-        new RespawnPoint(new Vector3(25, 1, 67), Quaternion.Euler(0, -135, 0)), // ƒŠƒXƒ|[ƒ“’n“_6
-        new RespawnPoint(new Vector3(-26, 4, -15), Quaternion.Euler(0, 45, 0)), // ƒŠƒXƒ|[ƒ“’n“_7
-        new RespawnPoint(new Vector3(6, 4, -35), Quaternion.Euler(0, 30, 0)), // ƒŠƒXƒ|[ƒ“’n“_8
+        new RespawnPoint(new Vector3(46, 5, -29), Quaternion.Euler(0, 90, 0)), // ãƒªã‚¹ãƒãƒ¼ãƒ³åœ°ç‚¹1
+        new RespawnPoint(new Vector3(94, 5, 14), Quaternion.Euler(0, 180, 0)), // ãƒªã‚¹ãƒãƒ¼ãƒ³åœ°ç‚¹2
+        new RespawnPoint(new Vector3(27, 0, 91), Quaternion.Euler(0, 90, 0)), // ãƒªã‚¹ãƒãƒ¼ãƒ³åœ°ç‚¹3
+        new RespawnPoint(new Vector3(3, 0, 25), Quaternion.Euler(0, -90, 0)), // ãƒªã‚¹ãƒãƒ¼ãƒ³åœ°ç‚¹4
+        new RespawnPoint(new Vector3(50, 4, 23), Quaternion.Euler(0, -90, 0)), // ãƒªã‚¹ãƒãƒ¼ãƒ³åœ°ç‚¹5
+        new RespawnPoint(new Vector3(25, 1, 67), Quaternion.Euler(0, -135, 0)), // ãƒªã‚¹ãƒãƒ¼ãƒ³åœ°ç‚¹6
+        new RespawnPoint(new Vector3(-26, 4, -15), Quaternion.Euler(0, 45, 0)), // ãƒªã‚¹ãƒãƒ¼ãƒ³åœ°ç‚¹7
+        new RespawnPoint(new Vector3(6, 4, -35), Quaternion.Euler(0, 30, 0)), // ãƒªã‚¹ãƒãƒ¼ãƒ³åœ°ç‚¹8
         
 
     };
@@ -59,49 +59,49 @@ public class RespawnManager : NetworkBehaviour
 
     public override void FixedUpdateNetwork()
     {
-        //ƒnƒbƒVƒ…ƒZƒbƒg‚ÌƒŠƒZƒbƒg
+        //ãƒãƒƒã‚·ãƒ¥ã‚»ãƒƒãƒˆã®ãƒªã‚»ãƒƒãƒˆ
         reservedSpawnIndices.Clear();
     }
 
-    //ƒzƒXƒg‚ÉƒŠƒXƒ|[ƒ“—v‹
+    //ãƒ›ã‚¹ãƒˆã«ãƒªã‚¹ãƒãƒ¼ãƒ³è¦æ±‚
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_RequestRespawn(NetworkObject playerObject)
     {
-        // ƒŠƒXƒ|[ƒ“—v‹‚ğó‚¯æ‚Á‚½ƒvƒŒƒCƒ„[‚ÌƒIƒuƒWƒFƒNƒg‚ª—LŒø‚©Šm”F
+        // ãƒªã‚¹ãƒãƒ¼ãƒ³è¦æ±‚ã‚’å—ã‘å–ã£ãŸãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒæœ‰åŠ¹ã‹ç¢ºèª
         if (playerObject == null || !playerObject.IsValid)
         {
             Debug.LogWarning("RPC_RequestRespawn: Invalid player object.");
             return;
         }
         Debug.Log($"RPC_RequestRespawn: Player {playerObject.InputAuthority} requested respawn.");
-        // ƒŠƒXƒ|[ƒ“ˆ—‚ğÀs
+        // ãƒªã‚¹ãƒãƒ¼ãƒ³å‡¦ç†ã‚’å®Ÿè¡Œ
         InitializePlayerInHost(playerObject);
     }
 
     private void InitializePlayerInHost(NetworkObject playerObject)
     {
-        //ƒzƒXƒg‚Ì‚İÀs
+        //ãƒ›ã‚¹ãƒˆã®ã¿å®Ÿè¡Œ
         if(!Object.HasStateAuthority) return;        
 
         RespawnPoint respawnPoint = GetRespawnPoint(playerObject.InputAuthority);
 
         
 
-        //HP‚Ì‰Šú‰»E–³“G‰»
+        //HPã®åˆæœŸåŒ–ãƒ»ç„¡æ•µåŒ–
         var playerState = playerObject.GetComponent<PlayerNetworkState>();
         if (playerState != null)
         {
-            Debug.Log($"InitializePlayerInHostF {playerObject.InputAuthority} HP initialized.");
+            Debug.Log($"InitializePlayerInHostï¼š {playerObject.InputAuthority} HP initialized.");
             playerState.SetInvincible(true); 
             playerState.InitializeHP();
         }
         
-        //RPC‚ğŒÄ‚Ño‚µ‚ÄAƒNƒ‰ƒCƒAƒ“ƒg‘¤‚Å‚àƒŠƒXƒ|[ƒ“ˆ—‚ğÀs
+        //RPCã‚’å‘¼ã³å‡ºã—ã¦ã€ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆå´ã§ã‚‚ãƒªã‚¹ãƒãƒ¼ãƒ³å‡¦ç†ã‚’å®Ÿè¡Œ
         RPC_InitializePlayerInAll(playerObject, respawnPoint.Position, respawnPoint.Rotation);
 
     }
 
-    //ƒNƒ‰ƒCƒAƒ“ƒg‘¤‚ÌƒŠƒXƒ|[ƒ“ˆ—
+    //ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆå´ã®ãƒªã‚¹ãƒãƒ¼ãƒ³å‡¦ç†
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_InitializePlayerInAll(NetworkObject playerObject,Vector3 respawnPosition,Quaternion respawnRotation)
     {
@@ -110,11 +110,11 @@ public class RespawnManager : NetworkBehaviour
         var playerAvatar = playerObject.GetComponent<PlayerAvatar>();
         if (playerAvatar != null)
         {
-            playerAvatar.HideMesh(); // ƒƒbƒVƒ…‚ğ”ñ•\¦‚É‚·‚é
+            playerAvatar.HideMesh(); // ãƒ¡ãƒƒã‚·ãƒ¥ã‚’éè¡¨ç¤ºã«ã™ã‚‹
             playerAvatar.TeleportToInitialSpawnPoint(respawnPosition, respawnRotation);
-            playerAvatar.ShowMesh(); // ƒƒbƒVƒ…‚ğ•\¦‚·‚é
+            playerAvatar.ShowMesh(); // ãƒ¡ãƒƒã‚·ãƒ¥ã‚’è¡¨ç¤ºã™ã‚‹
 
-            //“à•”“I‚É–³—‚â‚ècurrrentWeapon‚ğ•ÏX‚·‚é
+            //å†…éƒ¨çš„ã«ç„¡ç†ã‚„ã‚ŠcurrrentWeaponã‚’å¤‰æ›´ã™ã‚‹
             playerAvatar.ForceWeaponChange(WeaponType.AssaultRifle);
     
 
@@ -131,22 +131,22 @@ public class RespawnManager : NetworkBehaviour
         }
         
 
-        //Collider —LŒø‰»(ƒŒƒCƒ„[Ø‚è‘Ö‚¦)
+        //Collider æœ‰åŠ¹åŒ–(ãƒ¬ã‚¤ãƒ¤ãƒ¼åˆ‡ã‚Šæ›¿ãˆ)
         foreach (var col in playerObject.GetComponentsInChildren<Collider>())
             col.gameObject.layer = LayerMask.NameToLayer("Player");
-        //Hitbox —LŒø‰»(ƒŒƒCƒ„[Ø‚è‘Ö‚¦)
+        //Hitbox æœ‰åŠ¹åŒ–(ãƒ¬ã‚¤ãƒ¤ãƒ¼åˆ‡ã‚Šæ›¿ãˆ)
         foreach (var hitbox in playerObject.GetComponentsInChildren<PlayerHitbox>())
             hitbox.gameObject.layer = LayerMask.NameToLayer("PlayerHitbox");
         var target = playerObject.GetComponentInChildren<PlayerWorldUIController>(true);
         if (target != null)
         {
-            target.gameObject.SetActive(true); // ƒl[ƒ€ƒ^ƒO‚ğÄ•\¦
+            target.gameObject.SetActive(true); // ãƒãƒ¼ãƒ ã‚¿ã‚°ã‚’å†è¡¨ç¤º
         }
     }
-    //ƒŠƒXƒ|[ƒ“’n“_‚Ìæ“¾
+    //ãƒªã‚¹ãƒãƒ¼ãƒ³åœ°ç‚¹ã®å–å¾—
     
 
-    //ƒzƒXƒg‘¤‚ÌƒŠƒXƒ|[ƒ“I—¹‚Ìˆ—
+    //ãƒ›ã‚¹ãƒˆå´ã®ãƒªã‚¹ãƒãƒ¼ãƒ³çµ‚äº†æ™‚ã®å‡¦ç†
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_RespawnEnd(NetworkObject playerObject)
     {
@@ -156,7 +156,7 @@ public class RespawnManager : NetworkBehaviour
             return;
         }
         Debug.Log($"RPC_RespawnEnd: Player {playerObject.InputAuthority} respawn finished.");
-        // ƒvƒŒƒCƒ„[‚Ì–³“Gó‘Ô‚ğ3•bŒã‚É‰ğœ
+        // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ç„¡æ•µçŠ¶æ…‹ã‚’3ç§’å¾Œã«è§£é™¤
         var playerState = playerObject.GetComponent<PlayerNetworkState>();
         if (playerState != null)
         {
@@ -164,26 +164,21 @@ public class RespawnManager : NetworkBehaviour
         }
     }
 
-    // ƒŠƒXƒ|[ƒ“’n“_‚ğæ“¾‚·‚éƒƒ\ƒbƒh
+    // ãƒªã‚¹ãƒãƒ¼ãƒ³åœ°ç‚¹ã‚’å–å¾—ã™ã‚‹ãƒ¡ã‚½ãƒƒãƒ‰
     private RespawnPoint GetRespawnPoint(PlayerRef respawnPlayer)
     {
         if(!Runner.IsServer)
         {
             Debug.LogError("GetRespawnPoint: This method should only be called on the server.");
-            return new RespawnPoint(); // ƒT[ƒo[‚Å‚È‚¢ê‡‚ÍƒfƒtƒHƒ‹ƒg‚ÌˆÊ’u‚ğ•Ô‚·
+            return new RespawnPoint(); // ã‚µãƒ¼ãƒãƒ¼ã§ãªã„å ´åˆã¯ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ä½ç½®ã‚’è¿”ã™
         }
-        // ‘¼‚ÌƒvƒŒƒCƒ„[‚ÌˆÊ’u‚ğæ“¾
+        // ä»–ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ä½ç½®ã‚’å–å¾—
         List<Vector3> otherPlayerPositions = GetOtherPlayerPositions(respawnPlayer);
         if (otherPlayerPositions.Count == 0)
         {
-            Debug.LogWarning("No other player positions found. Using default respawn point.");
-            // ‘¼‚ÌƒvƒŒƒCƒ„[‚ª‚¢‚È‚¢ê‡‚Íƒ‰ƒ“ƒ_ƒ€‚ÈƒXƒ|[ƒ“’n“_‚ğg—p
-            var randomIndex = UnityEngine.Random.Range(0, respawnPoints.Count);
-            Vector3 respownPosition = respawnPoints[randomIndex].Position * mapScale;
-            Quaternion respownRotation = respawnPoints[randomIndex].Rotation;
-            return new RespawnPoint(respownPosition, respownRotation);
+            otherPlayerPositions.Add(Vector3.zero); // ä»–ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒã„ãªã„å ´åˆã¯åŸç‚¹ã‹ã‚‰ã®è·é›¢ã§è¨ˆç®—
         }
-        //ŠeƒXƒ|[ƒ“’n“_‚ÌƒXƒRƒAŒvZ(’n“_AƒXƒRƒAAŒ³‚ÌƒCƒ“ƒfƒbƒNƒX)
+        //å„ã‚¹ãƒãƒ¼ãƒ³åœ°ç‚¹ã®ã‚¹ã‚³ã‚¢è¨ˆç®—(åœ°ç‚¹ã€ã‚¹ã‚³ã‚¢ã€å…ƒã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹)
         List<(Vector3 point, float score, int index)> scoredSpawnPoints = new();
 
         var scaledRespawnPoints = respawnPoints.Select(p => p.Position * mapScale).ToList();
@@ -194,7 +189,7 @@ public class RespawnManager : NetworkBehaviour
             float closestSqrDistance = float.MaxValue;
             foreach (var otherPos in otherPlayerPositions)
             {
-                // ŠeƒXƒ|[ƒ“’n“_‚Æ‘¼‚ÌƒvƒŒƒCƒ„[‚Ì‹——£‚ğŒvZ
+                // å„ã‚¹ãƒãƒ¼ãƒ³åœ°ç‚¹ã¨ä»–ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®è·é›¢ã‚’è¨ˆç®—
                 float sqrDistance = (point - otherPos).sqrMagnitude;
                 if (sqrDistance < closestSqrDistance)
                 {
@@ -205,13 +200,13 @@ public class RespawnManager : NetworkBehaviour
             index++;
         }
 
-        //‹——£‚ªÅ‚à‰“‚¢‡‚Éƒ\[ƒg
+        //è·é›¢ãŒæœ€ã‚‚é ã„é †ã«ã‚½ãƒ¼ãƒˆ
         scoredSpawnPoints.Sort((a, b) => b.score.CompareTo(a.score));
         
-        //—\–ñ‚³‚ê‚Ä‚¢‚È‚¢’n“_‚ğ’T‚·
+        //äºˆç´„ã•ã‚Œã¦ã„ãªã„åœ°ç‚¹ã‚’æ¢ã™
         int chosenIndex = FindAvailableSpawnIndex(scoredSpawnPoints.Select(p => p.point).ToList());
 
-        //Œ³X‚ÌƒCƒ“ƒfƒbƒNƒX‚©‚çƒXƒ|[ƒ“’n“_‚ğæ“¾
+        //å…ƒã€…ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‹ã‚‰ã‚¹ãƒãƒ¼ãƒ³åœ°ç‚¹ã‚’å–å¾—
         return respawnPoints[scoredSpawnPoints[chosenIndex].index];
     }
 
@@ -237,7 +232,7 @@ public class RespawnManager : NetworkBehaviour
         return positions;
     }
 
-    //—\–ñƒXƒ|[ƒ“’n“_‚ÌŠÇ—
+    //äºˆç´„ã‚¹ãƒãƒ¼ãƒ³åœ°ç‚¹ã®ç®¡ç†
     private int FindAvailableSpawnIndex(List<Vector3> spawnPoints)
     {
         for (int i = 0; i < spawnPoints.Count; i++)
@@ -249,14 +244,14 @@ public class RespawnManager : NetworkBehaviour
             }
         }
 
-        //‹ó‚¢‚Ä‚È‚¢ê‡‚Íƒ‰ƒ“ƒ_ƒ€‚È’n“_‚ğ‘I‚Ô
+        //ç©ºã„ã¦ãªã„å ´åˆã¯ãƒ©ãƒ³ãƒ€ãƒ ãªåœ°ç‚¹ã‚’é¸ã¶
         return UnityEngine.Random.Range(0,respawnPoints.Count);
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_RequestTeleportSpawnPoint(PlayerRef spawnPlayer)
     {
-        // ƒXƒ|[ƒ“’n“_‚ğæ“¾
+        // ã‚¹ãƒãƒ¼ãƒ³åœ°ç‚¹ã‚’å–å¾—
         RespawnPoint respawnPoint = GetRespawnPoint(spawnPlayer);
         RPC_TeleportSpawnPoint(spawnPlayer, respawnPoint.Position, respawnPoint.Rotation);
     }
@@ -273,9 +268,9 @@ public class RespawnManager : NetworkBehaviour
             var playerAvatar = playerObject.GetComponent<PlayerAvatar>();
             if (playerAvatar != null)
             {
-                playerAvatar.HideMesh(); // ƒƒbƒVƒ…‚ğ”ñ•\¦‚É‚·‚é
+                playerAvatar.HideMesh(); // ãƒ¡ãƒƒã‚·ãƒ¥ã‚’éè¡¨ç¤ºã«ã™ã‚‹
                 playerAvatar.TeleportToInitialSpawnPoint(respawnPosition,respownRotation);
-                playerAvatar.ShowMesh(); // ƒƒbƒVƒ…‚ğ•\¦‚·‚é
+                playerAvatar.ShowMesh(); // ãƒ¡ãƒƒã‚·ãƒ¥ã‚’è¡¨ç¤ºã™ã‚‹
             }
             else
             {
