@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 using System.Linq;
+using Unity.VisualScripting;
 
 public enum SoundCategory {System, Action, Weapon, BGM }
 public enum SoundType { OneShot, Loop }
@@ -47,6 +48,7 @@ public class AudioManager : MonoBehaviour
     [SerializeField] 
     private AudioMixer audioMixer;
 
+    Dictionary<AudioSource, AudioFollower> _followerBySource = new Dictionary<AudioSource, AudioFollower>();
 
 
     void Awake()
@@ -79,11 +81,7 @@ public class AudioManager : MonoBehaviour
         availableSources = new Queue<AudioSource>();
         for (int i = 0; i < poolSize; i++)
         {
-            var go = new GameObject($"SfxSrc_{i}");
-            go.transform.parent = transform;
-            var src = go.AddComponent<AudioSource>();
-            src.playOnAwake = false;
-            src.maxDistance = maxDistance;
+            var src = CreateNewSource();
             availableSources.Enqueue(src);
         }
         inUseSources = new HashSet<AudioSource>();
@@ -168,6 +166,10 @@ public class AudioManager : MonoBehaviour
         var src = go.AddComponent<AudioSource>();
         src.playOnAwake = false;
         src.maxDistance = maxDistance;
+
+        var follower = go.AddComponent<AudioFollower>();
+        _followerBySource[src] = follower;
+
         return src;
     }
     //AudioSourceを初期化
@@ -182,10 +184,14 @@ public class AudioManager : MonoBehaviour
         src.panStereo = 0f; 
         src.dopplerLevel = 0f; 
         src.transform.position = Vector3.zero;
+        var follower = _followerBySource[src];
+        follower.ClearTarget(); // 追従ターゲットをクリア
+
     }
 
     void ReturnSource(AudioSource src)
     {
+
         if (inUseSources.Remove(src))
         {
             availableSources.Enqueue(src);
@@ -232,14 +238,16 @@ public class AudioManager : MonoBehaviour
         if (type == SoundType.OneShot)
         {
             
-            if (pos.HasValue)
+            if (pos.HasValue&&followTarget==null)
             {
                 src.transform.position = pos.Value;
                 src.spatialBlend = 1f;
             }
             else if (followTarget != null)
             {
+                var follower = _followerBySource[src];  
                 src.transform.position = followTarget.position;
+                follower.SetTarget(followTarget);
                 src.spatialBlend = 1f;
             }
             else
@@ -259,14 +267,16 @@ public class AudioManager : MonoBehaviour
         }
         else 
         {
-            if (pos.HasValue)
+            if (pos.HasValue && followTarget == null)
             {
                 src.transform.position = pos.Value;
                 src.spatialBlend = 1f;
             }
             else if (followTarget != null)
             {
+                var follower = _followerBySource[src];
                 src.transform.position = followTarget.position;
+                follower.SetTarget(followTarget);
                 src.spatialBlend = 1f;
             } 
             else
@@ -401,7 +411,8 @@ public class AudioManager : MonoBehaviour
                    : Mathf.Log10(Mathf.Clamp(volume, 0f, 1f)) * 20f;
         audioMixer.SetFloat(param, dB);
     }
-    
+
     #endregion
+
 }
 

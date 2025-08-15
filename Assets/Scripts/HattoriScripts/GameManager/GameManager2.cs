@@ -803,7 +803,8 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
          debugInput = LocalInputHandler.CollectDebugInput();
         if (debugInput.BattleEndPressedDown)
         {
-            OnTimeUp?.Invoke(); // デバッグ用に試合終了イベントを発火
+            AudioManager.Instance.PlaySound("jingle_25", SoundCategory.System, 0f, 1f, SoundType.OneShot,null,Runner.GetPlayerObject(Runner.LocalPlayer).transform );
+            //OnTimeUp?.Invoke(); // デバッグ用に試合終了イベントを発火
         }
     }
    
