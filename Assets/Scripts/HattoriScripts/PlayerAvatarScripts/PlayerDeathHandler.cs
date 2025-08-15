@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+//using UnityEngine;
 using System.Collections;
 using Fusion;
 using TMPro;
@@ -29,30 +29,31 @@ public class PlayerDeathHandler : NetworkBehaviour
 
     public void HandleDeath( float hostTimeStamp, PlayerRef victim, PlayerRef killer)
     {
+
         Debug.Log($"PlayerDeathHandlerBefore:victim:{victim}, killer: {killer}, hostTimeStamp: {hostTimeStamp},InputAuthority:{Object.InputAuthority}");
-        //このプレイヤーでない場合は何もしない
+
         if (victim != Object.InputAuthority)
         {
             return;
         }
         Debug.Log($"PlayerDeathHandler: Player{victim.PlayerId} has died at {hostTimeStamp} by {killer.PlayerId}");
-        //プレイヤーアバターに死亡アニメーションを設定
+        //繝励Ξ繧､繝､繝ｼ繧｢繝舌ち繝ｼ縺ｫ豁ｻ莠｡繧｢繝九Γ繝ｼ繧ｷ繝ｧ繝ｳ繧定ｨｭ螳
 
         playerAvatar.SetActionAnimationPlayList(ActionType.Dead,hostTimeStamp);
-        //行動不能化
+        //陦悟虚荳崎�蛹
        
         playerAvatar.CurrentWeaponActionState= WeaponActionState.Stun;
         playerAvatar.SetReturnTimeToIdle(0f);
         playerAvatar.IsImmobilized = true;
-        //顔のカメラ追従を切る
+        //鬘斐�繧ｫ繝｡繝ｩ霑ｽ蠕薙ｒ蛻�ｋ
         playerAvatar.IsFollowingCameraForward = false;
-        //Collider 無効化(レイヤー切り替え)
+        //Collider 辟｡蜉ｹ蛹(繝ｬ繧､繝､繝ｼ蛻�ｊ譖ｿ縺)
         foreach (var col in GetComponentsInChildren<Collider>())
             col.gameObject.layer = LayerMask.NameToLayer("DeadPlayer");
-        //Hitbox 無効化(レイヤー切り替え)
+        //Hitbox 辟｡蜉ｹ蛹(繝ｬ繧､繝､繝ｼ蛻�ｊ譖ｿ縺)
         foreach (var hitbox in GetComponentsInChildren<PlayerHitbox>())
             hitbox.gameObject.layer = LayerMask.NameToLayer("DeadHitbox");
-        //ネームタグ非表示
+        //繝阪�繝繧ｿ繧ｰ髱櫁｡ｨ遉ｺ
         WorldUICanvas.SetActive(false);
         
 

@@ -278,15 +278,15 @@ MonoBehaviour:
   obstructionLayer:
     serializedVersion: 2
     m_Bits: 129
-  directHitRadius: 1
-  blastHitRadius: 5
+  directHitRadius: 4
+  blastHitRadius: 8
   minBlastDamage: 20
   damageDuration: 1
-  explosionDelay: 3.5
+  explosionDelay: 2.2
   cornRayAngleDeg: 30
   cornRayNum: 10
   timerClipKey: Weapon_BombTimer_Grenade
-  timerInterVal: 1
+  timerInterVal: 0.5
   timerClipVolume: 0.5
   explosionClipKey: Weapon_Bomb_Grenade
   explosionClipVolume: 0.5
