@@ -10899,11 +10899,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5111644406287013726, guid: 2a4b62eb3579ad94fac6651beacd874e, type: 3}
       propertyPath: playerAvatarPrefab.RawGuidValue.Array.data[0]
-      value: 3787067905171981268
+      value: -5437535185559679860
       objectReference: {fileID: 0}
     - target: {fileID: 5111644406287013726, guid: 2a4b62eb3579ad94fac6651beacd874e, type: 3}
       propertyPath: playerAvatarPrefab.RawGuidValue.Array.data[1]
-      value: -299955381400440278
+      value: -1948044834335892214
       objectReference: {fileID: 0}
     - target: {fileID: 5526528335563473999, guid: 2a4b62eb3579ad94fac6651beacd874e, type: 3}
       propertyPath: m_LocalPosition.x

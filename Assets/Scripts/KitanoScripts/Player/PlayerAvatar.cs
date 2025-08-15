@@ -225,9 +225,14 @@ public class PlayerAvatar : NetworkBehaviour
 
     #endregion
 
+    #region ロビーシーン用
+
+    [SerializeField] private bool isInLobby=false; 
 
 
-    Vector3 debug_lastFramePosition= Vector3.zero; //デバッグ用の前フレームの位置を保持する変数
+    #endregion
+
+    Vector3 debug_lastFramePosition = Vector3.zero; //デバッグ用の前フレームの位置を保持する変数
     //----------------------ここまで変数宣言----------------------------------
 
 
@@ -405,6 +410,7 @@ public class PlayerAvatar : NetworkBehaviour
     void Update()
     {
 
+
         if (HasInputAuthority)
         {
             CheckInput();
@@ -419,13 +425,34 @@ public class PlayerAvatar : NetworkBehaviour
 
     }
 
+
     public override void FixedUpdateNetwork()
     {
 
         SynchronizeTransform();
     }
 
-    int groundBufferFrames = 3;
+
+    // ロビーシーンでの更新処理
+    void LobbyUpdate()
+    {
+        if (Object.HasInputAuthority) //入力権限がない場合は何もしない
+        {
+
+            // ロビーシーンでの入力処理をここに記述
+
+            PlayerInputData localInputData = LocalInputHandler.CollectInput(); //ロビーシーンでの入力を取得
+
+
+        }
+
+        // ロビーシーンでの更新処理をここに記述
+        // 例えば、UIの更新やアニメーションの再生など
+        //Debug.Log("Lobby Update called.");
+    }
+
+
+        int groundBufferFrames = 3;
     int ungroundedFrameCount = 0;
 
     // 入力をチェック、接地判定などアクションの実行可否は判定しない
@@ -513,26 +540,27 @@ public class PlayerAvatar : NetworkBehaviour
             }
 
 
+            if (!isInLobby)
+            {
+                //武器切り替え
+                //武器切り替え条件を満たしている場合、武器を切り替える
 
-            //武器切り替え
-            //武器切り替え条件を満たしている場合、武器を切り替える
-
-            if (CanChangeWeapon(localInputData, inputBuffer, currentWeaponActionState)) //武器変更のスクロールがあれば、武器の変更処理を呼ぶ
+                if (CanChangeWeapon(localInputData, inputBuffer, currentWeaponActionState)) //武器変更のスクロールがあれば、武器の変更処理を呼ぶ
             {
                 ChangeWeapon(localInputData.weaponChangeScroll);
                 return;
             }
 
 
+            
+                //武器毎のUpdate処理
+                if (weaponClassDictionary.TryGetValue(currentWeapon, out WeaponBase currentWeaponScript))
+                {
 
 
-            //武器毎のUpdate処理
-            if (weaponClassDictionary.TryGetValue(currentWeapon, out WeaponBase currentWeaponScript))
-            {
+                    currentWeaponScript.CalledOnUpdate(localInputData, inputBuffer, currentWeaponActionState); //武器のUpdate処理を呼び出す
 
-
-                currentWeaponScript.CalledOnUpdate(localInputData, inputBuffer, currentWeaponActionState); //武器のUpdate処理を呼び出す
-
+                }
             }
 
 
