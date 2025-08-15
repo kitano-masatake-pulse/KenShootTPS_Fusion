@@ -44,25 +44,9 @@ public class PlaySoundOnStateEnter : StateMachineBehaviour
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
 
-
-        AudioManager.Instance.StartCoroutine(DelayedPlay(animator));
-
-
-        
-
-    }
-
-
-
-    private IEnumerator DelayedPlay(Animator animator)
-    {
-        // 指定秒だけ待機
-        if (delay > 0f)
-        { yield return new WaitForSeconds(delay); }
-
         // 位置 or 追従ターゲットを設定
         Vector3? pos = useSpatial ? (Vector3?)animator.transform.position : null;
-        Transform follow = useFollow ? animator.transform : null;
+        Transform follow = useFollow ? animator.gameObject.transform : null;
 
         // PlaySound を呼び出し
         _loopHandle = AudioManager.Instance.PlaySound(
@@ -73,13 +57,42 @@ public class PlaySoundOnStateEnter : StateMachineBehaviour
             type,
             pos,
             follow
+            //animator.gameObject.transform
+           
         );
 
         AudioManager.Instance.SetSoundVolume(_loopHandle, normalizedVolume);
 
-
-
     }
+
+
+
+    //private IEnumerator DelayedPlay(Animator animator)
+    //{
+    //    //// 指定秒だけ待機
+    //    //if (delay > 0f)
+    //    //{ yield return new WaitForSeconds(delay); }
+
+    //    //// 位置 or 追従ターゲットを設定
+    //    //Vector3? pos = useSpatial ? (Vector3?)animator.transform.position : null;
+    //    //Transform follow = useFollow ? animator.transform : null;
+
+    //    //// PlaySound を呼び出し
+    //    //_loopHandle = AudioManager.Instance.PlaySound(
+    //    //    clipKey,
+    //    //    category,
+    //    //    startTime,
+    //    //    volume,
+    //    //    type,
+    //    //    pos,
+    //    //    follow
+    //    //);
+
+    //    //AudioManager.Instance.SetSoundVolume(_loopHandle, normalizedVolume);
+
+
+
+    //}
 
 
 
