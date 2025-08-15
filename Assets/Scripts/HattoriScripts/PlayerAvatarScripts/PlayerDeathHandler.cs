@@ -27,6 +27,9 @@ public class PlayerDeathHandler : NetworkBehaviour
 
     private void HandleDeath( float hostTimeStamp, PlayerRef victim, PlayerRef killer)
     {
+
+        Debug.Log($"Before PlayerDeathHandler: Player{victim.PlayerId} has died at {hostTimeStamp} by {killer.PlayerId}");
+
         //‚±‚ÌƒvƒŒƒCƒ„[‚Å‚È‚¢ê‡‚Í‰½‚à‚µ‚È‚¢
         if (victim != Object.InputAuthority)
         {

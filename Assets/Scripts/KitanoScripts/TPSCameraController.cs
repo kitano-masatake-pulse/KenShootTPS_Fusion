@@ -87,7 +87,8 @@ public class TPSCameraController : MonoBehaviour
 
     [Header("FOV Settings")]
     [SerializeField] private float normalFOV = 60f;
-    [SerializeField] private float adsFOV = 30f;
+    [SerializeField] private float adsFOV_assault = 30f;
+    [SerializeField] private float adsFOV_semiauto= 15f; // FOVの補間速度
     [SerializeField] private float fovLerpSpeed = 15f;
 
     [Header("Mouse Sensitivity")]
@@ -395,7 +396,33 @@ public class TPSCameraController : MonoBehaviour
         // カメラ寄せ・FOV切り替え
         targetOffset = ADSflag ? adsShoulderOffset : normalShoulderOffset;
         targetDistance = ADSflag ? adsDistance : normalDistance;
-        targetFOV = ADSflag ? adsFOV : normalFOV;
+
+        //FOVは武器ごとに異なるので、武器タイプに応じて切り替える
+        if (myPlayerAvatar != null && ADSflag)
+        {
+            if (myPlayerAvatar.CurrentWeapon == WeaponType.AssaultRifle)
+            {
+                targetFOV = adsFOV_assault;
+            }
+            else if (myPlayerAvatar.CurrentWeapon == WeaponType.SemiAutoRifle)
+            {
+                targetFOV = adsFOV_semiauto;
+            }
+            else
+            {
+                targetFOV = normalFOV; // その他の武器は通常のFOVを使用
+            }
+
+
+
+        }
+        else
+        { 
+            targetFOV = normalFOV; // PlayerAvatarが設定されていない場合は通常のFOVを使用
+
+        }
+
+       
 
 
         // 感度とリコイル倍率
@@ -552,14 +579,14 @@ public class TPSCameraController : MonoBehaviour
             // アバターのメッシュを非表示にする処理
             myPlayerAvatar.HideMesh();
             // 例: myPlayerAvatar.SetMeshActive(false);
-            Debug.Log("Avatar mesh culled due to close camera distance.");
+           //Debug.Log("Avatar mesh culled due to close camera distance.");
         }
         else
         {
             // アバターのメッシュを表示する処理
             // 例: myPlayerAvatar.SetMeshActive(true);
             myPlayerAvatar.ShowMesh();
-            Debug.Log("Avatar mesh visible.");
+           // Debug.Log("Avatar mesh visible.");
         }
 
 

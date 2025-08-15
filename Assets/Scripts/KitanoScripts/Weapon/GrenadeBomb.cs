@@ -66,7 +66,7 @@ public class GrenadeBomb : NetworkBehaviour
         }
         else
         {
-            OnlyEffectCoroutine();
+            StartCoroutine(OnlyEffectCoroutine());
 
 
         }
@@ -410,7 +410,7 @@ public class GrenadeBomb : NetworkBehaviour
         spawner.Spawn(
              explosionPrefab,
              position: transform.position,
-             startRadius: 0.5f, growTime: 0.15f, endRadius: 5.0f,
+             startRadius: 0.5f, growTime: 0.15f, endRadius: blastHitRadius,
              startAlpha: 0.9f, endAlpha: 0.3f,
              duration: 1f, fadeTime: 0.1f
          );
