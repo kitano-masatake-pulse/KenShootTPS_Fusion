@@ -261,9 +261,9 @@ MonoBehaviour:
   bgmVolume: 0.02
   isLoop: 1
   countdownSoundKey: se_countdown
-  countdownSoundVolume: 0.2
+  countdownSoundVolume: 0.3
   timeUpSoundKey: se_timeout
-  timeUpSoundVolume: 0.2
+  timeUpSoundVolume: 0.3
 --- !u!1 &8837520755633866738
 GameObject:
   m_ObjectHideFlags: 0

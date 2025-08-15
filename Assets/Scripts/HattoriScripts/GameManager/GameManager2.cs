@@ -1,4 +1,4 @@
-using Fusion;
+ï»¿using Fusion;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,33 +7,33 @@ using UnityEngine.SocialPlatforms.Impl;
 
 
 
-//ƒQ[ƒ€ŠÔAƒLƒ‹ƒfƒXAƒXƒRƒAŠÇ—‚ğs‚¤ƒNƒ‰ƒX
+//ã‚²ãƒ¼ãƒ æ™‚é–“ã€ã‚­ãƒ«ãƒ‡ã‚¹ã€ã‚¹ã‚³ã‚¢ç®¡ç†ã‚’è¡Œã†ã‚¯ãƒ©ã‚¹
 public class GameManager2 : NetworkBehaviour,IAfterSpawned
 {
-    // ƒVƒ“ƒOƒ‹ƒgƒ“ƒCƒ“ƒXƒ^ƒ“ƒX
+    // ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
     public static GameManager2 Instance { get; private set; }
-    //‰Šú‰»‚Ì‚½‚ß‚Ìƒtƒ‰ƒO
+    //åˆæœŸåŒ–ã®ãŸã‚ã®ãƒ•ãƒ©ã‚°
     private bool _afterSpawned = false;
     private bool _sceneLoaded = false;
 
-    // €”õŠ®—¹‚µ‚½ƒvƒŒƒCƒ„[‚ÌƒJƒEƒ“ƒg
+    // æº–å‚™å®Œäº†ã—ãŸãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ã‚«ã‚¦ãƒ³ãƒˆ
     private int readyPlayerCount = 0;
 
-    //¶¬ƒCƒxƒ“ƒg
+    //ç”Ÿæˆæ™‚ã‚¤ãƒ™ãƒ³ãƒˆ
     public static event Action OnManagerInitialized;
-    //‡I—¹ƒCƒxƒ“ƒg
+    //è©¦åˆçµ‚äº†ã‚¤ãƒ™ãƒ³ãƒˆ
     public event Action OnTimeUp;
 
     
     //============================================
-    //ƒ†[ƒU[ƒf[ƒ^ŠÖŒW
+    //ãƒ¦ãƒ¼ã‚¶ãƒ¼ãƒ‡ãƒ¼ã‚¿é–¢ä¿‚
     //============================================
     public UserData[] UserDataArray { get; private set; } = new UserData[50];
-    bool isUserDataArrayDirty = false; // ÅV‚ÌUserDataArray‚ª“¯Šú‚ª‚Ü‚¾‚³‚ê‚Ä‚¢‚È‚¢‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO
+    bool isUserDataArrayDirty = false; // æœ€æ–°ã®UserDataArrayãŒåŒæœŸãŒã¾ã ã•ã‚Œã¦ã„ãªã„ã‹ã©ã†ã‹ã®ãƒ•ãƒ©ã‚°
 
 
     //============================================
-    //ƒLƒ‹ƒfƒXŠÖŒW
+    //ã‚­ãƒ«ãƒ‡ã‚¹é–¢ä¿‚
     //============================================
     public struct KillLog
     {
@@ -52,19 +52,19 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
     private List<KillLog> killLogs = new List<KillLog>(KillLogLimit);
     public event Action<float,PlayerRef, PlayerRef> OnAnyPlayerDied;
     public event Action<float,PlayerRef> OnMyPlayerDied;
-    //”­‰Îæˆê——
-    //PlayerAvatar‚ÌPlayerDeathHandler
-    //HUDManager‚ÌRespawnPanel
+    //ç™ºç«å…ˆä¸€è¦§
+    //PlayerAvatarã®PlayerDeathHandler
+    //HUDManagerã®RespawnPanel
 
     //============================================
-    //ƒXƒRƒAŠÖŒW
+    //ã‚¹ã‚³ã‚¢é–¢ä¿‚
     //============================================
     public event Action OnScoreChanged;
 
     //============================================
-    //ŠÔŠÖŒW
+    //æ™‚é–“é–¢ä¿‚
     //============================================
-    [Header("ƒQ[ƒ€ƒXƒ^[ƒg‚Ü‚Å‚ÌƒJƒEƒ“ƒg(3•bˆÈã)")]
+    [Header("ã‚²ãƒ¼ãƒ ã‚¹ã‚¿ãƒ¼ãƒˆã¾ã§ã®ã‚«ã‚¦ãƒ³ãƒˆ(3ç§’ä»¥ä¸Š)")]
     private const float countdownTime = 5f;
     private Coroutine countdownCoroutine;
     public event Action<float> OnCountDownBattleStart;
@@ -78,7 +78,7 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
     public event Action<int> OnTimeChanged;
 
     //============================================
-    // ƒCƒxƒ“ƒg”­‰Î—pƒtƒ‰ƒO
+    // ã‚¤ãƒ™ãƒ³ãƒˆç™ºç«ç”¨ãƒ•ãƒ©ã‚°
     //=============================================
     private bool _scoreDirty = false;
     private struct DeathEventData
@@ -92,12 +92,12 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
     [Networked] TickTimer NextTickTimer { get; set; }
 
     //============================================
-    //ƒfƒoƒbƒO—p“ü—Í
+    //ãƒ‡ãƒãƒƒã‚°ç”¨å…¥åŠ›
     //============================================
     public DebugInputData debugInput = DebugInputData.Default();
 
     //===========================================
-    //‰Šú‰»ˆ—
+    //åˆæœŸåŒ–å‡¦ç†
     //===========================================
     private void Awake()
     {
@@ -115,7 +115,7 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
     {
         if (!Runner.IsServer)
         {
-            InitializeGameManager(); // ƒNƒ‰ƒCƒAƒ“ƒg‘¤‚Å‰Šú‰»‚ğs‚¤
+            InitializeGameManager(); // ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆå´ã§åˆæœŸåŒ–ã‚’è¡Œã†
         }
 
     }
@@ -132,17 +132,17 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
         }
 
 
-        //‚±‚±‚ÉUserData‚Ì‰Šú‰»ˆ—‚ğ’Ç‰Á‚·‚é
+        //ã“ã“ã«UserDataã®åˆæœŸåŒ–å‡¦ç†ã‚’è¿½åŠ ã™ã‚‹
         if (Runner.IsServer)
         {
-            RPC_RequestId(); // ƒzƒXƒg‚©‚ç‘SƒNƒ‰ƒCƒAƒ“ƒg‚ÉID—v‹‚ğ‘—M
+            RPC_RequestId(); // ãƒ›ã‚¹ãƒˆã‹ã‚‰å…¨ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆã«IDè¦æ±‚ã‚’é€ä¿¡
             Debug.Log("GameManager2: InitializeGameManager called on server. Requesting IDs from clients.");
         }
         else 
         {
-            RPC_SubmitIdToHost(ConnectionManager.Instance.GetLocalID()); // ƒNƒ‰ƒCƒAƒ“ƒg‚Í©•ª‚ÌID‚ğƒzƒXƒg‚É‘—M
+            RPC_SubmitIdToHost(ConnectionManager.Instance.GetLocalID()); // ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆã¯è‡ªåˆ†ã®IDã‚’ãƒ›ã‚¹ãƒˆã«é€ä¿¡
             Debug.Log("GameManager2: InitializeGameManager called on client. Waiting for RPC_RequestId.");
-            // ƒNƒ‰ƒCƒAƒ“ƒg‘¤‚Å‚ÍRPC_RequestId‚ğ‘Ò‚Â
+            // ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆå´ã§ã¯RPC_RequestIdã‚’å¾…ã¤
         }
 
         if(Runner.TryGetPlayerObject(Runner.LocalPlayer, out NetworkObject playerObject))
@@ -159,12 +159,12 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
     }
 
 
-    // ‡@ ƒzƒXƒg¨‘SƒNƒ‰ƒCƒAƒ“ƒg —v‹
+    // â‘  ãƒ›ã‚¹ãƒˆâ†’å…¨ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆ è¦æ±‚
     [Rpc(RpcSources.StateAuthority, RpcTargets.All, HostMode = RpcHostMode.SourceIsHostPlayer)]
     public void RPC_RequestId()
     {
         Debug.Log("GameManager2: RPC_RequestId called. Requesting IDs from clients.");
-        // ƒNƒ‰ƒCƒAƒ“ƒg‚Í©•ª‚Ì ID ‚ğ‘—M‚·‚é
+        // ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆã¯è‡ªåˆ†ã® ID ã‚’é€ä¿¡ã™ã‚‹
         if (Runner.IsServer)
         {
             if (ConnectionManager.Instance != null)
@@ -186,11 +186,11 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
     {
 
         Debug.Log("RPC_SubmitIdToHost called.");
-        PlayerRef sender = info.Source;            // ‚Ç‚Ì PlayerRef ‚©‚ç—ˆ‚½‚©
+        PlayerRef sender = info.Source;            // ã©ã® PlayerRef ã‹ã‚‰æ¥ãŸã‹
 
         if (GameManager2.Instance != null)
         {
-            GameManager2.Instance.RegisterUserID(userID, sender); // GameManager2‚Ìƒƒ\ƒbƒh‚ğŒÄ‚Ño‚µ‚Äƒ†[ƒU[ID‚ğ“o˜^
+            GameManager2.Instance.RegisterUserID(userID, sender); // GameManager2ã®ãƒ¡ã‚½ãƒƒãƒ‰ã‚’å‘¼ã³å‡ºã—ã¦ãƒ¦ãƒ¼ã‚¶ãƒ¼IDã‚’ç™»éŒ²
 
         }
         else
@@ -204,25 +204,25 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
     {
         Debug.Log($"RegisterUserID called with userID: {userID}, player: {player}");
         if (!Runner.IsServer) { return; }
-        //UserDataArray‚Ì’†‚©‚çplayer‚Éˆê’v‚·‚é—v‘f‚ğ’T‚·
+        //UserDataArrayã®ä¸­ã‹ã‚‰playerã«ä¸€è‡´ã™ã‚‹è¦ç´ ã‚’æ¢ã™
         int index = Array.FindIndex(UserDataArray, u => u.userGuid == userID);
         if (index >= 0)
         {
-            //Œ©‚Â‚©‚Á‚½ê‡‚ÍXV
+            //è¦‹ã¤ã‹ã£ãŸå ´åˆã¯æ›´æ–°
             UserDataArray[index].playerRef = player;
-            UserDataArray[index].userConnectionState = ConnectionState.Connected; // Ú‘±ó‘Ô‚ğXV
+            UserDataArray[index].userConnectionState = ConnectionState.Connected; // æ¥ç¶šçŠ¶æ…‹ã‚’æ›´æ–°
 
 
-            // ƒfƒoƒbƒO—p‚Éî•ñ‚ğ•\¦
+            // ãƒ‡ãƒãƒƒã‚°ç”¨ã«æƒ…å ±ã‚’è¡¨ç¤º
             UserDataArray[index].DisplayUserInfo();
 
-            //‚·‚Å‚É“o˜^‚³‚ê‚Ä‚¢‚é‚Ì‚ÉÄ“x“o˜^‚µ‚æ‚¤‚Æ‚µ‚½‚Æ‚¢‚¤‚±‚Æ‚ÍAÄÚ‘±Ò‚Æl‚¦‚ç‚ê‚é
+            //ã™ã§ã«ç™»éŒ²ã•ã‚Œã¦ã„ã‚‹ã®ã«å†åº¦ç™»éŒ²ã—ã‚ˆã†ã¨ã—ãŸã¨ã„ã†ã“ã¨ã¯ã€å†æ¥ç¶šè€…ã¨è€ƒãˆã‚‰ã‚Œã‚‹
             Debug.Log($"UserData for player {player} already exists. Updated connection state and player reference. UserID: {userID}");
-            // ‚±‚±‚Å•K—v‚È‚çÄÚ‘±‚Ìˆ—‚ğ’Ç‰Á‚·‚é‚±‚Æ‚à‰Â”\
+            // ã“ã“ã§å¿…è¦ãªã‚‰å†æ¥ç¶šæ™‚ã®å‡¦ç†ã‚’è¿½åŠ ã™ã‚‹ã“ã¨ã‚‚å¯èƒ½
 
 
-            // —á‚¦‚ÎAƒXƒRƒA‚âƒ`[ƒ€î•ñ‚ÌÄİ’è‚È‚Ç
-            ShareUserDataArray(UserDataArray); // ÄÚ‘±‚É‘SƒNƒ‰ƒCƒAƒ“ƒg‚ÉÅV‚ÌUserDataArray‚ğ‹¤—L‚·‚é
+            // ä¾‹ãˆã°ã€ã‚¹ã‚³ã‚¢ã‚„ãƒãƒ¼ãƒ æƒ…å ±ã®å†è¨­å®šãªã©
+            ShareUserDataArray(UserDataArray); // å†æ¥ç¶šæ™‚ã«å…¨ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆã«æœ€æ–°ã®UserDataArrayã‚’å…±æœ‰ã™ã‚‹
 
 
 
@@ -236,18 +236,18 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
             {
                 userGuid = userID,
                 playerRef = player,
-                userScore = new PlayerScore(), // ƒXƒRƒA‚Í‰Šú‰»
-                userTeam = TeamType.None, // ƒ`[ƒ€‚Í‰Šú‰»
-                userConnectionState = ConnectionState.Connected, // Ú‘±ó‘Ô‚ÍÚ‘±’†‚Éİ’è
-                //userName = $"Player {userID}" // ƒ†[ƒU[–¼‚ÍƒfƒtƒHƒ‹ƒgİ’è
+                userScore = new PlayerScore(), // ã‚¹ã‚³ã‚¢ã¯åˆæœŸåŒ–
+                userTeam = TeamType.None, // ãƒãƒ¼ãƒ ã¯åˆæœŸåŒ–
+                userConnectionState = ConnectionState.Connected, // æ¥ç¶šçŠ¶æ…‹ã¯æ¥ç¶šä¸­ã«è¨­å®š
+                //userName = $"Player {userID}" // ãƒ¦ãƒ¼ã‚¶ãƒ¼åã¯ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆè¨­å®š
             };
 
             AddUserData(newUserData);
-            // ƒfƒoƒbƒO—p‚Éî•ñ‚ğ•\¦
+            // ãƒ‡ãƒãƒƒã‚°ç”¨ã«æƒ…å ±ã‚’è¡¨ç¤º
             newUserData.DisplayUserInfo();
         }
 
-        isUserDataArrayDirty = true; // UserDataArray‚Ì“¯Šú‚ª•K—v‚Å‚ ‚é‚±‚Æ‚ğ¦‚·ƒtƒ‰ƒO‚ğ—§‚Ä‚é
+        isUserDataArrayDirty = true; // UserDataArrayã®åŒæœŸãŒå¿…è¦ã§ã‚ã‚‹ã“ã¨ã‚’ç¤ºã™ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 
     }
 
@@ -255,7 +255,7 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
 
     void AddUserData(UserData userData)
     {
-        //Œ©‚Â‚©‚ç‚È‚©‚Á‚½ê‡‚Í’Ç‰Á
+        //è¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸå ´åˆã¯è¿½åŠ 
         for (int i = 0; i < UserDataArray.Length; i++)
         {
             if (UserDataArray[i].Equals(default(UserData)))
@@ -270,14 +270,14 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
     }
 
 
-    //ƒ†[ƒU[ƒf[ƒ^‚ÌXV‚ğs‚¤ƒƒ\ƒbƒh
+    //ãƒ¦ãƒ¼ã‚¶ãƒ¼ãƒ‡ãƒ¼ã‚¿ã®æ›´æ–°ã‚’è¡Œã†ãƒ¡ã‚½ãƒƒãƒ‰
     void UpdateUserDataArray(UserData userData)
     {
 
         int index = Array.FindIndex(UserDataArray, u => u.userGuid==userData.userGuid);
         if (index >= 0)
         {
-            //Œ©‚Â‚©‚Á‚½ê‡‚ÍXV
+            //è¦‹ã¤ã‹ã£ãŸå ´åˆã¯æ›´æ–°
             UserDataArray[index] = userData;
             
         }
@@ -288,31 +288,31 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
             //{
             //    userID = userID,
             //    playerRef = player,
-            //    userScore = new PlayerScore(), // ƒXƒRƒA‚Í‰Šú‰»
-            //    userTeam = TeamType.None, // ƒ`[ƒ€‚Í‰Šú‰»
-            //    userConnectionState = ConnectionState.Connected, // Ú‘±ó‘Ô‚ÍÚ‘±’†‚Éİ’è
-            //    //userName = $"Player {userID}" // ƒ†[ƒU[–¼‚ÍƒfƒtƒHƒ‹ƒgİ’è
+            //    userScore = new PlayerScore(), // ã‚¹ã‚³ã‚¢ã¯åˆæœŸåŒ–
+            //    userTeam = TeamType.None, // ãƒãƒ¼ãƒ ã¯åˆæœŸåŒ–
+            //    userConnectionState = ConnectionState.Connected, // æ¥ç¶šçŠ¶æ…‹ã¯æ¥ç¶šä¸­ã«è¨­å®š
+            //    //userName = $"Player {userID}" // ãƒ¦ãƒ¼ã‚¶ãƒ¼åã¯ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆè¨­å®š
             //};
 
             AddUserData(userData);
-            // ƒfƒoƒbƒO—p‚Éî•ñ‚ğ•\¦
+            // ãƒ‡ãƒãƒƒã‚°ç”¨ã«æƒ…å ±ã‚’è¡¨ç¤º
             //newUserData.DisplayUserInfo();
         }
 
-        isUserDataArrayDirty = true; // UserDataArray‚Ì“¯Šú‚ª•K—v‚Å‚ ‚é‚±‚Æ‚ğ¦‚·ƒtƒ‰ƒO‚ğ—§‚Ä‚é
+        isUserDataArrayDirty = true; // UserDataArrayã®åŒæœŸãŒå¿…è¦ã§ã‚ã‚‹ã“ã¨ã‚’ç¤ºã™ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 
     }
 
     public void UpdateConnectionState(PlayerRef player, ConnectionState state)
     { 
         if (!Runner.IsServer) { return; }
-        //UserDataArray‚Ì’†‚©‚çplayer‚Éˆê’v‚·‚é—v‘f‚ğ’T‚·
+        //UserDataArrayã®ä¸­ã‹ã‚‰playerã«ä¸€è‡´ã™ã‚‹è¦ç´ ã‚’æ¢ã™
         int index = Array.FindIndex(UserDataArray, u => u.playerRef == player);
         if (index >= 0)
         {
-            //Œ©‚Â‚©‚Á‚½ê‡‚ÍXV
-            UserDataArray[index].userConnectionState = state; // Ú‘±ó‘Ô‚ğXV
-            isUserDataArrayDirty = true; // UserDataArray‚Ì“¯Šú‚ª•K—v‚Å‚ ‚é‚±‚Æ‚ğ¦‚·ƒtƒ‰ƒO‚ğ—§‚Ä‚é
+            //è¦‹ã¤ã‹ã£ãŸå ´åˆã¯æ›´æ–°
+            UserDataArray[index].userConnectionState = state; // æ¥ç¶šçŠ¶æ…‹ã‚’æ›´æ–°
+            isUserDataArrayDirty = true; // UserDataArrayã®åŒæœŸãŒå¿…è¦ã§ã‚ã‚‹ã“ã¨ã‚’ç¤ºã™ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
         }
         else
         {
@@ -323,7 +323,7 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
 
 
 
-    //ƒ†[ƒU[ƒf[ƒ^‚Ìƒ`ƒFƒbƒN‚ğs‚¤ƒƒ\ƒbƒh
+    //ãƒ¦ãƒ¼ã‚¶ãƒ¼ãƒ‡ãƒ¼ã‚¿ã®ãƒã‚§ãƒƒã‚¯ã‚’è¡Œã†ãƒ¡ã‚½ãƒƒãƒ‰
     private bool CheckUserDataIsAbleToShare(UserData[] userDataArray)
     {
         if (!Runner.IsServer) { return  false; }
@@ -338,8 +338,8 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
         {
             foreach (PlayerRef activePlayer in Runner.ActivePlayers)
             {
-                // ŠeƒvƒŒƒCƒ„[‚ÌUserData‚ª‘¶İ‚·‚é‚©ƒ`ƒFƒbƒN
-                //PlayerRef‚Åƒ`ƒFƒbƒN‚µ‚Ä‚é‚ªA‚Ù‚ñ‚Æ‚¤‚É³Šm‚É‚â‚é‚È‚çUserID‚ğÆ‡‚µ‚½‚Ù‚¤‚ª‚¢‚¢H
+                // å„ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®UserDataãŒå­˜åœ¨ã™ã‚‹ã‹ãƒã‚§ãƒƒã‚¯
+                //PlayerRefã§ãƒã‚§ãƒƒã‚¯ã—ã¦ã‚‹ãŒã€ã»ã‚“ã¨ã†ã«æ­£ç¢ºã«ã‚„ã‚‹ãªã‚‰UserIDã‚’ç…§åˆã—ãŸã»ã†ãŒã„ã„ï¼Ÿ
                 if (!userDataArray.Any(d => d.playerRef == activePlayer ))
                 {
                     Debug.LogWarning($"UserData for player {activePlayer} is missing or invalid.");
@@ -349,7 +349,7 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
 
             }
 
-            return true; // ‘S‚Ä‚ÌƒvƒŒƒCƒ„[‚ÌUserData‚ª‘¶İ‚·‚éê‡‚Ítrue‚ğ•Ô‚·
+            return true; // å…¨ã¦ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®UserDataãŒå­˜åœ¨ã™ã‚‹å ´åˆã¯trueã‚’è¿”ã™
         }
 
 
@@ -367,14 +367,14 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
 
         foreach (var userData in UserDataArray)
         {
-            if (userData.Equals(default(UserData))) continue; // ‹ó—v‘f‚ğœŠO
+            if (userData.Equals(default(UserData))) continue; // ç©ºè¦ç´ ã‚’é™¤å¤–
             RPC_ShareUserData(userData);
         }
 
 
 
-        RPC_InitializeCompleted();// ‰Šú‰»Š®—¹ƒCƒxƒ“ƒg‚ğ”­‰Î
-        _scoreDirty = true; // ƒXƒRƒA‚ªXV‚³‚ê‚½‚±‚Æ‚ğ¦‚·ƒtƒ‰ƒO‚ğ—§‚Ä‚é
+        RPC_InitializeCompleted();// åˆæœŸåŒ–å®Œäº†ã‚¤ãƒ™ãƒ³ãƒˆã‚’ç™ºç«
+        _scoreDirty = true; // ã‚¹ã‚³ã‚¢ãŒæ›´æ–°ã•ã‚ŒãŸã“ã¨ã‚’ç¤ºã™ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 
 
 
@@ -389,23 +389,23 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
         Debug.Log($"RPC_ShareUserData called. element size {elementSize} bytes.");
 
 
-        // UserDataArray‚Ì’†‚©‚çplayer‚Éˆê’v‚·‚é—v‘f‚ğ’T‚·
+        // UserDataArrayã®ä¸­ã‹ã‚‰playerã«ä¸€è‡´ã™ã‚‹è¦ç´ ã‚’æ¢ã™
         int index = Array.FindIndex(UserDataArray, u => u.playerRef == sharedUserData.playerRef);
         if (index >= 0)
         {
-            //Œ©‚Â‚©‚Á‚½ê‡‚ÍXV
+            //è¦‹ã¤ã‹ã£ãŸå ´åˆã¯æ›´æ–°
             UserDataArray[index] = sharedUserData;
         }
         else
         {
-            //Œ©‚Â‚©‚ç‚È‚©‚Á‚½ê‡‚Í’Ç‰Á
+            //è¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸå ´åˆã¯è¿½åŠ 
             AddUserData(sharedUserData);
         }
-        isUserDataArrayDirty = true; // UserDataArray‚Ì“¯Šú‚ª•K—v‚Å‚ ‚é‚±‚Æ‚ğ¦‚·ƒtƒ‰ƒO‚ğ—§‚Ä‚é
+        isUserDataArrayDirty = true; // UserDataArrayã®åŒæœŸãŒå¿…è¦ã§ã‚ã‚‹ã“ã¨ã‚’ç¤ºã™ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
         Debug.Log($"UserData for player {sharedUserData.playerRef} updated or added. UserID {sharedUserData.userGuid}");
 
 
-        _scoreDirty = true; // ƒXƒRƒA‚ªXV‚³‚ê‚½‚±‚Æ‚ğ¦‚·ƒtƒ‰ƒO‚ğ—§‚Ä‚é
+        _scoreDirty = true; // ã‚¹ã‚³ã‚¢ãŒæ›´æ–°ã•ã‚ŒãŸã“ã¨ã‚’ç¤ºã™ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 
 
 
@@ -414,12 +414,12 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
     [Rpc(RpcSources.StateAuthority, RpcTargets.All, HostMode = RpcHostMode.SourceIsHostPlayer)]
     public void RPC_InitializeCompleted()
     { 
-        OnManagerInitialized?.Invoke(); // ‰Šú‰»Š®—¹ƒCƒxƒ“ƒg‚ğ”­‰Î
+        OnManagerInitialized?.Invoke(); // åˆæœŸåŒ–å®Œäº†ã‚¤ãƒ™ãƒ³ãƒˆã‚’ç™ºç«
 
     }
 
 
-    //‚±‚Á‚©‚ç“_ŒÄ(ŠeŠÂ‹«‚ÅAGameManager‚Ì‰Šú‰»‚ªŠeXI‚í‚Á‚½‚©‚Ç‚¤‚©‚ğŠm”F‚·‚é)
+    //ã“ã£ã‹ã‚‰ç‚¹å‘¼(å„ç’°å¢ƒã§ã€GameManagerã®åˆæœŸåŒ–ãŒå„ã€…çµ‚ã‚ã£ãŸã‹ã©ã†ã‹ã‚’ç¢ºèªã™ã‚‹)
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_ReadyGame()
     {
@@ -432,15 +432,15 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
 
 
     //===========================================
-    //ƒzƒXƒgŠÂ‹«‚Å‚Ì‚İŒÄ‚Î‚ê‚éƒƒ\ƒbƒhŒQ
+    //ãƒ›ã‚¹ãƒˆç’°å¢ƒã§ã®ã¿å‘¼ã°ã‚Œã‚‹ãƒ¡ã‚½ãƒƒãƒ‰ç¾¤
     //===========================================
-    //ƒvƒŒƒCƒ„[‚ª€–S‚µ‚½‚Æ‚«‚ÉŒÄ‚Î‚êAFX‚Èˆ—‚ğs‚¤ƒƒ\ƒbƒh
+    //ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒæ­»äº¡ã—ãŸã¨ãã«å‘¼ã°ã‚Œã€è‰²ã€…ãªå‡¦ç†ã‚’è¡Œã†ãƒ¡ã‚½ãƒƒãƒ‰
     public void NotifyDeath(float killTime,PlayerRef victim, PlayerRef killer)
     {
         Debug.Log($"Object :{Object}");
         Debug.Log($"Object.HasStateAuthority :{Object.HasStateAuthority}");
         if (!Object.HasStateAuthority) return;
-        //killTime‚ÉŠù‚É‡ŠÔ‚ªI—¹‚µ‚Ä‚¢‚ê‚ÎÀs‚µ‚È‚¢
+        //killTimeæ™‚ã«æ—¢ã«è©¦åˆæ™‚é–“ãŒçµ‚äº†ã—ã¦ã„ã‚Œã°å®Ÿè¡Œã—ãªã„
         if(startSimTime + initialTimeSec <= Runner.SimulationTime)
         {
             Debug.LogWarning("Game time has already ended. Not processing death notification.");
@@ -450,19 +450,19 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
 
     }
 
-    //ƒLƒ‹ƒƒO‚ğ‘Sƒ[ƒJƒ‹ŠÂ‹«‚É‘—M‚µA‚Â‚¢‚Å‚ÉFX‚·‚éƒƒ\ƒbƒh
+    //ã‚­ãƒ«ãƒ­ã‚°ã‚’å…¨ãƒ­ãƒ¼ã‚«ãƒ«ç’°å¢ƒã«é€ä¿¡ã—ã€ã¤ã„ã§ã«è‰²ã€…ã™ã‚‹ãƒ¡ã‚½ãƒƒãƒ‰
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_SendDeathData(float timeStamp,PlayerRef victim, PlayerRef killer)
     {
         var killLog = new KillLog(timeStamp, victim, killer);
         killLogs.Add(killLog);
 
-        //ãŒÀ‚ğ’´‚¦‚½‚çÅŒÃ‚ÌƒƒO‚ğíœ
+        //ä¸Šé™ã‚’è¶…ãˆãŸã‚‰æœ€å¤ã®ãƒ­ã‚°ã‚’å‰Šé™¤
         if (killLogs.Count >= KillLogLimit) 
         {
             killLogs.RemoveAt(0); 
         }
-        NextTickTimer =    // ŸƒeƒBƒbƒNŒã‚ÉExpired‚É‚È‚é
+        NextTickTimer =    // æ¬¡ãƒ†ã‚£ãƒƒã‚¯å¾Œã«Expiredã«ãªã‚‹
             TickTimer.CreateFromTicks(Runner, 2);
 
         AddScore(victim, killer);
@@ -485,7 +485,7 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
         }
         if (countdownCoroutine != null)
         {
-            StopCoroutine(countdownCoroutine); // Šù‘¶‚ÌƒJƒEƒ“ƒgƒ_ƒEƒ“‚ğ’â~
+            StopCoroutine(countdownCoroutine); // æ—¢å­˜ã®ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³ã‚’åœæ­¢
         }
         StartCoroutine(CountdownCoroutine());
     }
@@ -501,13 +501,13 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
             //
             if(countdown == 3)
             {
-                RPC_InvokeCountDown(countdown); // ‘SƒNƒ‰ƒCƒAƒ“ƒg‚ÉƒJƒEƒ“ƒgƒ_ƒEƒ“ŠJn‚ğ’Ê’m
+                RPC_InvokeCountDown(countdown); // å…¨ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆã«ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³é–‹å§‹ã‚’é€šçŸ¥
             }
         }
-        // ƒJƒEƒ“ƒgƒ_ƒEƒ“I—¹Œã‚ÉƒQ[ƒ€‚ğŠJn
+        // ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³çµ‚äº†å¾Œã«ã‚²ãƒ¼ãƒ ã‚’é–‹å§‹
         TimerStart();
 
-        //PlayerAvatar‚Ìs“®•s”\‚ğ‰ğœ
+        //PlayerAvatarã®è¡Œå‹•ä¸èƒ½ã‚’è§£é™¤
         foreach (var player in Runner.ActivePlayers)
         {
             var playerObject = Runner.GetPlayerObject(player);
@@ -516,7 +516,7 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
                 var avatar = playerObject.GetComponent<PlayerAvatar>();
                 if (avatar != null)
                 {
-                    //RPC‚Ås“®•s”\‚ğ‰ğœ
+                    //RPCã§è¡Œå‹•ä¸èƒ½ã‚’è§£é™¤
                     avatar.RPC_ClearStun();
                 }
             }
@@ -533,31 +533,31 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
 
     private void UpdateTimer()
     {
-        // ƒ^ƒCƒ}[XVˆ—
+        // ã‚¿ã‚¤ãƒãƒ¼æ›´æ–°å‡¦ç†
         if (!Object.HasStateAuthority) return;
         if (!IsTimerRunning) return;
-        //Œ»İ‚ÌŠÔ‚©‚çƒXƒ^[ƒgŠÔ‚ğˆø‚¢‚½ŠÔ‚ªŒo‰ßŠÔ
+        //ç¾åœ¨ã®æ™‚é–“ã‹ã‚‰ã‚¹ã‚¿ãƒ¼ãƒˆæ™‚é–“ã‚’å¼•ã„ãŸæ™‚é–“ãŒçµŒéæ™‚é–“
         double elapsed = Runner.SimulationTime - startSimTime;
-        //Œo‰ßŠÔ‚ğ•b‚É•ÏŠ·
+        //çµŒéæ™‚é–“ã‚’ç§’ã«å¤‰æ›
         int elapsedSeconds = Mathf.FloorToInt((float)elapsed);
 
-        //c‚èŠÔ‚ğŒvZ
+        //æ®‹ã‚Šæ™‚é–“ã‚’è¨ˆç®—
         int newRemainingSeconds = Mathf.Max(initialTimeSec - elapsedSeconds);
 
-        // c‚èŠÔ‚ª•Ï‚í‚Á‚½ê‡‚Ì‚İXV
+        // æ®‹ã‚Šæ™‚é–“ãŒå¤‰ã‚ã£ãŸå ´åˆã®ã¿æ›´æ–°
         if (newRemainingSeconds != RemainingSeconds)
         {
             RemainingSeconds = newRemainingSeconds;
             if (RemainingSeconds <= 0)
             {
                 IsTimerRunning = false;
-                //‡I—¹ˆ—‚ğŠJn
+                //è©¦åˆçµ‚äº†å‡¦ç†ã‚’é–‹å§‹
                 EndGame();
             }
         }
     }
 
-    //ŠÔXV
+    //æ™‚é–“æ›´æ–°
     public override void FixedUpdateNetwork()
     {
         if (isUserDataArrayDirty && Runner.IsServer && CheckUserDataIsAbleToShare(UserDataArray))
@@ -567,26 +567,26 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
                 int totalSize = UserDataArray.Length * elementSize;
                 Debug.Log($"ShareUserData. element size {elementSize} bytes. total size {totalSize} bytes. ");
                 ShareUserDataArray(UserDataArray);
-                isUserDataArrayDirty = false; // “¯Šú‚ªŠ®—¹‚µ‚½‚Ì‚Åƒtƒ‰ƒO‚ğƒŠƒZƒbƒg
+                isUserDataArrayDirty = false; // åŒæœŸãŒå®Œäº†ã—ãŸã®ã§ãƒ•ãƒ©ã‚°ã‚’ãƒªã‚»ãƒƒãƒˆ
             }
 
 
         }
 
-        //ƒXƒRƒAXVƒ^ƒCƒ~ƒ“ƒO
+        //ã‚¹ã‚³ã‚¢æ›´æ–°ã‚¿ã‚¤ãƒŸãƒ³ã‚°
         if (NextTickTimer.Expired(Runner))
         {
-            NextTickTimer = TickTimer.None;   // ƒŠƒZƒbƒg
+            NextTickTimer = TickTimer.None;   // ãƒªã‚»ãƒƒãƒˆ
             if (_scoreDirty)
             {
-                //ƒXƒRƒA•ÏXƒCƒxƒ“ƒg‚ğ”­‰Î
+                //ã‚¹ã‚³ã‚¢å¤‰æ›´ã‚¤ãƒ™ãƒ³ãƒˆã‚’ç™ºç«
                 OnScoreChanged?.Invoke();
                 _scoreDirty = false;
             }
 
         }
 
-        UpdateTimer(); // ƒ^ƒCƒ}[‚ÌXVˆ—‚ğŒÄ‚Ño‚·
+        UpdateTimer(); // ã‚¿ã‚¤ãƒãƒ¼ã®æ›´æ–°å‡¦ç†ã‚’å‘¼ã³å‡ºã™
 
 
     }
@@ -614,19 +614,19 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
     {
         if (!Object.HasStateAuthority) return;
         Debug.Log("GameManager2: EndGame called. Game has ended.");
-        //‡I—¹ƒCƒxƒ“ƒg‚ğ”­‰Î
+        //è©¦åˆçµ‚äº†ã‚¤ãƒ™ãƒ³ãƒˆã‚’ç™ºç«
         OnTimeUp?.Invoke();
 
     }
 
     //===========================================
-    //‘Sƒ[ƒJƒ‹ŠÂ‹«‚ÅŒÄ‚Î‚ê‚éƒƒ\ƒbƒhŒQ
+    //å…¨ãƒ­ãƒ¼ã‚«ãƒ«ç’°å¢ƒã§å‘¼ã°ã‚Œã‚‹ãƒ¡ã‚½ãƒƒãƒ‰ç¾¤
     //===========================================
-    //ƒvƒŒƒCƒ„[‚ÌƒXƒRƒA‚ğXV‚·‚éƒƒ\ƒbƒh
+    //ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ã‚¹ã‚³ã‚¢ã‚’æ›´æ–°ã™ã‚‹ãƒ¡ã‚½ãƒƒãƒ‰
     public void AddScore(PlayerRef victim, PlayerRef killer)
     {
-        //ƒfƒXƒXƒRƒA‰ÁZ
-        //FirstOrDefault‚ğg‚¤‚Æƒƒ“ƒ`ƒƒƒ“null‚Å‚Í‚È‚­
+        //ãƒ‡ã‚¹ã‚¹ã‚³ã‚¢åŠ ç®—
+        //FirstOrDefaultã‚’ä½¿ã†ã¨ãƒ¯ãƒ³ãƒãƒ£ãƒ³nullã§ã¯ãªã
         UserData? foundV = UserDataArray.FirstOrDefault(u => u.playerRef==victim);
         if (!foundV.Equals(default(UserData)))
         {
@@ -639,9 +639,9 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
             }
         }
 
-        if (killer != PlayerRef.None)
+        if (killer != PlayerRef.None&&killer != victim)
         {
-            //ƒLƒ‹ƒXƒRƒA‰ÁZ
+            //ã‚­ãƒ«ã‚¹ã‚³ã‚¢åŠ ç®—
             UserData? foundK = UserDataArray.FirstOrDefault(u => u.playerRef == killer);
             if (!foundV.Equals(default(UserData)))
             {
@@ -657,11 +657,11 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
 
         _scoreDirty = true;
 
-        // ƒXƒRƒA•ÏXƒCƒxƒ“ƒg‚ğ”­‰Î
+        // ã‚¹ã‚³ã‚¢å¤‰æ›´ã‚¤ãƒ™ãƒ³ãƒˆã‚’ç™ºç«
         //OnScoreChanged?.Invoke();
     }
 
-    //ŠÔXV‚ÌƒR[ƒ‹ƒoƒbƒN‚È‚Ç
+    //æ™‚é–“æ›´æ–°æ™‚ã®ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ãªã©
     static void TimeChangedCallback(Changed<GameManager2> changed)
     {
         changed.Behaviour.RaiseTimeChanged();
@@ -672,12 +672,12 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
     }
 
     //===========================================
-    //ƒAƒNƒZƒTƒƒ\ƒbƒhŒQ
+    //ã‚¢ã‚¯ã‚»ã‚µãƒ¡ã‚½ãƒƒãƒ‰ç¾¤
     //===========================================
 
 
     /// <summary>
-    /// w’è‚³‚ê‚½ƒvƒŒƒCƒ„[‚ÌƒXƒRƒA‚ğæ“¾‚·‚éƒƒ\ƒbƒh
+    /// æŒ‡å®šã•ã‚ŒãŸãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ã‚¹ã‚³ã‚¢ã‚’å–å¾—ã™ã‚‹ãƒ¡ã‚½ãƒƒãƒ‰
     /// </summary>
     public bool TryGetPlayerScore(PlayerRef playerRef, out PlayerScore score)
     {
@@ -687,7 +687,7 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
     }
     
     /// <summary>
-    /// ©•ª‚ÌƒvƒŒƒCƒ„[ƒXƒRƒA‚ğæ“¾‚·‚éƒƒ\ƒbƒh
+    /// è‡ªåˆ†ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚¹ã‚³ã‚¢ã‚’å–å¾—ã™ã‚‹ãƒ¡ã‚½ãƒƒãƒ‰
     /// </summary> 
     public bool TryGetMyScore(out PlayerScore score)
     {
@@ -695,23 +695,23 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
     }
 
     /// <summary>
-    ///ƒLƒ‹”~‡‚Åƒ\[ƒg‚³‚ê‚½ƒXƒRƒAƒf[ƒ^(key‚Ævalue‚ğ‚ÂƒŠƒXƒg)‚ğ•Ô‚·ƒƒ\ƒbƒh
+    ///ã‚­ãƒ«æ•°é™é †ã§ã‚½ãƒ¼ãƒˆã•ã‚ŒãŸã‚¹ã‚³ã‚¢ãƒ‡ãƒ¼ã‚¿(keyã¨valueã‚’æŒã¤ãƒªã‚¹ãƒˆ)ã‚’è¿”ã™ãƒ¡ã‚½ãƒƒãƒ‰
     /// </summary>
-    // UserDataArray‚ğg‚Á‚ÄƒLƒ‹”~‡EƒfƒX”¸‡EPlayerRef‡‚Åƒ\[ƒg‚µ‚½ƒŠƒXƒg‚ğ•Ô‚·ƒƒ\ƒbƒh
+    // UserDataArrayã‚’ä½¿ã£ã¦ã‚­ãƒ«æ•°é™é †ãƒ»ãƒ‡ã‚¹æ•°æ˜‡é †ãƒ»PlayerRefé †ã§ã‚½ãƒ¼ãƒˆã—ãŸãƒªã‚¹ãƒˆã‚’è¿”ã™ãƒ¡ã‚½ãƒƒãƒ‰
     public IReadOnlyList<UserData> GetSortedUserData()
     {
         var sortedUserData = UserDataArray
-            .Where(u => !u.Equals(default(UserData))) // ‹ó—v‘f‚ğœŠO
-            .OrderByDescending(u => u.userScore.Kills) // ƒLƒ‹”‚ª‘½‚¢‡
-            .ThenBy(u => u.userScore.Deaths)           // ƒfƒX”‚ª­‚È‚¢‡
-            .ThenBy(u => u.playerRef.RawEncoded)       // PlayerRef‚Ì”’l‚ª¬‚³‚¢‡
+            .Where(u => !u.Equals(default(UserData))) // ç©ºè¦ç´ ã‚’é™¤å¤–
+            .OrderByDescending(u => u.userScore.Kills) // ã‚­ãƒ«æ•°ãŒå¤šã„é †
+            .ThenBy(u => u.userScore.Deaths)           // ãƒ‡ã‚¹æ•°ãŒå°‘ãªã„é †
+            .ThenBy(u => u.playerRef.RawEncoded)       // PlayerRefã®æ•°å€¤ãŒå°ã•ã„é †
             .ToList();
 
         return sortedUserData;
     }
 
     /// <summary>
-    /// ©•ª‚ÌƒvƒŒƒCƒ„[‚ªw’è‚³‚ê‚½PlayerRef‚Æˆê’v‚·‚é‚©‚Ç‚¤‚©‚ğŠm”F‚·‚éƒƒ\ƒbƒh
+    /// è‡ªåˆ†ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒæŒ‡å®šã•ã‚ŒãŸPlayerRefã¨ä¸€è‡´ã™ã‚‹ã‹ã©ã†ã‹ã‚’ç¢ºèªã™ã‚‹ãƒ¡ã‚½ãƒƒãƒ‰
     /// </summary>
     public bool IsMyPlayer(PlayerRef playerRef)
     {
@@ -719,7 +719,7 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
     }
 
     /// <summary>
-    ///  ©•ª‚ÌƒvƒŒƒCƒ„[‚ÌPlayerRef‚ğæ“¾‚·‚éƒƒ\ƒbƒh
+    ///  è‡ªåˆ†ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®PlayerRefã‚’å–å¾—ã™ã‚‹ãƒ¡ã‚½ãƒƒãƒ‰
     /// </summary> 
     public PlayerRef GetMyPlayerRef()
     {
@@ -730,7 +730,7 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
         return Runner.GetPlayerObject(Runner.LocalPlayer);
     }
     /// <summary>
-    /// Œ»İ‚ÌƒT[ƒo[ŠÔ‚Å‚Ìƒ^ƒCƒ€ƒXƒ^ƒ“ƒv‚ğæ“¾‚·‚éƒƒ\ƒbƒh
+    /// ç¾åœ¨ã®ã‚µãƒ¼ãƒãƒ¼æ™‚é–“ã§ã®ã‚¿ã‚¤ãƒ ã‚¹ã‚¿ãƒ³ãƒ—ã‚’å–å¾—ã™ã‚‹ãƒ¡ã‚½ãƒƒãƒ‰
     /// </summary>
     public float GetCurrentTime()
     {
@@ -738,7 +738,7 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
     }
 
     /// <summary>
-    /// ƒvƒŒƒCƒ„[‚Ìƒ`[ƒ€‚ğæ“¾‚·‚éƒƒ\ƒbƒh
+    /// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ãƒãƒ¼ãƒ ã‚’å–å¾—ã™ã‚‹ãƒ¡ã‚½ãƒƒãƒ‰
     /// </summary>
     public bool TryGetPlayerTeam(PlayerRef playerRef, out TeamType outTeam)
     {
@@ -750,16 +750,16 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
         }
         else
         {
-            outTeam = TeamType.None; // ƒ`[ƒ€‚ªŒ©‚Â‚©‚ç‚È‚¢ê‡‚ÍNone‚ğ•Ô‚·
+            outTeam = TeamType.None; // ãƒãƒ¼ãƒ ãŒè¦‹ã¤ã‹ã‚‰ãªã„å ´åˆã¯Noneã‚’è¿”ã™
             return false;
         }
     }
 
     //===========================================
-    //-----------------ƒfƒoƒbƒO—p----------------
+    //-----------------ãƒ‡ãƒãƒƒã‚°ç”¨----------------
     //===========================================
 
-    //‘SƒvƒŒƒCƒ„[‚ÌƒXƒRƒA‚ğƒfƒoƒbƒOƒƒO‚Éo—Í‚·‚éƒƒ\ƒbƒh
+    //å…¨ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ã‚¹ã‚³ã‚¢ã‚’ãƒ‡ãƒãƒƒã‚°ãƒ­ã‚°ã«å‡ºåŠ›ã™ã‚‹ãƒ¡ã‚½ãƒƒãƒ‰
     public void PrintAllScore()
     {
         if (!Object.HasStateAuthority) return;
@@ -770,18 +770,18 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
         }
     }
 
-    //ƒ‰ƒ“ƒ_ƒ€‚ÈƒvƒŒƒCƒ„[‚ÌƒLƒ‹‚ğ¶‚İo‚µNotifyDeath‚ğŒÄ‚Ño‚·ƒƒ\ƒbƒh
+    //ãƒ©ãƒ³ãƒ€ãƒ ãªãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ã‚­ãƒ«ã‚’ç”Ÿã¿å‡ºã—NotifyDeathã‚’å‘¼ã³å‡ºã™ãƒ¡ã‚½ãƒƒãƒ‰
     public void DebugRandomKill()
     {
         if (!Object.HasStateAuthority) return;
         var players = Runner.ActivePlayers.ToList();
-        if (players.Count < 2) return; // 2lˆÈã‚ÌƒvƒŒƒCƒ„[‚ª•K—v
+        if (players.Count < 2) return; // 2äººä»¥ä¸Šã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒå¿…è¦
         var victim = players[UnityEngine.Random.Range(0, players.Count)];
         PlayerRef killer;
         do
         {
             killer = players[UnityEngine.Random.Range(0, players.Count)];
-        } while (killer == victim); // ©•ª‚ğƒLƒ‹‚·‚é‚±‚Æ‚Í‚Å‚«‚È‚¢
+        } while (killer == victim); // è‡ªåˆ†ã‚’ã‚­ãƒ«ã™ã‚‹ã“ã¨ã¯ã§ããªã„
         NotifyDeath(Runner.SimulationTime, victim, killer);
     }
 
@@ -790,7 +790,7 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
          debugInput = LocalInputHandler.CollectDebugInput();
         if (debugInput.BattleEndPressedDown)
         {
-            OnTimeUp?.Invoke(); // ƒfƒoƒbƒO—p‚É‡I—¹ƒCƒxƒ“ƒg‚ğ”­‰Î
+            OnTimeUp?.Invoke(); // ãƒ‡ãƒãƒƒã‚°ç”¨ã«è©¦åˆçµ‚äº†ã‚¤ãƒ™ãƒ³ãƒˆã‚’ç™ºç«
         }
     }
    
