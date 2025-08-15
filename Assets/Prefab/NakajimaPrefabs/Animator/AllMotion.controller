@@ -3484,11 +3484,11 @@ MonoBehaviour:
   clipKey: Action_Reload_Gun
   category: 1
   delay: 0
-  startTime: 0
+  startTime: 1.5
   volume: 1
   type: 0
   useSpatial: 1
-  useFollow: 0
+  useFollow: 1
   normalizedVolume: 1
 --- !u!1101 &1110583611187365673
 AnimatorStateTransition:
@@ -4963,11 +4963,11 @@ MonoBehaviour:
   clipKey: Action_Reload_Gun
   category: 1
   delay: 0
-  startTime: 0
+  startTime: 1.5
   volume: 1
   type: 0
-  useSpatial: 0
-  useFollow: 0
+  useSpatial: 1
+  useFollow: 1
   normalizedVolume: 1
 --- !u!1101 &6070582077416860799
 AnimatorStateTransition:

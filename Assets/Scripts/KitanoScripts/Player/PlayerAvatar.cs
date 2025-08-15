@@ -226,6 +226,8 @@ public class PlayerAvatar : NetworkBehaviour
     #endregion
 
 
+
+    Vector3 debug_lastFramePosition= Vector3.zero; //デバッグ用の前フレームの位置を保持する変数
     //----------------------ここまで変数宣言----------------------------------
 
 
@@ -470,7 +472,9 @@ public class PlayerAvatar : NetworkBehaviour
             isGroundedNow = characterController.isGrounded || CheckGround();
 
 
-            if (inputBuffer.jump && isGroundedNow && !isImmobilized)//ここに接地判定を追加
+            if (inputBuffer.jump && isGroundedNow && currentWeaponActionState != WeaponActionState.Stun
+                //&& !isImmobilized
+                )//ここに接地判定を追加
             {
                 Jump();
                 inputBuffer.jump = false; //ジャンプのバッファをクリア
@@ -783,6 +787,7 @@ public class PlayerAvatar : NetworkBehaviour
         {
             // 入力方向に基づいて移動方向を計算
             moveVelocity = Quaternion.LookRotation(bodyObject.transform.forward, Vector3.up) * normalizedInputDir *moveSpeed;
+            Debug.Log($"MoveVelocity:( {moveVelocity.x},{moveVelocity.y},{moveVelocity.z},InputData:{normalizedInputDir},KeyInput:D={Input.GetKey(KeyCode.D)},Axis={Input.GetAxis("Horizontal")}"); //デバッグログ
         }
 
 
@@ -790,7 +795,18 @@ public class PlayerAvatar : NetworkBehaviour
         // 重力を加算（ここを省略すれば浮く）
         velocity.y += gravity * Time.deltaTime;
         // 坂道対応：Moveは自動で地形の傾斜に合わせてくれる
-        characterController.Move((moveVelocity  + velocity) * Time.deltaTime);
+
+        Vector3 MoveVec = (moveVelocity + velocity) * Time.deltaTime;
+        characterController.Move(MoveVec);
+
+        Debug.Log($"characterController.Move: ({MoveVec.x},{MoveVec.y},{MoveVec.z})"); //デバッグログ
+
+        Vector3 positionDiff= bodyObject.transform.position - debug_lastFramePosition; //デバッグ用の前フレームの位置との差分を計算
+
+        Debug.Log($"Move PositionDiff: ({positionDiff.x},{positionDiff.y},{positionDiff.z})"); //デバッグログ
+        debug_lastFramePosition = bodyObject.transform.position; //デバッグ用の前フレームの位置を更新
+
+
         // 着地しているなら重力リセット
         if (characterController.isGrounded)
         {
@@ -1039,45 +1055,45 @@ public class PlayerAvatar : NetworkBehaviour
 
 
 
-    //攻撃後の硬直時間の管理
-    IEnumerator PostAttackDelayCoroutine()
-    {
-        yield return new WaitForSeconds(attackImmolizedTime);
+    ////攻撃後の硬直時間の管理
+    //IEnumerator PostAttackDelayCoroutine()
+    //{
+    //    yield return new WaitForSeconds(attackImmolizedTime);
 
-        if (currentWeaponActionState != WeaponActionState.Stun)
-        {
-            isImmobilized = false; // 行動不能を解除
-        }
+    //    if (currentWeaponActionState != WeaponActionState.Stun)
+    //    {
+    //        isImmobilized = false; // 行動不能を解除
+    //    }
 
-        //currentWeaponActionState = WeaponActionState.Idle; // 現在のアクションをIdleに設定
-        //キャラの向きをカメラの向きに徐々に戻す
-        StartCoroutine(RotateToCameraOverTime(rotationDuration));
+    //    //currentWeaponActionState = WeaponActionState.Idle; // 現在のアクションをIdleに設定
+    //    //キャラの向きをカメラの向きに徐々に戻す
+    //    StartCoroutine(RotateToCameraOverTime(rotationDuration));
 
-    }
+    //}
 
-    //0.1秒かけてカメラの前方向に向くコルーチン
-    private IEnumerator RotateToCameraOverTime(float duration)
-    {
-        float elapsed = 0f;
+    ////0.1秒かけてカメラの前方向に向くコルーチン
+    //private IEnumerator RotateToCameraOverTime(float duration)
+    //{
+    //    float elapsed = 0f;
 
-        while (elapsed < duration)
-        {
-            // カメラのY軸の回転をターゲットとする
-            float targetY = tpsCameraTransform.eulerAngles.y;
-            Quaternion targetRotation = Quaternion.Euler(0, targetY, 0);
+    //    while (elapsed < duration)
+    //    {
+    //        // カメラのY軸の回転をターゲットとする
+    //        float targetY = tpsCameraTransform.eulerAngles.y;
+    //        Quaternion targetRotation = Quaternion.Euler(0, targetY, 0);
 
-            // 回転速度に基づいて現在の向きを補間
-            bodyObject.transform.rotation = Quaternion.RotateTowards(
-                transform.rotation,
-                targetRotation,
-                maxAlignToCameraAnglePerSecond * Time.deltaTime
-            );
+    //        // 回転速度に基づいて現在の向きを補間
+    //        bodyObject.transform.rotation = Quaternion.RotateTowards(
+    //            transform.rotation,
+    //            targetRotation,
+    //            maxAlignToCameraAnglePerSecond * Time.deltaTime
+    //        );
 
-            elapsed += Time.deltaTime;
-            yield return null;
-        }
-        isFollowingCameraForward = true; // カメラの向きに追従するように設定
-    }
+    //        elapsed += Time.deltaTime;
+    //        yield return null;
+    //    }
+    //    isFollowingCameraForward = true; // カメラの向きに追従するように設定
+    //}
 
     public void SetFollowingCameraForward(bool isFollowing)
     {

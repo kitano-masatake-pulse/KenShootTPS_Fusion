@@ -79,7 +79,16 @@ public static class LocalInputHandler
     public static PlayerInputData CollectInput()
     {
         PlayerInputData input;
-        input.wasdInput = new Vector3(Input.GetAxis("Horizontal"), 0f,Input.GetAxis("Vertical"));
+
+        //WASD
+        int W = Input.GetKey(KeyCode.W) ? 1 : 0;
+        int A = Input.GetKey(KeyCode.A) ? 1 : 0;
+        int S = Input.GetKey(KeyCode.S) ? 1 : 0;
+        int D = Input.GetKey(KeyCode.D) ? 1 : 0;
+
+
+
+        input.wasdInput = new Vector3(D-A, 0f,W-S);
         input.JumpPressedDown = Input.GetKeyDown(KeyCode.Space);
         input.FirePressedDown = Input.GetMouseButtonDown(0);
         input.FirePressedStay = Input.GetMouseButton(0);
