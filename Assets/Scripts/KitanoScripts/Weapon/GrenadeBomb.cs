@@ -52,6 +52,8 @@ public class GrenadeBomb : NetworkBehaviour
     [SerializeField] private float castRadius = 0.1f; // SphereCastの半径
     [SerializeField] ExplosionSphereSpawner spawner;
 
+    bool isTimerSound= false; // タイマー音が再生中かどうかのフラグ
+
 
     public override void Spawned()
     {
@@ -59,7 +61,7 @@ public class GrenadeBomb : NetworkBehaviour
         // Initialization code here, if needed
 
         ExplosionSphereSpawner spawner = GetComponent<ExplosionSphereSpawner>();
-
+        isTimerSound = true; // タイマー音を再生中に設定
         if (HasStateAuthority)
         {
             StartCoroutine(DamageCoroutine());
@@ -70,11 +72,16 @@ public class GrenadeBomb : NetworkBehaviour
 
 
         }
+
     }
 
     private void Update()
     {
-        timerElapsed += Time.deltaTime; // タイマーの経過時間を更新
+        if (isTimerSound) // タイマー音が再生中でない場合は何もしない
+        {
+            timerElapsed += Time.deltaTime; // タイマーの経過時間を更新
+        }
+
         if (timerElapsed > timerInterVal)
         { 
             timerElapsed = 0f; // タイマーをリセット
@@ -99,10 +106,12 @@ public class GrenadeBomb : NetworkBehaviour
     {
 
         yield return new WaitForSeconds(explosionDelay);
+        isTimerSound= false; // タイマー音を停止するフラグを設定
+                             // //タイマーの音を停止する
+        timerElapsed = 0f; // タイマーをリセット
         //爆発音を再生する
         SoundHandle exHandle = AudioManager.Instance.PlaySound(explosionClipKey, SoundCategory.Weapon, 0f, explosionClipVolume, SoundType.OneShot, this.transform.position, this.transform);
-        //タイマーの音を停止する
-        timerElapsed = 0f; // タイマーをリセット
+        
 
         // 爆発範囲の描画
         SpawnParticle(this.transform.position, damageDuration);
@@ -113,11 +122,13 @@ public class GrenadeBomb : NetworkBehaviour
     {
         yield return new WaitForSeconds(explosionDelay); // 爆発までの遅延時間を待つ
 
+        isTimerSound = false; // タイマー音を停止するフラグを設定
+        //タイマーの音を停止する
+        timerElapsed = 0f; // タイマーをリセット
         //爆発音を再生する
         SoundHandle exHandle = AudioManager.Instance.PlaySound(explosionClipKey, SoundCategory.Weapon, 0f, explosionClipVolume, SoundType.OneShot, this.transform.position, this.transform);
 
-        //タイマーの音を停止する
-        timerElapsed = 0f; // タイマーをリセット
+        
 
         // 爆発範囲の描画
         SpawnParticle(this.transform.position, damageDuration);
