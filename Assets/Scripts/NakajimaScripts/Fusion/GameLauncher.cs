@@ -1,4 +1,4 @@
-using Cinemachine;
+﻿using Cinemachine;
 using Fusion;
 using Fusion.Sockets;
 using System;
@@ -197,6 +197,9 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         {
             // バトルシーンに遷移
             Debug.Log("バトルシーンに遷移します");
+
+
+            AudioManager.Instance.PlaySound("se_battleStart", SoundCategory.System, 0f, 0.7f);
             networkRunner.SessionInfo.IsOpen = false; // セッションを閉じる
             networkRunner.SessionInfo.IsVisible = false; // セッションを非表示にする
             string sceneName = nextScene.ToSceneName();
