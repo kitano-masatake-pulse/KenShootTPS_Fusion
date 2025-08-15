@@ -651,8 +651,9 @@ public class PlayerAvatar : NetworkBehaviour
 
         Vector3 moveDirection = Vector3.zero; // 初期化
 
-        if (isImmobilized)
-        {
+        //if (isImmobilized)
+        if (currentWeaponActionState == WeaponActionState.Stun || currentWeaponActionState==WeaponActionState.SwordAttacking)
+            {
             // 行動不能中は移動方向をゼロにする
             moveDirection = Vector3.zero;
 

@@ -30,8 +30,8 @@ public static class WeaponTypeExtensions
         return weaponType switch
         {
             WeaponType.Sword => 0,
-            WeaponType.AssaultRifle => 200,
-            WeaponType.SemiAutoRifle => 500,
+            WeaponType.AssaultRifle => 30,
+            WeaponType.SemiAutoRifle => 10,
             WeaponType.Grenade => 5,
             _ => 0
         };
@@ -53,9 +53,9 @@ public static class WeaponTypeExtensions
     { 
         return weaponType switch
         {
-            WeaponType.Sword => 50, // 剣のダメージは決まってないので仮に50とする
+            WeaponType.Sword => 40, // 剣のダメージは決まってないので仮に50とする
             WeaponType.AssaultRifle => 5,
-            WeaponType.SemiAutoRifle => 20,
+            WeaponType.SemiAutoRifle => 30,
             WeaponType.Grenade => 50,
             _ => 0
         };
