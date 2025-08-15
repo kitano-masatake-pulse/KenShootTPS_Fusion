@@ -42,7 +42,9 @@ public class PlayerDeathHandler : NetworkBehaviour
         playerAvatar.SetActionAnimationPlayList(ActionType.Dead,hostTimeStamp);
         //陦悟虚荳崎�蛹
        
+        playerAvatar.IsDead = true;
         playerAvatar.CurrentWeaponActionState= WeaponActionState.Stun;
+        playerAvatar.TimeElapsedUntilHomingFinish = 0f;  
         playerAvatar.SetReturnTimeToIdle(0f);
         playerAvatar.IsImmobilized = true;
         //鬘斐�繧ｫ繝｡繝ｩ霑ｽ蠕薙ｒ蛻�ｋ

@@ -171,6 +171,14 @@ PrefabInstance:
       value: 3752808192233514346
       objectReference: {fileID: 0}
     - target: {fileID: 1516604608215421652, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
+      propertyPath: dummyAvatarPrefab.RawGuidValue.Array.data[0]
+      value: 3787067905171981268
+      objectReference: {fileID: 0}
+    - target: {fileID: 1516604608215421652, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
+      propertyPath: dummyAvatarPrefab.RawGuidValue.Array.data[1]
+      value: -299955381400440278
+      objectReference: {fileID: 0}
+    - target: {fileID: 1516604608215421652, guid: 0768dff331254fa4396e8a9a04213bf7, type: 3}
       propertyPath: gameManagerPrefab.RawGuidValue.Array.data[0]
       value: 4930145172303938604
       objectReference: {fileID: 0}

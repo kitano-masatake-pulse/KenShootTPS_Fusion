@@ -108,9 +108,27 @@ public class PlayerAvatar : NetworkBehaviour
     private bool isADS = false;
 
 
-    private bool isHoming = false; // ホーミング中かどうか
-    private bool isFollowingCameraForward = true; //カメラの前方向に向くかどうか(デフォルトはtrue)
+    [SerializeField] private bool isHoming = false; // ホーミング中かどうか
+    float timeElapsedUntilHomingFinish = 0f; // ホーミング開始からの経過時間
+
+    public float TimeElapsedUntilHomingFinish
+    {
+        get { return timeElapsedUntilHomingFinish; }
+        set { timeElapsedUntilHomingFinish = value; }
+    }
+
+    [SerializeField]private bool isFollowingCameraForward = true; //カメラの前方向に向くかどうか(デフォルトはtrue)
+
+
+    float timer_isFollowingCameraForward = 0f; //カメラの前方向に向くまでのタイマー(0.1秒かけてカメラの前方向に向く)
+    public float Timer_IsFollowingCameraForward
+    {
+        get { return timer_isFollowingCameraForward; }
+        set { timer_isFollowingCameraForward = value; }
+    }
+
     //private bool isInvincible = false; //無敵状態かどうか(デフォルトはfalse)
+    private bool isDead = false; //死亡状態かどうか(デフォルトはfalse)
 
 
 
@@ -129,6 +147,28 @@ public class PlayerAvatar : NetworkBehaviour
     {
         get { return isFollowingCameraForward; }
         set { isFollowingCameraForward = value; }
+    }
+
+    public bool IsDead
+    {
+        get { return isDead; }
+        set
+        {
+
+            isDead = value;
+            //if (isDead)
+            //{
+            //    currentWeaponActionState = WeaponActionState.Stun; //行動不能状態に設定
+            //    isImmobilized = true; //行動不能フラグを設定
+            //}
+            //else
+            //{
+            //    currentWeaponActionState = WeaponActionState.Idle; //行動不能状態を解除
+            //    isImmobilized = false; //行動不能フラグを解除
+            //}
+
+        }
+
     }
 
     // 先行入力の構造体。各武器の発射やリロードなどの入力をバッファリングするために使用
@@ -195,7 +235,7 @@ public class PlayerAvatar : NetworkBehaviour
     {
         //SetNickName($"Player({Object.InputAuthority.PlayerId})");
         //PlayerAvatarのRenderer
-        _renderers = GetComponentsInChildren<Renderer>(includeInactive:true);
+        _renderers = GetComponentsInChildren<Renderer>(includeInactive: true);
 
         myPlayerHitboxRoot = GetComponent<HitboxRoot>();
 
@@ -258,7 +298,7 @@ public class PlayerAvatar : NetworkBehaviour
         }
         else
         {
-            TeleportToInitialSpawnPoint(new Vector3(0, 2, 0), Quaternion.Euler(0,180,0));
+            TeleportToInitialSpawnPoint(new Vector3(0, 2, 0), Quaternion.Euler(0, 180, 0));
         }
 
     }
@@ -314,16 +354,16 @@ public class PlayerAvatar : NetworkBehaviour
     }
 
 
-    public void TeleportToInitialSpawnPoint(Vector3 initialSpawnPoint, Quaternion? playerRotation =null)
+    public void TeleportToInitialSpawnPoint(Vector3 initialSpawnPoint, Quaternion? playerRotation = null)
     {
         characterController.enabled = false; // CharacterControllerを一時的に無効化
 
         var rot = playerRotation ?? Quaternion.identity;
         Debug.Log($"Teleporting to initial spawn point: {initialSpawnPoint}, rotation: {rot.eulerAngles}"); //デバッグログ
         // 初期スポーンポイントにテレポートする
-        if(tpsCameraController != null){tpsCameraController.SetYawPitch(rot.eulerAngles.y, rot.eulerAngles.x);}
+        if (tpsCameraController != null) { tpsCameraController.SetYawPitch(rot.eulerAngles.y, rot.eulerAngles.x); }
         transform.SetPositionAndRotation(initialSpawnPoint, rot);
-        
+
         characterController.enabled = true; // 再度有効化して、衝突判定をリセット
 
     }
@@ -349,7 +389,7 @@ public class PlayerAvatar : NetworkBehaviour
     [Rpc(RpcSources.StateAuthority, RpcTargets.All, HostMode = RpcHostMode.SourceIsHostPlayer, TickAligned = false)]
     public void RPC_ClearStun()
     {
-        
+
         currentWeaponActionState = WeaponActionState.Idle; //行動不能状態を解除
         isImmobilized = false; //行動不能フラグを解除
 
@@ -394,11 +434,33 @@ public class PlayerAvatar : NetworkBehaviour
 
         if (Object.HasInputAuthority) //入力権限がない場合は何もしない
         {
+
+
+
+
             PlayerInputData localInputData = PlayerInputData.Default();
             if (!LocalInputHandler.isOpenMenu) //メニューが開いていないなら更新
             {
-               　localInputData = LocalInputHandler.CollectInput();
+                localInputData = LocalInputHandler.CollectInput();
             }
+
+
+            //死んでたら重力以外何もしない
+            if (isDead)
+            {
+                // 重力を加算（ここを省略すれば浮く）
+                velocity.y += gravity * Time.deltaTime;
+                // 坂道対応：Moveは自動で地形の傾斜に合わせてくれる
+                characterController.Move((velocity) * Time.deltaTime);
+                // 着地しているなら重力リセット
+                if (characterController.isGrounded)
+                {
+                    velocity.y = 0;
+                }
+
+                return;
+            }
+
             ManageInputBufferDuration(localInputData); //入力バッファの持続時間を管理する
 
 
@@ -420,7 +482,7 @@ public class PlayerAvatar : NetworkBehaviour
             //武器アクションの状態管理
 
             //死んでる時と投擲準備中は、明示的にIdleに戻さないと復帰しない
-            if (currentWeaponActionState != WeaponActionState.Stun && currentWeaponActionState != WeaponActionState.GrenadePreparing) 
+            if (currentWeaponActionState != WeaponActionState.Stun && currentWeaponActionState != WeaponActionState.GrenadePreparing)
             {
                 stateTimer_ReturnToIdle = Math.Max(stateTimer_ReturnToIdle - Time.deltaTime, 0); //状態タイマーを更新し、最大値を設定
                 if (stateTimer_ReturnToIdle <= 0f) //状態タイマーが0以下になったら、Idle状態に戻す
@@ -429,7 +491,24 @@ public class PlayerAvatar : NetworkBehaviour
                 }
             }
 
-            
+            if (isHoming)
+            {
+                if (timeElapsedUntilHomingFinish > 0f)
+                {
+                    timeElapsedUntilHomingFinish -= Time.deltaTime; // ホーミング開始からの経過時間を更新
+                }
+                else
+                {
+                    timeElapsedUntilHomingFinish = 0f;
+                    isHoming = false; // ホーミング終了
+                    currentTargetTransform = null; // ターゲットをクリア
+
+                }
+
+
+            }
+
+
 
             //武器切り替え
             //武器切り替え条件を満たしている場合、武器を切り替える
@@ -440,7 +519,7 @@ public class PlayerAvatar : NetworkBehaviour
                 return;
             }
 
-           
+
 
 
             //武器毎のUpdate処理
@@ -548,7 +627,7 @@ public class PlayerAvatar : NetworkBehaviour
 
     }
 
- 
+
 
 
     bool CanChangeWeapon(PlayerInputData localInputData, InputBufferStruct inputBuffer, WeaponActionState currentAction)
@@ -569,7 +648,7 @@ public class PlayerAvatar : NetworkBehaviour
 
     public void SetReturnTimeToIdle(float returnTime)
     {
-        stateTimer_ReturnToIdle =returnTime; //アクション後、Idle状態に戻るまでの時間を設定
+        stateTimer_ReturnToIdle = returnTime; //アクション後、Idle状態に戻るまでの時間を設定
     }
 
 
@@ -613,7 +692,9 @@ public class PlayerAvatar : NetworkBehaviour
 
     public void ChangeTransformLocally(Vector3 normalizedInputDir, Vector3 lookForwardDir)
     {
+        Vector3 moveVelocity = Vector3.zero; // 初期化
 
+        //方向変換
         if (isFollowingCameraForward)
         {
             //デバッグログ
@@ -634,34 +715,74 @@ public class PlayerAvatar : NetworkBehaviour
             Quaternion currentRotation = headObject.transform.rotation;
             Quaternion targetRotation = Quaternion.LookRotation(lookForwardDir.normalized);
             headObject.transform.rotation = Quaternion.Slerp(currentRotation, targetRotation, Time.deltaTime * 10f);
-            
+
         }
         else
         {
-            if (isHoming)
-            {
-                Homing(bodyObject.transform.position, currentTargetTransform); //ホーミング中はターゲットに向かって移動する
+
+            //タイマー更新
+            if (timer_isFollowingCameraForward > 0f)
+            { 
+                if(timer_isFollowingCameraForward < rotationDuration)
+                {
+                    // カメラのY軸の回転をターゲットとする
+                    float targetY = tpsCameraTransform.eulerAngles.y;
+                    Quaternion targetRotation = Quaternion.Euler(0, targetY, 0);
+
+                    // 回転速度に基づいて現在の向きを補間
+                    bodyObject.transform.rotation = Quaternion.RotateTowards(
+                        transform.rotation,
+                        targetRotation,
+                        maxAlignToCameraAnglePerSecond * Time.deltaTime
+                    );
+                }
+                timer_isFollowingCameraForward -= Time.deltaTime;
 
             }
             else
             {
-                //コルーチン(RotateToCameraOverTime(float duration))で、カメラの前方向に徐々に向きを合わせる
+                isFollowingCameraForward = true; //カメラの前方向に向く
+                timer_isFollowingCameraForward = 0f; //タイマーをリセット
             }
+
+            //ホーミング中かつ標的がいる場合、ターゲットに向かって移動する
+            if (isHoming && currentTargetTransform != null)
+            {
+
+                ChangeAngleInHoming(bodyObject.transform, currentTargetTransform);
+
+               
+
+            }
+            
         }
 
-        Vector3 moveDirection = Vector3.zero; // 初期化
-
-        //if (isImmobilized)
-        if (currentWeaponActionState == WeaponActionState.Stun || currentWeaponActionState==WeaponActionState.SwordAttacking)
-            {
+        //座標移動
+        
+        if (　currentWeaponActionState == WeaponActionState.Stun)
+        {
             // 行動不能中は移動方向をゼロにする
-            moveDirection = Vector3.zero;
+            moveVelocity = Vector3.zero;
+        }
+        else if (currentWeaponActionState == WeaponActionState.SwordAttacking)
+        {
 
+            
+            if (isHoming)
+            {
+
+                moveVelocity = StepInHoming(bodyObject.transform, currentTargetTransform);
+            }
+            else
+                            {
+                // 剣攻撃中の移動してない時間
+                moveVelocity = Vector3.zero;
+            }
         }
         else
         {
             // 入力方向に基づいて移動方向を計算
-            moveDirection = Quaternion.LookRotation(bodyObject.transform.forward, Vector3.up) * normalizedInputDir;
+            moveVelocity = Quaternion.LookRotation(bodyObject.transform.forward, Vector3.up) * normalizedInputDir *moveSpeed;
         }
 
 
@@ -669,7 +790,7 @@ public class PlayerAvatar : NetworkBehaviour
         // 重力を加算（ここを省略すれば浮く）
         velocity.y += gravity * Time.deltaTime;
         // 坂道対応：Moveは自動で地形の傾斜に合わせてくれる
-        characterController.Move((moveDirection * moveSpeed + velocity) * Time.deltaTime);
+        characterController.Move((moveVelocity  + velocity) * Time.deltaTime);
         // 着地しているなら重力リセット
         if (characterController.isGrounded)
         {
@@ -703,8 +824,8 @@ public class PlayerAvatar : NetworkBehaviour
     {
 
         var hits = new List<LagCompensatedHit>();
-        int hitCount=Runner.LagCompensation.OverlapSphere(
-            origin, 
+        int hitCount = Runner.LagCompensation.OverlapSphere(
+            origin,
             range,
             Object.InputAuthority,
             hits,
@@ -713,7 +834,7 @@ public class PlayerAvatar : NetworkBehaviour
             HitOptions.IgnoreInputAuthority // HitOptions.Noneを使用して、すべてのヒットを取得する
             ); // プレイヤーのレイヤーマスクを使用して近くの敵を検出
 
-        Debug.Log("Homing hitCount:" +hitCount);
+        Debug.Log("Homing hitCount:" + hitCount);
 
         float closestDistance = Mathf.Infinity;
         targetTransform = null;
@@ -799,29 +920,31 @@ public class PlayerAvatar : NetworkBehaviour
 
             homingMoveDirection = toTarget; // 現在の移動方向を更新
 
-            StartCoroutine(HomingCoroutine()); // ホーミング時間の管理を開始
+            timeElapsedUntilHomingFinish = homingTime;
 
 
         }
         else
         {
             isHoming = true;// ホーミングを開始
-            // ターゲットが見つからない場合は前進するだけ
-            StartCoroutine(HomingCoroutine()); // ホーミング時間の管理を開始
+                            // ターゲットが見つからない場合は前進するだけ
+            timeElapsedUntilHomingFinish = homingTime;
         }
     }
 
 
-    void Homing(Vector3 attackerTransform, Transform targetTransform)
+    void Homing(Transform attackeTransform, Transform targetTransform)
     {
         // 移動
-        
+
+        ChangeAngleInHoming(attackeTransform, targetTransform); // ホーミング中の角度を調整
+
         if (currentTargetTransform != null)
         {
-            Vector3 toTarget = (targetTransform.position - attackerTransform);
+            Vector3 toTarget = (targetTransform.position - attackeTransform.position);
             Debug.Log($"Homing to target: {targetTransform.name} at position {targetTransform.position}");
             toTarget.y = 0f; // Y軸の成分をゼロにして水平面上の方向を取得
-            Vector3  toTargetDirection = toTarget.normalized; // 正規化して方向ベクトルにする
+            Vector3 toTargetDirection = toTarget.normalized; // 正規化して方向ベクトルにする
 
             // 今の移動方向から敵への方向との差を角度で計算
             float angleToTarget = Vector3.Angle(homingMoveDirection, toTargetDirection);
@@ -847,7 +970,7 @@ public class PlayerAvatar : NetworkBehaviour
 
             //Debug.Log($"Homing towards {targetTransform.name}");
         }
-        else 
+        else
         {
             characterController.Move(bodyObject.transform.forward * chaseSpeed * Time.deltaTime);
 
@@ -856,14 +979,63 @@ public class PlayerAvatar : NetworkBehaviour
 
     }
 
-    //ホーミング時間の管理
-    IEnumerator HomingCoroutine()
+    void ChangeAngleInHoming(Transform attackerTransform, Transform targetTransform)
     {
-        yield return new WaitForSeconds(homingTime);
-        currentTargetTransform = null; // ターゲットをクリア
-        isHoming = false; // ホーミングを終了
+        if (targetTransform != null)
+        {
+
+            Vector3 toTarget = (targetTransform.position - attackerTransform.position);
+            Debug.Log($"Homing to target: {targetTransform.name} at position {targetTransform.position}");
+            toTarget.y = 0f; // Y軸の成分をゼロにして水平面上の方向を取得
+            Vector3 toTargetDirection = toTarget.normalized; // 正規化し.て方向ベクトルにする
+
+            // 今の移動方向から敵への方向との差を角度で計算
+            float angleToTarget = Vector3.Angle(homingMoveDirection, toTargetDirection);
+
+            // 角度差がある場合は補正
+            if (angleToTarget > 0f)
+            {
+                // 回転角の制限（最大maxTurnAnglePerFrame度）
+                float t = Mathf.Min(1f, maxTurnAnglePerFrame / angleToTarget);
+                homingMoveDirection = Vector3.Slerp(homingMoveDirection, toTargetDirection, t);
+            }
+
+            attackerTransform.forward = homingMoveDirection;
+
+        }
     }
 
+    Vector3 StepInHoming(Transform attackerTransform, Transform targetTransform)
+    {
+
+        Vector3 StepVector= Vector3.zero; // 初期化
+        if (targetTransform != null)
+        {
+            Vector3 toTarget = (targetTransform.position - attackerTransform.position);
+            toTarget.y = 0f; // Y軸の成分をゼロにして水平面上の方向を取得
+            Vector3 toTargetDirection = toTarget.normalized; // 正規化して方向ベクトルにする
+
+
+            if (toTarget.magnitude > homingDistanceThreshold)
+            {
+                StepVector = attackerTransform.forward * chaseSpeed; // ステップベクトルを計算
+            }
+
+
+        }
+        else 
+        { 
+            StepVector = attackerTransform.forward * chaseSpeed; // ターゲットがない場合は前進するだけ
+
+
+        }
+
+        Debug.Log($"Step Vector: {StepVector}, Target: {targetTransform?.name}");
+        return StepVector; // ステップベクトルを返す
+
+
+    }
+ 
 
 
 
@@ -1024,6 +1196,7 @@ public class PlayerAvatar : NetworkBehaviour
         stateTimer_ReturnToIdle= attackImmolizedTime; //近接攻撃の待機時間を設定
 
         isFollowingCameraForward = false; // カメラの向きに追従しないように設定
+        timer_isFollowingCameraForward = attackImmolizedTime; // カメラの向きに追従するまでの時間を設定
 
         inputBuffer.swordFireDown = false; //近接攻撃のバッファをクリア  
 
@@ -1031,7 +1204,7 @@ public class PlayerAvatar : NetworkBehaviour
         weaponClassDictionary[currentWeapon].FireDown(); //現在の武器の発射処理を呼ぶ
         SetActionAnimationPlayListForAllClients(currentWeapon.FireDownAction()); //アクションアニメーションのリストに発射ダウンを追加
 
-        StartCoroutine(PostAttackDelayCoroutine()); //攻撃後の硬直時間を管理するコルーチンを開始
+        //StartCoroutine(PostAttackDelayCoroutine()); //攻撃後の硬直時間を管理するコルーチンを開始
 
         if (TryGetClosestTargetInRange(headObject.transform.position, bodyObject.transform.forward, chaseRange, chaseAngle, out Transform targetTransform))
         {
