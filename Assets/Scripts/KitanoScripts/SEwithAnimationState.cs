@@ -104,5 +104,10 @@ public class PlaySoundOnStateEnter : StateMachineBehaviour
         {
             AudioManager.Instance.StopSound(_loopHandle);
         }
+
+        if (clipKey == "Action_Reload_Gun")
+        {
+            AudioManager.Instance.StopSound(_loopHandle);
+        }
     }
 }

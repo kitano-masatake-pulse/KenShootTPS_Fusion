@@ -1150,6 +1150,26 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 843593040134110373, guid: 5c51c096cf7287f44b35786fdcf4b89b, type: 3}
+      propertyPath: m_UiScaleMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 843593040134110373, guid: 5c51c096cf7287f44b35786fdcf4b89b, type: 3}
+      propertyPath: m_ScreenMatchMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 843593040134110373, guid: 5c51c096cf7287f44b35786fdcf4b89b, type: 3}
+      propertyPath: m_MatchWidthOrHeight
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 843593040134110373, guid: 5c51c096cf7287f44b35786fdcf4b89b, type: 3}
+      propertyPath: m_ReferenceResolution.x
+      value: 1920
+      objectReference: {fileID: 0}
+    - target: {fileID: 843593040134110373, guid: 5c51c096cf7287f44b35786fdcf4b89b, type: 3}
+      propertyPath: m_ReferenceResolution.y
+      value: 1080
+      objectReference: {fileID: 0}
     - target: {fileID: 1166773737583764127, guid: 5c51c096cf7287f44b35786fdcf4b89b, type: 3}
       propertyPath: m_Name
       value: TitleScenePrefab
