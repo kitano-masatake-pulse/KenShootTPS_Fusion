@@ -1,4 +1,4 @@
-using Fusion;
+ï»¿using Fusion;
 using System;
 using System.Collections;
 using TMPro;
@@ -6,13 +6,13 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-// ƒŠƒXƒ|[ƒ“—pƒpƒlƒ‹
+// ãƒªã‚¹ãƒãƒ¼ãƒ³ç”¨ãƒ‘ãƒãƒ«
 public class RespawnUI : MonoBehaviour,IUIPanel
 {
     [SerializeField] private CanvasGroup respawnPanelGroup;
     [SerializeField] private TMP_Text countdownText, killerText;
     [SerializeField] private Button respawnBtn;
-    [Header("ƒŠƒXƒ|[ƒ“UI•\¦‚ÌƒtƒF[ƒh‚Æ’x‰„‚Ìİ’è")]
+    [Header("ãƒªã‚¹ãƒãƒ¼ãƒ³UIè¡¨ç¤ºã®ãƒ•ã‚§ãƒ¼ãƒ‰ã¨é…å»¶ã®è¨­å®š")]
     [SerializeField] private float UIfadeTime = 0.3f, delay = 5f;
 
     private LocalRespawnHandler respawnHandler;
@@ -24,12 +24,14 @@ public class RespawnUI : MonoBehaviour,IUIPanel
     {
         GameManager2.Instance.OnMyPlayerDied -= DisplayRespawnPanel;
         GameManager2.Instance.OnMyPlayerDied += DisplayRespawnPanel;
-        ResetUI(); // UI‚ğƒŠƒZƒbƒg
+        ResetUI(); // UIã‚’ãƒªã‚»ãƒƒãƒˆ
     }
     public void Cleanup()
     {
         GameManager2.Instance.OnMyPlayerDied -= DisplayRespawnPanel;
-        ResetUI(); // UI‚ğƒŠƒZƒbƒg
+        CursorManager.Instance.ReleaseUI(this);
+
+        ResetUI(); // UIã‚’ãƒªã‚»ãƒƒãƒˆ
     }
 
     public void SetRespawnHandler(LocalRespawnHandler handler)
@@ -46,11 +48,11 @@ public class RespawnUI : MonoBehaviour,IUIPanel
 
     private IEnumerator WaitRespawnCoroutine(PlayerRef killer)
     {
-        ResetUI(); // UI‚ğƒŠƒZƒbƒg
+        ResetUI(); // UIã‚’ãƒªã‚»ãƒƒãƒˆ
         respawnPanelGroup.blocksRaycasts = true;
         respawnPanelGroup.interactable = true;
 
-        // ƒtƒF[ƒhƒCƒ“
+        // ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¤ãƒ³
         float t = 0;
         while (t < UIfadeTime)
         {
@@ -59,9 +61,9 @@ public class RespawnUI : MonoBehaviour,IUIPanel
             yield return null;
         }
         respawnPanelGroup.alpha = 1;
-        killerText.text = $"You were killed by {killer.PlayerId}";
+        killerText.text = $"You were killed by Player{killer.PlayerId}";
 
-        // ƒJƒEƒ“ƒgƒ_ƒEƒ“ŠJn
+        // ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³é–‹å§‹
         float rem = delay;
         while (rem > 0)
         {
@@ -72,28 +74,28 @@ public class RespawnUI : MonoBehaviour,IUIPanel
         countdownText.text = "";
         respawnBtn.gameObject.SetActive(true);
     }
-    // ƒŠƒXƒ|[ƒ“ƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚½‚Ìˆ—
+    // ãƒªã‚¹ãƒãƒ¼ãƒ³ãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚ŒãŸæ™‚ã®å‡¦ç†
     public void OnRespawnClick()
     {
-        Debug.Log("RespawnPanel:ƒŠƒXƒ|[ƒ“ƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚Ü‚µ‚½BƒŠƒXƒ|[ƒ“ˆ—‚ğŠJn‚µ‚Ü‚·B");
+        Debug.Log("RespawnPanel:ãƒªã‚¹ãƒãƒ¼ãƒ³ãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚Œã¾ã—ãŸã€‚ãƒªã‚¹ãƒãƒ¼ãƒ³å‡¦ç†ã‚’é–‹å§‹ã—ã¾ã™ã€‚");
         CursorManager.Instance.ReleaseUI(this);
-        // ƒRƒ‹[ƒ`ƒ“‚ğ’â~
+        // ã‚³ãƒ«ãƒ¼ãƒãƒ³ã‚’åœæ­¢
         if (co != null)
         {
             StopCoroutine(co);
             co = null;
         }
         respawnPanelGroup.interactable = false;
-        killerText.text = "Now Respawningc";
+        killerText.text = "Now Respawningâ€¦";
 
-        // UI‘I‘ğó‘Ô‚ğ‰ğœ
+        // UIé¸æŠçŠ¶æ…‹ã‚’è§£é™¤
         EventSystem.current.SetSelectedGameObject(null);
 
-        // ƒŠƒXƒ|[ƒ“—v‹
+        // ãƒªã‚¹ãƒãƒ¼ãƒ³è¦æ±‚
         respawnHandler.RespawnStart();
     }
 
-    //UI‚Ì‰Šú‰»
+    //UIã®åˆæœŸåŒ–
     public void ResetUI()
     {
         SetVisible(false);

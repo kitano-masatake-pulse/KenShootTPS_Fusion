@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -23,13 +23,15 @@ public class AudioManager : MonoBehaviour
     [SerializeField] CategoryInfo[] categories;
     Dictionary<SoundCategory, AudioMixerGroup> _groupMap;
 
-    [Header("‰Šúƒv[ƒ‹ƒTƒCƒY")]
+    [Header("åˆæœŸãƒ—ãƒ¼ãƒ«ã‚µã‚¤ã‚º")]
     [SerializeField] int poolSize = 30;
+    [Header("3Dç©ºé–“ã§ã®Maxè·é›¢")]
+    [SerializeField] float maxDistance = 100f;
 
     Queue<AudioSource> availableSources;
     HashSet<AudioSource> inUseSources;
 
-    // Ä¶’†‚Ì OneShot —pƒ\[ƒX‚ğ id ‚ÅŠÇ—
+    // å†ç”Ÿä¸­ã® OneShot ç”¨ã‚½ãƒ¼ã‚¹ã‚’ id ã§ç®¡ç†
     Dictionary<int, AudioSource> _playingSounds = new Dictionary<int, AudioSource>();
     int _nextSoundId = 1;
 
@@ -44,6 +46,7 @@ public class AudioManager : MonoBehaviour
     //AudioMixer
     [SerializeField] 
     private AudioMixer audioMixer;
+
 
 
     void Awake()
@@ -80,6 +83,7 @@ public class AudioManager : MonoBehaviour
             go.transform.parent = transform;
             var src = go.AddComponent<AudioSource>();
             src.playOnAwake = false;
+            src.maxDistance = maxDistance;
             availableSources.Enqueue(src);
         }
         inUseSources = new HashSet<AudioSource>();
@@ -120,10 +124,10 @@ public class AudioManager : MonoBehaviour
 
     void OnSceneUnloaded(SceneType scene)
     {
-        //ƒtƒF[ƒh‚µ‚È‚ª‚çÁ‚¦‚é‚Ì‚ª–]‚Ü‚µ‚¢‚ªA‚±‚±‚Å‚Í‘¦À‚É’â~
+        //ãƒ•ã‚§ãƒ¼ãƒ‰ã—ãªãŒã‚‰æ¶ˆãˆã‚‹ã®ãŒæœ›ã¾ã—ã„ãŒã€ã“ã“ã§ã¯å³åº§ã«åœæ­¢
         StopAll();
 
-        //ƒv[ƒ‹ƒTƒCƒY‚ğŒ³‚É–ß‚·
+        //ãƒ—ãƒ¼ãƒ«ã‚µã‚¤ã‚ºã‚’å…ƒã«æˆ»ã™
         while(availableSources.Count > poolSize)
         {
             var src = availableSources.Dequeue();
@@ -150,7 +154,7 @@ public class AudioManager : MonoBehaviour
             inUseSources.Add(src);
             return src;
         }
-        //ƒv[ƒ‹‚ª‹ó‚È‚çWarning‚ğo‚µ‚ÄV‚µ‚¢AudioSource‚ğì¬
+        //ãƒ—ãƒ¼ãƒ«ãŒç©ºãªã‚‰Warningã‚’å‡ºã—ã¦æ–°ã—ã„AudioSourceã‚’ä½œæˆ
         Debug.LogWarning("AudioManager: No free AudioSource available, creating a new one.");
         var fallback = CreateNewSource();
         inUseSources.Add(fallback);
@@ -163,9 +167,10 @@ public class AudioManager : MonoBehaviour
         go.transform.parent = transform;
         var src = go.AddComponent<AudioSource>();
         src.playOnAwake = false;
+        src.maxDistance = maxDistance;
         return src;
     }
-    //AudioSource‚ğ‰Šú‰»
+    //AudioSourceã‚’åˆæœŸåŒ–
     void InitializeSource(AudioSource src)
     {
         src.clip = null;
@@ -187,11 +192,11 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    //Ä¶‚µI‚í‚Á‚½‰¹‚ğÄ¶’†«‘‚©‚çíœ
+    //å†ç”Ÿã—çµ‚ã‚ã£ãŸéŸ³ã‚’å†ç”Ÿä¸­è¾æ›¸ã‹ã‚‰å‰Šé™¤
     IEnumerator CleanupAfterPlay(int id, AudioSource src, float duration)
     {
         yield return new WaitForSeconds(duration);
-        //Ä¶‚ªI‚í‚Á‚½‚çƒ}ƒbƒv‚©‚çœ‹AŠù‚É’â~‚µ‚Ä‚¢‚éê‡‚Í‰½‚à‚µ‚È‚¢
+        //å†ç”ŸãŒçµ‚ã‚ã£ãŸã‚‰ãƒãƒƒãƒ—ã‹ã‚‰é™¤å»ã€æ—¢ã«åœæ­¢ã—ã¦ã„ã‚‹å ´åˆã¯ä½•ã‚‚ã—ãªã„
         if (_playingSounds.ContainsKey(id)) { 
             _playingSounds.Remove(id);
             ReturnSource(src);
@@ -202,7 +207,7 @@ public class AudioManager : MonoBehaviour
 
     #region AudioClip Management
 
-    //“Ç‚İ‚Ü‚ê‚½AudioClip‚Ì’†‚©‚çkey‚É‘Î‰‚·‚é‚à‚Ì‚ğæ“¾‚·‚é
+    //èª­ã¿è¾¼ã¾ã‚ŒãŸAudioClipã®ä¸­ã‹ã‚‰keyã«å¯¾å¿œã™ã‚‹ã‚‚ã®ã‚’å–å¾—ã™ã‚‹
     AudioClip GetClip(string key)
     {
         if (_systemClips != null && _systemClips.TryGetValue(key, out var clip)) return clip;
@@ -243,8 +248,8 @@ public class AudioManager : MonoBehaviour
             }
             src.clip = clip;
             src.outputAudioMixerGroup = group;
-            src.time = startTime; // Ä¶ŠJnˆÊ’u‚ğİ’è
-            src.volume = soundVolume; // ‰¹—Ê‚ğİ’è
+            src.time = startTime; // å†ç”Ÿé–‹å§‹ä½ç½®ã‚’è¨­å®š
+            src.volume = soundVolume; // éŸ³é‡ã‚’è¨­å®š
             int id = _nextSoundId++;
             _playingSounds[id] = src;
             StartCoroutine(CleanupAfterPlay(id, src, clip.length));
@@ -270,8 +275,8 @@ public class AudioManager : MonoBehaviour
             }
             src.clip = clip;
             src.loop = true;
-            src.time = startTime; // Ä¶ŠJnˆÊ’u‚ğİ’è
-            src.volume = soundVolume; // ‰¹—Ê‚ğİ’è
+            src.time = startTime; // å†ç”Ÿé–‹å§‹ä½ç½®ã‚’è¨­å®š
+            src.volume = soundVolume; // éŸ³é‡ã‚’è¨­å®š
             src.outputAudioMixerGroup = group;
             int id = _nextSoundId++;
             _playingSounds[id] = src;
@@ -283,7 +288,7 @@ public class AudioManager : MonoBehaviour
 
 
 
-    // w’è‚³‚ê‚½ƒnƒ“ƒhƒ‹‚ÌƒTƒEƒ“ƒh‚ğ’â~
+    // æŒ‡å®šã•ã‚ŒãŸãƒãƒ³ãƒ‰ãƒ«ã®ã‚µã‚¦ãƒ³ãƒ‰ã‚’åœæ­¢
     public void StopSound(SoundHandle handle)
     {
         if(_playingSounds.ContainsKey(handle.id))
@@ -295,7 +300,7 @@ public class AudioManager : MonoBehaviour
         }
 
     }
-    //w’è‚³‚ê‚½–¼‘O‚ÌƒTƒEƒ“ƒh‚ğ‘S‚Ä’â~
+    //æŒ‡å®šã•ã‚ŒãŸåå‰ã®ã‚µã‚¦ãƒ³ãƒ‰ã‚’å…¨ã¦åœæ­¢
     public void StopSound(string clipKey)
     {
         var keys = _playingSounds
@@ -313,7 +318,7 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// BGM—pƒXƒgƒŠ[ƒ~ƒ“ƒOÄ¶
+    /// BGMç”¨ã‚¹ãƒˆãƒªãƒ¼ãƒŸãƒ³ã‚°å†ç”Ÿ
     /// </summary>
     public void PlayBgm(string clipKey,float soundVolume, SoundCategory soundCategory = SoundCategory.BGM,SoundType soundType = SoundType.Loop)
     {
@@ -327,7 +332,7 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// BGM’â~
+    /// BGMåœæ­¢
     /// </summary>
     public void StopBgm()
     {
@@ -347,7 +352,7 @@ public class AudioManager : MonoBehaviour
         StopBgm();
     }
 
-    //Ä¶’†‚ÌƒTƒEƒ“ƒh‚Ì‰¹—Ê(AudioSource)‚ğ•ÏX
+    //å†ç”Ÿä¸­ã®ã‚µã‚¦ãƒ³ãƒ‰ã®éŸ³é‡(AudioSource)ã‚’å¤‰æ›´
     public void SetSoundVolume(SoundHandle handle, float volume)
     {
         if (_playingSounds.TryGetValue(handle.id, out var src))
@@ -356,7 +361,7 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    //SetSoundVolume‚ğg‚Á‚Ä‰¹—ÊƒtƒF[ƒh
+    //SetSoundVolumeã‚’ä½¿ã£ã¦éŸ³é‡ãƒ•ã‚§ãƒ¼ãƒ‰
     public void FadeSound(SoundHandle handle, float targetVolume, float duration)
     {
         if (_playingSounds.TryGetValue(handle.id, out var src))
@@ -375,14 +380,14 @@ public class AudioManager : MonoBehaviour
             src.volume = Mathf.Lerp(startVolume, targetVolume, elapsed / duration);
             yield return null;
         }
-        src.volume = targetVolume; // ÅI“I‚È‰¹—Ê‚ğİ’è
+        src.volume = targetVolume; // æœ€çµ‚çš„ãªéŸ³é‡ã‚’è¨­å®š
     }
     #endregion
     #region AudioMixer Control
 
     private void ApplyOptions(OptionData data)
     {
-        //‰¹—Ê‚ğAudioMixer‚É“K—p
+        //éŸ³é‡ã‚’AudioMixerã«é©ç”¨
         SetMixerVolume("Master", data.masterVolume);
         SetMixerVolume("System", data.systemVolume);
         SetMixerVolume("BGM", data.bgmVolume);

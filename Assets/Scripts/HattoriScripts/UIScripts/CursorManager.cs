@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 
@@ -6,10 +6,11 @@ public class CursorManager : MonoBehaviour
 {
     public static CursorManager Instance;
 
-    // Œ»İ‚ÌƒV[ƒ“‚ÌuŠî€vFUI‚ª–³‚¢’Êí‚ÉƒƒbƒN‚·‚éH
+    // ç¾åœ¨ã®ã‚·ãƒ¼ãƒ³ã®ã€ŒåŸºæº–ã€ï¼šUIãŒç„¡ã„é€šå¸¸æ™‚ã«ãƒ­ãƒƒã‚¯ã™ã‚‹ï¼Ÿ
+    [SerializeField]
     bool gameplayLocksCursor = true;
 
-    // UI“™‚©‚ç‚Ìˆê“I‚È‰ğ•úƒŠƒNƒGƒXƒg‚ÌW‡id•¡–h~j
+    // UIç­‰ã‹ã‚‰ã®ä¸€æ™‚çš„ãªè§£æ”¾ãƒªã‚¯ã‚¨ã‚¹ãƒˆã®é›†åˆï¼ˆé‡è¤‡é˜²æ­¢ï¼‰
     readonly HashSet<object> uiHolders = new HashSet<object>();
 
     void Awake()
@@ -25,14 +26,17 @@ public class CursorManager : MonoBehaviour
 
     void OnSceneChanged(SceneType type)
     {
-        // —áFƒV[ƒ“–¼‚Å‚´‚Á‚­‚èØ‘Öi–{”Ô‚ÍScriptableObject‚Å–¾¦w’è‚ªãY—íj
+        Debug.Log($"CursorManager: OnSceneChanged({type})");
+        // ä¾‹ï¼šã‚·ãƒ¼ãƒ³åã§ã–ã£ãã‚Šåˆ‡æ›¿ï¼ˆæœ¬ç•ªã¯ScriptableObjectã§æ˜ç¤ºæŒ‡å®šãŒç¶ºéº—ï¼‰
         if (type.ToSceneName().Contains("Lobby") || type.ToSceneName().Contains("Battle"))
         {
-            SetScenePolicy(true);   // ƒƒbƒNŠî€
+            SetScenePolicy(true);   // ãƒ­ãƒƒã‚¯åŸºæº–
+            Debug.Log("CursorManager: ãƒ­ãƒƒã‚¯åŸºæº–ã‚’è¨­å®šã—ã¾ã—ãŸã€‚");
         }
         else
         {
-            SetScenePolicy(false);  // ”ñƒƒbƒNŠî€
+            SetScenePolicy(false);  // éãƒ­ãƒƒã‚¯åŸºæº–
+            Debug.Log("CursorManager: éãƒ­ãƒƒã‚¯åŸºæº–ã‚’è¨­å®šã—ã¾ã—ãŸã€‚");
         }
     }
 

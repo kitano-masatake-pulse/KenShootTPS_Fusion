@@ -1,9 +1,9 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 
-//ƒL[“ü—Í‚â“Á’èğŒ‚Åo‚Ä‚­‚éUI‚ğŠÇ—‚·‚éƒNƒ‰ƒX
+//ã‚­ãƒ¼å…¥åŠ›ã‚„ç‰¹å®šæ¡ä»¶ã§å‡ºã¦ãã‚‹UIã‚’ç®¡ç†ã™ã‚‹ã‚¯ãƒ©ã‚¹
 public class EventUIManager : MonoBehaviour
 {
     [SerializeField]
