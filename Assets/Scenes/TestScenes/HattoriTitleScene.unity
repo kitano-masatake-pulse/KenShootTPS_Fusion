@@ -1146,6 +1146,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 779471752103684357, guid: 5c51c096cf7287f44b35786fdcf4b89b, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1166773737583764127, guid: 5c51c096cf7287f44b35786fdcf4b89b, type: 3}
       propertyPath: m_Name
       value: TitleScenePrefab
@@ -1181,6 +1185,10 @@ PrefabInstance:
     - target: {fileID: 2849719888014897366, guid: 5c51c096cf7287f44b35786fdcf4b89b, type: 3}
       propertyPath: sceneType
       value: 4096
+      objectReference: {fileID: 0}
+    - target: {fileID: 3008886219637903913, guid: 5c51c096cf7287f44b35786fdcf4b89b, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3047094527566947122, guid: 5c51c096cf7287f44b35786fdcf4b89b, type: 3}
       propertyPath: m_AnchorMax.x
@@ -1230,10 +1238,22 @@ PrefabInstance:
       propertyPath: m_Material
       value: 
       objectReference: {fileID: 1925542}
+    - target: {fileID: 4857520495770490932, guid: 5c51c096cf7287f44b35786fdcf4b89b, type: 3}
+      propertyPath: m_AspectRatio
+      value: 0.99244183
+      objectReference: {fileID: 0}
+    - target: {fileID: 5044994605639473133, guid: 5c51c096cf7287f44b35786fdcf4b89b, type: 3}
+      propertyPath: m_AdditionalShaderChannelsFlag
+      value: 25
+      objectReference: {fileID: 0}
     - target: {fileID: 5392018062561456546, guid: 5c51c096cf7287f44b35786fdcf4b89b, type: 3}
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 1944239326}
+    - target: {fileID: 5492265933622845701, guid: 5c51c096cf7287f44b35786fdcf4b89b, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5726843950006335380, guid: 5c51c096cf7287f44b35786fdcf4b89b, type: 3}
       propertyPath: lobbySceneType
       value: 8
@@ -1245,6 +1265,10 @@ PrefabInstance:
     - target: {fileID: 5759754622283315158, guid: 5c51c096cf7287f44b35786fdcf4b89b, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5814927690216275686, guid: 5c51c096cf7287f44b35786fdcf4b89b, type: 3}
+      propertyPath: m_Text
+      value: Game Start
       objectReference: {fileID: 0}
     - target: {fileID: 5987227108111415472, guid: 5c51c096cf7287f44b35786fdcf4b89b, type: 3}
       propertyPath: m_AnchorMax.x
@@ -1294,6 +1318,22 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 1944239326}
+    - target: {fileID: 7965841661336693808, guid: 5c51c096cf7287f44b35786fdcf4b89b, type: 3}
+      propertyPath: buttons.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8009926516719950377, guid: 5c51c096cf7287f44b35786fdcf4b89b, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8170623025337544748, guid: 5c51c096cf7287f44b35786fdcf4b89b, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8224460707504168110, guid: 5c51c096cf7287f44b35786fdcf4b89b, type: 3}
+      propertyPath: m_AspectRatio
+      value: 1.7773626
+      objectReference: {fileID: 0}
     - target: {fileID: 8408063894417499105, guid: 5c51c096cf7287f44b35786fdcf4b89b, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -1343,7 +1383,8 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1628384223}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 269982835961119671, guid: 5c51c096cf7287f44b35786fdcf4b89b, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5c51c096cf7287f44b35786fdcf4b89b, type: 3}

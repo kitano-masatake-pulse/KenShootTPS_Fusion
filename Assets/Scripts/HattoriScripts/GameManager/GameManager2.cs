@@ -652,7 +652,7 @@ public class GameManager2 : NetworkBehaviour,IAfterSpawned
             }
         }
 
-        if (killer != PlayerRef.None)
+        if (killer != PlayerRef.None&&killer != victim)
         {
             //キルスコア加算
             UserData? foundK = UserDataArray.FirstOrDefault(u => u.playerRef == killer);

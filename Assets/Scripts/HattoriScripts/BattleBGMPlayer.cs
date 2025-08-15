@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
@@ -25,15 +25,16 @@ public class BattleBGMPlayer : MonoBehaviour
         if(GameManager2.Instance != null)
         {
             GameManager2.Instance.OnCountDownBattleStart -= PlayCountdownSE;
-            GameManager2.Instance.OnTimeUp -= StopBGM;
-            GameManager2.Instance.OnTimeUp -= PlayTimeUpSE;
+            BattleEndProcessor.Instance.OnBattleEnd -= StopBGM;
+            BattleEndProcessor.Instance.OnBattleEnd -= PlayTimeUpSE;
         }
+
     }
     private void SubscribePlaySound()
     {
         GameManager2.Instance.OnCountDownBattleStart += PlayCountdownSE;
-        GameManager2.Instance.OnTimeUp += StopBGM;
-        GameManager2.Instance.OnTimeUp += PlayTimeUpSE;
+        BattleEndProcessor.Instance.OnBattleEnd += StopBGM; 
+        BattleEndProcessor.Instance.OnBattleEnd += PlayTimeUpSE;
     }
 
     private void PlayCountdownSE(float countDown)
