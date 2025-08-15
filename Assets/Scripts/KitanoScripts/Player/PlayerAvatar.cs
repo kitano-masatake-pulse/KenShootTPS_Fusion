@@ -1,4 +1,4 @@
-using Fusion;
+﻿using Fusion;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -1387,7 +1387,7 @@ public class PlayerAvatar : NetworkBehaviour
         }
         currentWeapon = newWeapon;
         RPC_NotifyChangeWeapon(newWeapon);
-        OnWeaponChanged?.Invoke(currentWeapon, weaponClassDictionary[currentWeapon].currentMagazine, weaponClassDictionary[currentWeapon].currentReserve); //武器変更イベントを発火
+        if(Runner.LocalPlayer == Object.InputAuthority) OnWeaponChanged?.Invoke(currentWeapon, weaponClassDictionary[currentWeapon].currentMagazine, weaponClassDictionary[currentWeapon].currentReserve); //武器変更イベントを発火
 
     }
 
