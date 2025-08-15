@@ -1,4 +1,4 @@
-using UnityEngine;
+//using UnityEngine;
 using System.Collections;
 using Fusion;
 using TMPro;
@@ -13,6 +13,7 @@ public class PlayerDeathHandler : NetworkBehaviour
         if(GameManager2.Instance != null)
         {
             GameManager2.Instance.OnAnyPlayerDied += HandleDeath;
+            Debug.Log("PlayerDeathHandler: Registered to GameManager2.OnAnyPlayerDied");
         }
         
     }
@@ -22,37 +23,37 @@ public class PlayerDeathHandler : NetworkBehaviour
         if (GameManager2.Instance != null)
         {
             GameManager2.Instance.OnAnyPlayerDied -= HandleDeath;
+            Debug.Log("PlayerDeathHandler: Unregistered from GameManager2.OnAnyPlayerDied");
         }
     }
 
-    private void HandleDeath( float hostTimeStamp, PlayerRef victim, PlayerRef killer)
+    public void HandleDeath( float hostTimeStamp, PlayerRef victim, PlayerRef killer)
     {
 
-        Debug.Log($"Before PlayerDeathHandler: Player{victim.PlayerId} has died at {hostTimeStamp} by {killer.PlayerId}");
+        Debug.Log($"PlayerDeathHandlerBefore:victim:{victim}, killer: {killer}, hostTimeStamp: {hostTimeStamp},InputAuthority:{Object.InputAuthority}");
 
-        //‚±‚ÌƒvƒŒƒCƒ„[‚Å‚È‚¢ê‡‚Í‰½‚à‚µ‚È‚¢
         if (victim != Object.InputAuthority)
         {
             return;
         }
         Debug.Log($"PlayerDeathHandler: Player{victim.PlayerId} has died at {hostTimeStamp} by {killer.PlayerId}");
-        //ƒvƒŒƒCƒ„[ƒAƒoƒ^[‚É€–SƒAƒjƒ[ƒVƒ‡ƒ“‚ğİ’è
+        //ç¹åŠ±Îç¹§ï½¤ç¹ï½¤ç¹ï½¼ç¹§ï½¢ç¹èˆŒã¡ç¹ï½¼ç¸ºï½«è±ï½»è ï½¡ç¹§ï½¢ç¹ä¹Î“ç¹ï½¼ç¹§ï½·ç¹ï½§ç¹ï½³ç¹§å®šï½¨ï½­è³
 
         playerAvatar.SetActionAnimationPlayList(ActionType.Dead,hostTimeStamp);
-        //s“®•s”\‰»
+        //é™¦æ‚Ÿè™šè³å´ï¿½è›¹
        
         playerAvatar.CurrentWeaponActionState= WeaponActionState.Stun;
         playerAvatar.SetReturnTimeToIdle(0f);
         playerAvatar.IsImmobilized = true;
-        //Šç‚ÌƒJƒƒ‰’Ç]‚ğØ‚é
+        //é¬˜æ–ï¿½ç¹§ï½«ç¹ï½¡ç¹ï½©éœ‘ï½½è •è–™ï½’è›»ï¿½ï½‹
         playerAvatar.IsFollowingCameraForward = false;
-        //Collider –³Œø‰»(ƒŒƒCƒ„[Ø‚è‘Ö‚¦)
+        //Collider è¾Ÿï½¡èœ‰ï½¹è›¹(ç¹ï½¬ç¹§ï½¤ç¹ï½¤ç¹ï½¼è›»ï¿½ï½Šè­–ï½¿ç¸º)
         foreach (var col in GetComponentsInChildren<Collider>())
             col.gameObject.layer = LayerMask.NameToLayer("DeadPlayer");
-        //Hitbox –³Œø‰»(ƒŒƒCƒ„[Ø‚è‘Ö‚¦)
+        //Hitbox è¾Ÿï½¡èœ‰ï½¹è›¹(ç¹ï½¬ç¹§ï½¤ç¹ï½¤ç¹ï½¼è›»ï¿½ï½Šè­–ï½¿ç¸º)
         foreach (var hitbox in GetComponentsInChildren<PlayerHitbox>())
             hitbox.gameObject.layer = LayerMask.NameToLayer("DeadHitbox");
-        //ƒl[ƒ€ƒ^ƒO”ñ•\¦
+        //ç¹é˜ªï¿½ç¹ç¹§ï½¿ç¹§ï½°é«±æ«ï½¡ï½¨é‰ï½º
         WorldUICanvas.SetActive(false);
         
 
