@@ -1074,16 +1074,18 @@ MonoBehaviour:
   isImmobilized: 0
   wasGrounded: 0
   isGroundedNow: 0
+  isHoming: 0
+  isFollowingCameraForward: 1
   chaseAngle: 90
   chaseRange: 12
   chaseSpeed: 12
   maxTurnAnglePerFrame: 5
   homingDistanceThreshold: 0.5
-  maxAlignToCameraAnglePerSecond: 360
+  maxAlignToCameraAnglePerSecond: 900
   homingStartTime: 0.2
   homingTime: 1
   attackImmolizedTime: 1.9
-  rotationDuration: 0.1
+  rotationDuration: 0.2
   playerLayer:
     serializedVersion: 2
     m_Bits: 64
@@ -4166,6 +4168,14 @@ PrefabInstance:
     - target: {fileID: 1127450730860520516, guid: b84d7ca3927758646a65731cc107aa76, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2142021146967332986, guid: b84d7ca3927758646a65731cc107aa76, type: 3}
+      propertyPath: m_Convex
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2142021146967332986, guid: b84d7ca3927758646a65731cc107aa76, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

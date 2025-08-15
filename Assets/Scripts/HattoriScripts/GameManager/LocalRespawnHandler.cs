@@ -82,6 +82,7 @@ public class LocalRespawnHandler: MonoBehaviour
     {
         //s“®§ŒÀ‚ğ‰ğœ
         
+        playerAvatar.IsDead = false;
         playerAvatar.CurrentWeaponActionState = WeaponActionState.Idle;
         playerAvatar.IsImmobilized = false;
 
