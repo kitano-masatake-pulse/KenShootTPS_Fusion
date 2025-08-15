@@ -754,7 +754,7 @@ MonoBehaviour:
   volume: 1
   type: 0
   useSpatial: 1
-  useFollow: 0
+  useFollow: 1
   normalizedVolume: 1
 --- !u!1102 &-6231892326552156573
 AnimatorState:
@@ -5851,7 +5851,7 @@ MonoBehaviour:
   volume: 1
   type: 0
   useSpatial: 1
-  useFollow: 0
+  useFollow: 1
   normalizedVolume: 1
 --- !u!1101 &8720840207138680740
 AnimatorStateTransition:

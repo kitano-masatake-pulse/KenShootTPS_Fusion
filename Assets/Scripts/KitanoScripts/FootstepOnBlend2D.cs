@@ -99,7 +99,7 @@ public class FootstepOnBlend2D_UsingAudioManager : StateMachineBehaviour
                 soundVolume: baseVolume,
                 type: SoundType.OneShot,
                 pos: animator.transform.position,
-                followTarget: animator.transform // ƒLƒƒƒ‰‚É’Ç]
+                followTarget: null// ƒLƒƒƒ‰‚É’Ç]
             );
         }
         else

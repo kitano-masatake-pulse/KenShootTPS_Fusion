@@ -25,7 +25,7 @@ public class SemiAutoRifle : WeaponBase
 
     bool isADS = false;
     float reloadTimer = 0f; // リロードタイマー
-    float reloadWaitTime = 0.5f; // リロードにかかる時間(秒)
+    float reloadWaitTime = 1.5f; // リロードにかかる時間(秒)
     bool isWaitingForReload = false; // リロード待機中かどうかのフラグ
 
     #region 弾の拡散(スプレッド)
@@ -346,6 +346,7 @@ public class SemiAutoRifle : WeaponBase
     public override void ResetOnChangeWeapon()
     {
          reloadTimer = 0f;
+        isWaitingForReload = false;
     }
 
     #region 音関係
